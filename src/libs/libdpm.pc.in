@@ -1,0 +1,13 @@
+# Package Information for pkg-config
+
+prefix=/usr
+exec_prefix=@EXEC_PREFIX@
+libdir=@LIBDIR@
+includedir=@INCLUDEDIR@
+
+Name: dpm
+Description: Tizen Device Policy Manager library
+Version: @VERSION@
+Requires: @PC_REQUIRED@
+Libs: -L${libdir} -ldpm
+Cflags: -I${includedir}

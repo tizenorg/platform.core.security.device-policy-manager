@@ -1,0 +1,33 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS true)
+
+PROJECT(dpm-server C)
+SET(VERSION_MAJOR 0)
+SET(VERSION "${VERSION_MAJOR}.0.1")
+
+SET(BINNAME "${PROJECT_NAME}")
+INCLUDE(FindPkgConfig)
+
+pkg_check_modules(dpmsvc_pkgs REQUIRED
+			libsystemd-journal
+			glib-2.0
+			libgum
+		)
+
+FOREACH(flag ${dpmsvc_pkgs_CFLAGS})
+	SET(dpmsvc_pkgs_CFLAGS "${dpmsvc_pkgs_CFLAGS} ${flag}")
+ENDFOREACH(flag)
+
+INCLUDE_DIRECTORIES(${LIBS}
+		${dpmsvc_pkgs_INCLUDE_DIRS}
+	)
+
+SET(SOURCES main.c
+	   )
+
+
+ADD_EXECUTABLE(${BINNAME} ${SOURCES} ${INCLUDE_SRCS} )
+TARGET_LINK_LIBRARIES(${BINNAME} ${dpmvc_pkgs_LDFLAGS} dpm )
+
+INSTALL(TARGETS ${BINNAME} DESTINATION bin)
+
