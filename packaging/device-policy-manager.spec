@@ -1,52 +1,40 @@
 Name:    device-policy-manager
-Summary: Tizen Device Policy Manger
 Version: 0.0.1
-Release: 1
-Group:   Security/Other
+Release: 0
 License: Apache-2.0
 Source0: %{name}-%{version}.tar.gz
-
+Summary: Tizen Device Policy Manager
+Group:   Security/Other
 BuildRequires: gcc
 BuildRequires: cmake
 BuildRequires: pkgconfig(glib-2.0)
-BuildRequires: pkgconfig(libgum)
-BuildRequires: pkgconfig(libsystemd-daemon)
-BuildRequires: pkgconfig(libsystemd-journal)
 
 %description
-Tizen Device Policy Manger service, libraries, devel packages.
-dpm-server, libdpm, libdpm-devel.
+The device-policy-manager package provides a daemon which is responsible for
+managing device policies.
 
-%package -n libdpm 
-Summary : Tizen DPM client library.
-Group   : Development/Libraries
-
-%description -n libdpm 
-Tizen Device Policy manager client library.
-
-%post -n libdpm -p /sbin/ldconfig
-%postun -n libdpm -p /sbin/ldconfig
-
-%package -n libdpm-devel
-Summary : Tizen DPM development package.
-Group   : Development/Libraries
-Requires : %{name} = %{version}-%{release}
-
-%description -n libdpm-devel
-Tizen Device Policy manager development package
-
-%post -n libdpm-devel -p /sbin/ldconfig
-%postun -n libdpm-devel -p /sbin/ldconfig
+%files
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_bindir}/device-policy-manager
 
 %prep
 %setup -q
 
-%preun
-/sbin/ldconfig
-
 %build
+%{!?build_type:%define build_type "RELEASE"}
 
-%cmake . -DCMAKE_INSTALL_PREFIX=%{_prefix}
+%if %{build_type} == "DEBUG" || %{build_type} == "PROFILING" || %{build_type} == "CCOV"
+	CFLAGS="$CFLAGS -Wp,-U_FORTIFY_SOURCE"
+	CXXFLAGS="$CXXFLAGS -Wp,-U_FORTIFY_SOURCE"
+%endif
+
+%cmake . -DVERSION=%{version} \
+	 -DCMAKE_BUILD_TYPE=%{build_type} \
+	 -DSCRIPT_INSTALL_DIR=%{_scriptdir} \
+	 -DPOLICY_INSTALL_DIR=%{_policydir} \
+	 -DSYSTEMD_UNIT_INSTALL_DIR=%{_unitdir} \
+	 -DDATA_INSTALL_DIR=%{_datadir}
+
 make %{?jobs:-j%jobs}
 
 %install
@@ -58,16 +46,59 @@ rm -rf %{buildroot}
 
 %post
 
+%preun
+/sbin/ldconfig
 
-%files -n libdpm 
-%defattr(-,root,root,-)
-/usr/lib/*.so.*
+%postun
+
+## Client Package #############################################################
+%package -n libdpm
+Summary: Tizen Device Policy Client library
+Group: Development/Libraries
+Requires: %{name} = %{version}-%{release}
+Requires(post): /sbin/ldconfig
+Requires(postun): /sbin/ldconfig
+
+%description -n libdpm
+The libdpm package contains the libraries needed to run DPM client.
+
+%post -n libdpm -p /sbin/ldconfig
+
+%postun -n libdpm -p /sbin/ldconfig
+
+%files -n libdpm
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libdpm.so.%{version}
+%{_libdir}/libdpm.so.0
+
+
+## Devel Package ##############################################################
+%package -n libdpm-devel
+Summary: Libraries and header files for device policy client development
+Group: Development/Libraries
+Requires: %{name} = %{version}-%{release}
+Requires: libdpm = %{version}-%{release}
+
+%description -n libdpm-devel
+The libdpm-devel package includes the libraries and header files necessary for
+developing the DPM client program.
 
 %files -n libdpm-devel
-/usr/include/*.h
-/usr/lib/*.so
-/usr/lib/pkgconfig/*.pc
+%defattr(644,root,root,755)
+%{_libdir}/libdpm.so
+%{_includedir}/dpm
+%{_libdir}/pkgconfig/dpm.pc
 
-%files 
-%defattr(-,root,root,-)
-/usr/bin/dpm-server
+## Test Package ##############################################################
+%package -n dpm-testcases
+Summary: Device Policy Manager test cases
+Group: Development/Libraries
+Requires: %{name} = %{version}-%{release}
+
+%description -n dpm-testcases
+Testcases for device policy manager and device policy client
+
+%files -n dpm-testcases
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_bindir}/dpm-unit-tests
+%attr(755,root,root) %{_bindir}/dpm-integration-tests

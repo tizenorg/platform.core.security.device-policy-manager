@@ -14,3 +14,18 @@
  *  limitations under the License
  */
 
+#ifndef __DEVICE_POLICY_SERVER__
+#define __DEVICE_POLICY_SERVER__
+
+namespace dpm {
+
+class Server {
+public:
+    Server();
+    ~Server();
+
+    void run();
+    void terminate();
+};
+} // namespace dpm
+#endif //__DEVICE_POLICY_SERVER__

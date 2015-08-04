@@ -14,3 +14,24 @@
  *  limitations under the License
  */
 
+#include "server.hxx"
+
+namespace dpm {
+
+Server::Server()
+{
+}
+
+Server::~Server()
+{
+}
+
+void Server::run()
+{
+}
+
+void Server::terminate()
+{
+}
+
+} // namespace dpm

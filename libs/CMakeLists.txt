@@ -1,0 +1,41 @@
+#
+# Copyright (c) 2015 Samsung Electronics Co., Ltd All Rights Reserved
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+SET(TARGET "dpm")
+SET(LIB_VERSION "${VERSION}")
+SET(LIB_SOVERSION "0")
+
+SET(PC_FILE "${TARGET}.pc")
+
+SET(SOURCES dpm.cxx)
+
+SET (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,noexecstack")
+
+ADD_LIBRARY(${TARGET} SHARED ${SOURCES})
+SET_TARGET_PROPERTIES(${TARGET} PROPERTIES COMPILE_FLAGS "-fvisibility=hidden")
+SET_TARGET_PROPERTIES(${TARGET} PROPERTIES SOVERSION ${LIB_SOVERSION})
+SET_TARGET_PROPERTIES(${TARGET} PROPERTIES VERSION   ${LIB_VERSION})
+
+PKG_CHECK_MODULES(LIB_DEPS REQUIRED gio-2.0)
+INCLUDE_DIRECTORIES(SYSTEM ${LIB_DEPS_INCLUDE_DIRS} ${DPM_COMMON} ${DPM_POLICY} ${DPM_LIBS})
+TARGET_LINK_LIBRARIES(${TARGET} ${LIB_DEPS_LIBRARIES} pthread)
+
+CONFIGURE_FILE(${PC_FILE}.in ${CMAKE_BINARY_DIR}/${PC_FILE} @ONLY)
+
+INSTALL(FILES ${CMAKE_BINARY_DIR}/${PC_FILE} DESTINATION ${LIB_INSTALL_DIR}/pkgconfig)
+INSTALL(TARGETS ${TARGET} DESTINATION ${LIB_INSTALL_DIR} COMPONENT RuntimeLibraries)
+INSTALL(FILES device-policy-client.h DESTINATION ${INCLUDE_INSTALL_DIR}/dpm)
+
