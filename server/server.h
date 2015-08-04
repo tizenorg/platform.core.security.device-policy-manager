@@ -14,3 +14,16 @@
  *  limitations under the License
  */
 
+#ifndef __DPM_SERVER_H__
+#define __DPM_SERVER_H__
+
+class Server {
+public:
+    Server();
+    ~Server();
+
+    void run();
+    void terminate();
+};
+
+#endif //__DPM_SERVER_H__

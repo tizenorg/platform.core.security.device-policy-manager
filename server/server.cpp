@@ -14,3 +14,20 @@
  *  limitations under the License
  */
 
+#include "server.h"
+
+Server::Server()
+{
+}
+
+Server::~Server()
+{
+}
+
+void Server::run()
+{
+}
+
+void Server::terminate()
+{
+}

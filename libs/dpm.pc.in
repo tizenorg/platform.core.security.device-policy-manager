@@ -6,8 +6,8 @@ libdir=@LIBDIR@
 includedir=@INCLUDEDIR@
 
 Name: dpm
-Description: Tizen Device Policy Manager library
+Description: Tizen Device Policy Client library
 Version: @VERSION@
 Requires: @PC_REQUIRED@
 Libs: -L${libdir} -ldpm
-Cflags: -I${includedir}
+Cflags: -I${includedir}/dpm
