@@ -13,7 +13,11 @@
 // limitations under the License.
 //
 
-int main(int /*atgc*/, char** /*argv*/)
+#include "testbench/testbench.hxx"
+
+int main(int /*argc*/, char** /*argv*/)
 {
-	return 0;
+    Test::Testbench::runAllTestSuites();
+
+    return 0;
 }

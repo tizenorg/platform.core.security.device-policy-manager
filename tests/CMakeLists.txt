@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 
+SET(DPM_TESTBENCH        ${DPM_TESTS}/testbench)
 SET(DPM_UNIT_TEST        ${DPM_TESTS}/unit)
 SET(DPM_INTEGRATION_TEST ${DPM_TESTS}/integration)
 
