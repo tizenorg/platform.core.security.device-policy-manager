@@ -14,8 +14,8 @@
  *  limitations under the License
  */
 
-#ifndef __DEVICE_POLICY_CLIENT__
-#define __DEVICE_POLICY_CLIENT__
+#ifndef __DEVICE_POLICY_CLIENT_H__
+#define __DEVICE_POLICY_CLIENT_H__
 
 #ifndef DPM_API
 #define DPM_API __attribute__((visibility("default")))
@@ -30,4 +30,4 @@ extern "C" {
 }
 #endif
 
-#endif //! __DEVICE_POLICY_CLIENT__
+#endif //! __DEVICE_POLICY_CLIENT_H__
