@@ -17,6 +17,9 @@ SET(UNIT_TEST_TARGET	"dpm-unit-tests")
 
 SET(UNIT_TEST_SOURCES	main.cxx
 						${DPM_COMMON}/error.cxx
+						${DPM_COMMON}/audit/logger.cxx
+						${DPM_COMMON}/audit/null-sink.cxx
+						${DPM_COMMON}/audit/console-sink.cxx
 						${DPM_TESTBENCH}/testbench.cxx
 )
 

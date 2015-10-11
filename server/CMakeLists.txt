@@ -19,6 +19,9 @@ SET(TARGET ${PROJECT_NAME})
 SET(SOURCES	main.cxx
 			server.cxx
 			${DPM_COMMON}/error.cxx
+			${DPM_COMMON}/audit/logger.cxx
+			${DPM_COMMON}/audit/null-sink.cxx
+			${DPM_COMMON}/audit/console-sink.cxx
 )
 
 ADD_EXECUTABLE(${TARGET} ${SOURCES} ${INCLUDE_SRCS})
