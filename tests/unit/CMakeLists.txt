@@ -16,6 +16,7 @@
 SET(UNIT_TEST_TARGET	"dpm-unit-tests")
 
 SET(UNIT_TEST_SOURCES	main.cxx
+						${DPM_COMMON}/error.cxx
 						${DPM_TESTBENCH}/testbench.cxx
 )
 

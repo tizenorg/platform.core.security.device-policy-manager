@@ -16,7 +16,10 @@
 
 SET(TARGET ${PROJECT_NAME})
 
-SET(SOURCES	main.cxx server.cxx)
+SET(SOURCES	main.cxx
+			server.cxx
+			${DPM_COMMON}/error.cxx
+)
 
 ADD_EXECUTABLE(${TARGET} ${SOURCES} ${INCLUDE_SRCS})
 
