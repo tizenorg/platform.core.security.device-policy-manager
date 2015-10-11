@@ -16,6 +16,7 @@
 SET(UNIT_TEST_TARGET	"dpm-unit-tests")
 
 SET(UNIT_TEST_SOURCES	main.cpp
+						${DPM_COMMON}/error.cpp
 						${DPM_TESTBENCH}/testbench.cpp
 )
 

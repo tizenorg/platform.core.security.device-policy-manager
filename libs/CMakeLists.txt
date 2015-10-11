@@ -20,7 +20,9 @@ SET(LIB_SOVERSION "0")
 
 SET(PC_FILE "${TARGET}.pc")
 
-SET(SOURCES dpm.cpp)
+SET(SOURCES dpm.cpp
+			${DPM_COMMON}/error.cpp
+)
 
 SET (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,noexecstack")
 

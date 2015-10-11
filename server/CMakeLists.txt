@@ -16,7 +16,10 @@
 
 SET(TARGET ${PROJECT_NAME})
 
-SET(SOURCES	main.cpp server.cpp)
+SET(SOURCES	main.cpp
+			server.cpp
+			${DPM_COMMON}/error.cpp
+)
 
 ADD_EXECUTABLE(${TARGET} ${SOURCES} ${INCLUDE_SRCS})
 

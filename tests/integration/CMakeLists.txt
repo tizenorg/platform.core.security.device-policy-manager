@@ -16,6 +16,7 @@
 SET(INTEGRATION_TEST_TARGET	"dpm-integration-tests")
 
 SET(INTEGRATION_TEST_SOURCES main.cpp
+							 ${DPM_COMMON}/error.cpp
 							 ${DPM_TESTBENCH}/testbench.cpp
 )
 
