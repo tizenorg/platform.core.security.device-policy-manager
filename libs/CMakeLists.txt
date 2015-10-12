@@ -21,7 +21,12 @@ SET(LIB_SOVERSION "0")
 SET(PC_FILE "${TARGET}.pc")
 
 SET(SOURCES dpm.cxx
+			policy-client.cxx
 			${DPM_COMMON}/error.cxx
+			${DPM_COMMON}/ipc/client.cxx
+			${DPM_COMMON}/ipc/socket.cxx
+			${DPM_COMMON}/ipc/connection.cxx
+			${DPM_COMMON}/ipc/message.cxx
 )
 
 SET (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,noexecstack")

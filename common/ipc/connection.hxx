@@ -14,26 +14,38 @@
  *  limitations under the License
  */
 
-#ifndef __DEVICE_POLICY_SERVER__
-#define __DEVICE_POLICY_SERVER__
+#ifndef __CONNECTION__
+#define __CONNECTION__
 
 #include <string>
-#include <memory>
 
-#include "ipc/service.hxx"
+#include "socket.hxx"
+#include "serialize.hxx"
+#include "message.hxx"
 
-namespace dpm {
+namespace Ipc {
 
-class Server {
+class Connection {
 public:
-    Server();
-    ~Server();
+    Connection(Socket&& sock);
+    Connection(const Connection&) = delete;
+    ~Connection() noexcept;
 
-    void run();
-    void terminate();
+    Connection& operator=(const Connection&) = delete;
+    Connection& operator=(Connection&) = delete;
+
+    Message createMessage(unsigned int type, const std::string& target);
+
+    void send(const Message& message) const;
+    Message dispatch() const;
+
+    int getFd() const {
+        return socket.getFd();
+    }
 
 private:
-    std::unique_ptr<Ipc::Service> service;
+    Socket socket;
 };
-} // namespace dpm
-#endif //__DEVICE_POLICY_SERVER__
+
+} // namespace Ipc
+#endif //__CONNECTION__

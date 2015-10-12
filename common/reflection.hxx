@@ -14,34 +14,27 @@
  *  limitations under the License
  */
 
-#include "server.hxx"
+#ifndef __REFLECTION__
+#define __REFLECTION__
 
-namespace dpm {
+#include "preprocessor.hxx"
 
-namespace {
+#define VISIT_ELEMENT(elem) v.visit(#elem, elem)
 
-const std::string POLICY_MANAGER_ADDRESS = "/tmp/.device-policy-manager";
-
-} // namespace
-
-Server::Server()
-{
-    service.reset(new Ipc::Service(POLICY_MANAGER_ADDRESS));
+#define REFLECTABLE(...)				\
+template<typename V>					\
+void accept(V v)					\
+{							\
+	FOR_EACH_VAR_ARGS(VISIT_ELEMENT, __VA_ARGS__);	\
+}							\
+template<typename V>					\
+void accept(V v) const					\
+{							\
+	FOR_EACH_VAR_ARGS(VISIT_ELEMENT, __VA_ARGS__);	\
 }
 
-Server::~Server()
-{
-}
+#define NO_REFLECTABLE_PROPERTY				\
+	template<typename V>				\
+	static void accept(V) {}
 
-void Server::run()
-{
-    // Prepare execution environment
-    service->start();
-}
-
-void Server::terminate()
-{
-    service->stop();
-}
-
-} // namespace dpm
+#endif //!__REFLECTION__

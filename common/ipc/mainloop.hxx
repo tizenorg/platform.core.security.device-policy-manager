@@ -14,26 +14,38 @@
  *  limitations under the License
  */
 
-#ifndef __DEVICE_POLICY_SERVER__
-#define __DEVICE_POLICY_SERVER__
+#ifndef __MAINLOOP__
+#define __MAINLOOP__
+
+#include <sys/epoll.h>
 
 #include <string>
+#include <functional>
+#include <unordered_map>
 #include <memory>
+#include <mutex>
 
-#include "ipc/service.hxx"
+namespace Ipc {
 
-namespace dpm {
-
-class Server {
+class Mainloop {
 public:
-    Server();
-    ~Server();
+    typedef unsigned int Event;
+    typedef std::function<void(int fd, Event event)> Callback;
 
-    void run();
-    void terminate();
+    Mainloop();
+    ~Mainloop();
+
+    void addEventSource(const int fd, const Event events, Callback&& callback);
+    void removeEventSource(const int fd);
+    bool dispatch(const int timeout);
+    void run(const int timeout = -1);
 
 private:
-    std::unique_ptr<Ipc::Service> service;
+    typedef std::recursive_mutex Mutex;
+
+    std::unordered_map<int, std::shared_ptr<Callback>> callbacks;
+    Mutex mutex;
+    int pollFd;
 };
-} // namespace dpm
-#endif //__DEVICE_POLICY_SERVER__
+} // namespace Ipc
+#endif //__MAINLOOP__

@@ -22,6 +22,11 @@ SET(SOURCES	main.cxx
 			${DPM_COMMON}/audit/logger.cxx
 			${DPM_COMMON}/audit/null-sink.cxx
 			${DPM_COMMON}/audit/console-sink.cxx
+			${DPM_COMMON}/ipc/socket.cxx
+			${DPM_COMMON}/ipc/service.cxx
+			${DPM_COMMON}/ipc/mainloop.cxx
+			${DPM_COMMON}/ipc/message.cxx
+			${DPM_COMMON}/ipc/connection.cxx
 )
 
 ADD_EXECUTABLE(${TARGET} ${SOURCES} ${INCLUDE_SRCS})

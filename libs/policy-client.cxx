@@ -14,9 +14,7 @@
  *  limitations under the License
  */
 
-#include "server.hxx"
-
-namespace dpm {
+#include "policy-client.hxx"
 
 namespace {
 
@@ -24,24 +22,33 @@ const std::string POLICY_MANAGER_ADDRESS = "/tmp/.device-policy-manager";
 
 } // namespace
 
-Server::Server()
-{
-    service.reset(new Ipc::Service(POLICY_MANAGER_ADDRESS));
-}
 
-Server::~Server()
+DevicePolicyClient::DevicePolicyClient() noexcept
 {
 }
 
-void Server::run()
+DevicePolicyClient::~DevicePolicyClient() noexcept
 {
-    // Prepare execution environment
-    service->start();
 }
 
-void Server::terminate()
+int DevicePolicyClient::connect(const std::string& address) noexcept
 {
-    service->stop();
+    try {
+        client.reset(new Ipc::Client(address));
+        client->connect();
+    } catch (Runtime::Exception& e) {
+        return -1;
+    }
+
+    return 0;
 }
 
-} // namespace dpm
+int DevicePolicyClient::connect() noexcept
+{
+    return connect(POLICY_MANAGER_ADDRESS);
+}
+
+void DevicePolicyClient::disconnect() noexcept
+{
+    client.reset();
+}

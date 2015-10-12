@@ -14,34 +14,25 @@
  *  limitations under the License
  */
 
-#include "server.hxx"
+#ifndef __POLICY_CLIENT__
+#define __POLICY_CLIENT__
 
-namespace dpm {
+#include <string>
+#include <memory>
 
-namespace {
+#include "ipc/client.hxx"
 
-const std::string POLICY_MANAGER_ADDRESS = "/tmp/.device-policy-manager";
+class DevicePolicyClient {
+public:
+    DevicePolicyClient() noexcept;
+    ~DevicePolicyClient() noexcept;
 
-} // namespace
+    int connect() noexcept;
+    int connect(const std::string& address) noexcept;
+    void disconnect() noexcept;
 
-Server::Server()
-{
-    service.reset(new Ipc::Service(POLICY_MANAGER_ADDRESS));
-}
+private:
+    std::unique_ptr<Ipc::Client> client;
+};
 
-Server::~Server()
-{
-}
-
-void Server::run()
-{
-    // Prepare execution environment
-    service->start();
-}
-
-void Server::terminate()
-{
-    service->stop();
-}
-
-} // namespace dpm
+#endif //__POLICY_CLIENT__
