@@ -14,30 +14,27 @@
  *  limitations under the License
  */
 
-#include "server.h"
+#ifndef __RUNTIME_REFLECTION_H__
+#define __RUNTIME_REFLECTION_H__
 
-namespace {
+#include "preprocessor.h"
 
-const std::string POLICY_MANAGER_ADDRESS = "/tmp/.device-policy-manager";
+#define VISIT_ELEMENT(elem) v.visit(#elem, elem)
 
-} // namespace
-
-Server::Server()
-{
-    service.reset(new rmi::Service(POLICY_MANAGER_ADDRESS));
+#define REFLECTABLE(...)				\
+template<typename V>					\
+void accept(V v)					\
+{							\
+	FOR_EACH_VAR_ARGS(VISIT_ELEMENT, __VA_ARGS__);	\
+}							\
+template<typename V>					\
+void accept(V v) const					\
+{							\
+	FOR_EACH_VAR_ARGS(VISIT_ELEMENT, __VA_ARGS__);	\
 }
 
-Server::~Server()
-{
-}
+#define NO_REFLECTABLE_PROPERTY				\
+	template<typename V>				\
+	static void accept(V) {}
 
-void Server::run()
-{
-    // Prepare execution environment
-    service->start();
-}
-
-void Server::terminate()
-{
-    service->stop();
-}
+#endif //!__RUNTIME_REFLECTION_H__

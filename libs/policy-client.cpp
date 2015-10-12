@@ -14,7 +14,7 @@
  *  limitations under the License
  */
 
-#include "server.h"
+#include "policy-client.h"
 
 namespace {
 
@@ -22,22 +22,33 @@ const std::string POLICY_MANAGER_ADDRESS = "/tmp/.device-policy-manager";
 
 } // namespace
 
-Server::Server()
-{
-    service.reset(new rmi::Service(POLICY_MANAGER_ADDRESS));
-}
 
-Server::~Server()
+DevicePolicyClient::DevicePolicyClient() noexcept
 {
 }
 
-void Server::run()
+DevicePolicyClient::~DevicePolicyClient() noexcept
 {
-    // Prepare execution environment
-    service->start();
 }
 
-void Server::terminate()
+int DevicePolicyClient::connect(const std::string& address) noexcept
 {
-    service->stop();
+    try {
+        client.reset(new rmi::Client(address));
+        client->connect();
+    } catch (runtime::Exception& e) {
+        return -1;
+    }
+
+    return 0;
+}
+
+int DevicePolicyClient::connect() noexcept
+{
+    return connect(POLICY_MANAGER_ADDRESS);
+}
+
+void DevicePolicyClient::disconnect() noexcept
+{
+    client.reset();
 }

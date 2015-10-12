@@ -16,10 +16,17 @@
 SET(UNIT_TEST_TARGET	"dpm-unit-tests")
 
 SET(UNIT_TEST_SOURCES	main.cpp
+						rmi.cpp
 						${DPM_COMMON}/error.cpp
+						${DPM_COMMON}/mainloop.cpp
 						${DPM_COMMON}/audit/logger.cpp
 						${DPM_COMMON}/audit/null-sink.cpp
 						${DPM_COMMON}/audit/console-sink.cpp
+						${DPM_COMMON}/rmi/socket.cpp
+						${DPM_COMMON}/rmi/connection.cpp
+						${DPM_COMMON}/rmi/message.cpp
+						${DPM_COMMON}/rmi/service.cpp
+						${DPM_COMMON}/rmi/client.cpp
 						${DPM_TESTBENCH}/testbench.cpp
 )
 

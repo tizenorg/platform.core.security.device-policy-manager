@@ -14,30 +14,25 @@
  *  limitations under the License
  */
 
-#include "server.h"
+#ifndef __POLICY_CLIENT__
+#define __POLICY_CLIENT__
 
-namespace {
+#include <string>
+#include <memory>
 
-const std::string POLICY_MANAGER_ADDRESS = "/tmp/.device-policy-manager";
+#include "rmi/client.h"
 
-} // namespace
+class DevicePolicyClient {
+public:
+    DevicePolicyClient() noexcept;
+    ~DevicePolicyClient() noexcept;
 
-Server::Server()
-{
-    service.reset(new rmi::Service(POLICY_MANAGER_ADDRESS));
-}
+    int connect() noexcept;
+    int connect(const std::string& address) noexcept;
+    void disconnect() noexcept;
 
-Server::~Server()
-{
-}
+private:
+    std::unique_ptr<rmi::Client> client;
+};
 
-void Server::run()
-{
-    // Prepare execution environment
-    service->start();
-}
-
-void Server::terminate()
-{
-    service->stop();
-}
+#endif //__POLICY_CLIENT__

@@ -14,24 +14,39 @@
  *  limitations under the License
  */
 
-#ifndef __DPM_SERVER_H__
-#define __DPM_SERVER_H__
+#ifndef __RMI_CONNECTION_H__
+#define __RMI_CONNECTION_H__
 
 #include <string>
-#include <memory>
 
-#include "rmi/service.h"
+#include "socket.h"
+#include "serialize.h"
+#include "message.h"
 
-class Server {
+namespace rmi {
+
+class Connection {
 public:
-    Server();
-    ~Server();
+    Connection(Socket&& sock);
+    Connection(const Connection&) = delete;
+    ~Connection() noexcept;
 
-    void run();
-    void terminate();
+    Connection& operator=(const Connection&) = delete;
+    Connection& operator=(Connection&) = delete;
+
+    Message createMessage(unsigned int type, const std::string& target);
+
+    void send(const Message& message) const;
+    Message dispatch() const;
+
+    int getFd() const
+    {
+        return socket.getFd();
+    }
 
 private:
-    std::unique_ptr<rmi::Service> service;
+    Socket socket;
 };
 
-#endif //__DPM_SERVER_H__
+} // namespace rmi
+#endif //__RMI_CONNECTION_H__
