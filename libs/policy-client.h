@@ -24,6 +24,8 @@
 
 class DevicePolicyClient {
 public:
+    typedef std::unique_ptr<rmi::Client> PolicyControlContext;
+
     DevicePolicyClient() noexcept;
     ~DevicePolicyClient() noexcept;
 
@@ -31,8 +33,19 @@ public:
     int connect(const std::string& address) noexcept;
     void disconnect() noexcept;
 
+    template<typename Policy, typename... Args>
+    Policy createPolicyInterface(Args&&... args) noexcept
+    {
+        return Policy(getPolicyControlContext(), std::forward<Args>(args)...);
+    }
+
 private:
-    std::unique_ptr<rmi::Client> client;
+    PolicyControlContext& getPolicyControlContext()
+    {
+        return client;
+    }
+
+    PolicyControlContext client;
 };
 
 #endif //__POLICY_CLIENT_H__
