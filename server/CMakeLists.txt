@@ -18,6 +18,8 @@ SET(TARGET ${PROJECT_NAME})
 
 SET(SOURCES	main.cxx
 			server.cxx
+			policy.cxx
+			policy-storage.cxx
 			${DPM_COMMON}/error.cxx
 			${DPM_COMMON}/audit/logger.cxx
 			${DPM_COMMON}/audit/null-sink.cxx
@@ -27,11 +29,15 @@ SET(SOURCES	main.cxx
 			${DPM_COMMON}/ipc/mainloop.cxx
 			${DPM_COMMON}/ipc/message.cxx
 			${DPM_COMMON}/ipc/connection.cxx
+			${DPM_COMMON}/xml/parser.cxx
+			${DPM_COMMON}/xml/document.cxx
+			${DPM_COMMON}/xml/node.cxx
+			${DPM_COMMON}/xml/keepblanks
 )
 
 ADD_EXECUTABLE(${TARGET} ${SOURCES} ${INCLUDE_SRCS})
 
-PKG_CHECK_MODULES(SERVER_DEPS REQUIRED glib-2.0)
+PKG_CHECK_MODULES(SERVER_DEPS REQUIRED glib-2.0 libxml-2.0)
 
 INCLUDE_DIRECTORIES(SYSTEM ${SERVER_DEPS_INCLUDE_DIRS} ${DPM_COMMON} ${DPM_POLICY} ${DPM_SERVER})
 
@@ -40,4 +46,5 @@ SET_TARGET_PROPERTIES(${TARGET} PROPERTIES COMPILE_FLAGS "-fPIE")
 SET_TARGET_PROPERTIES(${TARGET} PROPERTIES LINK_FLAGS "-pie")
 
 INSTALL(TARGETS ${TARGET} DESTINATION bin)
+INSTALL(FILES data/PolicyManifest.xml DESTINATION ${POLICY_INSTALL_DIR})
 
