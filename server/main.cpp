@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
     }
 
     try {
-        Server server;
+        Server& server = Server::instance();
         server.run();
     } catch (std::exception &e) {
         std::cerr << e.what() << std::endl;

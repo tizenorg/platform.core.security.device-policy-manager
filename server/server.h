@@ -20,18 +20,32 @@
 #include <string>
 #include <memory>
 
+#include "client-manager.h"
+
 #include "rmi/service.h"
 
 class Server {
 public:
-    Server();
-    ~Server();
-
     void run();
     void terminate();
 
+    ClientManager& getClientManager() {
+        return clientManager;
+    }
+
+    rmi::Service& getServiceManager() {
+        return *service;
+    }
+
+    static Server& instance();
+
 private:
+    Server();
+    ~Server();
+
     std::unique_ptr<rmi::Service> service;
+
+    ClientManager clientManager;
 };
 
 #endif //__DPM_SERVER_H__

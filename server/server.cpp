@@ -41,3 +41,10 @@ void Server::terminate()
 {
     service->stop();
 }
+
+Server& Server::instance()
+{
+    static Server _instance_;
+
+    return _instance_;
+}

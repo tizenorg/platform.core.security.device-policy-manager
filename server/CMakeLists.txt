@@ -20,6 +20,7 @@ SET(SOURCES	main.cpp
 			server.cpp
 			policy.cpp
 			policy-storage.cpp
+			client-manager.cpp
 			${DPM_COMMON}/error.cpp
 			${DPM_COMMON}/mainloop.cpp
 			${DPM_COMMON}/audit/logger.cpp
@@ -29,6 +30,9 @@ SET(SOURCES	main.cpp
 			${DPM_COMMON}/rmi/service.cpp
 			${DPM_COMMON}/rmi/message.cpp
 			${DPM_COMMON}/rmi/connection.cpp
+			${DPM_COMMON}/db/connection.cpp
+			${DPM_COMMON}/db/statement.cpp
+			${DPM_COMMON}/db/column.cpp
 			${DPM_COMMON}/xml/parser.cpp
 			${DPM_COMMON}/xml/document.cpp
 			${DPM_COMMON}/xml/node.cpp
@@ -37,7 +41,7 @@ SET(SOURCES	main.cpp
 
 ADD_EXECUTABLE(${TARGET} ${SOURCES} ${INCLUDE_SRCS})
 
-PKG_CHECK_MODULES(SERVER_DEPS REQUIRED glib-2.0 libxml-2.0)
+PKG_CHECK_MODULES(SERVER_DEPS REQUIRED glib-2.0 libxml-2.0 sqlite3)
 
 INCLUDE_DIRECTORIES(SYSTEM ${SERVER_DEPS_INCLUDE_DIRS} ${DPM_COMMON} ${DPM_POLICY} ${DPM_SERVER})
 
