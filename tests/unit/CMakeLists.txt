@@ -17,6 +17,7 @@ SET(UNIT_TEST_TARGET	"dpm-unit-tests")
 
 SET(UNIT_TEST_SOURCES	main.cpp
 						rmi.cpp
+						database.cpp
 						${DPM_COMMON}/error.cpp
 						${DPM_COMMON}/mainloop.cpp
 						${DPM_COMMON}/audit/logger.cpp
@@ -27,12 +28,15 @@ SET(UNIT_TEST_SOURCES	main.cpp
 						${DPM_COMMON}/rmi/message.cpp
 						${DPM_COMMON}/rmi/service.cpp
 						${DPM_COMMON}/rmi/client.cpp
+						${DPM_COMMON}/db/connection.cpp
+						${DPM_COMMON}/db/statement.cpp
+						${DPM_COMMON}/db/column.cpp
 						${DPM_TESTBENCH}/testbench.cpp
 )
 
 ADD_EXECUTABLE(${UNIT_TEST_TARGET} ${UNIT_TEST_SOURCES})
 
-PKG_CHECK_MODULES(TESTS_DEPS REQUIRED glib-2.0)
+PKG_CHECK_MODULES(TESTS_DEPS REQUIRED glib-2.0 sqlite3)
 INCLUDE_DIRECTORIES(SYSTEM ${TESTS_DEPS_INCLUDE_DIRS} ${DPM_COMMON} ${DPM_LIBS} ${DPM_TESTS})
 
 SET_TARGET_PROPERTIES(${UNIT_TEST_TARGET} PROPERTIES

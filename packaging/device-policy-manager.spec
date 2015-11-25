@@ -8,6 +8,7 @@ Group:   Security/Other
 BuildRequires: gcc
 BuildRequires: cmake
 BuildRequires: pkgconfig(glib-2.0)
+BuildRequires: pkgconfig(sqlite3)
 
 %description
 The device-policy-manager package provides a daemon which is responsible for
@@ -44,6 +45,9 @@ rm -rf %{buildroot}
 
 %clean
 rm -rf %{buildroot}
+
+%post
+mkdir -p ${buildroot}/opt/data/dpm
 
 %preun
 /sbin/ldconfig
