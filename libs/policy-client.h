@@ -14,8 +14,8 @@
  *  limitations under the License
  */
 
-#ifndef __POLICY_CLIENT__
-#define __POLICY_CLIENT__
+#ifndef __POLICY_CLIENT_H__
+#define __POLICY_CLIENT_H__
 
 #include <string>
 #include <memory>
@@ -35,4 +35,4 @@ private:
     std::unique_ptr<rmi::Client> client;
 };
 
-#endif //__POLICY_CLIENT__
+#endif //__POLICY_CLIENT_H__

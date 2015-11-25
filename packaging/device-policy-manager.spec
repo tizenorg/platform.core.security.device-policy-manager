@@ -14,6 +14,7 @@ The device-policy-manager package provides a daemon which is responsible for
 managing device policies.
 
 %files
+%manifest device-policy-manager.manifest
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/device-policy-manager
 
