@@ -20,20 +20,37 @@
 #include <string>
 #include <memory>
 
+#include "client-manager.hxx"
+
 #include "ipc/service.hxx"
 
-namespace dpm {
+namespace DevicePolicyServer {
 
 class Server {
 public:
-    Server();
-    ~Server();
-
     void run();
     void terminate();
 
+    ClientManager& getClientManager()
+    {
+        return clientManager;
+    }
+
+    Ipc::Service& getServiceManager()
+    {
+        return *service;
+    }
+
+    static Server& instance();
+
 private:
+    Server();
+    ~Server();
+
     std::unique_ptr<Ipc::Service> service;
+
+    ClientManager clientManager;
 };
-} // namespace dpm
+
+} // namespace DevicePolicyServer
 #endif //__DEVICE_POLICY_SERVER__

@@ -16,7 +16,7 @@
 
 #include "server.hxx"
 
-namespace dpm {
+namespace DevicePolicyServer {
 
 namespace {
 
@@ -44,4 +44,11 @@ void Server::terminate()
     service->stop();
 }
 
-} // namespace dpm
+Server& Server::instance()
+{
+    static Server _instance_;
+
+    return _instance_;
+}
+
+} // namespace DevicePolicyServer

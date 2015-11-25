@@ -25,7 +25,7 @@
 
 #include "server.hxx"
 
-using namespace dpm;
+using namespace DevicePolicyServer;
 
 static bool daemonize(void)
 {
@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
     }
 
     try {
-        Server server;
+        Server& server = Server::instance();
         server.run();
     } catch (std::exception &e) {
         std::cerr << e.what() << std::endl;

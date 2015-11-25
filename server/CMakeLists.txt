@@ -20,6 +20,7 @@ SET(SOURCES	main.cxx
 			server.cxx
 			policy.cxx
 			policy-storage.cxx
+			client-manager.cxx
 			${DPM_COMMON}/error.cxx
 			${DPM_COMMON}/audit/logger.cxx
 			${DPM_COMMON}/audit/null-sink.cxx
@@ -29,6 +30,9 @@ SET(SOURCES	main.cxx
 			${DPM_COMMON}/ipc/mainloop.cxx
 			${DPM_COMMON}/ipc/message.cxx
 			${DPM_COMMON}/ipc/connection.cxx
+			${DPM_COMMON}/db/connection.cxx
+			${DPM_COMMON}/db/statement.cxx
+			${DPM_COMMON}/db/column.cxx
 			${DPM_COMMON}/xml/parser.cxx
 			${DPM_COMMON}/xml/document.cxx
 			${DPM_COMMON}/xml/node.cxx
@@ -37,7 +41,7 @@ SET(SOURCES	main.cxx
 
 ADD_EXECUTABLE(${TARGET} ${SOURCES} ${INCLUDE_SRCS})
 
-PKG_CHECK_MODULES(SERVER_DEPS REQUIRED glib-2.0 libxml-2.0)
+PKG_CHECK_MODULES(SERVER_DEPS REQUIRED glib-2.0 libxml-2.0 sqlite3)
 
 INCLUDE_DIRECTORIES(SYSTEM ${SERVER_DEPS_INCLUDE_DIRS} ${DPM_COMMON} ${DPM_POLICY} ${DPM_SERVER})
 
