@@ -14,35 +14,13 @@
  *  limitations under the License
  */
 
-#include <cassert>
-#include <iostream>
+#ifndef __DPM__
+#define __DPM__
 
-#include "dpm.hxx"
-#include "exception.hxx"
+#include "device-policy-client.h"
 
-DevicePolicyClient& GetDevicePolicyClient(dpm_client_h handle)
-{
-    assert(handle);
-    return *reinterpret_cast<DevicePolicyClient*>(handle);
-}
+#include "policy-client.hxx"
 
-DPM_API dpm_client_h dpm_create_client(void)
-{
-    DevicePolicyClient *client = new(std::nothrow) DevicePolicyClient();
+DevicePolicyClient& GetDevicePolicyClient(dpm_client_h handle);
 
-    assert(client);
-
-    if (client->connect() < 0) {
-        delete client;
-        return NULL;
-    }
-
-    return reinterpret_cast<dpm_client_h>(client);
-}
-
-DPM_API void dpm_destroy_client(dpm_client_h handle)
-{
-    assert(handle);
-
-    delete &GetDevicePolicyClient(handle);
-}
+#endif //!__DPM__

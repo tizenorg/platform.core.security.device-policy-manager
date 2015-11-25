@@ -25,6 +25,10 @@
 extern "C" {
 #endif
 
+typedef void* dpm_client_h;
+
+DPM_API dpm_client_h dpm_create_client(void);
+DPM_API void dpm_destroy_client(dpm_client_h handle);
 
 #ifdef __cplusplus
 }
