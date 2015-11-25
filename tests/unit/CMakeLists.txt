@@ -18,6 +18,7 @@ SET(UNIT_TEST_TARGET	"dpm-unit-tests")
 SET(UNIT_TEST_SOURCES	main.cpp
 						rmi.cpp
 						database.cpp
+						xml.cpp
 						${DPM_COMMON}/error.cpp
 						${DPM_COMMON}/mainloop.cpp
 						${DPM_COMMON}/audit/logger.cpp
@@ -31,12 +32,16 @@ SET(UNIT_TEST_SOURCES	main.cpp
 						${DPM_COMMON}/db/connection.cpp
 						${DPM_COMMON}/db/statement.cpp
 						${DPM_COMMON}/db/column.cpp
+						${DPM_COMMON}/xml/parser.cpp
+						${DPM_COMMON}/xml/document.cpp
+						${DPM_COMMON}/xml/node.cpp
+						${DPM_COMMON}/xml/keepblanks.cpp
 						${DPM_TESTBENCH}/testbench.cpp
 )
 
 ADD_EXECUTABLE(${UNIT_TEST_TARGET} ${UNIT_TEST_SOURCES})
 
-PKG_CHECK_MODULES(TESTS_DEPS REQUIRED glib-2.0 sqlite3)
+PKG_CHECK_MODULES(TESTS_DEPS REQUIRED glib-2.0 libxml-2.0 sqlite3)
 INCLUDE_DIRECTORIES(SYSTEM ${TESTS_DEPS_INCLUDE_DIRS} ${DPM_COMMON} ${DPM_LIBS} ${DPM_TESTS})
 
 SET_TARGET_PROPERTIES(${UNIT_TEST_TARGET} PROPERTIES
@@ -47,3 +52,4 @@ SET_TARGET_PROPERTIES(${UNIT_TEST_TARGET} PROPERTIES
 TARGET_LINK_LIBRARIES(${UNIT_TEST_TARGET} ${TESTS_DEPS_LIBRARIES})
 
 INSTALL(TARGETS ${UNIT_TEST_TARGET} DESTINATION bin)
+INSTALL(FILES   data/sample-policy.xml DESTINATION ${DATA_INSTALL_DIR}/dpm)

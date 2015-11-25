@@ -8,6 +8,7 @@ Group:   Security/Other
 BuildRequires: gcc
 BuildRequires: cmake
 BuildRequires: pkgconfig(glib-2.0)
+BuildRequires: pkgconfig(libxml-2.0)
 BuildRequires: pkgconfig(sqlite3)
 
 %description
@@ -105,3 +106,5 @@ Testcases for device policy manager and device policy client
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/dpm-unit-tests
 %attr(755,root,root) %{_bindir}/dpm-integration-tests
+%defattr(-,root,root,-)
+%{_datadir}/dpm/sample-policy.xml
