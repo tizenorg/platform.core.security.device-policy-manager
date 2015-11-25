@@ -8,6 +8,7 @@ Group:   Security/Other
 BuildRequires: gcc
 BuildRequires: cmake
 BuildRequires: pkgconfig(glib-2.0)
+BuildRequires: pkgconfig(sqlite3)
 
 %description
 The device-policy-manager package provides a daemon which is responsible for
@@ -32,7 +33,6 @@ managing device policies.
 %cmake . -DVERSION=%{version} \
 	 -DCMAKE_BUILD_TYPE=%{build_type} \
 	 -DSCRIPT_INSTALL_DIR=%{_scriptdir} \
-	 -DPOLICY_INSTALL_DIR=%{_policydir} \
 	 -DSYSTEMD_UNIT_INSTALL_DIR=%{_unitdir} \
 	 -DDATA_INSTALL_DIR=%{_datadir}
 
@@ -46,6 +46,7 @@ rm -rf %{buildroot}
 rm -rf %{buildroot}
 
 %post
+mkdir -p ${buildroot}/opt/data/dpm
 
 %preun
 /sbin/ldconfig
