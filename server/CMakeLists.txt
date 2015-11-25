@@ -18,6 +18,8 @@ SET(TARGET ${PROJECT_NAME})
 
 SET(SOURCES	main.cpp
 			server.cpp
+			policy.cpp
+			policy-storage.cpp
 			${DPM_COMMON}/error.cpp
 			${DPM_COMMON}/mainloop.cpp
 			${DPM_COMMON}/audit/logger.cpp
@@ -27,11 +29,15 @@ SET(SOURCES	main.cpp
 			${DPM_COMMON}/rmi/service.cpp
 			${DPM_COMMON}/rmi/message.cpp
 			${DPM_COMMON}/rmi/connection.cpp
+			${DPM_COMMON}/xml/parser.cpp
+			${DPM_COMMON}/xml/document.cpp
+			${DPM_COMMON}/xml/node.cpp
+			${DPM_COMMON}/xml/keepblanks.cpp
 )
 
 ADD_EXECUTABLE(${TARGET} ${SOURCES} ${INCLUDE_SRCS})
 
-PKG_CHECK_MODULES(SERVER_DEPS REQUIRED glib-2.0)
+PKG_CHECK_MODULES(SERVER_DEPS REQUIRED glib-2.0 libxml-2.0)
 
 INCLUDE_DIRECTORIES(SYSTEM ${SERVER_DEPS_INCLUDE_DIRS} ${DPM_COMMON} ${DPM_POLICY} ${DPM_SERVER})
 
@@ -40,4 +46,5 @@ SET_TARGET_PROPERTIES(${TARGET} PROPERTIES COMPILE_FLAGS "-fPIE")
 SET_TARGET_PROPERTIES(${TARGET} PROPERTIES LINK_FLAGS "-pie")
 
 INSTALL(TARGETS ${TARGET} DESTINATION bin)
+INSTALL(FILES data/PolicyManifest.xml DESTINATION ${POLICY_INSTALL_DIR})
 
