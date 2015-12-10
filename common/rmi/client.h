@@ -41,6 +41,10 @@ public:
     Type methodCall(const std::string& method, const Args&... args);
 
 private:
+    void packParameters(const Message& message)
+    {
+    }
+
     template<typename F>
     void packParameters(const Message& message, const F& arg)
     {
