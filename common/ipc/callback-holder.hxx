@@ -56,6 +56,10 @@ struct CallbackHolder {
         return callCallback(message, typename SequenceExpansion<sizeof...(Args)>::type());
     }
 
+    void buildParameters(const Message& message)
+    {
+    }
+
     template<typename F>
     void buildParameters(const Message& message, F& arg)
     {
