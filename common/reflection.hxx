@@ -17,6 +17,8 @@
 #ifndef __REFLECTION__
 #define __REFLECTION__
 
+#include <type_traits>
+
 #include "preprocessor.hxx"
 
 #define VISIT_ELEMENT(elem) v.visit(#elem, elem)
@@ -36,5 +38,21 @@ void accept(V v) const					\
 #define NO_REFLECTABLE_PROPERTY				\
 	template<typename V>				\
 	static void accept(V) {}
+
+template<typename T>
+struct ReflectionTraitChecker {
+    struct Visitor {};
+
+    template <typename C> static std::true_type
+    test(decltype(std::declval<C>().template accept(Visitor()))*);
+
+    template <typename C> static std::false_type
+    test(...);
+
+    static constexpr bool value = std::is_same<decltype(test<T>(0)), std::true_type>::value;
+};
+
+template<typename T>
+struct IsReflectable : public std::integral_constant<bool, ReflectionTraitChecker<T>::value> {};
 
 #endif //!__REFLECTION__
