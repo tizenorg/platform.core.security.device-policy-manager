@@ -21,6 +21,8 @@
 #include <string>
 #include <utility>
 
+#include "reflection.h"
+
 namespace runtime {
 
 template<class StorageType>
@@ -48,6 +50,12 @@ private:
     void visitInternal(const DataType& value)
     {
         storage.write(&value, sizeof(DataType));
+    }
+
+    template<typename DataType, typename std::enable_if<::IsReflectable<DataType>::value, int>::type = 0>
+    void visitInternal(DataType& value)
+    {
+        value.accept(*this);
     }
 
     template<typename DataType>
@@ -90,6 +98,12 @@ private:
     void visitInternal(DataType& value)
     {
         storage.read(&value, sizeof(DataType));
+    }
+
+    template<typename T, typename std::enable_if<::IsReflectable<T>::value, int>::type = 0>
+    void visitInternal(T& value)
+    {
+        value.accept(*this);
     }
 
     template<typename DataType>
