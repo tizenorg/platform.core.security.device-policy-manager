@@ -63,6 +63,11 @@ std::string LogLevelToString(const LogLevel level)
     }
 }
 
+void Logger::setLogLevel(const LogLevel level)
+{
+    Logger::logLevel = level;
+}
+
 LogLevel Logger::getLogLevel(void)
 {
     return Logger::logLevel;
