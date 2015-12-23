@@ -1,0 +1,4 @@
+%HOME% %HOME%/.zone/%USER% none rw,bind,create=dir 0 0
+%HOME%/.zone /home none rw,rbind 0 0
+%RUN% %RUN%/.zone/%UID% none rw,bind,create=dir 0 0
+%RUN%/.zone /run/user none rw,rbind 0 0
