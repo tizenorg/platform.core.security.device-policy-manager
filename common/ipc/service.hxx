@@ -48,6 +48,15 @@ setMethodHandler<TYPEOF(M), TYPEOF(STRIP(STRIP(M)))>                          \
                 (STRINGIFY(TYPEOF(STRIP(M))), std::bind(&TYPEOF(STRIP(M)), T, \
                 PROTOTYPE(TYPEOF(STRIP(STRIP(M))))))
 
+#define registerParametricMethod(T, M, ...)                                   \
+setMethodHandler<TYPEOF(M), TYPEOF(STRIP(STRIP(M)))>                          \
+                (STRINGIFY(TYPEOF(STRIP(M))), std::bind(&TYPEOF(STRIP(M)), T, \
+                PROTOTYPE(TYPEOF(STRIP(STRIP(M))))))
+
+#define registerNonparametricMethod(T, M, ...)                                \
+setMethodHandler<TYPEOF(M)>                                                   \
+                (STRINGIFY(TYPEOF(STRIP(M))), std::bind(&TYPEOF(STRIP(M)), T))
+
 namespace Ipc {
 
 typedef std::function<bool(const Connection& connection)> ConnectionCallback;

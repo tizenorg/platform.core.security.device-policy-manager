@@ -18,6 +18,11 @@
 
 namespace Ipc {
 
+Message::Message()
+    : signature({0, Invalid, ""})
+{
+}
+
 Message::Message(unsigned int type, const std::string& target)
     : signature({0, type, target})
 {

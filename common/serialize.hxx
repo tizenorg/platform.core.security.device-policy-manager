@@ -24,6 +24,22 @@
 
 namespace Runtime {
 
+template<typename T>
+struct SerializableArgument {
+    SerializableArgument(const T& arg) : value(arg) {}
+
+    const T& value;
+    REFLECTABLE(value)
+};
+
+template<typename T>
+struct DeserializableArgument {
+    DeserializableArgument(T& arg) : value(arg) {}
+
+    T& value;
+    REFLECTABLE(value)
+};
+
 template<class StorageType>
 class Serializer {
 public:

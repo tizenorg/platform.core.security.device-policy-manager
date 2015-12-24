@@ -92,7 +92,8 @@ public:
         Signal
     };
 
-    Message(unsigned int type = Invalid, const std::string& target = "");
+    Message();
+    Message(unsigned int type, const std::string&);
     Message(const Message& message);
 
     ~Message();
@@ -168,14 +169,16 @@ template<typename DataType>
 void Message::enclose(const DataType& data) const
 {
     Runtime::Serializer<MessageBuffer> serializer(buffer);
-    data.accept(serializer);
+    Runtime::SerializableArgument<DataType> arg(data);
+    arg.accept(serializer);
 }
 
 template<typename DataType>
 void Message::disclose(DataType& data) const
 {
     Runtime::Deserializer<MessageBuffer> deserializer(buffer);
-    data.accept(deserializer);
+    Runtime::DeserializableArgument<DataType> arg(data);
+    arg.accept(deserializer);
 }
 
 template<typename T>
@@ -189,6 +192,8 @@ void Message::encode(const T& device) const
 
     device.write(&header, sizeof(header));
     device.write(buffer.begin(), header.length);
+
+    buffer.reset();
 }
 
 template<typename T>
