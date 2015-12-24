@@ -16,10 +16,19 @@
 SET(INTEGRATION_TEST_TARGET	"dpm-integration-tests")
 
 SET(INTEGRATION_TEST_SOURCES main.cxx
+							 administration.cxx
+							 ${DPM_LIBS}/policy-client.cxx
+							 ${DPM_LIBS}/administration.cxx
 							 ${DPM_COMMON}/error.cxx
 							 ${DPM_COMMON}/audit/logger.cxx
 							 ${DPM_COMMON}/audit/null-sink.cxx
 							 ${DPM_COMMON}/audit/console-sink.cxx
+							 ${DPM_COMMON}/ipc/socket.cxx
+							 ${DPM_COMMON}/ipc/connection.cxx
+							 ${DPM_COMMON}/ipc/message.cxx
+							 ${DPM_COMMON}/ipc/service.cxx
+							 ${DPM_COMMON}/ipc/client.cxx
+							 ${DPM_COMMON}/ipc/mainloop.cxx
 							 ${DPM_TESTBENCH}/testbench.cxx
 )
 

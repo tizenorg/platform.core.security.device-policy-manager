@@ -21,6 +21,7 @@ SET(SOURCES	main.cxx
 			policy.cxx
 			policy-storage.cxx
 			client-manager.cxx
+			administration.cxx
 			${DPM_COMMON}/error.cxx
 			${DPM_COMMON}/audit/logger.cxx
 			${DPM_COMMON}/audit/null-sink.cxx

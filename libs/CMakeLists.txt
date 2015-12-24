@@ -22,6 +22,7 @@ SET(PC_FILE "${PROJECT_NAME}.pc")
 
 SET(SOURCES dpm.cxx
 			policy-client.cxx
+			administration.cxx
 			${DPM_COMMON}/error.cxx
 			${DPM_COMMON}/ipc/client.cxx
 			${DPM_COMMON}/ipc/socket.cxx
