@@ -16,6 +16,7 @@
 #include <device-policy-client.h>
 
 #include "testbench/testbench.hxx"
+#include "audit/logger.hxx"
 
 TESTCASE(PolicyClientHandleTest)
 {
@@ -28,7 +29,9 @@ TESTCASE(PolicyClientHandleTest)
 
 int main(int /*argc*/, char** /*argv*/)
 {
+    Audit::Logger::setLogLevel(Audit::LogLevel::Info);
     Test::Testbench::runAllTestSuites();
+
 
     return 0;
 }

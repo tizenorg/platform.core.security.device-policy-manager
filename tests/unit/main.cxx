@@ -14,9 +14,11 @@
 //
 
 #include "testbench/testbench.hxx"
+#include "audit/logger.hxx"
 
 int main(int /*argc*/, char** /*argv*/)
 {
+    Audit::Logger::setLogLevel(Audit::LogLevel::Info);
     Test::Testbench::runAllTestSuites();
 
     return 0;
