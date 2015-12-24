@@ -73,11 +73,17 @@ struct CallbackHolder {
         buildParameters(message, rest...);
     }
 
+    template<typename...R>
+    Type callCallback(const Message& message, R&... args)
+    {
+        buildParameters(message, args...);
+        return callback(args...);
+    }
+
     template<int... S>
     Type callCallback(const Message& message, Sequence<S...>)
     {
-        buildParameters(message, std::get<S>(parameters)...);
-        return callback(std::get<S>(parameters)...);
+        return callCallback(message, std::get<S>(parameters)...);
     }
 };
 
