@@ -23,6 +23,7 @@ SET(PC_FILE "${PROJECT_NAME}.pc")
 SET(SOURCES dpm.cpp
 			policy-client.cpp
 			administration.cpp
+			security.cpp
 			${DPM_COMMON}/error.cpp
 			${DPM_COMMON}/rmi/client.cpp
 			${DPM_COMMON}/rmi/socket.cpp

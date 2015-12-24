@@ -19,8 +19,10 @@ SET(UNIT_TEST_SOURCES	main.cpp
 						rmi.cpp
 						database.cpp
 						xml.cpp
+						filesystem.cpp
 						${DPM_COMMON}/error.cpp
 						${DPM_COMMON}/mainloop.cpp
+						${DPM_COMMON}/filesystem.cpp
 						${DPM_COMMON}/audit/logger.cpp
 						${DPM_COMMON}/audit/null-sink.cpp
 						${DPM_COMMON}/audit/console-sink.cpp

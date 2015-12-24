@@ -22,8 +22,11 @@ SET(SOURCES	main.cpp
 			policy-storage.cpp
 			client-manager.cpp
 			administration.cpp
+			security.cpp
 			${DPM_COMMON}/error.cpp
 			${DPM_COMMON}/mainloop.cpp
+			${DPM_COMMON}/process.cpp
+			${DPM_COMMON}/filesystem.cpp
 			${DPM_COMMON}/audit/logger.cpp
 			${DPM_COMMON}/audit/null-sink.cpp
 			${DPM_COMMON}/audit/console-sink.cpp
@@ -42,7 +45,7 @@ SET(SOURCES	main.cpp
 
 ADD_EXECUTABLE(${TARGET} ${SOURCES} ${INCLUDE_SRCS})
 
-PKG_CHECK_MODULES(SERVER_DEPS REQUIRED glib-2.0 libxml-2.0 sqlite3)
+PKG_CHECK_MODULES(SERVER_DEPS REQUIRED glib-2.0 libxml-2.0 sqlite3 bundle aul appsvc vconf syspopup-caller deviced)
 
 INCLUDE_DIRECTORIES(SYSTEM ${SERVER_DEPS_INCLUDE_DIRS} ${DPM_COMMON} ${DPM_POLICY} ${DPM_SERVER})
 
