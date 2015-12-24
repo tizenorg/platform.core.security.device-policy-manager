@@ -21,6 +21,7 @@ SET(SOURCES	main.cpp
 			policy.cpp
 			policy-storage.cpp
 			client-manager.cpp
+			administration.cpp
 			${DPM_COMMON}/error.cpp
 			${DPM_COMMON}/mainloop.cpp
 			${DPM_COMMON}/audit/logger.cpp
