@@ -10,6 +10,12 @@ BuildRequires: cmake
 BuildRequires: pkgconfig(glib-2.0)
 BuildRequires: pkgconfig(libxml-2.0)
 BuildRequires: pkgconfig(sqlite3)
+BuildRequires: pkgconfig(bundle)
+BuildRequires: pkgconfig(appsvc)
+BuildRequires: pkgconfig(syspopup-caller)
+BuildRequires: pkgconfig(deviced)
+BuildRequires: pkgconfig(vconf)
+BuildRequires: pkgconfig(vconf-internal-keys)
 
 %description
 The device-policy-manager package provides a daemon which is responsible for

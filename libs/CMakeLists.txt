@@ -23,6 +23,7 @@ SET(PC_FILE "${PROJECT_NAME}.pc")
 SET(SOURCES dpm.cxx
 			policy-client.cxx
 			administration.cxx
+			security.cxx
 			${DPM_COMMON}/error.cxx
 			${DPM_COMMON}/ipc/client.cxx
 			${DPM_COMMON}/ipc/socket.cxx
@@ -46,4 +47,3 @@ CONFIGURE_FILE(${PC_FILE}.in ${CMAKE_BINARY_DIR}/${PC_FILE} @ONLY)
 INSTALL(FILES ${CMAKE_BINARY_DIR}/${PC_FILE} DESTINATION ${LIB_INSTALL_DIR}/pkgconfig)
 INSTALL(TARGETS ${PROJECT_NAME} DESTINATION ${LIB_INSTALL_DIR} COMPONENT RuntimeLibraries)
 INSTALL(FILES device-policy-client.h DESTINATION ${INCLUDE_INSTALL_DIR}/dpm)
-

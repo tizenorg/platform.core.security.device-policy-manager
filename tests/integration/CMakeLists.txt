@@ -17,8 +17,10 @@ SET(INTEGRATION_TEST_TARGET	"dpm-integration-tests")
 
 SET(INTEGRATION_TEST_SOURCES main.cxx
 							 administration.cxx
+							 security.cxx
 							 ${DPM_LIBS}/policy-client.cxx
 							 ${DPM_LIBS}/administration.cxx
+							 ${DPM_LIBS}/security.cxx
 							 ${DPM_COMMON}/error.cxx
 							 ${DPM_COMMON}/audit/logger.cxx
 							 ${DPM_COMMON}/audit/null-sink.cxx
