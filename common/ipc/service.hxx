@@ -82,7 +82,29 @@ public:
     void setNewConnectionCallback(const ConnectionCallback& callback);
     void setCloseConnectionCallback(const ConnectionCallback& callback);
 
+    pid_t getPeerPid() const {
+        return processingContext.credentials.pid;
+    }
+
+    uid_t getPeerUid() const {
+        return processingContext.credentials.uid;
+    }
+
+    gid_t getPeerGid() const {
+        return processingContext.credentials.gid;
+    }
+
 private:
+    struct ProcessingContext {
+        ProcessingContext() = default;
+        ProcessingContext(const std::shared_ptr<Connection>& connection)
+            : credentials(connection->getPeerCredentials())
+        {
+        }
+
+        Credentials credentials;
+    };
+
     typedef std::vector<std::shared_ptr<Connection>> ConnectionRegistry;
     typedef std::function<void(const std::shared_ptr<Connection>& connection)> CallbackDispatcher;
 
@@ -104,6 +126,8 @@ private:
 
     Runtime::ThreadPool workqueue;
     std::mutex stateLock;
+
+    static thread_local ProcessingContext processingContext;
 };
 
 template<typename Type, typename... Args>

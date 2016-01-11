@@ -26,6 +26,12 @@ public:
     SocketException(const std::string& msg) : Runtime::Exception(msg) {}
 };
 
+struct Credentials {
+    pid_t pid;
+    uid_t uid;
+    gid_t gid;
+};
+
 class Socket {
 public:
     explicit Socket(int socketFd = -1);
@@ -38,6 +44,7 @@ public:
 
     Socket accept();
     int getFd() const;
+    Credentials getPeerCredentials() const;
 
     void write(const void* buffer, const size_t size) const;
     void read(void* buffer, const size_t size) const;
@@ -52,6 +59,7 @@ private:
     static int createSystemdSocket(const std::string& path);
 #endif
 
+private:
     int socketFd;
 };
 

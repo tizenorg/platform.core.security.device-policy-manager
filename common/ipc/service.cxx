@@ -25,6 +25,8 @@
 
 namespace Ipc {
 
+thread_local Service::ProcessingContext Service::processingContext;
+
 Service::Service(const std::string& path)
     : address(path), workqueue(5)
 {
@@ -117,6 +119,7 @@ void Service::onMessageProcess(const std::shared_ptr<Connection>& connection)
             stateLock.unlock();
 
             // [TBD] Request authentication before dispatching method handler.
+            processingContext = ProcessingContext(connection);
             connection->send((*methodDispatcher)(request));
         } catch (Runtime::Exception& e) {
             std::cerr << e.what() << std::endl;
