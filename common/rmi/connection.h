@@ -45,6 +45,11 @@ public:
         return socket.getFd();
     }
 
+    Credentials getPeerCredentials() const
+    {
+        return socket.getPeerCredentials();
+    }
+
 private:
     Socket socket;
     mutable std::mutex receiveMutex;

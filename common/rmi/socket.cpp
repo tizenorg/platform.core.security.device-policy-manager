@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
 
 #include <sys/socket.h>
 #include <sys/stat.h>
@@ -37,6 +40,17 @@ void setCloseOnExec(int fd)
     if (::fcntl(fd, F_SETFD, FD_CLOEXEC) == -1) {
         throw SocketException(runtime::GetSystemErrorMessage());
     }
+}
+
+Credentials getCredentials(int fd)
+{
+    struct ucred cred;
+    socklen_t credsz = sizeof(cred);
+    if (::getsockopt(fd, SOL_SOCKET, SO_PEERCRED, &cred, &credsz)) {
+        throw SocketException(runtime::GetSystemErrorMessage());
+    }
+
+    return {cred.pid, cred.uid, cred.gid};
 }
 
 } // namespace
@@ -74,6 +88,11 @@ Socket Socket::accept()
 int Socket::getFd() const
 {
     return socketFd;
+}
+
+Credentials Socket::getPeerCredentials() const
+{
+    return getCredentials(socketFd);
 }
 
 void Socket::read(void *buffer, const size_t size) const
@@ -151,6 +170,12 @@ int Socket::createRegularSocket(const std::string& path)
     }
 
     if (::bind(sockfd, reinterpret_cast<struct sockaddr *>(&addr), sizeof(struct sockaddr_un)) == -1) {
+        ::close(sockfd);
+        throw SocketException(runtime::GetSystemErrorMessage());
+    }
+
+    int optval = 1;
+    if (::setsockopt(sockfd, SOL_SOCKET, SO_PASSCRED, &optval, sizeof(optval)) == -1) {
         ::close(sockfd);
         throw SocketException(runtime::GetSystemErrorMessage());
     }
