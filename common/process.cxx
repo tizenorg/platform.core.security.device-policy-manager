@@ -50,12 +50,11 @@ int Process::execute()
         return -1;
     }
 
-    if (pid == 0) {
+    if (pid == 0){
         const char *const argv[] = {
             program.c_str(),
             NULL
         };
-
         ::execv(program.c_str(), const_cast<char* const*>(argv));
         std::quick_exit(EXIT_FAILURE);
     }

@@ -36,12 +36,15 @@ Message Connection::createMessage(unsigned int type, const std::string& target)
 
 void Connection::send(const Message& message) const
 {
+    std::lock_guard<std::mutex> lock(transmitMutex);
     message.encode(socket);
 }
 
 Message Connection::dispatch() const
 {
     Message message;
+
+    std::lock_guard<std::mutex> lock(receiveMutex);
     message.decode(socket);
 
     return message;

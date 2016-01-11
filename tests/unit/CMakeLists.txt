@@ -21,6 +21,7 @@ SET(UNIT_TEST_SOURCES	main.cxx
 						xml.cxx
 						filesystem.cxx
 						${DPM_COMMON}/error.cxx
+						${DPM_COMMON}/thread-pool.cxx
 						${DPM_COMMON}/filesystem.cxx
 						${DPM_COMMON}/audit/logger.cxx
 						${DPM_COMMON}/audit/null-sink.cxx

@@ -18,6 +18,7 @@
 #define __CONNECTION__
 
 #include <string>
+#include <mutex>
 
 #include "socket.hxx"
 #include "serialize.hxx"
@@ -45,6 +46,8 @@ public:
 
 private:
     Socket socket;
+    mutable std::mutex receiveMutex;
+    mutable std::mutex transmitMutex;
 };
 
 } // namespace Ipc
