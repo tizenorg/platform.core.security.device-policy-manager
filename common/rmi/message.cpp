@@ -29,14 +29,41 @@ Message::Message(unsigned int type, const std::string& target) :
     enclose(signature);
 }
 
+Message::Message(Message&& rhs)
+    : signature(std::move(rhs.signature)),
+      buffer(std::move(rhs.buffer))
+{
+}
+
 Message::~Message()
 {
 }
 
-Message::Message(const Message& message) :
-    signature(message.signature)
+Message::Message(const Message& rhs) :
+    signature(rhs.signature),
+    buffer(rhs.buffer)
 {
     enclose(signature);
+}
+
+Message& Message::operator=(const Message& rhs)
+{
+    if (this != &rhs) {
+        buffer = rhs.buffer;
+        signature = rhs.signature;
+    }
+
+    return *this;
+}
+
+Message& Message::operator=(Message&& rhs)
+{
+    if (this != &rhs) {
+        buffer = std::move(rhs.buffer);
+        signature = std::move(rhs.signature);
+    }
+
+    return *this;
 }
 
 Message Message::createReplyMessage() const

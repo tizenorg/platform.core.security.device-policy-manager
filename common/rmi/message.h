@@ -18,7 +18,7 @@
 #define __RMI_MESSAGE_H__
 
 #include <cstring>
-
+#include <iostream>
 #include <string>
 #include <memory>
 
@@ -27,54 +27,135 @@
 
 namespace rmi {
 
-class MessageBuffer {
+class MemoryBlock {
 public:
-    MessageBuffer(size_t caps = 1024) :
-        capacity(caps), position(0)
+    MemoryBlock(size_t caps = 1024) :
+        capacity(caps),
+        produce(0),
+        consume(0),
+        buffer(new char[caps])
     {
-        buffer = new char[capacity];
     }
 
-    ~MessageBuffer()
+    MemoryBlock(const MemoryBlock& rhs) :
+        capacity(rhs.capacity),
+        produce(rhs.produce),
+        consume(rhs.consume),
+        buffer(new char[rhs.capacity])
     {
-        delete buffer;
+        std::copy(rhs.buffer + consume, rhs.buffer + produce, buffer + consume);
+    }
+
+    MemoryBlock(MemoryBlock&& rhs)
+        : capacity(0),
+          produce(0),
+          consume(0),
+          buffer(nullptr)
+    {
+        buffer = rhs.buffer;
+        capacity = rhs.capacity;
+        produce = rhs.produce;
+        consume = rhs.consume;
+
+        // Release buffer pointer from the source object so that
+        // the destructor does not free the memory multiple times.
+
+        rhs.buffer = nullptr;
+        rhs.produce = 0;
+        rhs.consume = 0;
+    }
+
+    ~MemoryBlock()
+    {
+        if (buffer != nullptr) {
+            delete[] buffer;
+        }
+    }
+
+    MemoryBlock& operator=(const MemoryBlock& rhs)
+    {
+        if (this != &rhs) {
+            delete[] buffer;
+
+            capacity = rhs.capacity;
+            produce = rhs.produce;
+            consume = rhs.consume;
+            buffer = new char[capacity];
+            std::copy(rhs.buffer + consume, rhs.buffer + produce, buffer + consume);
+        }
+
+        return *this;
+    }
+
+    MemoryBlock& operator=(MemoryBlock&& rhs)
+    {
+        if (this != &rhs) {
+            // Free existing buffer
+            delete[] buffer;
+
+            // Copy the buffer pointer and its attributes from the
+            // source object.
+            buffer = rhs.buffer;
+            produce = rhs.produce;
+            consume = rhs.consume;
+            capacity = rhs.capacity;
+
+            // Release buffer pointer from the source object so that
+            // the destructor does not free the memory multiple times.
+            rhs.buffer = nullptr;
+            rhs.produce = 0;
+            rhs.consume = 0;
+            rhs.capacity = 0;
+        }
+
+        return *this;
     }
 
     void write(const void* ptr, const size_t sz) const
     {
         size_t bytes = sz;
-        if ((position + bytes) > capacity) {
-            bytes = capacity - position;
+        if ((produce + bytes) > capacity) {
+            bytes = capacity - produce;
         }
 
-        ::memcpy(reinterpret_cast<char *>(buffer + position), ptr, bytes);
-        position += bytes;
+        ::memcpy(reinterpret_cast<char *>(buffer + produce), ptr, bytes);
+        produce += bytes;
     }
 
     void read(void* ptr, const size_t sz) const
     {
         size_t bytes = sz;
-        if ((position + bytes) > capacity) {
-            bytes = capacity - position;
+        if ((consume + bytes) > produce) {
+            bytes = produce - consume;
         }
 
-        ::memcpy(ptr, reinterpret_cast<char *>(buffer) + position, bytes);
-        position += bytes;
+        ::memcpy(ptr, reinterpret_cast<char *>(buffer) + consume, bytes);
+        consume += bytes;
+
+        // Reset cursors if there is no data
+        if (consume == produce) {
+            consume = produce = 0;
+        }
     }
 
-    void reset() const
+    void reserve(size_t size)
     {
-        position = 0;
+        produce = size;
+    }
+
+    void reset()
+    {
+        produce = consume = 0;
     }
 
     char* begin() const
     {
-        return buffer;
+        return buffer + consume;
     }
 
     char* end() const
     {
-        return buffer + position;
+        return buffer + produce;
     }
 
     size_t size() const
@@ -83,9 +164,10 @@ public:
     }
 
 private:
-    char *buffer;
     size_t capacity;
-    mutable int position;
+    mutable size_t produce;
+    mutable size_t consume;
+    mutable char *buffer;
 };
 
 class Message {
@@ -100,12 +182,13 @@ public:
 
     Message();
     Message(unsigned int type, const std::string&);
-    Message(const Message& message);
+    Message(const Message& rhs);
+    Message(Message&& rhs);
 
     ~Message();
 
-    Message& operator=(Message&) = delete;
-    Message& operator=(const Message&) = delete;
+    Message& operator=(const Message& rhs);
+    Message& operator=(Message&& rhs);
 
     // [TBD] Take arguments
     Message createReplyMessage() const;
@@ -183,13 +266,13 @@ private:
     };
 
     MessageSignature signature;
-    MessageBuffer buffer;
+    MemoryBlock buffer;
 };
 
 template<typename DataType>
 void Message::enclose(const DataType& data) const
 {
-    runtime::Serializer<MessageBuffer> serializer(buffer);
+    runtime::Serializer<MemoryBlock> serializer(buffer);
     runtime::SerializableArgument<DataType> arg(data);
     arg.accept(serializer);
 }
@@ -197,7 +280,7 @@ void Message::enclose(const DataType& data) const
 template<typename DataType>
 void Message::disclose(DataType& data) const
 {
-    runtime::Deserializer<MessageBuffer> deserializer(buffer);
+    runtime::Deserializer<MemoryBlock> deserializer(buffer);
     runtime::DeserializableArgument<DataType> arg(data);
     arg.accept(deserializer);
 }
@@ -213,8 +296,6 @@ void Message::encode(const T& device) const
 
     device.write(&header, sizeof(header));
     device.write(buffer.begin(), header.length);
-
-    buffer.reset();
 }
 
 template<typename T>
@@ -222,9 +303,9 @@ void Message::decode(const T& device)
 {
     MessageHeader header;
     device.read(&header, sizeof(header));
-
-    buffer.reset();
     device.read(buffer.begin(), header.length);
+
+    buffer.reserve(header.length);
 
     disclose(signature);
 }

@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+#include <sys/types.h>
+#include <unistd.h>
+
 #include <algorithm>
 
 #include "exception.h"
@@ -23,7 +26,8 @@
 namespace rmi {
 
 Service::Service(const std::string& path) :
-    address(path)
+    address(path),
+    workqueue(5)
 {
     setNewConnectionCallback(nullptr);
     setCloseConnectionCallback(nullptr);
@@ -53,14 +57,17 @@ void Service::stop()
 
 Service::ConnectionRegistry::iterator Service::getConnectionIterator(const int id)
 {
-    return std::find_if(connectionRegistry.begin(), connectionRegistry.end(), [id](const Client& client) {
-        return id == client->getFd();
+    std::lock_guard<std::mutex> lock(stateLock);
+
+    return std::find_if(connectionRegistry.begin(), connectionRegistry.end(),
+                        [id](const std::shared_ptr<Connection>& connection) {
+        return id == connection->getFd();
     });
 }
 
 void Service::setNewConnectionCallback(const ConnectionCallback& connectionCallback)
 {
-    auto callback = [connectionCallback, this](const Client& connection) {
+    auto callback = [connectionCallback, this](const std::shared_ptr<Connection>& connection) {
         auto handle = [&](int fd, runtime::Mainloop::Event event) {
             auto iter = getConnectionIterator(fd);
             if (iter == connectionRegistry.end()) {
@@ -70,13 +77,14 @@ void Service::setNewConnectionCallback(const ConnectionCallback& connectionCallb
             if ((event & EPOLLHUP) || (event & EPOLLRDHUP)) {
                 onCloseConnection(*iter);
                 connectionRegistry.erase(iter);
-            } else {
-                onMessageProcess(*iter);
+                return;
             }
+
+            onMessageProcess(*iter);
         };
 
         if ((connectionCallback == nullptr) ||
-                (connectionCallback(*connection) == true)) {
+            (connectionCallback(*connection) == true)) {
             mainloop.addEventSource(connection->getFd(),
                                     EPOLLIN | EPOLLHUP | EPOLLRDHUP,
                                     handle);
@@ -84,37 +92,43 @@ void Service::setNewConnectionCallback(const ConnectionCallback& connectionCallb
         }
     };
 
-    // [TBD] Lock
+    std::lock_guard<std::mutex> lock(stateLock);
     onNewConnection = std::move(callback);
 }
 
 void Service::setCloseConnectionCallback(const ConnectionCallback& closeCallback)
 {
-    auto callback = [closeCallback, this](const Client& connection) {
+    auto callback = [closeCallback, this](const std::shared_ptr<Connection>& connection) {
         mainloop.removeEventSource(connection->getFd());
         if (closeCallback) {
             closeCallback(*connection);
         }
     };
 
-    // [TBD] Lock
+    std::lock_guard<std::mutex> lock(stateLock);
     onCloseConnection = std::move(callback);
 }
 
-void Service::onMessageProcess(const Client& connection)
+void Service::onMessageProcess(const std::shared_ptr<Connection>& connection)
 {
-    try {
-        Message request = connection->dispatch();
+    auto process = [&](const Message& request) {
+        try {
+            stateLock.lock();
+            std::shared_ptr<MethodDispatcher> methodDispatcher = methodRegistry.at(request.target());
+            stateLock.unlock();
 
-        const std::string &target = request.target();
-        if (methodRegistry.count(target)) {
-            std::shared_ptr<MethodDispatcher> methodDispatcher = methodRegistry.at(target);
             // [TBD] Request authentication before dispatching method handler.
             connection->send((*methodDispatcher)(request));
-        } else {
+        } catch (runtime::Exception& e) {
+            std::cerr << e.what() << std::endl;
             connection->send(request.createErrorMessage());
         }
+    };
+
+    try {
+        workqueue.submit(std::bind(process, connection->dispatch()));
     } catch (runtime::Exception& e) {
+        std::cerr << e.what() << std::endl;
     }
 }
 

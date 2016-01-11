@@ -17,13 +17,16 @@
 #ifndef __RMI_SERVICE_H__
 #define __RMI_SERVICE_H__
 
+#include <mutex>
 #include <string>
 #include <functional>
 #include <memory>
 #include <vector>
 #include <unordered_map>
+#include <thread>
 
 #include "preprocessor.h"
+#include "thread-pool.h"
 #include "mainloop.h"
 #include "connection.h"
 #include "message.h"
@@ -80,14 +83,13 @@ public:
     void setCloseConnectionCallback(const ConnectionCallback& callback);
 
 private:
-    typedef std::shared_ptr<Connection> Client;
-    typedef std::vector<Client> ConnectionRegistry;
-    typedef std::function<void(const Client& connection)> CallbackDispatcher;
+    typedef std::vector<std::shared_ptr<Connection>> ConnectionRegistry;
+    typedef std::function<void(const std::shared_ptr<Connection>& connection)> CallbackDispatcher;
 
     typedef std::function<Message(const Message& message)> MethodDispatcher;
     typedef std::unordered_map<std::string, std::shared_ptr<MethodDispatcher>> MethodRegistry;
 
-    void onMessageProcess(const Client& client);
+    void onMessageProcess(const std::shared_ptr<Connection>& connection);
 
     ConnectionRegistry::iterator getConnectionIterator(const int id);
 
@@ -99,6 +101,9 @@ private:
 
     runtime::Mainloop mainloop;
     std::string address;
+
+    runtime::ThreadPool workqueue;
+    std::mutex stateLock;
 };
 
 template<typename Type, typename... Args>
@@ -107,14 +112,14 @@ void Service::setMethodHandler(const std::string& method,
 {
     auto dispatchMethod = [handler](const Message& message) {
         CallbackHolder<Type, Args...> callback(handler);
-
         Type response = callback.dispatch(message);
-
         Message reply = message.createReplyMessage();
         reply.enclose<Type>(response);
 
         return reply;
     };
+
+    std::lock_guard<std::mutex> lock(stateLock);
 
     if (methodRegistry.count(method)) {
         throw runtime::Exception("Method handler already registered");

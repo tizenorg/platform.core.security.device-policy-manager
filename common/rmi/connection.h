@@ -18,6 +18,7 @@
 #define __RMI_CONNECTION_H__
 
 #include <string>
+#include <mutex>
 
 #include "socket.h"
 #include "serialize.h"
@@ -46,6 +47,8 @@ public:
 
 private:
     Socket socket;
+    mutable std::mutex receiveMutex;
+    mutable std::mutex transmitMutex;
 };
 
 } // namespace rmi
