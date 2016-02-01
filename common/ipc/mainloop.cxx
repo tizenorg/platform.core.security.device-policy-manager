@@ -19,6 +19,8 @@
 #include <unistd.h>
 #include <assert.h>
 
+#include <iostream>
+
 #include "error.hxx"
 #include "exception.hxx"
 #include "mainloop.hxx"
@@ -28,11 +30,17 @@
 namespace Ipc {
 
 Mainloop::Mainloop()
-    : pollFd(::epoll_create1(EPOLL_CLOEXEC))
+    : pollFd(::epoll_create1(EPOLL_CLOEXEC)), stopped(false)
 {
+    auto wakeupMainloop = [this](int fd, Mainloop::Event event) {
+        wakeupSignal.receive();
+    };
+
     if (pollFd == -1) {
         throw Runtime::Exception(Runtime::GetSystemErrorMessage());
     }
+
+    addEventSource(wakeupSignal.getFd(), EPOLLIN, wakeupMainloop);
 }
 
 Mainloop::~Mainloop()
@@ -108,16 +116,23 @@ bool Mainloop::dispatch(const int timeout)
 
             (*callback)(event[i].data.fd, event[i].events);
         } catch (std::exception& e) {
+            std::cout << "EXCEPTION ON MAINLOOP" << std::endl;
         }
     }
 
     return true;
 }
 
-void Mainloop::run(const int timeout)
+void Mainloop::stop()
 {
-    while (1) {
-        dispatch(timeout);
+    stopped = true;
+    wakeupSignal.send();
+}
+
+void Mainloop::run()
+{
+    while (!stopped) {
+        dispatch(-1);
     }
 }
 

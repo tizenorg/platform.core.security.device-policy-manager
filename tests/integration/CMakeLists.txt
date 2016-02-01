@@ -23,6 +23,7 @@ SET(INTEGRATION_TEST_SOURCES main.cxx
 							 ${DPM_LIBS}/security.cxx
 							 ${DPM_COMMON}/error.cxx
 							 ${DPM_COMMON}/thread-pool.cxx
+							 ${DPM_COMMON}/eventfd.cxx
 							 ${DPM_COMMON}/audit/logger.cxx
 							 ${DPM_COMMON}/audit/null-sink.cxx
 							 ${DPM_COMMON}/audit/console-sink.cxx

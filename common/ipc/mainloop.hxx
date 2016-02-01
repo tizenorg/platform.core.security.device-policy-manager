@@ -24,6 +24,9 @@
 #include <unordered_map>
 #include <memory>
 #include <mutex>
+#include <atomic>
+
+#include "eventfd.hxx"
 
 namespace Ipc {
 
@@ -38,7 +41,8 @@ public:
     void addEventSource(const int fd, const Event events, Callback&& callback);
     void removeEventSource(const int fd);
     bool dispatch(const int timeout);
-    void run(const int timeout = -1);
+    void run();
+    void stop();
 
 private:
     typedef std::recursive_mutex Mutex;
@@ -46,6 +50,8 @@ private:
     std::unordered_map<int, std::shared_ptr<Callback>> callbacks;
     Mutex mutex;
     int pollFd;
+    std::atomic<bool> stopped;
+    Runtime::EventFD wakeupSignal;
 };
 } // namespace Ipc
 #endif //__MAINLOOP__
