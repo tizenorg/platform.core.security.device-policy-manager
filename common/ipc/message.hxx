@@ -21,6 +21,7 @@
 #include <iostream>
 #include <string>
 #include <memory>
+#include <atomic>
 
 #include "reflection.hxx"
 #include "serialize.hxx"
@@ -177,6 +178,7 @@ public:
     };
 
     Message();
+    Message(unsigned int id, unsigned int type, const std::string&);
     Message(unsigned int type, const std::string&);
     Message(const Message& rhs);
     Message(Message&& rhs);
@@ -248,6 +250,8 @@ private:
 
     MessageSignature signature;
     MemoryBlock buffer;
+
+    static std::atomic<unsigned int> sequence;
 };
 
 template<typename DataType>
