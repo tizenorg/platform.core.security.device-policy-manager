@@ -18,13 +18,21 @@
 
 namespace rmi {
 
+std::atomic<unsigned int> Message::sequence(0);
+
 Message::Message() :
-    signature({0, Invalid, ""})
+    signature({sequence++, Invalid, ""})
 {
 }
 
+Message::Message(unsigned int id, unsigned int type, const std::string& target) :
+    signature({id, type, target})
+{
+    enclose(signature);
+}
+
 Message::Message(unsigned int type, const std::string& target) :
-    signature({0, type, target})
+    signature({sequence++, type, target})
 {
     enclose(signature);
 }
@@ -68,12 +76,12 @@ Message& Message::operator=(Message&& rhs)
 
 Message Message::createReplyMessage() const
 {
-    return Message(Reply, target());
+    return Message(id(), Reply, target());
 }
 
 Message Message::createErrorMessage() const
 {
-    return Message(Error, target());
+    return Message(id(), Error, target());
 }
 
 } // namespace rmi
