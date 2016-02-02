@@ -25,6 +25,7 @@ SET(SOURCES dpm.cpp
 			administration.cpp
 			security.cpp
 			${DPM_COMMON}/error.cpp
+			${DPM_COMMON}/eventfd.cpp
 			${DPM_COMMON}/rmi/client.cpp
 			${DPM_COMMON}/rmi/socket.cpp
 			${DPM_COMMON}/rmi/connection.cpp

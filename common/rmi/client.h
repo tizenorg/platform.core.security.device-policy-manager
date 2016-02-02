@@ -17,12 +17,17 @@
 #ifndef __RMI_CLIENT_H__
 #define __RMI_CLIENT_H__
 
+#include <thread>
 #include <string>
 #include <memory>
+#include <mutex>
+#include <unordered_map>
 
 #include "error.h"
+#include "object-latch.h"
 #include "message.h"
 #include "connection.h"
+#include "mainloop.h"
 
 namespace rmi {
 
@@ -35,7 +40,7 @@ public:
     Client& operator=(const Client&) = delete;
 
     void connect();
-    void stop();
+    void disconnect();
 
     template<typename Type, typename... Args>
     Type methodCall(const std::string& method, const Args&... args);
@@ -58,30 +63,44 @@ private:
         packParameters(message, rest...);
     }
 
+private:
+    typedef std::function<void(const Message&)> ReplyCallback;
+    typedef std::unordered_map<unsigned int, ReplyCallback> ReplyCallbackMap;
+
     std::string address;
+
+    ReplyCallbackMap replyCallbackMap;
+    std::mutex replyCallbackLock;
+
     std::shared_ptr<Connection> connection;
+    runtime::Mainloop mainloop;
+    std::thread dispatcher;
 };
 
 template<typename Type, typename... Args>
 Type Client::methodCall(const std::string& method, const Args&... args)
 {
-    Message request = connection->createMessage(Message::MethodCall, method);
-    packParameters(request, args...);
-    connection->send(request);
+    ObjectLatch<Type> latch;
 
-    auto handleResponse = [&]() {
-        Message reply = connection->dispatch();
-        if (reply.isError() || reply.isInvalid()) {
-            throw runtime::Exception(runtime::GetSystemErrorMessage(EREMOTEIO));
-        }
+    auto ResultBuilder = [&latch](const Message& reply) {
+        Type data;
 
-        Type response;
-        reply.disclose<Type>(response);
-
-        return response;
+        reply.disclose<Type>(data);
+        latch.set(std::move(data));
     };
 
-    return handleResponse();
+    Message request = connection->createMessage(Message::MethodCall, method);
+    packParameters(request, args...);
+
+    replyCallbackLock.lock();
+    replyCallbackMap[request.id()] = std::move(ResultBuilder);
+    replyCallbackLock.unlock();
+
+    connection->send(request);
+
+    latch.wait();
+
+    return latch.get();
 }
 
 } // namespace rmi
