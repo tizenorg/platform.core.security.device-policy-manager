@@ -25,15 +25,44 @@ Client::Client(const std::string& path)
 
 Client::~Client()
 {
+    disconnect();
 }
 
 void Client::connect()
 {
+    auto callback = [&](int fd, Mainloop::Event event) {
+        if ((event & EPOLLHUP) || (event & EPOLLRDHUP)) {
+            mainloop.removeEventSource(fd);
+            return;
+        }
+
+        try {
+            Message msg = connection->dispatch();
+
+            replyCallbackLock.lock();
+            ReplyCallback composer = std::move(replyCallbackMap.at(msg.id()));
+            replyCallbackMap.erase(msg.id());
+            replyCallbackLock.unlock();
+
+            composer(msg);
+        } catch (Runtime::Exception& e) {
+            std::cout << e.what() << std::endl;
+        }
+    };
+
     connection = std::make_shared<Connection>(Socket::connect(address));
+    mainloop.addEventSource(connection->getFd(),
+                            EPOLLIN | EPOLLHUP | EPOLLRDHUP,
+                            callback);
+
+    dispatcher = std::thread([this] { mainloop.run(); });
 }
 
-void Client::stop()
+void Client::disconnect()
 {
+    mainloop.stop();
+    dispatcher.join();
+    mainloop.removeEventSource(connection->getFd());
 }
 
 } // namespace Ipc

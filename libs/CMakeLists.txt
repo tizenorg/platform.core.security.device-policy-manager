@@ -25,10 +25,12 @@ SET(SOURCES dpm.cxx
 			administration.cxx
 			security.cxx
 			${DPM_COMMON}/error.cxx
+			${DPM_COMMON}/eventfd.cxx
 			${DPM_COMMON}/ipc/client.cxx
 			${DPM_COMMON}/ipc/socket.cxx
 			${DPM_COMMON}/ipc/connection.cxx
 			${DPM_COMMON}/ipc/message.cxx
+			${DPM_COMMON}/ipc/mainloop.cxx
 )
 
 SET (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,noexecstack")
