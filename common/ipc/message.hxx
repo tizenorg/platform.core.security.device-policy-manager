@@ -192,12 +192,6 @@ public:
     Message createReplyMessage() const;
     Message createErrorMessage() const;
 
-    template<typename DataType>
-    void enclose(const DataType& data) const;
-
-    template<typename DataType>
-    void disclose(DataType& data) const;
-
     unsigned int id() const {
         return signature.id;
     }
@@ -229,6 +223,30 @@ public:
     template<typename T>
     void decode(const T& device);
 
+    void packParameters() const {
+    }
+
+    template<typename F>
+    void packParameters(const F& arg) const;
+
+    template<typename F, typename...R>
+    void packParameters(const F& first, const R&... rest) const;
+
+    void unpackParameters() const {
+    }
+
+    template<typename F>
+    void unpackParameters(F& arg) const;
+
+    template<typename F, typename... R>
+    void unpackParameters(F& first, R&... rest) const;
+
+    template<typename DataType>
+    void enclose(const DataType& data) const;
+
+    template<typename DataType>
+    void disclose(DataType& data) const;
+
 private:
     struct MessageHeader {
         unsigned int id;    // Unique message id
@@ -253,6 +271,32 @@ private:
 
     static std::atomic<unsigned int> sequence;
 };
+
+template<typename F>
+void Message::packParameters(const F& arg) const
+{
+    enclose<F>(arg);
+}
+
+template<typename F, typename...R>
+void Message::packParameters(const F& first, const R&... rest) const
+{
+    packParameters(first);
+    packParameters(rest...);
+}
+
+template<typename F>
+void Message::unpackParameters(F& arg) const
+{
+    disclose<F>(arg);
+}
+
+template<typename F, typename... R>
+void Message::unpackParameters(F& first, R&... rest) const
+{
+    unpackParameters(first);
+    unpackParameters(rest...);
+}
 
 template<typename DataType>
 void Message::enclose(const DataType& data) const
