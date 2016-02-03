@@ -46,24 +46,6 @@ public:
     Type methodCall(const std::string& method, const Args&... args);
 
 private:
-    void packParameters(const Message& message)
-    {
-    }
-
-    template<typename F>
-    void packParameters(const Message& message, const F& arg)
-    {
-        message.enclose<F>(arg);
-    }
-
-    template<typename F, typename...R>
-    void packParameters(const Message& message, const F& first, const R&... rest)
-    {
-        packParameters(message, first);
-        packParameters(message, rest...);
-    }
-
-private:
     typedef std::function<void(const Message&)> ReplyCallback;
     typedef std::unordered_map<unsigned int, ReplyCallback> ReplyCallbackMap;
 
@@ -85,12 +67,12 @@ Type Client::methodCall(const std::string& method, const Args&... args)
     auto ResultBuilder = [&latch](const Message& reply) {
         Type data;
 
-        reply.disclose<Type>(data);
+        reply.unpackParameters<Type>(data);
         latch.set(std::move(data));
     };
 
     Message request = connection->createMessage(Message::MethodCall, method);
-    packParameters(request, args...);
+    request.packParameters(args...);
 
     replyCallbackLock.lock();
     replyCallbackMap[request.id()] = std::move(ResultBuilder);

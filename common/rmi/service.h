@@ -141,7 +141,7 @@ void Service::setMethodHandler(const std::string& method,
         CallbackHolder<Type, Args...> callback(handler);
         Type response = callback.dispatch(message);
         Message reply = message.createReplyMessage();
-        reply.enclose<Type>(response);
+        reply.packParameters<Type>(response);
 
         return reply;
     };
