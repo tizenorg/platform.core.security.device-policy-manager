@@ -112,7 +112,7 @@ public:
         return *this;
     }
 
-    void write(const void* ptr, const size_t sz) const
+    void write(const void* ptr, const size_t sz)
     {
         size_t bytes = sz;
         if ((produce + bytes) > capacity) {
@@ -123,7 +123,7 @@ public:
         produce += bytes;
     }
 
-    void read(void* ptr, const size_t sz) const
+    void read(void* ptr, const size_t sz)
     {
         size_t bytes = sz;
         if ((consume + bytes) > produce) {
@@ -162,9 +162,9 @@ public:
 
 private:
     size_t capacity;
-    mutable size_t produce;
-    mutable size_t consume;
-    mutable char *buffer;
+    size_t produce;
+    size_t consume;
+    char *buffer;
 };
 
 class Message {
@@ -223,29 +223,29 @@ public:
     template<typename T>
     void decode(const T& device);
 
-    void packParameters() const {
+    void packParameters() {
     }
 
     template<typename F>
-    void packParameters(const F& arg) const;
+    void packParameters(F&& arg);
 
     template<typename F, typename...R>
-    void packParameters(const F& first, const R&... rest) const;
+    void packParameters(F&& first, R&&... rest);
 
-    void unpackParameters() const {
+    void unpackParameters() {
     }
 
     template<typename F>
-    void unpackParameters(F& arg) const;
+    void unpackParameters(F& arg);
 
     template<typename F, typename... R>
-    void unpackParameters(F& first, R&... rest) const;
+    void unpackParameters(F& first, R&... rest);
 
     template<typename DataType>
-    void enclose(const DataType& data) const;
+    void enclose(DataType&& data);
 
     template<typename DataType>
-    void disclose(DataType& data) const;
+    void disclose(DataType& data);
 
 private:
     struct MessageHeader {
@@ -273,41 +273,41 @@ private:
 };
 
 template<typename F>
-void Message::packParameters(const F& arg) const
+void Message::packParameters(F&& arg)
 {
-    enclose<F>(arg);
+    enclose<F>(std::forward<F>(arg));
 }
 
 template<typename F, typename...R>
-void Message::packParameters(const F& first, const R&... rest) const
+void Message::packParameters(F&& first, R&&... rest)
 {
-    packParameters(first);
-    packParameters(rest...);
+    packParameters(std::forward<F>(first));
+    packParameters(std::forward<R>(rest)...);
 }
 
 template<typename F>
-void Message::unpackParameters(F& arg) const
+void Message::unpackParameters(F& arg)
 {
     disclose<F>(arg);
 }
 
 template<typename F, typename... R>
-void Message::unpackParameters(F& first, R&... rest) const
+void Message::unpackParameters(F& first, R&... rest)
 {
     unpackParameters(first);
     unpackParameters(rest...);
 }
 
 template<typename DataType>
-void Message::enclose(const DataType& data) const
+void Message::enclose(DataType&& data)
 {
     Runtime::Serializer<MemoryBlock> serializer(buffer);
-    Runtime::SerializableArgument<DataType> arg(data);
+    Runtime::SerializableArgument<DataType> arg(std::forward<DataType>(data));
     arg.accept(serializer);
 }
 
 template<typename DataType>
-void Message::disclose(DataType& data) const
+void Message::disclose(DataType& data)
 {
     Runtime::Deserializer<MemoryBlock> deserializer(buffer);
     Runtime::DeserializableArgument<DataType> arg(data);

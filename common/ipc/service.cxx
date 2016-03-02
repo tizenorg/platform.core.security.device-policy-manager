@@ -112,7 +112,7 @@ void Service::setCloseConnectionCallback(const ConnectionCallback& closeCallback
 
 void Service::onMessageProcess(const std::shared_ptr<Connection>& connection)
 {
-    auto process = [&](const Message& request) {
+    auto process = [&](Message& request) {
         try {
             stateLock.lock();
             std::shared_ptr<MethodDispatcher> methodDispatcher = methodRegistry.at(request.target());

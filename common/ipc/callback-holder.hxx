@@ -51,20 +51,20 @@ struct CallbackHolder {
     {
     }
 
-    Type dispatch(const Message& message)
+    Type dispatch(Message& message)
     {
         return callCallback(message, typename SequenceExpansion<sizeof...(Args)>::type());
     }
 
     template<typename...R>
-    Type callCallback(const Message& message, R&... args)
+    Type callCallback(Message& message, R&... args)
     {
         message.unpackParameters(args...);
         return callback(args...);
     }
 
     template<int... S>
-    Type callCallback(const Message& message, Sequence<S...>)
+    Type callCallback(Message& message, Sequence<S...>)
     {
         return callCallback(message, std::get<S>(parameters)...);
     }

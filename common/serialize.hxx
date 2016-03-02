@@ -43,7 +43,7 @@ struct DeserializableArgument {
 template<class StorageType>
 class Serializer {
 public:
-    Serializer(const StorageType& source) : storage(source) {}
+    Serializer(StorageType& source) : storage(source) {}
 
     template<typename DataType>
     void visit(const std::string&, const DataType& value)
@@ -79,13 +79,13 @@ private:
         }
     }
 private:
-    const StorageType& storage;
+    StorageType& storage;
 };
 
 template<class StorageType>
 class Deserializer {
 public:
-    Deserializer(const StorageType& source) : storage(source) {}
+    Deserializer(StorageType& source) : storage(source) {}
 
     template<typename DataType>
     void visit(const std::string&, DataType& value)
@@ -126,7 +126,7 @@ private:
         }
     }
 private:
-    const StorageType& storage;
+    StorageType& storage;
 };
 
 } // namespace Runtime

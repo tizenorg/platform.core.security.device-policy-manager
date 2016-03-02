@@ -108,7 +108,7 @@ private:
     typedef std::vector<std::shared_ptr<Connection>> ConnectionRegistry;
     typedef std::function<void(const std::shared_ptr<Connection>& connection)> CallbackDispatcher;
 
-    typedef std::function<Message(const Message& message)> MethodDispatcher;
+    typedef std::function<Message(Message& message)> MethodDispatcher;
     typedef std::unordered_map<std::string, std::shared_ptr<MethodDispatcher>> MethodRegistry;
 
     void onMessageProcess(const std::shared_ptr<Connection>& connection);
@@ -134,11 +134,10 @@ template<typename Type, typename... Args>
 void Service::setMethodHandler(const std::string& method,
                                const typename MethodHandler<Type, Args...>::type& handler)
 {
-    auto dispatchMethod = [handler](const Message& message) {
+    auto dispatchMethod = [handler](Message& message) {
         CallbackHolder<Type, Args...> callback(handler);
-        Type response = callback.dispatch(message);
         Message reply = message.createReplyMessage();
-        reply.packParameters<Type>(response);
+        reply.packParameters<Type>(callback.dispatch(message));
 
         return reply;
     };
