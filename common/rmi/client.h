@@ -43,10 +43,10 @@ public:
     void disconnect();
 
     template<typename Type, typename... Args>
-    Type methodCall(const std::string& method, const Args&... args);
+    Type methodCall(const std::string& method, Args&&... args);
 
 private:
-    typedef std::function<void(const Message&)> ReplyCallback;
+    typedef std::function<void(Message&)> ReplyCallback;
     typedef std::unordered_map<unsigned int, ReplyCallback> ReplyCallbackMap;
 
     std::string address;
@@ -60,11 +60,11 @@ private:
 };
 
 template<typename Type, typename... Args>
-Type Client::methodCall(const std::string& method, const Args&... args)
+Type Client::methodCall(const std::string& method, Args&&... args)
 {
     ObjectLatch<Type> latch;
 
-    auto ResultBuilder = [&latch](const Message& reply) {
+    auto ResultBuilder = [&latch](Message& reply) {
         Type data;
 
         reply.unpackParameters<Type>(data);
@@ -72,7 +72,7 @@ Type Client::methodCall(const std::string& method, const Args&... args)
     };
 
     Message request = connection->createMessage(Message::MethodCall, method);
-    request.packParameters(args...);
+    request.packParameters(std::forward<Args>(args)...);
 
     replyCallbackLock.lock();
     replyCallbackMap[request.id()] = std::move(ResultBuilder);
