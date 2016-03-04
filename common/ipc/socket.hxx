@@ -49,6 +49,9 @@ public:
     void write(const void* buffer, const size_t size) const;
     void read(void* buffer, const size_t size) const;
 
+    void sendFileDescriptors(const int* fds, const size_t nr) const;
+    void receiveFileDescriptors(int* fds, const size_t nr) const;
+
     static Socket create(const std::string& path);
     static Socket connect(const std::string& path);
 

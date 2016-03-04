@@ -127,6 +127,92 @@ void Socket::write(const void *buffer, const size_t size) const
     }
 }
 
+void Socket::sendFileDescriptors(const int* fds, const size_t nr) const
+{
+    if (nr == 0) return;
+
+    int buf;
+    struct iovec iov = {
+        .iov_base = &buf,
+        .iov_len = sizeof(char)
+    };
+
+    char buffer[CMSG_SPACE(sizeof(int) * nr)];
+    ::memset(buffer, 0, sizeof(buffer));
+
+    struct msghdr msgh;
+    ::memset(&msgh, 0, sizeof(msgh));
+
+    msgh.msg_iov = &iov;
+    msgh.msg_iovlen = 1;
+    msgh.msg_control = buffer;
+    msgh.msg_controllen = sizeof(buffer);
+
+    struct cmsghdr *cmhp;
+    cmhp = CMSG_FIRSTHDR(&msgh);
+    cmhp->cmsg_level = SOL_SOCKET;
+    cmhp->cmsg_type = SCM_RIGHTS;
+    cmhp->cmsg_len = CMSG_LEN(sizeof(int) * nr);
+
+    ::memcpy(CMSG_DATA(cmhp), fds, sizeof(int) * nr);
+
+    int written = 0;
+    while (written < 1) {
+        ssize_t ret = ::sendmsg(socketFd, &msgh, MSG_NOSIGNAL);
+        if (ret >= 0) {
+            written += ret;
+        } else if ((errno != EAGAIN) && (errno != EWOULDBLOCK) && (errno != EINTR)) {
+            throw SocketException(Runtime::GetSystemErrorMessage());
+        }
+    }
+}
+
+void Socket::receiveFileDescriptors(int* fds, const size_t nr) const
+{
+    if (nr == 0) return;
+
+    char buf = '!';
+    struct iovec iov = {
+        .iov_base = &buf,
+        .iov_len = sizeof(char)
+    };
+
+    char buffer[CMSG_SPACE(sizeof(int) * nr) + CMSG_SPACE(sizeof(struct ucred))];
+    ::memset(buffer, 0, sizeof(buffer));
+
+    struct msghdr msgh;
+    ::memset(&msgh, 0, sizeof(msgh));
+
+    msgh.msg_iov = &iov;
+    msgh.msg_iovlen = 1;
+    msgh.msg_control = buffer;
+    msgh.msg_controllen = sizeof(buffer);
+
+    ssize_t bytes = 0;
+    while (bytes < 1) {
+        ssize_t ret = ::recvmsg(socketFd, &msgh, MSG_WAITALL);
+        if (ret >= 0) {
+            bytes += ret;
+        } else {
+            if ((errno != EAGAIN) && (errno != EWOULDBLOCK) && (errno != EINTR)) {
+                std::cout << Runtime::GetSystemErrorMessage() << std::endl;
+                throw SocketException(Runtime::GetSystemErrorMessage());
+            }
+        }
+    }
+
+    int i = 0;
+    for (struct cmsghdr *cmhp = CMSG_FIRSTHDR(&msgh); cmhp != NULL; cmhp = CMSG_NXTHDR(&msgh, cmhp)) {
+        if ((cmhp->cmsg_level == SOL_SOCKET) && (cmhp->cmsg_type == SCM_RIGHTS)) {
+            if (cmhp->cmsg_len != CMSG_LEN(sizeof(int) * nr)) {
+                std::cout << "Invalid File Descriptor Table" << std::endl;
+            }
+
+            fds[i++] = *(reinterpret_cast<int*>(CMSG_DATA(cmhp)));
+        }
+    }
+}
+
 #ifdef USE_SYSTEMD_SOCKET_ACTIVATION
 int Socket::createSystemdSocket(const std::string& path)
 {

@@ -39,7 +39,8 @@ Message::Message(unsigned int type, const std::string& target)
 
 Message::Message(Message&& rhs)
     : signature(std::move(rhs.signature)),
-      buffer(std::move(rhs.buffer))
+      buffer(std::move(rhs.buffer)),
+      fileDescriptors(std::move(rhs.fileDescriptors))
 {
 }
 
@@ -69,6 +70,7 @@ Message& Message::operator=(Message&& rhs)
     if (this != &rhs) {
         buffer = std::move(rhs.buffer);
         signature = std::move(rhs.signature);
+        fileDescriptors = std::move(rhs.fileDescriptors);
     }
 
     return *this;
@@ -82,6 +84,19 @@ Message Message::createReplyMessage() const
 Message Message::createErrorMessage() const
 {
     return Message(id(), Error, target());
+}
+
+template<> void Message::enclose(FileDescriptor&& fd)
+{
+    fileDescriptors.push_back(std::move(fd));
+}
+
+template<> void Message::disclose(FileDescriptor& fd)
+{
+    if (!fileDescriptors.empty()) {
+        fd.fileDescriptor = std::move(fileDescriptors.front()).fileDescriptor;
+        fileDescriptors.pop_front();
+    }
 }
 
 } // namespace Ipc
