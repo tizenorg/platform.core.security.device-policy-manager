@@ -22,9 +22,11 @@
 #include <string>
 #include <memory>
 #include <atomic>
+#include <deque>
 
 #include "reflection.h"
 #include "serialize.h"
+#include "file-descriptor.h"
 
 namespace rmi {
 
@@ -273,6 +275,7 @@ private:
         unsigned int id;    // Unique message id
         unsigned int type;  // Mesage type
         size_t length;// Total message length except MessageHeader itself
+        size_t ancillary;
     };
 
     struct MessageSignature {
@@ -289,6 +292,7 @@ private:
 
     MessageSignature signature;
     MemoryBlock buffer;
+    std::deque<FileDescriptor> fileDescriptors;
 
     static std::atomic<unsigned int> sequence;
 };
@@ -341,11 +345,19 @@ void Message::encode(const T& device) const
     MessageHeader header = {
         signature.id,
         signature.type,
-        buffer.size()
+        buffer.size(),
+        fileDescriptors.size()
     };
 
     device.write(&header, sizeof(header));
     device.write(buffer.begin(), header.length);
+
+    int i = 0, fds[fileDescriptors.size()];
+    for (const FileDescriptor& fd : fileDescriptors) {
+        fds[i++] = fd.fileDescriptor;
+    }
+
+    device.sendFileDescriptors(fds, fileDescriptors.size());
 }
 
 template<typename T>
@@ -354,11 +366,20 @@ void Message::decode(const T& device)
     MessageHeader header;
     device.read(&header, sizeof(header));
     device.read(buffer.begin(), header.length);
-
     buffer.reserve(header.length);
+
+    int fds[header.ancillary];
+
+    device.receiveFileDescriptors(fds, header.ancillary);
+    for (unsigned int i = 0; i < header.ancillary; i++) {
+        fileDescriptors.emplace_back(FileDescriptor(fds[i]));
+    }
 
     disclose(signature);
 }
+
+template<> void Message::enclose(FileDescriptor&& fd);
+template<> void Message::disclose(FileDescriptor& fd);
 
 } // namespae rmi
 #endif //__RMI_MESSAGE_H__
