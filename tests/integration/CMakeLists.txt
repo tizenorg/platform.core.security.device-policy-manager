@@ -33,6 +33,7 @@ SET(INTEGRATION_TEST_SOURCES main.cpp
 							 ${DPM_COMMON}/rmi/message.cpp
 							 ${DPM_COMMON}/rmi/service.cpp
 							 ${DPM_COMMON}/rmi/client.cpp
+							 ${DPM_COMMON}/rmi/notification.cpp
 							 ${DPM_TESTBENCH}/testbench.cpp
 )
 

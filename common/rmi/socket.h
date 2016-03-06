@@ -34,7 +34,7 @@ struct Credentials {
 
 class Socket {
 public:
-    explicit Socket(int socketFd = -1);
+    explicit Socket(int socketFd = -1, bool autoclose = true);
     Socket(Socket&& socket) noexcept;
     ~Socket() noexcept;
 
@@ -64,6 +64,7 @@ private:
 
 private:
     int socketFd;
+    bool autoClose;
 };
 
 } // namespace rmi

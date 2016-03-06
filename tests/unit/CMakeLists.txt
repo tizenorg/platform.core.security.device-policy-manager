@@ -33,6 +33,7 @@ SET(UNIT_TEST_SOURCES	main.cpp
 						${DPM_COMMON}/rmi/message.cpp
 						${DPM_COMMON}/rmi/service.cpp
 						${DPM_COMMON}/rmi/client.cpp
+						${DPM_COMMON}/rmi/notification.cpp
 						${DPM_COMMON}/db/connection.cpp
 						${DPM_COMMON}/db/statement.cpp
 						${DPM_COMMON}/db/column.cpp

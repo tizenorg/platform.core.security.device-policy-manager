@@ -30,32 +30,26 @@ Client::~Client()
 
 void Client::connect()
 {
-    auto callback = [&](int fd, runtime::Mainloop::Event event) {
-        if ((event & EPOLLHUP) || (event & EPOLLRDHUP)) {
-            mainloop.removeEventSource(fd);
-            return;
-        }
-
-        try {
-            Message msg = connection->dispatch();
-
-            replyCallbackLock.lock();
-            ReplyCallback composer = std::move(replyCallbackMap.at(msg.id()));
-            replyCallbackMap.erase(msg.id());
-            replyCallbackLock.unlock();
-
-            composer(msg);
-        } catch (runtime::Exception& e) {
-            std::cout << e.what() << std::endl;
-        }
-    };
-
     connection = std::make_shared<Connection>(Socket::connect(address));
-    mainloop.addEventSource(connection->getFd(),
-                            EPOLLIN | EPOLLHUP | EPOLLRDHUP,
-                            callback);
 
     dispatcher = std::thread([this] { mainloop.run(); });
+}
+
+int Client::subscribe(const std::string& name)
+{
+    Message request = connection->createMessage(Message::MethodCall, "Server::subscribeNotification");
+    request.packParameters(name);
+    connection->send(request);
+
+    Message reply = connection->dispatch();
+    if (reply.isError()) {
+        return -1;
+    }
+
+    FileDescriptor response;
+    reply.disclose(response);
+
+    return response.fileDescriptor;
 }
 
 void Client::disconnect()
@@ -66,4 +60,3 @@ void Client::disconnect()
 }
 
 } // namespace rmi
-

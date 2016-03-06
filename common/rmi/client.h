@@ -20,14 +20,13 @@
 #include <thread>
 #include <string>
 #include <memory>
-#include <mutex>
-#include <unordered_map>
 
 #include "error.h"
 #include "object-latch.h"
 #include "message.h"
 #include "connection.h"
 #include "mainloop.h"
+#include "callback-holder.h"
 
 namespace rmi {
 
@@ -42,47 +41,63 @@ public:
     void connect();
     void disconnect();
 
+    int subscribe(const std::string& name);
+
+    template<typename... Args>
+    void subscribe(const std::string& name,
+                   const typename MethodHandler<void, Args...>::type& handler);
+
     template<typename Type, typename... Args>
     Type methodCall(const std::string& method, Args&&... args);
 
 private:
-    typedef std::function<void(Message&)> ReplyCallback;
-    typedef std::unordered_map<unsigned int, ReplyCallback> ReplyCallbackMap;
-
     std::string address;
-
-    ReplyCallbackMap replyCallbackMap;
-    std::mutex replyCallbackLock;
-
     std::shared_ptr<Connection> connection;
     runtime::Mainloop mainloop;
     std::thread dispatcher;
 };
 
+template<typename... Args>
+void Client::subscribe(const std::string& name,
+                       const typename MethodHandler<void, Args...>::type& handler)
+{
+    auto callback = [handler, this](int fd, runtime::Mainloop::Event event) {
+        if ((event & EPOLLHUP) || (event & EPOLLRDHUP)) {
+            mainloop.removeEventSource(fd);
+            return;
+        }
+
+        try {
+            Message msg;
+            Socket transport(fd, false);
+            msg.decode(transport);
+
+            CallbackHolder<void, Args...> callback(handler);
+            callback.dispatch(msg);
+        } catch (std::exception& e) {
+            std::cout << e.what() << std::endl;
+        }
+    };
+
+    int fd = subscribe(name);
+    if (fd > 0) {
+        mainloop.addEventSource(fd, EPOLLIN | EPOLLHUP | EPOLLRDHUP, callback);
+    }
+}
+
 template<typename Type, typename... Args>
 Type Client::methodCall(const std::string& method, Args&&... args)
 {
-    ObjectLatch<Type> latch;
-
-    auto ResultBuilder = [&latch](Message& reply) {
-        Type data;
-
-        reply.unpackParameters<Type>(data);
-        latch.set(std::move(data));
-    };
-
     Message request = connection->createMessage(Message::MethodCall, method);
     request.packParameters(std::forward<Args>(args)...);
-
-    replyCallbackLock.lock();
-    replyCallbackMap[request.id()] = std::move(ResultBuilder);
-    replyCallbackLock.unlock();
-
     connection->send(request);
 
-    latch.wait();
+    Message reply = connection->dispatch();
 
-    return latch.get();
+    Type response;
+    reply.disclose<Type>(response);
+
+    return response;
 }
 
 } // namespace rmi

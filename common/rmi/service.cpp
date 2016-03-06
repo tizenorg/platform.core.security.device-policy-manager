@@ -111,18 +111,48 @@ void Service::setCloseConnectionCallback(const ConnectionCallback& closeCallback
     onCloseConnection = std::move(callback);
 }
 
+void Service::createNotification(const std::string& name)
+{
+    if (notificationRegistry.count(name)) {
+        throw runtime::Exception("Notification already registered");
+    }
+
+    notificationRegistry.emplace(name, name);
+}
+
+int Service::subscribeNotification(const std::string& name)
+{
+    if (!notificationRegistry.count(name)) {
+        return -1;
+    }
+
+    Notification& notification = notificationRegistry[name];
+
+    return notification.createSubscriber();
+}
+
+int Service::unsubscribeNotification(const std::string& name, const int id)
+{
+    if (notificationRegistry.count(name)) {
+        Notification& notification = notificationRegistry[name];
+        notification.removeSubscriber(id);
+    }
+
+    return 0;
+}
+
 void Service::onMessageProcess(const std::shared_ptr<Connection>& connection)
 {
     auto process = [&](Message& request) {
         try {
-            stateLock.lock();
+            //stateLock.lock();
             std::shared_ptr<MethodDispatcher> methodDispatcher = methodRegistry.at(request.target());
-            stateLock.unlock();
+            //stateLock.unlock();
 
             // [TBD] Request authentication before dispatching method handler.
             processingContext = ProcessingContext(connection);
             connection->send((*methodDispatcher)(request));
-        } catch (runtime::Exception& e) {
+        } catch (std::exception& e) {
             std::cerr << e.what() << std::endl;
             connection->send(request.createErrorMessage());
         }

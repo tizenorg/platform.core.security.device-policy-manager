@@ -55,20 +55,22 @@ Credentials getCredentials(int fd)
 
 } // namespace
 
-Socket::Socket(int fd) :
-    socketFd(fd)
+Socket::Socket(int fd, bool autoclose) :
+    socketFd(fd),
+    autoClose(autoclose)
 {
 }
 
 Socket::Socket(Socket&& socket) noexcept :
-    socketFd(socket.socketFd)
+    socketFd(socket.socketFd),
+    autoClose(socket.autoClose)
 {
     socket.socketFd = -1;
 }
 
 Socket::~Socket() noexcept
 {
-    if (socketFd != -1) {
+    if ((socketFd != -1) && (autoClose)) {
         ::close(socketFd);
     }
 }
@@ -195,7 +197,6 @@ void Socket::receiveFileDescriptors(int* fds, const size_t nr) const
             bytes += ret;
         } else {
             if ((errno != EAGAIN) && (errno != EWOULDBLOCK) && (errno != EINTR)) {
-                std::cout << runtime::GetSystemErrorMessage() << std::endl;
                 throw SocketException(runtime::GetSystemErrorMessage());
             }
         }
