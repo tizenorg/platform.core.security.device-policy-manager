@@ -31,6 +31,7 @@
 #include "connection.hxx"
 #include "message.hxx"
 #include "callback-holder.hxx"
+#include "notification.hxx"
 
 #define STRIP_(...)
 #define STRIP(x)         STRIP_ x
@@ -75,12 +76,19 @@ public:
     void start();
     void stop();
 
+    void setNewConnectionCallback(const ConnectionCallback& callback);
+    void setCloseConnectionCallback(const ConnectionCallback& callback);
+
     template<typename Type, typename... Args>
     void setMethodHandler(const std::string& method,
                           const typename MethodHandler<Type, Args...>::type& handler);
 
-    void setNewConnectionCallback(const ConnectionCallback& callback);
-    void setCloseConnectionCallback(const ConnectionCallback& callback);
+    void createNotification(const std::string& name);
+    int subscribeNotification(const std::string& name);
+    int unsubscribeNotification(const std::string& name, const int id);
+
+	template <typename... Args>
+	void notify(const std::string& name, Args&&... args);
 
     pid_t getPeerPid() const {
         return processingContext.credentials.pid;
@@ -110,6 +118,7 @@ private:
 
     typedef std::function<Message(Message& message)> MethodDispatcher;
     typedef std::unordered_map<std::string, std::shared_ptr<MethodDispatcher>> MethodRegistry;
+    typedef std::unordered_map<std::string, Notification> NotificationRegistry;
 
     void onMessageProcess(const std::shared_ptr<Connection>& connection);
 
@@ -119,6 +128,7 @@ private:
     CallbackDispatcher onCloseConnection;
 
     MethodRegistry methodRegistry;
+    NotificationRegistry notificationRegistry;
     ConnectionRegistry connectionRegistry;
 
     Mainloop mainloop;
@@ -149,6 +159,13 @@ void Service::setMethodHandler(const std::string& method,
     }
 
     methodRegistry[method] = std::make_shared<MethodDispatcher>(std::move(dispatchMethod));
+}
+
+template <typename... Args>
+void Service::notify(const std::string& name, Args&&... args)
+{
+    Notification& slot = notificationRegistry[name];
+    slot.notify(std::forward<Args>(args)...);
 }
 
 } // namespace Ipc

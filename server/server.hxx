@@ -20,11 +20,14 @@
 #include <string>
 #include <memory>
 
+
 #include "client-manager.hxx"
 
 #include "ipc/service.hxx"
 
 namespace DevicePolicyServer {
+
+using namespace Ipc;
 
 class Server {
 public:

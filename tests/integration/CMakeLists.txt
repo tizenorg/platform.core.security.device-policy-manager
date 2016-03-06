@@ -33,6 +33,7 @@ SET(INTEGRATION_TEST_SOURCES main.cxx
 							 ${DPM_COMMON}/ipc/service.cxx
 							 ${DPM_COMMON}/ipc/client.cxx
 							 ${DPM_COMMON}/ipc/mainloop.cxx
+                             ${DPM_COMMON}/ipc/notification.cxx
 							 ${DPM_TESTBENCH}/testbench.cxx
 )
 

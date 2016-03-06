@@ -36,6 +36,7 @@ SET(SOURCES	main.cxx
 			${DPM_COMMON}/ipc/mainloop.cxx
 			${DPM_COMMON}/ipc/message.cxx
 			${DPM_COMMON}/ipc/connection.cxx
+            ${DPM_COMMON}/ipc/notification.cxx
 			${DPM_COMMON}/db/connection.cxx
 			${DPM_COMMON}/db/statement.cxx
 			${DPM_COMMON}/db/column.cxx
