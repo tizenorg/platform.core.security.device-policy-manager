@@ -30,7 +30,7 @@ namespace DevicePolicyServer {
 
 namespace {
 
-const std::string defaultPolicyTemplate = "/etc/dpm/policy/PolicyManifest.xml";
+const std::string defaultPolicyTemplate = CONF_PATH "/policy/PolicyManifest.xml";
 
 }
 
@@ -38,7 +38,7 @@ PolicyStorage::PolicyStorage(const std::string& path, bool create)
     : location(path),
       data(nullptr)
 {
-    std::string &source = location;
+    std::string& source = location;
 
     if (create) {
         struct stat st;
