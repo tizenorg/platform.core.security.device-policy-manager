@@ -17,6 +17,7 @@ BuildRequires: pkgconfig(deviced)
 BuildRequires: pkgconfig(vconf)
 BuildRequires: pkgconfig(vconf-internal-keys)
 BuildRequires: pkgconfig(libsmack)
+BuildRequires: pkgconfig(libtzplatform-config)
 
 %description
 The device-policy-manager package provides a daemon which is responsible for
