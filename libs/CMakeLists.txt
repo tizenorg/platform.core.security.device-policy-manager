@@ -24,7 +24,9 @@ SET(SOURCES policy-client.cpp
 			administration.cpp
 			security.cpp
 			dpm/client-handle.cpp
+            dpm/security.cpp
 			${DPM_COMMON}/error.cpp
+			${DPM_COMMON}/mainloop.cpp
 			${DPM_COMMON}/eventfd.cpp
 			${DPM_COMMON}/rmi/client.cpp
 			${DPM_COMMON}/rmi/socket.cpp
