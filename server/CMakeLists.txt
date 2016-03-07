@@ -35,6 +35,7 @@ SET(SOURCES	main.cpp
             ${DPM_COMMON}/eventfd.cpp
 			${DPM_COMMON}/auth/user.cpp
 			${DPM_COMMON}/auth/group.cpp
+			${DPM_COMMON}/auth/shadow.cpp
 			${DPM_COMMON}/audit/logger.cpp
 			${DPM_COMMON}/audit/null-sink.cpp
 			${DPM_COMMON}/audit/console-sink.cpp

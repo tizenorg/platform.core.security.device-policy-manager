@@ -27,6 +27,7 @@ FILE(GLOB DPM_COMMON_SRCS	${DPM_COMMON}/error.cpp
 							${DPM_COMMON}/access-control.cpp
 							${DPM_COMMON}/auth/user.cpp
 							${DPM_COMMON}/auth/group.cpp
+							${DPM_COMMON}/auth/shadow.cpp
 							${DPM_COMMON}/xml/parser.cpp
 							${DPM_COMMON}/xml/document.cpp
 							${DPM_COMMON}/xml/node.cpp
