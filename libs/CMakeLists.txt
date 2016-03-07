@@ -25,8 +25,11 @@ SET(SOURCES dpm.cxx
 			administration.cxx
 			security.cxx
 			password.cxx
+			zone.cxx
             dpm/security.cxx
             dpm/password.cxx
+            dpm/security.cxx
+			dpm/zone.cxx
 			${DPM_COMMON}/error.cxx
 			${DPM_COMMON}/eventfd.cxx
 			${DPM_COMMON}/ipc/client.cxx

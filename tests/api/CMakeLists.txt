@@ -16,6 +16,7 @@
 SET(API_TEST_TARGET	"dpm-api-tests")
 
 SET(API_TEST_SOURCES main.c
+                     zone.c
                      security.c
                      password.c
                      testbench.c
