@@ -24,6 +24,7 @@ SET(SOURCES dpm.cxx
 			policy-client.cxx
 			administration.cxx
 			security.cxx
+			container.cxx
             dpm/security.cxx
 			${DPM_COMMON}/error.cxx
 			${DPM_COMMON}/eventfd.cxx
