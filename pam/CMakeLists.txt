@@ -24,6 +24,7 @@ FILE(GLOB PAM_ZONE_CLI_SRCS  cli/*.cxx
 FILE(GLOB DPM_COMMON_SRCS       ${DPM_COMMON}/error.cxx
                                 ${DPM_COMMON}/user.cxx
                                 ${DPM_COMMON}/group.cxx
+                                ${DPM_COMMON}/shadow.cxx
                                 ${DPM_COMMON}/parameter.cxx
                                 ${DPM_COMMON}/filesystem.cxx
                                 ${DPM_COMMON}/access-control.cxx

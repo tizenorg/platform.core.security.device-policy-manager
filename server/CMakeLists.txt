@@ -23,6 +23,7 @@ SET(SOURCES	main.cxx
 			client-manager.cxx
 			administration.cxx
 			security.cxx
+			container.cxx
 			${DPM_COMMON}/error.cxx
 			${DPM_COMMON}/user.cxx
 			${DPM_COMMON}/group.cxx
@@ -52,7 +53,7 @@ SET(SOURCES	main.cxx
 
 ADD_EXECUTABLE(${TARGET} ${SOURCES} ${INCLUDE_SRCS})
 
-PKG_CHECK_MODULES(SERVER_DEPS REQUIRED glib-2.0 libxml-2.0 sqlite3 bundle aul appsvc vconf syspopup-caller deviced libsmack)
+PKG_CHECK_MODULES(SERVER_DEPS REQUIRED glib-2.0 gio-2.0 libxml-2.0 sqlite3 bundle aul appsvc vconf syspopup-caller deviced libsmack libtzplatform-config)
 
 INCLUDE_DIRECTORIES(SYSTEM ${SERVER_DEPS_INCLUDE_DIRS} ${DPM_COMMON} ${DPM_POLICY} ${DPM_SERVER})
 
@@ -68,3 +69,4 @@ TARGET_COMPILE_DEFINITIONS(${TARGET} PRIVATE
 
 INSTALL(TARGETS ${TARGET} DESTINATION bin)
 INSTALL(FILES data/PolicyManifest.xml DESTINATION ${CONF_INSTALL_DIR}/policy)
+INSTALL(FILES data/DefaultBundleManifest.xml DESTINATION ${CONF_INSTALL_DIR}/container RENAME owner.xml)
