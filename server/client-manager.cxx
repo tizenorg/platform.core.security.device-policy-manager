@@ -31,7 +31,7 @@ namespace DevicePolicyServer {
 
 namespace {
 
-const std::string clientPolicyStorage = "/opt/data/dpm";
+const std::string clientPolicyStorage = CONF_PATH "/policy";
 
 } //namespace
 
@@ -48,7 +48,7 @@ Client::~Client()
 
 namespace {
 
-const std::string dataStorageLocation = "/opt/dbspace";
+const std::string dataStorageLocation = DB_PATH;
 const std::string clientDBName = ".client.db";
 
 } //namespace
@@ -120,7 +120,7 @@ void ClientManager::registerClient(const std::string& name)
 
 void ClientManager::deregisterClient(const std::string& name)
 {
-    auto removeClient = [](ClientList& list, const std::string& name) {
+    auto removeClient = [](ClientList & list, const std::string & name) {
         ClientList::iterator iter = list.begin();
         while (iter != list.end()) {
             Client& client = *iter;
@@ -154,7 +154,7 @@ void ClientManager::dumpRegisteredClients()
 
     ClientList::iterator iter = registeredClients.begin();
     while (iter != registeredClients.end()) {
-        Client &client = (*iter);
+        Client& client = (*iter);
         std::cout << "R[" << client.getName()
                   << "/" << client.getKey() << "]" << std::endl;
         ++iter;
@@ -170,7 +170,7 @@ void ClientManager::dumpActivatedClients()
 
     ClientList::iterator iter = activatedClients.begin();
     while (iter != activatedClients.end()) {
-        Client &client = (*iter);
+        Client& client = (*iter);
         std::cout << "A[" << client.getName()
                   << "/" << client.getKey() << "]" << std::endl;
         ++iter;
