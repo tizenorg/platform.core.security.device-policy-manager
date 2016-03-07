@@ -24,9 +24,11 @@ SET(SOURCES policy-client.cpp
 			administration.cpp
 			security.cpp
 			password.cpp
+			zone.cpp
 			dpm/client-handle.cpp
             dpm/security.cpp
 			dpm/password.cpp
+			dpm/zone.cpp
 			${DPM_COMMON}/error.cpp
 			${DPM_COMMON}/mainloop.cpp
 			${DPM_COMMON}/eventfd.cpp
