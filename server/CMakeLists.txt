@@ -45,11 +45,14 @@ SET(SOURCES	main.cxx
 			${DPM_COMMON}/xml/document.cxx
 			${DPM_COMMON}/xml/node.cxx
 			${DPM_COMMON}/xml/keepblanks
+			${DPM_COMMON}/shadow/user.cxx
+			${DPM_COMMON}/shadow/group.cxx
+			${DPM_COMMON}/shadow/lock.cxx
 )
 
 ADD_EXECUTABLE(${TARGET} ${SOURCES} ${INCLUDE_SRCS})
 
-PKG_CHECK_MODULES(SERVER_DEPS REQUIRED glib-2.0 libxml-2.0 sqlite3 bundle aul appsvc vconf syspopup-caller deviced libsmack)
+PKG_CHECK_MODULES(SERVER_DEPS REQUIRED glib-2.0 libxml-2.0 sqlite3 bundle aul appsvc vconf syspopup-caller deviced libsmack libtzplatform-config)
 
 INCLUDE_DIRECTORIES(SYSTEM ${SERVER_DEPS_INCLUDE_DIRS} ${DPM_COMMON} ${DPM_POLICY} ${DPM_SERVER})
 
