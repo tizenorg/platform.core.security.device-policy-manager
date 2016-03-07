@@ -20,10 +20,12 @@ SET(UNIT_TEST_SOURCES	main.cxx
 						database.cxx
 						xml.cxx
 						filesystem.cxx
+						shadow.cxx
 						${DPM_COMMON}/error.cxx
+						${DPM_COMMON}/shadow.cxx
 						${DPM_COMMON}/thread-pool.cxx
 						${DPM_COMMON}/filesystem.cxx
-						${DPM_COMMON}/access-control.cxx
+                        ${DPM_COMMON}/access-control.cxx
 						${DPM_COMMON}/eventfd.cxx
 						${DPM_COMMON}/audit/logger.cxx
 						${DPM_COMMON}/audit/null-sink.cxx
@@ -47,7 +49,7 @@ SET(UNIT_TEST_SOURCES	main.cxx
 
 ADD_EXECUTABLE(${UNIT_TEST_TARGET} ${UNIT_TEST_SOURCES})
 
-PKG_CHECK_MODULES(TESTS_DEPS REQUIRED glib-2.0 libxml-2.0 sqlite3 libsmack)
+PKG_CHECK_MODULES(TESTS_DEPS REQUIRED glib-2.0 libxml-2.0 sqlite3 libsmack libtzplatform-config)
 INCLUDE_DIRECTORIES(SYSTEM ${TESTS_DEPS_INCLUDE_DIRS} ${DPM_COMMON} ${DPM_LIBS} ${DPM_TESTS})
 
 SET_TARGET_PROPERTIES(${UNIT_TEST_TARGET} PROPERTIES
