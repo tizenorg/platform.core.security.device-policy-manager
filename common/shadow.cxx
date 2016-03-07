@@ -38,24 +38,19 @@ namespace Runtime {
 //PwdFileLock
 class PwdFileLock final {
 public:
-    void lock(void);
-    void unlock(void);
-
+    PwdFileLock();
     ~PwdFileLock();
 
 private:
+    std::unique_lock<std::mutex> lock;
     static std::mutex mutex;
-    bool isLocked = false;
 };
 
 std::mutex PwdFileLock::mutex;
 
-void PwdFileLock::lock()
+PwdFileLock::PwdFileLock()
+   : lock(mutex)
 {
-    mutex.lock();
-
-    isLocked = true;
-
     if (::seteuid(0) != 0) {
         throw Runtime::Exception("failed to change euid");
     }
@@ -65,25 +60,14 @@ void PwdFileLock::lock()
     }
 }
 
-void PwdFileLock::unlock()
+PwdFileLock::~PwdFileLock()
 {
-    isLocked = false;
-
     if (::ulckpwdf() != 0) {
         throw Runtime::Exception("shadow file unlock error");
     }
 
     if (::seteuid(getuid()) != 0) {
         throw Runtime::Exception("failed to change euid");
-    }
-
-    mutex.unlock();
-}
-
-PwdFileLock::~PwdFileLock()
-{
-    if (isLocked) {
-        unlock();
     }
 }
 
@@ -93,8 +77,6 @@ void Shadow::put(std::string& filename, const pwdStruct& pwd,
                  std::function<int(const pwdStruct*, FILE*)> put)
 {
     PwdFileLock pwdLock;
-
-    pwdLock.lock();
 
     std::unique_ptr<FILE, decltype(&::fclose)> fp_pwd
     (::fopen(filename.c_str(), "a"), &::fclose);
@@ -108,8 +90,6 @@ void Shadow::put(std::string& filename, const pwdStruct& pwd,
     }
 
     fp_pwd.reset();
-
-    pwdLock.unlock();
 }
 
 template<typename pwdStruct, typename element>
@@ -119,7 +99,6 @@ void Shadow::remove(std::string& filename, const element& value,
                     std::function<bool(const pwdStruct&, const element&)> compare)
 {
     std::string tmpfilename = filename + ".tmp";
-    PwdFileLock pwdLock;
     pwdStruct* ppwd;
     struct stat st;
 
@@ -142,7 +121,7 @@ void Shadow::remove(std::string& filename, const element& value,
         throw Runtime::Exception("shadow file information get error");
     }
 
-    pwdLock.lock();
+    PwdFileLock pwdLock;
 
     std::unique_ptr<FILE, decltype(&::fclose)> fp_pwd
     (::fopen(filename.c_str(), "r"), &::fclose);
@@ -172,8 +151,6 @@ void Shadow::remove(std::string& filename, const element& value,
     if (::rename(tmpfilename.c_str(), filename.c_str()) != 0) {
         throw Runtime::Exception("shadow file update error");
     }
-
-    pwdLock.unlock();
 }
 
 void Shadow::putPasswd(std::string filename, const struct passwd& ent)
