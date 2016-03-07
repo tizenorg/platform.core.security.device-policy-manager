@@ -16,6 +16,8 @@ BuildRequires: pkgconfig(syspopup-caller)
 BuildRequires: pkgconfig(deviced)
 BuildRequires: pkgconfig(vconf)
 BuildRequires: pkgconfig(vconf-internal-keys)
+BuildRequires: pkgconfig(libsmack)
+BuildRequires: pkgconfig(libtzplatform-config)
 
 %description
 The device-policy-manager package provides a daemon which is responsible for
@@ -25,9 +27,9 @@ managing device policies.
 %manifest device-policy-manager.manifest
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/device-policy-manager
-%dir /etc/dpm
-%dir /etc/dpm/policy
-%config /etc/dpm/policy/PolicyManifest.xml
+%dir %{TZ_SYS_DATA}/dpm
+%dir %{TZ_SYS_ETC}/dpm/policy
+%config %{TZ_SYS_ETC}/dpm/policy/PolicyManifest.xml
 
 %prep
 %setup -q
@@ -42,9 +44,10 @@ managing device policies.
 
 %cmake . -DVERSION=%{version} \
 	 -DCMAKE_BUILD_TYPE=%{build_type} \
-	 -DSCRIPT_INSTALL_DIR=%{_scriptdir} \
 	 -DSYSTEMD_UNIT_INSTALL_DIR=%{_unitdir} \
-	 -DDATA_INSTALL_DIR=%{_datadir}
+	 -DDATA_INSTALL_DIR=%{TZ_SYS_DATA}/dpm \
+	 -DCONF_INSTALL_DIR=%{TZ_SYS_ETC}/dpm \
+	 -DDB_INSTALL_DIR=%{TZ_SYS_DB} \
 
 make %{?jobs:-j%jobs}
 
@@ -56,10 +59,9 @@ rm -rf %{buildroot}
 rm -rf %{buildroot}
 
 %post
-mkdir -p ${buildroot}/opt/data/dpm
 
 %preun
-/sbin/ldconfig
+%{_sbindir}/ldconfig
 
 %postun
 
@@ -68,15 +70,15 @@ mkdir -p ${buildroot}/opt/data/dpm
 Summary: Tizen Device Policy Client library
 Group: Development/Libraries
 Requires: %{name} = %{version}-%{release}
-Requires(post): /sbin/ldconfig
-Requires(postun): /sbin/ldconfig
+Requires(post): %{_sbindir}/ldconfig
+Requires(postun): %{_sbindir}/ldconfig
 
 %description -n libdpm
 The libdpm package contains the libraries needed to run DPM client.
 
-%post -n libdpm -p /sbin/ldconfig
+%post -n libdpm -p %{_sbindir}/ldconfig
 
-%postun -n libdpm -p /sbin/ldconfig
+%postun -n libdpm -p %{_sbindir}/ldconfig
 
 %files -n libdpm
 %defattr(644,root,root,755)
@@ -88,7 +90,6 @@ The libdpm package contains the libraries needed to run DPM client.
 %package -n libdpm-devel
 Summary: Libraries and header files for device policy client development
 Group: Development/Libraries
-Requires: %{name} = %{version}-%{release}
 Requires: libdpm = %{version}-%{release}
 
 %description -n libdpm-devel
@@ -105,7 +106,7 @@ developing the DPM client program.
 %package -n dpm-testcases
 Summary: Device Policy Manager test cases
 Group: Development/Libraries
-Requires: %{name} = %{version}-%{release}
+Requires: libdpm = %{version}-%{release}
 
 %description -n dpm-testcases
 Testcases for device policy manager and device policy client
@@ -116,4 +117,4 @@ Testcases for device policy manager and device policy client
 %attr(755,root,root) %{_bindir}/dpm-integration-tests
 %attr(755,root,root) %{_bindir}/dpm-api-tests
 %defattr(-,root,root,-)
-%{_datadir}/dpm/sample-policy.xml
+%{TZ_SYS_DATA}/dpm/sample-policy.xml
