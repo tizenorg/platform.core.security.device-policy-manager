@@ -18,6 +18,7 @@
 #define __PROCESS__
 
 #include <string>
+#include <vector>
 
 namespace Runtime {
 
@@ -26,6 +27,7 @@ public:
     typedef pid_t Pid;
 
     Process(const std::string& prog);
+    Process(const std::string& prog, const std::vector<std::string>& args);
     Process(const Process& proc);
 
     ~Process();
@@ -45,6 +47,7 @@ private:
     int status;
     Pid pid;
     std::string program;
+    std::vector<std::string> args;
 };
 
 } // namespace Runtime
