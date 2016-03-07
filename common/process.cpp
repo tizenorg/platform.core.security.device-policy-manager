@@ -28,6 +28,12 @@ namespace runtime {
 Process::Process(const std::string& prog) :
     status(-1), pid(-1), program(prog)
 {
+    args.push_back(prog);
+}
+
+Process::Process(const std::string& prog, const std::vector<std::string>& args) :
+    status(-1), pid(-1), program(prog), args(args)
+{
 }
 
 Process::Process(const Process& proc)
@@ -51,10 +57,13 @@ int Process::execute()
     }
 
     if (pid == 0) {
-        const char *const argv[] = {
-            program.c_str(),
-            NULL
-        };
+        const char** argv = new const char *[args.size() + 1];
+
+        int i = 0;
+        for (std::string & arg : args) {
+            argv[i++] = arg.c_str();
+        }
+        argv[i] = NULL;
 
         ::execv(program.c_str(), const_cast<char* const*>(argv));
         std::quick_exit(EXIT_FAILURE);
