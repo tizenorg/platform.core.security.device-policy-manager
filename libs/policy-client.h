@@ -48,4 +48,5 @@ private:
     PolicyControlContext client;
 };
 
+DevicePolicyClient& GetDevicePolicyClient(void* handle);
 #endif //__POLICY_CLIENT_H__

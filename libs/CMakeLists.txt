@@ -20,10 +20,10 @@ SET(LIB_SOVERSION "0")
 
 SET(PC_FILE "${PROJECT_NAME}.pc")
 
-SET(SOURCES dpm.cpp
-			policy-client.cpp
+SET(SOURCES policy-client.cpp
 			administration.cpp
 			security.cpp
+			dpm/client-handle.cpp
 			${DPM_COMMON}/error.cpp
 			${DPM_COMMON}/eventfd.cpp
 			${DPM_COMMON}/rmi/client.cpp
@@ -31,6 +31,8 @@ SET(SOURCES dpm.cpp
 			${DPM_COMMON}/rmi/connection.cpp
 			${DPM_COMMON}/rmi/message.cpp
 )
+
+SET(CAPI_INCLUDE_FILES  dpm/device-policy-client.h)
 
 SET (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,noexecstack")
 
@@ -47,4 +49,4 @@ CONFIGURE_FILE(${PC_FILE}.in ${CMAKE_BINARY_DIR}/${PC_FILE} @ONLY)
 
 INSTALL(FILES ${CMAKE_BINARY_DIR}/${PC_FILE} DESTINATION ${LIB_INSTALL_DIR}/pkgconfig)
 INSTALL(TARGETS ${PROJECT_NAME} DESTINATION ${LIB_INSTALL_DIR} COMPONENT RuntimeLibraries)
-INSTALL(FILES dpm/device-policy-client.h DESTINATION ${INCLUDE_INSTALL_DIR}/dpm)
+INSTALL(FILES ${CAPI_INCLUDE_FILES} DESTINATION ${INCLUDE_INSTALL_DIR}/dpm)
