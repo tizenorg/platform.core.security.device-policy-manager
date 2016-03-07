@@ -13,25 +13,23 @@
 // limitations under the License.
 //
 
-#include <dpm/device-policy-client.h>
+#ifndef __DPM_API_TESTBENCH_H__
+#define __DPM_API_TESTBENCH_H__
 
-#include "testbench/testbench.hxx"
-#include "audit/logger.hxx"
+#include <stdio.h>
 
-TESTCASE(PolicyClientHandleTest)
-{
-    dpm_client_h client = dpm_create_client();
+#define TEST_SUCCESSED  1
+#define TEST_FAILED     0
 
-    TEST_CHECK(client != NULL);
+#define TESTCASE_CONSTRUCTOR __attribute__((constructor))
 
-    dpm_destroy_client(client);
-}
+struct testcase {
+    char* description;
+    int (*handler)(struct testcase* tc);
+    struct testcase* next;
+};
 
-int main(int /*argc*/, char** /*argv*/)
-{
-    Audit::Logger::setLogLevel(Audit::LogLevel::Info);
-    Test::Testbench::runAllTestSuites();
+void testbench_populate_testcase(struct testcase* tc);
+void testbench_execute_testcases(void);
 
-
-    return 0;
-}
+#endif /* !__DPM_API_TESTBENCH_H__ */

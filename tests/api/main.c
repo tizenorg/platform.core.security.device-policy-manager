@@ -13,25 +13,11 @@
 // limitations under the License.
 //
 
-#include <dpm/device-policy-client.h>
+#include "testbench.h"
 
-#include "testbench/testbench.hxx"
-#include "audit/logger.hxx"
-
-TESTCASE(PolicyClientHandleTest)
+int main(int argc, char** argv)
 {
-    dpm_client_h client = dpm_create_client();
-
-    TEST_CHECK(client != NULL);
-
-    dpm_destroy_client(client);
-}
-
-int main(int /*argc*/, char** /*argv*/)
-{
-    Audit::Logger::setLogLevel(Audit::LogLevel::Info);
-    Test::Testbench::runAllTestSuites();
-
+    testbench_execute_testcases();
 
     return 0;
 }

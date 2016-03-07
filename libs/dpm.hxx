@@ -17,7 +17,7 @@
 #ifndef __DPM__
 #define __DPM__
 
-#include "device-policy-client.h"
+#include "dpm/device-policy-client.h"
 
 #include "policy-client.hxx"
 
