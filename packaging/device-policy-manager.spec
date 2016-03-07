@@ -32,6 +32,8 @@ managing device policies.
 %dir %{TZ_SYS_DATA}/dpm
 %dir %{TZ_SYS_ETC}/dpm/policy
 %config %{TZ_SYS_ETC}/dpm/policy/PolicyManifest.xml
+%attr(700,root,root) %dir %{TZ_SYS_ETC}/dpm/zone
+%attr(700,root,root) %config %{TZ_SYS_ETC}/dpm/zone/owner.xml
 
 %prep
 %setup -q
@@ -152,12 +154,12 @@ Tizen ODE application
 
 ## PAM Plugin Package #######################################################
 %package -n dpm-pam-zone
-Summary: PAM Plugin for container policy in device policy manager
+Summary: PAM Plugin for zone policy in device policy manager
 Group: Development/Libraries
 Requires: systemd
 
 %description -n dpm-pam-zone
-PAM Plugin for container policy in device policy manager and CLI tool
+PAM Plugin for zone policy in device policy manager and CLI tool
 
 %files -n dpm-pam-zone
 %defattr(600,root,root,700)

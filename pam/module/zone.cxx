@@ -35,7 +35,7 @@
 #include "xml/parser.hxx"
 #include "xml/document.hxx"
 
-#define CONTAINER_MANIFEST_DIR CONF_PATH "/container/"
+#define ZONE_MANIFEST_DIR CONF_PATH "/zone/"
 
 static void attachNamespace(pid_t pid, int flags)
 {

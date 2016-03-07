@@ -129,7 +129,7 @@ User User::create(const std::string& name, const std::string& group_name,
         }
 
     if (uid > max) {
-        throw Runtime::Exception("Too many containers");
+        throw Runtime::Exception("Too many users");
     }
 
     pwd.pw_uid = uid;
