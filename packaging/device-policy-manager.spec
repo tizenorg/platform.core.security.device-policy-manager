@@ -16,6 +16,7 @@ BuildRequires: pkgconfig(syspopup-caller)
 BuildRequires: pkgconfig(deviced)
 BuildRequires: pkgconfig(vconf)
 BuildRequires: pkgconfig(vconf-internal-keys)
+BuildRequires: pkgconfig(libsmack)
 
 %description
 The device-policy-manager package provides a daemon which is responsible for

@@ -26,6 +26,7 @@ SET(SOURCES	main.cxx
 			${DPM_COMMON}/error.cxx
 			${DPM_COMMON}/process.cxx
 			${DPM_COMMON}/filesystem.cxx
+			${DPM_COMMON}/access-control.cxx
 			${DPM_COMMON}/thread-pool.cxx
             ${DPM_COMMON}/eventfd.cxx
 			${DPM_COMMON}/audit/logger.cxx
@@ -48,7 +49,7 @@ SET(SOURCES	main.cxx
 
 ADD_EXECUTABLE(${TARGET} ${SOURCES} ${INCLUDE_SRCS})
 
-PKG_CHECK_MODULES(SERVER_DEPS REQUIRED glib-2.0 libxml-2.0 sqlite3 bundle aul appsvc vconf syspopup-caller deviced)
+PKG_CHECK_MODULES(SERVER_DEPS REQUIRED glib-2.0 libxml-2.0 sqlite3 bundle aul appsvc vconf syspopup-caller deviced libsmack)
 
 INCLUDE_DIRECTORIES(SYSTEM ${SERVER_DEPS_INCLUDE_DIRS} ${DPM_COMMON} ${DPM_POLICY} ${DPM_SERVER})
 

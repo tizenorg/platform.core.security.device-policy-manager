@@ -36,28 +36,23 @@ public:
     Path& operator=(const std::string& path);
     Path& operator=(const char* path);
 
-    bool operator==(const Path& path) const
-    {
+    bool operator==(const Path& path) const {
         return (pathname == path.pathname);
     }
 
-    bool operator!=(const Path& path) const
-    {
+    bool operator!=(const Path& path) const {
         return !(pathname == path.pathname);
     }
 
-    bool isAbsolute() const
-    {
+    bool isAbsolute() const {
         return (pathname[0] == '/');
     }
 
-    bool isRelative() const
-    {
+    bool isRelative() const {
         return !(pathname[0] == '/');
     }
 
-    const std::string& getPathname() const
-    {
+    const std::string& getPathname() const {
         return pathname;
     }
 
@@ -78,20 +73,17 @@ public:
 
     ~File();
 
-    File& operator=(const std::string& pathname)
-    {
+    File& operator=(const std::string& pathname) {
         path = pathname;
         return *this;
     }
 
-    File& operator=(const File& file)
-    {
+    File& operator=(const File& file) {
         path = file.path;
         return *this;
     }
 
-    File& operator=(const Path& filePath)
-    {
+    File& operator=(const Path& filePath) {
         path = filePath;
         return *this;
     }
@@ -101,13 +93,11 @@ public:
     bool operator<=(const File& file) const;
     bool operator>=(const File& file) const;
 
-    bool operator==(const File& file) const
-    {
+    bool operator==(const File& file) const {
         return (path == file.path);
     }
 
-    bool operator!=(const File& file) const
-    {
+    bool operator!=(const File& file) const {
         return !(path == file.path);
     }
 
@@ -128,11 +118,13 @@ public:
     void moveTo(const std::string& pathname);
     void renameTo(const std::string& pathname);
     void remove(bool recursive = false);
+    void makeDirectory(bool recursive = false);
+
+    void chown(uid_t uid, gid_t gid);
 
     std::string toString() const;
 
-    const std::string& getPath() const
-    {
+    const std::string& getPath() const {
         return path.getPathname();
     }
 
@@ -153,33 +145,27 @@ public:
     DirectoryIterator& operator=(const Path& dir);
     DirectoryIterator& operator++();
 
-    bool operator==(const DirectoryIterator& iterator) const
-    {
+    bool operator==(const DirectoryIterator& iterator) const {
         return (current == iterator.current);
     }
 
-    bool operator!=(const DirectoryIterator& iterator) const
-    {
+    bool operator!=(const DirectoryIterator& iterator) const {
         return !(current == iterator.current);
     }
 
-    const File& operator*() const
-    {
+    const File& operator*() const {
         return current;
     }
 
-    File& operator*()
-    {
+    File& operator*() {
         return current;
     }
 
-    const File* operator->() const
-    {
+    const File* operator->() const {
         return &current;
     }
 
-    File* operator->()
-    {
+    File* operator->() {
         return &current;
     }
 
