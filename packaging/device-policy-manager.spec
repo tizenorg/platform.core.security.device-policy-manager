@@ -7,6 +7,7 @@ Summary: Tizen Device Policy Manager
 Group:   Security/Other
 BuildRequires: gcc
 BuildRequires: cmake
+BuildRequires: pam-devel
 BuildRequires: pkgconfig(glib-2.0)
 BuildRequires: pkgconfig(libxml-2.0)
 BuildRequires: pkgconfig(sqlite3)
@@ -48,8 +49,11 @@ managing device policies.
 	 -DDATA_INSTALL_DIR=%{TZ_SYS_DATA}/dpm \
 	 -DCONF_INSTALL_DIR=%{TZ_SYS_ETC}/dpm \
 	 -DDB_INSTALL_DIR=%{TZ_SYS_DB} \
+	 -DRUN_INSTALL_DIR=%{TZ_SYS_RUN} \
          -DAPP_INSTALL_PREFIX="%{TZ_SYS_RO_APP}" \
          -DAPP_SHARE_PACKAGES_DIR="%{TZ_SYS_RW_PACKAGES}" \
+	 -DPAMD_INSTALL_DIR=/etc/pam.d \
+>>>>>>> d1c94f2... Add PAM module for container feature
 
 make %{?jobs:-j%jobs}
 
@@ -145,3 +149,18 @@ Tizen ODE application
 %defattr(-,root,root,-)
 %{odeapp_home}/bin/*
 %{TZ_SYS_RW_PACKAGES}/org.tizen.ode-app.xml
+
+## PAM Package ##############################################################
+%package -n dpm-pam-unshare
+Summary: PAM for container policy in device policy manager
+Group: Development/Libraries
+Requires: systemd
+
+%description -n dpm-pam-unshare
+PAM for container policy in device policy manager and CLI tool
+
+%files -n dpm-pam-unshare
+%defattr(600,root,root,700)
+%attr(700,root,root) %{_libdir}/security/pam_*.so
+%attr(700,root,root) %{_sbindir}/nsattach
+%config /etc/pam.d/*
