@@ -19,12 +19,20 @@
 #include <memory>
 
 #include <grp.h>
+#include <gshadow.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 
 #include "group.hxx"
+#include "shadow.hxx"
 #include "exception.hxx"
+
+#define GROUP_DIR_PATH      "/etc/"
+#define GROUP_FILE_NAME     "group"
+#define GSHADOW_FILE_NAME   "gshadow"
+
+#define NAME_PATTERN "^[A-Za-z_][A-Za-z0-9_.-]*"
 
 namespace Runtime {
 
@@ -62,6 +70,70 @@ Group::Group(const gid_t group)
 Group::Group()
     : gid(INVALID_GID)
 {
+}
+
+
+static std::regex groupNamePattern(NAME_PATTERN);
+
+Group Group::create(const std::string& name, const gid_t min, const gid_t max)
+{
+    struct group group;
+    struct sgrp sgrp;
+
+    if (::getgrnam(name.c_str()) != NULL) {
+        return Group(name);
+    }
+
+    if (!std::regex_match(name, groupNamePattern)) {
+        throw Runtime::Exception("Invalid group name : " + name);
+    }
+
+    //prepare group structure
+    std::unique_ptr<char, decltype(&::free)>
+    gr_name(::strdup(name.c_str()), ::free),
+            gr_passwd(::strdup("x"), ::free);
+
+    group.gr_name = gr_name.get();
+    group.gr_passwd = gr_passwd.get();
+    group.gr_mem = NULL;
+
+    //prepare gshadow structure
+    std::unique_ptr<char, decltype(&::free)>
+    sg_namp(::strdup(name.c_str()), ::free),
+            sg_passwd(::strdup("!"), ::free);
+
+    sgrp.sg_namp = sg_namp.get();
+    sgrp.sg_passwd = sg_passwd.get();
+    sgrp.sg_adm = NULL;
+    sgrp.sg_mem = NULL;
+
+    //prepare gid - get free gid
+    for (group.gr_gid = min; group.gr_gid <= max; group.gr_gid++)
+        if (::getgrgid(group.gr_gid) == NULL) {
+            break;
+        }
+
+    if (group.gr_gid > max) {
+        throw Runtime::Exception("Too many groups");
+    }
+
+    Shadow::putGroup(GROUP_DIR_PATH GROUP_FILE_NAME, group);
+    Shadow::putGshadow(GROUP_DIR_PATH GSHADOW_FILE_NAME, sgrp);
+
+    return Group(name);
+}
+
+void Group::remove()
+{
+    if (gid == INVALID_GID) {
+        throw Runtime::Exception("Group is already removed");
+    }
+
+    Shadow::removeGroup(GROUP_DIR_PATH GROUP_FILE_NAME, gid);
+    Shadow::removeGshadow(GROUP_DIR_PATH GSHADOW_FILE_NAME, name);
+
+    name = "";
+    gid = INVALID_GID;
 }
 
 } // namespace Shadow

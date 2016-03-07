@@ -43,6 +43,9 @@ public:
         return gid;
     }
 
+    static Group create(const std::string& name, const gid_t min = 100, const gid_t max = 65000);
+    void remove();
+
 private:
     Group();
 

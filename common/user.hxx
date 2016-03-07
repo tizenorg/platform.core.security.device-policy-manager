@@ -47,6 +47,10 @@ public:
         return group;
     }
 
+    static User create(const std::string& name, const std::string& group,
+                       const uid_t min = 5000, const uid_t max = 65000);
+    void remove();
+
 private:
     std::string name;
     uid_t uid;

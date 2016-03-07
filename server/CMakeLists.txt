@@ -26,6 +26,7 @@ SET(SOURCES	main.cxx
 			${DPM_COMMON}/error.cxx
 			${DPM_COMMON}/user.cxx
 			${DPM_COMMON}/group.cxx
+			${DPM_COMMON}/shadow.cxx
 			${DPM_COMMON}/process.cxx
 			${DPM_COMMON}/filesystem.cxx
 			${DPM_COMMON}/smack.cxx

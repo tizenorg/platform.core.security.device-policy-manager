@@ -33,6 +33,37 @@ TESTCASE(GetGroupTest)
     }
 }
 
+TESTCASE(CreateGroupTest)
+{
+    try {
+        Runtime::Group group = Runtime::Group::create("testgroup");
+    } catch (Runtime::Exception& e) {
+        TEST_FAIL(e.what());
+    }
+
+    try {
+        Runtime::Group group("testgroup");
+    } catch (Runtime::Exception& e) {
+        TEST_FAIL(e.what());
+    }
+}
+
+TESTCASE(RemoveGroupTest)
+{
+    try {
+        Runtime::Group group("testgroup");
+        group.remove();
+    } catch (Runtime::Exception& e) {
+        TEST_FAIL(e.what());
+    }
+
+    try {
+        Runtime::Group group("testgroup");
+    } catch (Runtime::Exception& e) {}
+
+    TEST_FAIL("Failed to remove group");
+}
+
 TESTCASE(GetUserTest)
 {
     try {
@@ -40,4 +71,39 @@ TESTCASE(GetUserTest)
     } catch (Runtime::Exception& e) {
         TEST_FAIL(e.what());
     }
+}
+
+TESTCASE(CreateUserTest)
+{
+    try {
+        Runtime::User user = Runtime::User::create("testuser", "testgroup");
+    } catch (Runtime::Exception& e) {
+        TEST_FAIL(e.what());
+    }
+    try {
+        Runtime::User user("testuser");
+    } catch (Runtime::Exception& e) {
+        TEST_FAIL(e.what());
+    }
+}
+
+TESTCASE(RemoveUserTest)
+{
+    try {
+        Runtime::User user("testuser");
+        user.remove();
+    } catch (Runtime::Exception& e) {
+        TEST_FAIL(e.what());
+    }
+
+    try {
+        Runtime::Group group("testgroup");
+        group.remove();
+    } catch (Runtime::Exception& e) {}
+
+    try {
+        Runtime::Group group("testuser");
+    } catch (Runtime::Exception& e) {}
+
+    TEST_FAIL("Failed to remove group");
 }
