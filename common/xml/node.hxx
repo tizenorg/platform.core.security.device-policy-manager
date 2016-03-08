@@ -47,6 +47,9 @@ public:
     std::string getContent() const;
     void setContent(const std::string& content);
 
+    std::string getProp(const std::string& name) const;
+    void setProp(const std::string& name, const std::string& val);
+
     bool isBlank() const;
 
 private:
