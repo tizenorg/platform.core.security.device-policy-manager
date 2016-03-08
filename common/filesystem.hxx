@@ -118,6 +118,7 @@ public:
     void moveTo(const std::string& pathname);
     void renameTo(const std::string& pathname);
     void remove(bool recursive = false);
+    void makeDirectory(bool recursive = false);
 
     std::string toString() const;
 
