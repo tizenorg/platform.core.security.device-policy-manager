@@ -27,7 +27,7 @@ namespace Xml {
 
 Document::Document(const std::string& version)
     : rootNode(nullptr),
-      implementation(xmlNewDoc((const xmlChar *)version.c_str()))
+      implementation(xmlNewDoc((const xmlChar*)version.c_str()))
 {
     if (implementation == nullptr) {
         throw Runtime::Exception("Failed to create document");
@@ -67,7 +67,7 @@ std::string Document::getEncoding() const
     std::string encoding;
 
     if (implementation->encoding) {
-        encoding = (const char *)implementation->encoding;
+        encoding = (const char*)implementation->encoding;
     }
 
     return encoding;
@@ -80,7 +80,7 @@ Node::NodeList Document::evaluate(const std::string& xpath)
         throw Runtime::Exception("Failed to create XPath context for " + xpath);
     }
 
-    auto result = xmlXPathEval((const xmlChar *)xpath.c_str(), ctxt);
+    auto result = xmlXPathEval((const xmlChar*)xpath.c_str(), ctxt);
     if (result == nullptr) {
         xmlXPathFreeContext(ctxt);
         throw Runtime::Exception("Invalid XPath: " + xpath);
@@ -116,7 +116,7 @@ Node::NodeList Document::evaluate(const std::string& xpath)
             continue;
         }
 
-        nodes.push_back(new Node(cnode));
+        nodes.push_back(Node(cnode));
     }
 
     xmlXPathFreeObject(result);

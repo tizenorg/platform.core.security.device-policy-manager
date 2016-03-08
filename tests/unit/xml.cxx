@@ -36,11 +36,11 @@ const std::string testXmlFilePath = "/usr/share/dpm/sample-policy.xml";
 TESTCASE(XPath)
 {
     try {
-        Xml::Document *document = Xml::Parser::parseFile(testXmlFilePath);
+        Xml::Document* document = Xml::Parser::parseFile(testXmlFilePath);
         Xml::Node::NodeList nodes = document->evaluate("//policy-group[@name='APPLICATION']/policy[@name='SET_APP_INSTALLATION_MODE']");
         Xml::Node::NodeList::iterator iter = nodes.begin();
         while (iter != nodes.end()) {
-            std::cout << "Node Name: " << (*iter)->getName() << std::endl;
+            std::cout << "Node Name: " << iter->getName() << std::endl;
             ++iter;
         }
     } catch (Runtime::Exception& e) {
@@ -51,7 +51,7 @@ TESTCASE(XPath)
 TESTCASE(XmlWriter)
 {
     try {
-        Xml::Document *document = Xml::Parser::parseFile(testXmlFilePath);
+        Xml::Document* document = Xml::Parser::parseFile(testXmlFilePath);
         document->write("/opt/usr/tx.xml", "UTF-8", true);
     } catch (Runtime::Exception& e) {
         TEST_FAIL(e.what());
@@ -61,14 +61,14 @@ TESTCASE(XmlWriter)
 TESTCASE(XmlDomTree)
 {
     try {
-        Xml::Document *document = Xml::Parser::parseFile(testXmlFilePath);
+        Xml::Document* document = Xml::Parser::parseFile(testXmlFilePath);
 
-        Xml::Node &root = document->getRootNode();
+        Xml::Node& root = document->getRootNode();
 
         Xml::Node::NodeList list = root.getChildren();
         Xml::Node::NodeList::iterator iter = list.begin();
         while (iter != list.end()) {
-            std::cout << "Node Name: " << (*iter)->getName() << std::endl;
+            std::cout << "Node Name: " << iter->getName() << std::endl;
             ++iter;
         }
     } catch (Runtime::Exception& e) {
