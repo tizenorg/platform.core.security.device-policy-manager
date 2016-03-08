@@ -21,15 +21,24 @@
 
 namespace Xml {
 
-Node::Node(xmlNode *node)
+Node::Node(xmlNode* node)
     : implementation(node)
 {
     implementation->_private = this;
 }
 
+Node::Node(Node&& node)
+    : implementation(node.implementation)
+{
+    implementation->_private = this;
+    node.implementation = nullptr;
+}
+
 Node::~Node()
 {
-    implementation->_private = nullptr;
+    if (implementation != nullptr) {
+        implementation->_private = nullptr;
+    }
 }
 
 Node::NodeList Node::getChildren()
@@ -38,7 +47,7 @@ Node::NodeList Node::getChildren()
 
     auto child = implementation->xmlChildrenNode;
     while (child != nullptr) {
-        nodeList.push_back(new Node(child));
+        nodeList.push_back(Node(child));
         child = child->next;
     }
 
@@ -47,12 +56,12 @@ Node::NodeList Node::getChildren()
 
 std::string Node::getName() const
 {
-    return implementation->name ? (const char *)implementation->name : "";
+    return implementation->name ? (const char*)implementation->name : "";
 }
 
 void Node::setName(const std::string& name)
 {
-    xmlNodeSetName(implementation, (const xmlChar *)name.c_str());
+    xmlNodeSetName(implementation, (const xmlChar*)name.c_str());
 }
 
 void Node::setContent(const std::string& content)
@@ -61,7 +70,7 @@ void Node::setContent(const std::string& content)
         throw Runtime::Exception("Can not set content for this node type");
     }
 
-    xmlNodeSetContent(implementation, (xmlChar *)content.c_str());
+    xmlNodeSetContent(implementation, (xmlChar*)content.c_str());
 }
 
 std::string Node::getContent() const
@@ -70,12 +79,12 @@ std::string Node::getContent() const
         throw Runtime::Exception("This node type does not have content");
     }
 
-    return implementation->content ? (char *)implementation->content : "";
+    return implementation->content ? (char*)implementation->content : "";
 }
 
 bool Node::isBlank() const
 {
-    return xmlIsBlankNode(const_cast<xmlNode *>(implementation));
+    return xmlIsBlankNode(const_cast<xmlNode*>(implementation));
 }
 
 } // namespace Xml
