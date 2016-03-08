@@ -23,6 +23,7 @@ SET(UNIT_TEST_SOURCES	main.cpp
 						${DPM_COMMON}/error.cpp
 						${DPM_COMMON}/mainloop.cpp
 						${DPM_COMMON}/filesystem.cpp
+						${DPM_COMMON}/smack.cpp
 						${DPM_COMMON}/thread-pool.cpp
 						${DPM_COMMON}/eventfd.cpp
 						${DPM_COMMON}/audit/logger.cpp
@@ -46,7 +47,7 @@ SET(UNIT_TEST_SOURCES	main.cpp
 
 ADD_EXECUTABLE(${UNIT_TEST_TARGET} ${UNIT_TEST_SOURCES})
 
-PKG_CHECK_MODULES(TESTS_DEPS REQUIRED glib-2.0 libxml-2.0 sqlite3)
+PKG_CHECK_MODULES(TESTS_DEPS REQUIRED glib-2.0 libxml-2.0 sqlite3 libsmack)
 INCLUDE_DIRECTORIES(SYSTEM ${TESTS_DEPS_INCLUDE_DIRS} ${DPM_COMMON} ${DPM_LIBS} ${DPM_TESTS})
 
 SET_TARGET_PROPERTIES(${UNIT_TEST_TARGET} PROPERTIES
