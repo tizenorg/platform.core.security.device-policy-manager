@@ -29,9 +29,10 @@ namespace Xml {
 
 class Node {
 public:
-    typedef std::vector<Node *> NodeList;
+    typedef std::vector<Node> NodeList;
 
-    explicit Node(xmlNode *node);
+    explicit Node(xmlNode* node);
+    Node(Node&&);
     Node(const Node&) = delete;
 
     ~Node();
@@ -49,7 +50,7 @@ public:
     bool isBlank() const;
 
 private:
-    xmlNode *implementation;
+    xmlNode* implementation;
 };
 
 } // namespace Xml
