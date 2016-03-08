@@ -29,9 +29,10 @@ namespace xml {
 
 class Node {
 public:
-    typedef std::vector<Node *> NodeList;
+    typedef std::vector<Node> NodeList;
 
     explicit Node(xmlNode* node);
+    Node(Node&&);
     Node(const Node&) = delete;
 
     ~Node();

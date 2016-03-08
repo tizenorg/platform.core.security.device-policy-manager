@@ -28,9 +28,18 @@ Node::Node(xmlNode* node) :
     implementation->_private = this;
 }
 
+Node::Node(Node&& node) :
+    implementation(node.implementation)
+{
+    implementation->_private = this;
+    node.implementation = nullptr;
+}
+
 Node::~Node()
 {
-    implementation->_private = nullptr;
+    if (implementation != nullptr) {
+        implementation->_private = nullptr;
+    }
 }
 
 Node::NodeList Node::getChildren()
@@ -39,7 +48,7 @@ Node::NodeList Node::getChildren()
 
     auto child = implementation->xmlChildrenNode;
     while (child != nullptr) {
-        nodeList.push_back(new Node(child));
+        nodeList.push_back(Node(child));
         child = child->next;
     }
 

@@ -115,7 +115,7 @@ Node::NodeList Document::evaluate(const std::string& xpath)
             continue;
         }
 
-        nodes.push_back(new Node(cnode));
+        nodes.push_back(Node(cnode));
     }
 
     xmlXPathFreeObject(result);
