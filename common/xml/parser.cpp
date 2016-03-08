@@ -25,18 +25,13 @@
 
 namespace xml {
 
-Document* Parser::parseFile(const std::string& filename, bool validate)
+Document* Parser::parseContext(xmlParserCtxt* context, bool validate)
 {
-    KeepBlanks(false);
-
-    xmlParserCtxt *context = xmlCreateFileParserCtxt(filename.c_str());
     if (context == nullptr) {
         throw runtime::Exception("Could not create parser context");
     }
 
-    if (context->directory == nullptr) {
-        context->directory = xmlParserGetDirectory(filename.c_str());
-    }
+    KeepBlanks(false);
 
     int options = 0;
 
@@ -53,7 +48,7 @@ Document* Parser::parseFile(const std::string& filename, bool validate)
         throw runtime::Exception("Parsing failed");
     }
 
-    xmlDoc *document = context->myDoc;
+    xmlDoc* document = context->myDoc;
 
     // We took the ownership on the doc
     context->myDoc = nullptr;
@@ -61,6 +56,31 @@ Document* Parser::parseFile(const std::string& filename, bool validate)
     xmlFreeParserCtxt(context);
 
     return new Document(document);
+}
+
+Document* Parser::parseFile(const std::string& filename, bool validate)
+{
+    xmlParserCtxt* context = xmlCreateFileParserCtxt(filename.c_str());
+    if (context == nullptr) {
+        throw runtime::Exception("Could not create parser context");
+    }
+
+    if (context->directory == nullptr) {
+        context->directory = xmlParserGetDirectory(filename.c_str());
+    }
+
+    return parseContext(context, validate);
+}
+
+Document* Parser::parseString(const std::string& xml, bool validate)
+{
+    xmlParserCtxt* context = xmlCreateMemoryParserCtxt(xml.c_str(), xml.size() + 1);
+
+    if (context == nullptr) {
+        throw runtime::Exception("Could not create parser context");
+    }
+
+    return parseContext(context, validate);
 }
 
 } // namespace xml
