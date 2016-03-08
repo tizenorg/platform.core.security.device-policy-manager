@@ -266,6 +266,20 @@ void File::remove(bool recursive)
 {
 }
 
+void File::chown(uid_t uid, gid_t gid)
+{
+    if (::chown(path.getPathname().c_str(), uid, gid) != 0) {
+        throw Runtime::Exception(Runtime::GetSystemErrorMessage());
+    }
+}
+
+void File::chmod(mode_t mode)
+{
+    if (::chmod(path.getPathname().c_str(), mode) != 0) {
+        throw Runtime::Exception(Runtime::GetSystemErrorMessage());
+    }
+}
+
 DirectoryIterator::DirectoryIterator()
     : directoryHandle(nullptr)
 {

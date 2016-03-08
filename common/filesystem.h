@@ -129,6 +129,9 @@ public:
     void renameTo(const std::string& pathname);
     void remove(bool recursive = false);
 
+    void chown(uid_t uid, gid_t gid);
+    void chmod(mode_t mode);
+
     std::string toString() const;
 
     const std::string& getPath() const
