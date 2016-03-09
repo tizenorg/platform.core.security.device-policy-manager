@@ -56,7 +56,6 @@ void Client::disconnect()
 {
     mainloop.stop();
     dispatcher.join();
-    mainloop.removeEventSource(connection->getFd());
 }
 
 } // namespace rmi

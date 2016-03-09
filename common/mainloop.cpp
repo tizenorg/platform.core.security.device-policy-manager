@@ -33,15 +33,9 @@ Mainloop::Mainloop() :
     pollFd(::epoll_create1(EPOLL_CLOEXEC)),
     stopped(false)
 {
-    auto wakeupMainloop = [this](int fd, Mainloop::Event event) {
-        wakeupSignal.receive();
-    };
-
     if (pollFd == -1) {
         throw Exception(GetSystemErrorMessage());
     }
-
-    addEventSource(wakeupSignal.getFd(), EPOLLIN, wakeupMainloop);
 }
 
 Mainloop::~Mainloop()
@@ -126,12 +120,19 @@ bool Mainloop::dispatch(const int timeout)
 
 void Mainloop::stop()
 {
-    stopped = true;
     wakeupSignal.send();
 }
 
 void Mainloop::run()
 {
+    auto wakeupMainloop = [this](int fd, Mainloop::Event event) {
+        wakeupSignal.receive();
+        removeEventSource(wakeupSignal.getFd());
+        stopped = true;
+    };
+
+    addEventSource(wakeupSignal.getFd(), EPOLLIN, wakeupMainloop);
+
     while (!stopped) {
         dispatch(-1);
     }
