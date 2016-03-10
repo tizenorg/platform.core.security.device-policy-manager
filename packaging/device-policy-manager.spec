@@ -48,6 +48,9 @@ managing device policies.
 	 -DDATA_INSTALL_DIR=%{TZ_SYS_DATA}/dpm \
 	 -DCONF_INSTALL_DIR=%{TZ_SYS_ETC}/dpm \
 	 -DDB_INSTALL_DIR=%{TZ_SYS_DB} \
+         -DAPP_INSTALL_PREFIX="%{TZ_SYS_RO_APP}" \
+         -DAPP_DESKTOP_ICON_DIR="%{TZ_SYS_RW_ICONS}/default/small" \
+         -DAPP_SHARE_PACKAGES_DIR="%{TZ_SYS_RW_PACKAGES}" \
 
 make %{?jobs:-j%jobs}
 
@@ -118,3 +121,30 @@ Testcases for device policy manager and device policy client
 %attr(755,root,root) %{_bindir}/dpm-api-tests
 %defattr(-,root,root,-)
 %{TZ_SYS_DATA}/dpm/sample-policy.xml
+
+## Tools Package ############################################################
+%package -n org.tizen.ode-app
+Summary: Tizen ODE application
+Group: Security/Other
+BuildRequires: pkgconfig(ui-gadget-1)
+BuildRequires: pkgconfig(efl-extension)
+BuildRequires: pkgconfig(elementary)
+BuildRequires: pkgconfig(capi-appfw-application)
+BuildRequires: pkgconfig(evas)
+
+%description -n org.tizen.ode-app
+Tizen ODE application
+
+%post -n org.tizen.ode-app
+%{_sbindir}/ldconfig
+%postun -n org.tizen.ode-app
+%{_sbindir}/ldconfig
+
+%define odeapp_home %{TZ_SYS_RO_APP}/org.tizen.ode-app
+
+%files -n org.tizen.ode-app
+%defattr(-,root,root,-)
+%{odeapp_home}/bin/*
+%{TZ_SYS_RW_PACKAGES}/org.tizen.ode-app.xml
+%{odeapp_home}/shared/res/*
+%{TZ_SYS_RW_ICONS}/default/small/org.tizen.ode-app/org.tizen.ode-app.png
