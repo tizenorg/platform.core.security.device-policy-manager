@@ -23,6 +23,7 @@ SET(SOURCES	main.cpp
 			client-manager.cpp
 			administration.cpp
 			security.cpp
+			app-bundle.cpp
 			${DPM_COMMON}/error.cpp
 			${DPM_COMMON}/mainloop.cpp
 			${DPM_COMMON}/process.cpp
