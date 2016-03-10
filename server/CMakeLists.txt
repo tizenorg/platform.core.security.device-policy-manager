@@ -25,6 +25,7 @@ SET(SOURCES	main.cpp
 			security.cpp
 			app-bundle.cpp
 			syspopup.cpp
+			launchpad.cpp
 			${DPM_COMMON}/error.cpp
 			${DPM_COMMON}/mainloop.cpp
 			${DPM_COMMON}/process.cpp
