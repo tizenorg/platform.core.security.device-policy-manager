@@ -24,6 +24,7 @@ SET(SOURCES	main.cpp
 			administration.cpp
 			security.cpp
 			app-bundle.cpp
+			syspopup.cpp
 			${DPM_COMMON}/error.cpp
 			${DPM_COMMON}/mainloop.cpp
 			${DPM_COMMON}/process.cpp
