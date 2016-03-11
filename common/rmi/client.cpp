@@ -55,7 +55,9 @@ int Client::subscribe(const std::string& name)
 void Client::disconnect()
 {
     mainloop.stop();
-    dispatcher.join();
+    if (dispatcher.joinable()) {
+        dispatcher.join();
+    }
 }
 
 } // namespace rmi
