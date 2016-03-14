@@ -52,7 +52,6 @@ managing device policies.
          -DCONF_INSTALL_DIR=%{TZ_SYS_ETC}/dpm \
          -DDB_INSTALL_DIR=%{TZ_SYS_DB} \
          -DAPP_INSTALL_PREFIX="%{TZ_SYS_RO_APP}" \
-         -DAPP_DESKTOP_ICON_DIR="%{TZ_SYS_RW_ICONS}/default/small" \
          -DAPP_SHARE_PACKAGES_DIR="%{TZ_SYS_RW_PACKAGES}" \
 
 make %{?jobs:-j%jobs}
@@ -147,5 +146,3 @@ Tizen ODE User Interface for device policy management
 %defattr(-,root,root,-)
 %{odeapp_home}/bin/*
 %{TZ_SYS_RW_PACKAGES}/org.tizen.ode.xml
-%{odeapp_home}/shared/res/*
-%{TZ_SYS_RW_ICONS}/default/small/org.tizen.ode/org.tizen.ode.png
