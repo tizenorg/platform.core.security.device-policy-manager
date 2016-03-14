@@ -82,6 +82,28 @@ std::string Node::getContent() const
     return implementation->content ? (char*)implementation->content : "";
 }
 
+void Node::setProp(const std::string& name, const std::string& val)
+{
+    if (implementation->type != XML_ELEMENT_NODE) {
+        throw Runtime::Exception("Can not set properties for this node type");
+    }
+
+    xmlSetProp(implementation, (xmlChar*)name.c_str(), (xmlChar*)val.c_str());
+}
+
+std::string Node::getProp(const std::string& name) const
+{
+    xmlChar* result;
+
+    if (implementation->type != XML_ELEMENT_NODE) {
+        throw Runtime::Exception("This node type does not have properties");
+    }
+
+    result = xmlGetProp(implementation, (xmlChar*)name.c_str());
+
+    return result ? (char*)result : "";
+}
+
 bool Node::isBlank() const
 {
     return xmlIsBlankNode(const_cast<xmlNode*>(implementation));

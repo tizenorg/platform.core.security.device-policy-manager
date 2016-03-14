@@ -264,6 +264,36 @@ void File::renameTo(const std::string& dest)
 
 void File::remove(bool recursive)
 {
+    if (isDirectory()) {
+        if (recursive) {
+            DirectoryIterator iter(path), end;
+            while (iter != end) {
+                iter->remove(true);
+                ++iter;
+            }
+        }
+        if (::rmdir(path.getPathname().c_str()) != 0) {
+            throw Runtime::Exception(Runtime::GetSystemErrorMessage());
+        }
+    } else {
+        if (::unlink(path.getPathname().c_str()) != 0) {
+            throw Runtime::Exception(Runtime::GetSystemErrorMessage());
+        }
+    }
+}
+
+void File::chown(uid_t uid, gid_t gid)
+{
+    if (::chown(path.getPathname().c_str(), uid, gid) != 0) {
+        throw Runtime::Exception(Runtime::GetSystemErrorMessage());
+    }
+}
+
+void File::chmod(mode_t mode)
+{
+    if (::chmod(path.getPathname().c_str(), mode) != 0) {
+        throw Runtime::Exception(Runtime::GetSystemErrorMessage());
+    }
 }
 
 DirectoryIterator::DirectoryIterator()
@@ -298,9 +328,9 @@ void DirectoryIterator::reset(const std::string& dir)
 
     basename = dir;
     directoryHandle = ::opendir(basename.c_str());
-	if (directoryHandle == nullptr) {
+    if (directoryHandle == nullptr) {
         throw Runtime::Exception(Runtime::GetSystemErrorMessage());
-	}
+    }
 
     next();
 }
