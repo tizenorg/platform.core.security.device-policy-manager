@@ -51,7 +51,7 @@ static void ug_destroy_cb(ui_gadget_h ug, void* priv)
 	ui_app_exit();
 }
 
-static void create_ug(const char* ug_name)
+static int create_ug(const char* ug_name)
 {
 	struct ug_cbs cbs;
 
@@ -61,14 +61,15 @@ static void create_ug(const char* ug_name)
 
 	if (ug_name == NULL) {
 		dlog_print(DLOG_ERROR, LOG_TAG, "ug_name is NULL");
-		return ;
+		return -1;
 	}
 
 	if (ug_create(NULL, ug_name, UG_MODE_FULLVIEW, NULL, &cbs) == NULL) {
 		dlog_print(DLOG_ERROR, LOG_TAG, "failed to create ug");
+		return -1;
 	}
 
-	return ;
+	return 0;
 }
 
 static void create_ui_layout(void)
@@ -115,10 +116,10 @@ static bool app_create(void* data)
 static void
 app_control(app_control_h app_control, void* data)
 {
-	char* ug_name = (char*) data;
+	char* ug_type = (char*) data;
 	int ret = 0;
 
-	ret = app_control_get_extra_data(app_control, "viewtype", &ug_name);
+	ret = app_control_get_extra_data(app_control, "viewtype", &ug_type);
 	if (ret != APP_CONTROL_ERROR_NONE) {
 		dlog_print(DLOG_ERROR, LOG_TAG, "failed to get bundle data. error:%d", ret);
 	}
@@ -126,7 +127,16 @@ app_control(app_control_h app_control, void* data)
 	elm_app_base_scale_set(1.8);
 
 	create_ui_layout();
-	create_ug(ug_name);
+
+	if (!strcmp(ug_type, "encryption")) {
+		ret = create_ug("lockscreen-options");
+	} else if (!strcmp(ug_type, "decryption")) {
+		ret = create_ug("setting-privacy-efl");
+	}
+
+	if (ret != 0) {
+		ui_app_exit();
+	}
 
 	return ;
 }
