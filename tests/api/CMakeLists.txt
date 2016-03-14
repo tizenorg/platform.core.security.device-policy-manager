@@ -18,6 +18,7 @@ SET(API_TEST_TARGET	"dpm-api-tests")
 SET(API_TEST_SOURCES main.c
                      security.c
                      testbench.c
+                     restriction.c
 )
 
 ADD_EXECUTABLE(${API_TEST_TARGET} ${API_TEST_SOURCES})

@@ -18,9 +18,11 @@ SET(INTEGRATION_TEST_TARGET	"dpm-integration-tests")
 SET(INTEGRATION_TEST_SOURCES main.cxx
 							 administration.cxx
 							 security.cxx
+							 restriction.cxx
 							 ${DPM_LIBS}/policy-client.cxx
 							 ${DPM_LIBS}/administration.cxx
 							 ${DPM_LIBS}/security.cxx
+							 ${DPM_LIBS}/restriction.cxx
 							 ${DPM_COMMON}/error.cxx
 							 ${DPM_COMMON}/thread-pool.cxx
 							 ${DPM_COMMON}/eventfd.cxx
