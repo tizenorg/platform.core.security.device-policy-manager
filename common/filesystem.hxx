@@ -118,6 +118,7 @@ public:
     void moveTo(const std::string& pathname);
     void renameTo(const std::string& pathname);
     void remove(bool recursive = false);
+    void makeDirectory(bool recursive = false);
 
     void chown(uid_t uid, gid_t gid);
     void chmod(mode_t mode);
