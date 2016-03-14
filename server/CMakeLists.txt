@@ -23,6 +23,7 @@ SET(SOURCES	main.cxx
 			client-manager.cxx
 			administration.cxx
 			security.cxx
+			restriction.cxx
 			${DPM_COMMON}/error.cxx
 			${DPM_COMMON}/user.cxx
 			${DPM_COMMON}/group.cxx

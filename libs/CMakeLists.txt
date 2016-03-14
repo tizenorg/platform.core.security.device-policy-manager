@@ -24,7 +24,9 @@ SET(SOURCES dpm.cxx
 			policy-client.cxx
 			administration.cxx
 			security.cxx
-            dpm/security.cxx
+			restriction.cxx
+			dpm/security.cxx
+			dpm/restriction.cxx
 			${DPM_COMMON}/error.cxx
 			${DPM_COMMON}/eventfd.cxx
 			${DPM_COMMON}/ipc/client.cxx
