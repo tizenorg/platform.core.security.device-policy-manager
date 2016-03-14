@@ -22,15 +22,15 @@
 #include <dirent.h>
 
 #include <aul.h>
-#include <bundle.h>
 #include <vconf.h>
 #include <vconf-keys.h>
 #include <dd-deviced.h>
 #include <dd-control.h>
-#include <syspopup_caller.h>
 
 #include "security.hxx"
 
+#include "syspopup.h"
+#include "launchpad.h"
 #include "process.h"
 #include "filesystem.h"
 #include "audit/logger.h"
@@ -47,27 +47,7 @@ const std::string PROG_FACTORY_RESET = "/usr/bin/factory-reset";
 
 void WipeExternalMemoryCallback(int ret, void *user_data)
 {
-    mmc_contents *mmc_data = static_cast<mmc_contents*>(user_data);
-    delete mmc_data;
-}
-
-int LaunchMMCSysPopup(const std::string& prop)
-{
-    bundle *b = ::bundle_create();
-    if (b == NULL) {
-        ERROR("Failed to create bundle: out of memory");
-        return -1;
-    }
-
-    ::bundle_add_str(b, "_SYSPOPUP_CONTENT_", prop.c_str());
-    int ret = ::syspopup_launch((char *)"mmc-syspopup", b);
-    ::bundle_free(b);
-
-    if (ret < 0) {
-        ret = -1;
-    }
-
-    return ret;
+    std::cout << "WipeExternalMemoryCallback was called" << std::endl;
 }
 
 } // namespace
@@ -101,7 +81,9 @@ int Security::lockoutDevice()
 
 int Security::lockoutScreen()
 {
-    if (::aul_launch_app(APPID_LOCKSCREEN.c_str(), nullptr) < 0) {
+    Launchpad launchpad(context.getServiceManager().getPeerUid());
+
+    if (launchpad.launch(APPID_LOCKSCREEN) < 0) {
         ERROR("Failed to launch lockscreen: " + APPID_LOCKSCREEN);
         return -1;
     }
@@ -180,18 +162,16 @@ int Security::powerOffDevice()
 
 int Security::setInternalStorageEncryption(const bool encrypt)
 {
-    bundle *b = ::bundle_create();
-    if (b == nullptr) {
-        ERROR("Failed to create bundle: out of memory");
-        return -1;
-    }
+    try {
+        Bundle bundle;
+        bundle.add("viewtype", encrypt ? "encryption" : "decryption");
 
-    ::bundle_add_str(b, "viewtype", "encryption");
-    int ret = ::aul_launch_app(APPID_DEVICE_ENCRYPTION.c_str(), b);
-    ::bundle_free(b);
-
-    if (ret < 0) {
-        ERROR("Failed to launch syspopup for device encryption");
+        Launchpad launchpad(context.getServiceManager().getPeerUid());
+        if (launchpad.launch(APPID_DEVICE_ENCRYPTION, bundle) < 0) {
+            ERROR("Failed to start device encryption");
+            return -1;
+        }
+    } catch (runtime::Exception& e) {
         return -1;
     }
 
@@ -224,9 +204,16 @@ int Security::setExternalStorageEncryption(const bool encrypt)
         return -1;
     }
 
-    std::string prop = encrypt ? "odeencrypt" : "odedecrypt";
-    if (LaunchMMCSysPopup(prop) < 0) {
-        ERROR("Failed to launch syspop for external storage decryption");
+    try {
+        Bundle bundle;
+        bundle.add("_SYSPOPUP_CONTENT_", encrypt ? "odeencrypt" : "odedecrypt");
+
+        Syspopup syspopup("mmc-syspopup");
+        if (syspopup.launch(bundle) < 0) {
+            ERROR("Failed to launch mmc-syspopup");
+            return -1;
+        }
+    } catch (runtime::Exception& e) {
         return -1;
     }
 
