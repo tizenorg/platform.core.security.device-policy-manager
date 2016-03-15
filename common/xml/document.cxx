@@ -21,7 +21,7 @@
 #include "keepblanks.hxx"
 #include "document.hxx"
 
-#include "audit/logger.hxx"
+//#include "audit/logger.hxx"
 
 namespace Xml {
 
@@ -107,12 +107,12 @@ Node::NodeList Document::evaluate(const std::string& xpath)
     for (int i = 0; i != count; i++) {
         auto cnode = xmlXPathNodeSetItem(nodeset, i);
         if (!cnode) {
-            ERROR("Node::find() : xmlNode was null");
+            //ERROR("Node::find() : xmlNode was null");
             continue;
         }
 
         if (cnode->type == XML_NAMESPACE_DECL) {
-            ERROR("Node::find() : Ignore an xmlNS object");
+            //ERROR("Node::find() : Ignore an xmlNS object");
             continue;
         }
 
