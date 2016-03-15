@@ -20,7 +20,10 @@ SET(UNIT_TEST_SOURCES	main.cxx
 						database.cxx
 						xml.cxx
 						filesystem.cxx
+						shadow.cxx
 						${DPM_COMMON}/error.cxx
+						${DPM_COMMON}/user.cxx
+						${DPM_COMMON}/group.cxx
 						${DPM_COMMON}/thread-pool.cxx
 						${DPM_COMMON}/filesystem.cxx
 						${DPM_COMMON}/smack.cxx
