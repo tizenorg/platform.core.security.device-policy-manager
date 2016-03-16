@@ -20,6 +20,7 @@ BuildRequires: pkgconfig(vconf-internal-keys)
 BuildRequires: pkgconfig(capi-base-common)
 BuildRequires: pkgconfig(libsmack)
 BuildRequires: pkgconfig(libtzplatform-config)
+BuildRequires: pkgconfig(authentication-server-admin)
 
 %description
 The device-policy-manager package provides a daemon which is responsible for

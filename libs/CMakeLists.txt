@@ -23,8 +23,10 @@ SET(PC_FILE "${PROJECT_NAME}.pc")
 SET(SOURCES policy-client.cpp
 			administration.cpp
 			security.cpp
+			password.cpp
 			dpm/client-handle.cpp
             dpm/security.cpp
+			dpm/password.cpp
 			${DPM_COMMON}/error.cpp
 			${DPM_COMMON}/mainloop.cpp
 			${DPM_COMMON}/eventfd.cpp
@@ -43,7 +45,7 @@ SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-fvisibility=hid
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES SOVERSION ${LIB_SOVERSION})
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES VERSION   ${LIB_VERSION})
 
-PKG_CHECK_MODULES(LIB_DEPS REQUIRED gio-2.0)
+PKG_CHECK_MODULES(LIB_DEPS REQUIRED gio-2.0 glib-2.0 authentication-server-admin)
 INCLUDE_DIRECTORIES(SYSTEM ${LIB_DEPS_INCLUDE_DIRS} ${DPM_COMMON} ${DPM_POLICY} ${DPM_LIBS})
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${LIB_DEPS_LIBRARIES} pthread)
 
