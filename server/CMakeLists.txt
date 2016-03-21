@@ -57,7 +57,7 @@ SET(SOURCES	main.cpp
 
 ADD_EXECUTABLE(${TARGET} ${SOURCES} ${INCLUDE_SRCS})
 
-PKG_CHECK_MODULES(SERVER_DEPS REQUIRED glib-2.0 gio-2.0 libxml-2.0 sqlite3 bundle aul appsvc vconf syspopup-caller deviced libsmack libtzplatform-config authentication-server-admin)
+PKG_CHECK_MODULES(SERVER_DEPS REQUIRED glib-2.0 gio-2.0 libxml-2.0 sqlite3 bundle aul appsvc vconf syspopup-caller deviced libsmack libtzplatform-config auth-fw-admin)
 
 INCLUDE_DIRECTORIES(SYSTEM ${SERVER_DEPS_INCLUDE_DIRS} ${DPM_COMMON} ${DPM_POLICY} ${DPM_SERVER})
 

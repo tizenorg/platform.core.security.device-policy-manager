@@ -236,7 +236,7 @@ int Password::setMinPasswordComplexChars(const std::string& username, const int 
         return -1;
     }
 
-    if (auth_passwd_set_minComplexCharNumber(p_policy, value) != AUTH_PASSWD_API_SUCCESS) {
+    if (auth_passwd_set_min_complex_char_num(p_policy, value) != AUTH_PASSWD_API_SUCCESS) {
         auth_passwd_free_policy(p_policy);
         return -1;
     }
@@ -502,7 +502,7 @@ int Password::setMaximumCharacterOccurrences(const std::string& username, const 
         return -1;
     }
 
-    if (auth_passwd_set_maxCharOccurrences(p_policy, value) != AUTH_PASSWD_API_SUCCESS) {
+    if (auth_passwd_set_max_char_occurrences(p_policy, value) != AUTH_PASSWD_API_SUCCESS) {
         auth_passwd_free_policy(p_policy);
         return -1;
     }
@@ -541,7 +541,7 @@ int Password::setMaximumNumericSequenceLength(const std::string& username, const
         return -1;
     }
 
-    if (auth_passwd_set_maxNumSeqLength(p_policy, value) != AUTH_PASSWD_API_SUCCESS) {
+    if (auth_passwd_set_max_num_seq_len(p_policy, value) != AUTH_PASSWD_API_SUCCESS) {
         auth_passwd_free_policy(p_policy);
         return -1;
     }
@@ -581,7 +581,7 @@ int Password::setForbiddenStrings(const std::string& username, const std::vector
     }
 
     for (std::vector<std::string>::const_iterator iter = forbiddenStrings.begin(); iter != forbiddenStrings.end(); ++iter) {
-        if (auth_passwd_set_forbiddenPasswd(p_policy, (*iter).c_str()) != AUTH_PASSWD_API_SUCCESS) {
+        if (auth_passwd_set_forbidden_passwd(p_policy, (*iter).c_str()) != AUTH_PASSWD_API_SUCCESS) {
             auth_passwd_free_policy(p_policy);
             return -1;
         }
