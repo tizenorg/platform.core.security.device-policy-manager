@@ -41,7 +41,7 @@ extern "C" {
 #endif
 
 /**
- * @addtogroup  DPM_POLICY_CLIENT
+ * @addtogroup  CAPI_DPM_POLICY_CLIENT_MODULE
  * @{
  */
 
@@ -73,7 +73,8 @@ typedef enum {
     DPM_ERROR_ACCESS_DENIED = TIZEN_ERROR_PERMISSION_DENIED,    /**< Access privilege is not sufficient */
     DPM_ERROR_NOT_SUPPORTED = TIZEN_ERROR_NOT_SUPPORTED,        /**< Operation is not supported */
     DPM_ERROR_NO_SUCH_FILE  = TIZEN_ERROR_NO_SUCH_FILE,         /**< No such file or directory */
-    DPM_ERROR_FILE_EXISTS   = TIZEN_ERROR_FILE_EXISTS           /**< File exists */
+    DPM_ERROR_FILE_EXISTS   = TIZEN_ERROR_FILE_EXISTS,          /**< File exists */
+    DPM_ERROR_OUT_OF_MEMORY = TIZEN_ERROR_OUT_OF_MEMORY         /**< Out of memory */
 } dpm_error_type_e;
 
 /**
@@ -83,9 +84,6 @@ typedef enum {
  *              This API is also used to verity whether caller is authorized
  *              or not
  * @since_tizen 3.0
- * @privlevel   public
- * @param[in]   None
- * @param[out]  None
  * @return      Device Policy Client handle on success, otherwise NULL
  * @remark      The specific error code can be obtained by using the
  *              get_last_result() method. Error codes are described in
@@ -106,9 +104,7 @@ DPM_API dpm_client_h dpm_create_client(void);
  * @details     This API must be called if interaction with the Device
  *              Policy Manager is no longer required.
  * @since_tizen 3.0
- * @privlevel   public
  * @param[in]   handle Device Policy Client Handle
- * @param[out]  None
  * @return      None
  * @pre         The handle must be created by dpm_create_client()
  * @post
