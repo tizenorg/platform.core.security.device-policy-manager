@@ -15,12 +15,12 @@
  */
 
 #include <sys/types.h>
-#include <pwd.h>
 
 #include <auth-passwd-admin.h>
 
 #include "password.hxx"
 
+#include "auth/user.h"
 #include "audit/logger.h"
 
 namespace DevicePolicyManager {
@@ -136,12 +136,12 @@ Password::~Password()
 int Password::setPasswordQuality(const std::string& username, const int quality)
 {
     int ret = 0;
-    struct passwd *user_info;
+    runtime::User user(username);
+
     password_quality_type auth_quality_type = AUTH_PWD_QUALITY_UNSPECIFIED;
 
     policy_h *p_policy;
 
-    user_info = ::getpwnam(username.c_str());
     if (transformValueFromIntToQualityType(quality, qualityType) != 0) {
         return -1;
     }
@@ -155,7 +155,7 @@ int Password::setPasswordQuality(const std::string& username, const int quality)
         return -1;
     }
 
-    if (auth_passwd_set_user(p_policy, user_info->pw_uid) != AUTH_PASSWD_API_SUCCESS) {
+    if (auth_passwd_set_user(p_policy, user.getUid()) != AUTH_PASSWD_API_SUCCESS) {
         auth_passwd_free_policy(p_policy);
         return -1;
     }
@@ -183,16 +183,15 @@ int Password::getPasswordQuality(const std::string& username)
 int Password::setPasswordMinimumLength(const std::string& username, const int value)
 {
     int ret = 0;
-    struct passwd *user_info;
+    runtime::User user(username);
 
     policy_h *p_policy;
 
-    user_info = ::getpwnam(username.c_str());
     if (auth_passwd_new_policy(&p_policy) != AUTH_PASSWD_API_SUCCESS) {
         return -1;
     }
 
-    if (auth_passwd_set_user(p_policy, user_info->pw_uid) != AUTH_PASSWD_API_SUCCESS) {
+    if (auth_passwd_set_user(p_policy, user.getUid()) != AUTH_PASSWD_API_SUCCESS) {
         auth_passwd_free_policy(p_policy);
         return -1;
     }
@@ -222,16 +221,15 @@ int Password::getPasswordMinimumLength(const std::string& username)
 int Password::setMinPasswordComplexChars(const std::string& username, const int value)
 {
     int ret = 0;
-    struct passwd *user_info;
+    runtime::User user(username);
 
     policy_h *p_policy;
 
-    user_info = ::getpwnam(username.c_str());
     if (auth_passwd_new_policy(&p_policy) != AUTH_PASSWD_API_SUCCESS) {
         return -1;
     }
 
-    if (auth_passwd_set_user(p_policy, user_info->pw_uid) != AUTH_PASSWD_API_SUCCESS) {
+    if (auth_passwd_set_user(p_policy, user.getUid()) != AUTH_PASSWD_API_SUCCESS) {
         auth_passwd_free_policy(p_policy);
         return -1;
     }
@@ -261,16 +259,15 @@ int Password::getMinPasswordComplexChars(const std::string& username)
 int Password::setMaximumFailedPasswordForWipe(const std::string& username, const int value)
 {
     int ret = 0;
-    struct passwd *user_info;
+    runtime::User user(username);
 
     policy_h *p_policy;
 
-    user_info = ::getpwnam(username.c_str());
     if (auth_passwd_new_policy(&p_policy) != AUTH_PASSWD_API_SUCCESS) {
         return -1;
     }
 
-    if (auth_passwd_set_user(p_policy, user_info->pw_uid) != AUTH_PASSWD_API_SUCCESS) {
+    if (auth_passwd_set_user(p_policy, user.getUid()) != AUTH_PASSWD_API_SUCCESS) {
         auth_passwd_free_policy(p_policy);
         return -1;
     }
@@ -300,16 +297,15 @@ int Password::getMaximumFailedPasswordForWipe(const std::string& username)
 int Password::setPasswordExpires(const std::string& username, const int value)
 {
     int ret = 0;
-    struct passwd *user_info;
+    runtime::User user(username);
 
     policy_h *p_policy;
 
-    user_info = ::getpwnam(username.c_str());
     if (auth_passwd_new_policy(&p_policy) != AUTH_PASSWD_API_SUCCESS) {
         return -1;
     }
 
-    if (auth_passwd_set_user(p_policy, user_info->pw_uid) != AUTH_PASSWD_API_SUCCESS) {
+    if (auth_passwd_set_user(p_policy, user.getUid()) != AUTH_PASSWD_API_SUCCESS) {
         auth_passwd_free_policy(p_policy);
         return -1;
     }
@@ -339,16 +335,15 @@ int Password::getPasswordExpires(const std::string& username)
 int Password::setPasswordHistory(const std::string& username, const int value)
 {
     int ret = 0;
-    struct passwd *user_info;
+    runtime::User user(username);
 
     policy_h *p_policy;
 
-    user_info = ::getpwnam(username.c_str());
     if (auth_passwd_new_policy(&p_policy) != AUTH_PASSWD_API_SUCCESS) {
         return -1;
     }
 
-    if (auth_passwd_set_user(p_policy, user_info->pw_uid) != AUTH_PASSWD_API_SUCCESS) {
+    if (auth_passwd_set_user(p_policy, user.getUid()) != AUTH_PASSWD_API_SUCCESS) {
         auth_passwd_free_policy(p_policy);
         return -1;
     }
@@ -378,16 +373,15 @@ int Password::getPasswordHistory(const std::string& username)
 int Password::setPasswordPattern(const std::string& username, const std::string& pattern)
 {
     int ret = 0;
-    struct passwd *user_info;
+    runtime::User user(username);
 
     policy_h *p_policy;
 
-    user_info = ::getpwnam(username.c_str());
     if (auth_passwd_new_policy(&p_policy) != AUTH_PASSWD_API_SUCCESS) {
         return -1;
     }
 
-    if (auth_passwd_set_user(p_policy, user_info->pw_uid) != AUTH_PASSWD_API_SUCCESS) {
+    if (auth_passwd_set_user(p_policy, user.getUid()) != AUTH_PASSWD_API_SUCCESS) {
         auth_passwd_free_policy(p_policy);
         return -1;
     }
@@ -412,10 +406,9 @@ int Password::setPasswordPattern(const std::string& username, const std::string&
 int Password::resetPassword(const std::string& username, const std::string& passwd)
 {
     int ret = 0;
-    struct passwd *user_info;
+    runtime::User user(username);
 
-    user_info = ::getpwnam(username.c_str());
-    if (auth_passwd_reset_passwd(AUTH_PWD_NORMAL, user_info->pw_uid, passwd.c_str()) != AUTH_PASSWD_API_SUCCESS) {
+    if (auth_passwd_reset_passwd(AUTH_PWD_NORMAL, user.getUid(), passwd.c_str()) != AUTH_PASSWD_API_SUCCESS) {
         return -1;
     }
 
@@ -449,16 +442,15 @@ int Password::setPasswordStatus(const std::string& username, const int status)
 int Password::deletePasswordPattern(const std::string& username)
 {
     int ret = 0;
-    struct passwd *user_info;
+    runtime::User user(username);
 
     policy_h *p_policy;
 
-    user_info = ::getpwnam(username.c_str());
     if (auth_passwd_new_policy(&p_policy) != AUTH_PASSWD_API_SUCCESS) {
         return -1;
     }
 
-    if (auth_passwd_set_user(p_policy, user_info->pw_uid) != AUTH_PASSWD_API_SUCCESS) {
+    if (auth_passwd_set_user(p_policy, user.getUid()) != AUTH_PASSWD_API_SUCCESS) {
         auth_passwd_free_policy(p_policy);
         return -1;
     }
@@ -488,16 +480,15 @@ std::string Password::getPasswordPattern(const std::string& username)
 int Password::setMaximumCharacterOccurrences(const std::string& username, const int value)
 {
     int ret = 0;
-    struct passwd *user_info;
+    runtime::User user(username);
 
     policy_h *p_policy;
 
-    user_info = ::getpwnam(username.c_str());
     if (auth_passwd_new_policy(&p_policy) != AUTH_PASSWD_API_SUCCESS) {
         return -1;
     }
 
-    if (auth_passwd_set_user(p_policy, user_info->pw_uid) != AUTH_PASSWD_API_SUCCESS) {
+    if (auth_passwd_set_user(p_policy, user.getUid()) != AUTH_PASSWD_API_SUCCESS) {
         auth_passwd_free_policy(p_policy);
         return -1;
     }
@@ -527,16 +518,15 @@ int Password::getMaximumCharacterOccurrences(const std::string& username)
 int Password::setMaximumNumericSequenceLength(const std::string& username, const int value)
 {
     int ret = 0;
-    struct passwd *user_info;
+    runtime::User user(username);
 
     policy_h *p_policy;
 
-    user_info = ::getpwnam(username.c_str());
     if (auth_passwd_new_policy(&p_policy) != AUTH_PASSWD_API_SUCCESS) {
         return -1;
     }
 
-    if (auth_passwd_set_user(p_policy, user_info->pw_uid) != AUTH_PASSWD_API_SUCCESS) {
+    if (auth_passwd_set_user(p_policy, user.getUid()) != AUTH_PASSWD_API_SUCCESS) {
         auth_passwd_free_policy(p_policy);
         return -1;
     }
@@ -566,16 +556,15 @@ int Password::getMaximumNumericSequenceLength(const std::string& username)
 int Password::setForbiddenStrings(const std::string& username, const std::vector<std::string>& forbiddenStrings)
 {
     int ret = 0;
-    struct passwd *user_info;
+    runtime::User user(username);
 
     policy_h *p_policy;
 
-    user_info = ::getpwnam(username.c_str());
     if (auth_passwd_new_policy(&p_policy) != AUTH_PASSWD_API_SUCCESS) {
         return -1;
     }
 
-    if (auth_passwd_set_user(p_policy, user_info->pw_uid) != AUTH_PASSWD_API_SUCCESS) {
+    if (auth_passwd_set_user(p_policy, user.getUid()) != AUTH_PASSWD_API_SUCCESS) {
         auth_passwd_free_policy(p_policy);
         return -1;
     }
