@@ -48,30 +48,43 @@ User::User(const User& user) :
 
 User::User(const std::string& user)
 {
-    struct passwd* pwd;
+    struct passwd pwd, *result;
+    int bufsize;
 
-    pwd = ::getpwnam(user.c_str());
-    if (pwd == NULL) {
+    bufsize = sysconf(_SC_GETPW_R_SIZE_MAX);
+    if (bufsize == -1)
+        bufsize = 16384;
+
+    std::unique_ptr<char[]> buf(new char [bufsize]);
+
+    ::getpwnam_r(user.c_str(), &pwd, buf.get(), bufsize, &result);
+    if (result == NULL) {
         throw runtime::Exception("User " + user + " doesn't exist");
     }
 
-    name = pwd->pw_name;
-    uid = pwd->pw_uid;
-    gid = pwd->pw_gid;
+    name = result->pw_name;
+    uid = result->pw_uid;
+    gid = result->pw_gid;
 }
 
 User::User(const uid_t user)
 {
-    struct passwd* pwd;
+    struct passwd pwd, *result;
+    int bufsize;
 
-    pwd = ::getpwuid(user);
-    if (pwd == NULL) {
+    bufsize = sysconf(_SC_GETPW_R_SIZE_MAX);
+    if (bufsize == -1)
+        bufsize = 16384;
+
+    std::unique_ptr<char[]> buf(new char [bufsize]);
+    ::getpwuid_r(user, &pwd, buf.get(), bufsize, &result);
+    if (result == NULL) {
         throw runtime::Exception("User " + std::to_string(user) + "doesn't exist");
     }
 
-    name = pwd->pw_name;
-    uid = pwd->pw_uid;
-    gid = pwd->pw_gid;
+    name = result->pw_name;
+    uid = result->pw_uid;
+    gid = result->pw_gid;
 }
 
 
@@ -81,15 +94,22 @@ User User::create(const std::string& name, const std::string& group_name,
                   const uid_t min, const uid_t max)
 {
     runtime::File home(HOMEDIR_PATH "/" + name);
-    struct passwd pwd;
+    struct passwd pwd, tmppwd, *result;
     struct spwd spwd;
-    uid_t uid;
+    int bufsize;
 
     if (!std::regex_match(name, userNamePattern)) {
         throw runtime::Exception("Invalid user name : " + name);
     }
 
-    if (::getpwnam(name.c_str()) != NULL) {
+    bufsize = sysconf(_SC_GETPW_R_SIZE_MAX);
+    if (bufsize == -1)
+        bufsize = 16384;
+
+    std::unique_ptr<char[]> buf(new char [bufsize]);
+
+    ::getpwnam_r(name.c_str(), &tmppwd, buf.get(), bufsize, &result);
+    if (result != NULL) {
         return User(name);
     }
 
@@ -123,16 +143,16 @@ User User::create(const std::string& name, const std::string& group_name,
 
 
     //get free uid
-    for (uid = min; uid <= max; uid++)
-        if (::getpwuid(uid) == NULL) {
+    for (pwd.pw_uid = min; pwd.pw_uid <= max; pwd.pw_uid++) {
+        ::getpwuid_r(pwd.pw_uid, &tmppwd, buf.get(), bufsize, &result);
+        if (result == NULL) {
             break;
         }
-
-    if (uid > max) {
-        throw runtime::Exception("Too many users");
     }
 
-    pwd.pw_uid = uid;
+    if (pwd.pw_uid > max) {
+        throw runtime::Exception("Too many users");
+    }
 
     pwd.pw_gid = Group::create(group_name).getGid();
 

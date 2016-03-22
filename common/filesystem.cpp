@@ -341,9 +341,9 @@ void DirectoryIterator::reset(const std::string& dir)
 
     basename = dir;
     directoryHandle = ::opendir(basename.c_str());
-	if (directoryHandle == nullptr) {
+    if (directoryHandle == nullptr) {
         throw runtime::Exception(runtime::GetSystemErrorMessage());
-	}
+    }
 
     next();
 }
@@ -351,9 +351,20 @@ void DirectoryIterator::reset(const std::string& dir)
 void DirectoryIterator::next()
 {
     std::string name;
-    struct dirent* ent;
+    struct dirent entry, *ent;
 
-    while ((ent = readdir(directoryHandle)) != NULL) {
+    if (readdir_r(directoryHandle, &entry, &ent) != 0) {
+        throw runtime::Exception(runtime::GetSystemErrorMessage());
+    }
+
+    while (1) {
+        if (readdir_r(directoryHandle, &entry, &ent) != 0) {
+            throw runtime::Exception(runtime::GetSystemErrorMessage());
+        }
+
+        if (ent == NULL)
+            break;
+
         if (ent->d_name[0] == '.' && ent->d_name[1] == '\0') {
             continue;
         }

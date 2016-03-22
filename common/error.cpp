@@ -30,7 +30,7 @@ int Error::lastErrorCode()
 std::string Error::message(int errorCode)
 {
     char errmsg[256];
-    return ::strerror_r(errorCode, errmsg, 256);
+    return ::strerror_r(errorCode, errmsg, sizeof(errmsg));
 }
 
 std::string Error::message()

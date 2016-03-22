@@ -43,28 +43,42 @@ Group::Group(const Group& group) :
 
 Group::Group(const std::string& group)
 {
-    struct group* grp;
+    struct group grp, *result;
+    int bufsize;
 
-    grp = ::getgrnam(group.c_str());
-    if (grp == NULL) {
+    bufsize = sysconf(_SC_GETGR_R_SIZE_MAX);
+    if (bufsize == -1)
+        bufsize = 16384;
+
+    std::unique_ptr<char[]> buf(new char [bufsize]);
+
+    ::getgrnam_r(group.c_str(), &grp, buf.get(), bufsize, &result);
+    if (result == NULL) {
         throw runtime::Exception("Group doesn't exist");
     }
 
-    name = grp->gr_name;
-    gid = grp->gr_gid;
+    name = result->gr_name;
+    gid = result->gr_gid;
 }
 
 Group::Group(const gid_t group)
 {
-    struct group* grp;
+    struct group grp, *result;
+    int bufsize;
 
-    grp = ::getgrgid(group);
-    if (grp == NULL) {
+    bufsize = sysconf(_SC_GETGR_R_SIZE_MAX);
+    if (bufsize == -1)
+        bufsize = 16384;
+
+    std::unique_ptr<char[]> buf(new char [bufsize]);
+
+    ::getgrgid_r(group, &grp, buf.get(), bufsize, &result);
+    if (result == NULL) {
         throw runtime::Exception("Group doesn't exist");
     }
 
-    name = grp->gr_name;
-    gid = grp->gr_gid;
+    name = result->gr_name;
+    gid = result->gr_gid;
 }
 
 
@@ -72,10 +86,17 @@ static std::regex groupNamePattern(NAME_PATTERN);
 
 Group Group::create(const std::string& name, const gid_t min, const gid_t max)
 {
-    struct group group;
+    struct group group, tmpgrp, *result;
     struct sgrp sgrp;
+    int bufsize;
 
-    if (::getgrnam(name.c_str()) != NULL) {
+    bufsize = sysconf(_SC_GETGR_R_SIZE_MAX);
+    if (bufsize == -1)
+        bufsize = 16384;
+
+    std::unique_ptr<char[]> buf(new char [bufsize]);
+    ::getgrnam_r(name.c_str(), &tmpgrp, buf.get(), bufsize, &result);
+    if (result != NULL) {
         return Group(name);
     }
 
@@ -103,10 +124,12 @@ Group Group::create(const std::string& name, const gid_t min, const gid_t max)
     sgrp.sg_mem = NULL;
 
     //prepare gid - get free gid
-    for (group.gr_gid = min; group.gr_gid <= max; group.gr_gid++)
-        if (::getgrgid(group.gr_gid) == NULL) {
+    for (group.gr_gid = min; group.gr_gid <= max; group.gr_gid++) {
+        ::getgrgid_r(group.gr_gid, &tmpgrp, buf.get(), bufsize, &result);
+        if (result == NULL) {
             break;
         }
+    }
 
     if (group.gr_gid > max) {
         throw runtime::Exception("Too many groups");

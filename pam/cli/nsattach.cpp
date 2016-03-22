@@ -76,13 +76,20 @@ static inline int attach_program(runtime::User& user, char** args)
     runtime::PAM pam_app("nsattach", user.getName());
 
     try {
-        char hostname[MAXHOSTNAMELEN];
-        gethostname(hostname, sizeof(hostname));
-        pam_app.setItem(PAM_RHOST, hostname);
-        pam_app.setItem(PAM_RUSER, getlogin());
-        pam_app.setItem(PAM_TTY, ttyname(STDERR_FILENO));
+        char buf[PATH_MAX];
+        if (gethostname(buf, sizeof(buf)) != 0)
+            throw runtime::Exception("gethostname error");
+        pam_app.setItem(PAM_RHOST, buf);
+
+        if (getlogin_r(buf, sizeof(buf)) != 0)
+            throw runtime::Exception("getlogin_r error");
+        pam_app.setItem(PAM_RUSER, buf);
+
+        if (ttyname_r(STDERR_FILENO, buf, sizeof(buf)) != 0)
+            throw runtime::Exception("ttyname_r error");
+        pam_app.setItem(PAM_TTY, buf);
     } catch (runtime::Exception& e) {
-        std::cerr << "failed to set PAM items" << std::endl;
+        std::cerr << "failed to set PAM items : " << e.what()  << std::endl;
         return EXIT_FAILURE;
     }
 

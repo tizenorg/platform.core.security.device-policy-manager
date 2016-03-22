@@ -149,12 +149,13 @@ int WaitForFile(const std::string& path, const unsigned int timeout)
 int WaitForPid(pid_t pid)
 {
     int status, ret;
+    char errmsg[256];
 
     do {
         ret = waitpid(pid, &status, 0);
         if (ret == -1) {
             if (errno != EINTR) {
-                ERROR("Wait Pid failed: " + std::to_string(pid) + "(" + strerror(errno) + ")");
+                ERROR("Wait Pid failed: " + std::to_string(pid) + "(" + strerror_r(errno, errmsg, sizeof(errmsg)) + ")");
                 return -1;
             }
         }
