@@ -58,7 +58,7 @@ void dpm_free_zone_iterator(dpm_zone_iterator_h iter)
 {
 }
 
-zone_state_e dpm_get_zone_state(dpm_client_h handle, const char *name)
+int dpm_get_zone_state(dpm_client_h handle, const char *name)
 {
     assert(handle);
     assert(name);
@@ -68,7 +68,7 @@ zone_state_e dpm_get_zone_state(dpm_client_h handle, const char *name)
 
     /* TODO : should implement */
 
-    return DPM_ZONE_DOESNT_EXIST;
+    return DPM_ERROR_INVALID;
 }
 
 int dpm_subscribe_zone_signal(dpm_client_h handle, dpm_zone_signal_cb callback, void* user_data)

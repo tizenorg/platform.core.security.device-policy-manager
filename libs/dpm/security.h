@@ -22,7 +22,7 @@
 /**
  * @file security.h
  * @brief This file provides APIs to control security functionality such as
- *        device encryption, and wipe
+ *        device encryption and wipe
  */
 
 #ifdef __cplusplus
@@ -30,7 +30,7 @@ extern "C" {
 #endif
 
 /**
- * @addtogroup  DPM_SECURITY_POLICY
+ * @addtogroup  CAPI_DPM_SECURITY_POLICY_MODULE
  * @{
  */
 
