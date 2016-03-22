@@ -71,7 +71,7 @@ static int zone_get_state(struct testcase* tc)
         return TEST_FAILED;
     }
 
-    if (dpm_get_zone_state(handle, TEST_ZONE_ID) != DPM_ZONE_DOESNT_EXIST) {
+    if (dpm_get_zone_state(handle, TEST_ZONE_ID) != DPM_ERROR_INVALID) {
         dpm_destroy_client(handle);
         return TEST_SUCCESSED;
     }
