@@ -70,7 +70,6 @@ rm -rf %{buildroot}
 rm -rf %{buildroot}
 
 %preun
-%{_sbindir}/ldconfig
 
 %postun
 
@@ -79,15 +78,15 @@ rm -rf %{buildroot}
 Summary: Tizen Device Policy Client library
 Group: Development/Libraries
 Requires: %{name} = %{version}-%{release}
-Requires(post): %{_sbindir}/ldconfig
-Requires(postun): %{_sbindir}/ldconfig
+Requires(post): /sbin/ldconfig
+Requires(postun): /sbin/ldconfig
 
 %description -n libdpm
 The libdpm package contains the libraries needed to run DPM client.
 
-%post -n libdpm -p %{_sbindir}/ldconfig
+%post -n libdpm -p /sbin/ldconfig
 
-%postun -n libdpm -p %{_sbindir}/ldconfig
+%postun -n libdpm -p /sbin/ldconfig
 
 %files -n libdpm
 %defattr(644,root,root,755)
@@ -142,9 +141,9 @@ BuildRequires: pkgconfig(evas)
 Tizen ODE User Interface for device policy management
 
 %post -n org.tizen.ode
-%{_sbindir}/ldconfig
+/sbin/ldconfig
 %postun -n org.tizen.ode
-%{_sbindir}/ldconfig
+/sbin/ldconfig
 
 %define odeapp_home %{TZ_SYS_RO_APP}/org.tizen.ode
 
