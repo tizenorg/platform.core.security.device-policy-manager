@@ -38,7 +38,12 @@ SET(SOURCES policy-client.cpp
 			${DPM_COMMON}/rmi/message.cpp
 )
 
-SET(CAPI_INCLUDE_FILES  dpm/device-policy-client.h)
+SET(CAPI_INCLUDE_FILES  dpm/dpm.h
+						dpm/device-policy-client.h
+						dpm/security.h
+						dpm/password.h
+						dpm/zone.h
+)
 
 SET (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,noexecstack")
 
