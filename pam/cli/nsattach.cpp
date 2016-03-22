@@ -138,14 +138,18 @@ static inline int attach_program(runtime::User& user, char** args)
             return EXIT_FAILURE;
         }
 
+        char *default_args[2];
+        default_args[0] = strdup(DEFAULT_SHELL);
+        default_args[1] = NULL;
+
         if (args == NULL) {
-            args = new char*[2];
-            args[0] = strdup(DEFAULT_SHELL);
-            args[1] = NULL;
+            args = default_args;
         }
 
         execve(*args, args, environ);
         std::cerr << "failed to execute " << args[0] << std::endl;
+
+        free(default_args[0]);
 
         return EXIT_FAILURE;
     }
@@ -194,6 +198,7 @@ int main(int argc, char* argv[])
                 usage(argv[0]);
                 return 0;
             }
+            break;
         case 'u':
             username = optarg;
             break;
