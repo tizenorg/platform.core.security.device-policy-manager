@@ -44,18 +44,43 @@ int dpm_remove_zone(dpm_client_h handle, const char* name)
     return zone.remove(name);
 }
 
+struct dpm_zone_iterator_s {
+    std::vector<std::string> list;
+    std::vector<std::string>::iterator iter;
+};
+
 dpm_zone_iterator_h dpm_get_zone_iterator(dpm_client_h handle)
 {
-    return NULL;
+    assert(handle);
+
+    DevicePolicyClient &client = GetDevicePolicyClient(handle);
+    Zone zone = client.createPolicyInterface<Zone>();
+
+    struct dpm_zone_iterator_s *it = new dpm_zone_iterator_s();
+    it->list = zone.getList();
+    it->iter = it->list.begin();
+
+    return reinterpret_cast<dpm_zone_iterator_h>(it);
 }
 
 const char* dpm_zone_iterator_next(dpm_zone_iterator_h iter)
 {
-    return NULL;
+    struct dpm_zone_iterator_s *it;
+    const char* result = NULL;
+
+    assert(iter);
+
+    it = reinterpret_cast<dpm_zone_iterator_s *>(iter);
+    if (it->iter != it->list.end()) {
+        result = (*it->iter++).c_str();
+    }
+
+    return result;
 }
 
 void dpm_free_zone_iterator(dpm_zone_iterator_h iter)
 {
+    delete reinterpret_cast<dpm_zone_iterator_s *>(iter);
 }
 
 int dpm_get_zone_state(dpm_client_h handle, const char *name)
