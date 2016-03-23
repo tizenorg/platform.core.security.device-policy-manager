@@ -83,6 +83,7 @@ static int zone_get_state(struct testcase* tc)
 static int zone_get_list(struct testcase* tc)
 {
     dpm_client_h handle;
+    dpm_zone_iterator_h it;
 
     handle = dpm_create_client();
     if (handle == NULL) {
@@ -90,7 +91,53 @@ static int zone_get_list(struct testcase* tc)
         return TEST_FAILED;
     }
 
+    it = dpm_get_zone_iterator(handle);
+
     dpm_destroy_client(handle);
+
+    if (it != NULL) {
+        dpm_free_zone_iterator(it);
+        return TEST_SUCCESSED;
+    }
+
+    return TEST_FAILED;
+}
+
+static int zone_traverse_list(struct testcase* tc)
+{
+    dpm_client_h handle;
+    dpm_zone_iterator_h it;
+    const char *zone;
+
+    handle = dpm_create_client();
+    if (handle == NULL) {
+        printf("Failed to create client handle\n");
+        return TEST_FAILED;
+    }
+
+    it = dpm_get_zone_iterator(handle);
+
+    dpm_destroy_client(handle);
+
+    if (it != NULL) {
+        printf("Traversing zone list started\n");
+        while((zone = dpm_zone_iterator_next(it)) != NULL) {
+            printf("%s\n", zone);
+            if (!strcmp(zone, TEST_ZONE_ID)) {
+                printf("%s is found!\n", TEST_ZONE_ID);
+                break;
+            }
+        }
+        printf("Traversing zone list was completed\n");
+
+        dpm_free_zone_iterator(it);
+
+        if (zone != NULL) {
+            return TEST_SUCCESSED;
+        } else {
+            return TEST_FAILED;
+        }
+    }
 
     return TEST_FAILED;
 }
@@ -126,8 +173,13 @@ struct testcase zone_testcase_get_state = {
 };
 
 struct testcase zone_testcase_get_list = {
-    .description = "dpm_get_zone_iterator, dpm_zone_iterator_next, dpm_free_zone_iterator",
+    .description = "dpm_get_zone_iterator, dpm_free_zone_iterator",
     .handler = zone_get_list
+};
+
+struct testcase zone_testcase_traverse_list = {
+    .description = "dpm_zone_iterator_next",
+    .handler = zone_traverse_list
 };
 
 struct testcase zone_testcase_signal = {
@@ -141,6 +193,7 @@ void TESTCASE_CONSTRUCTOR zone_policy_build_testcase(void)
     testbench_populate_testcase(&zone_testcase_create);
     testbench_populate_testcase(&zone_testcase_get_state);
     testbench_populate_testcase(&zone_testcase_get_list);
+    testbench_populate_testcase(&zone_testcase_traverse_list);
     testbench_populate_testcase(&zone_testcase_signal);
     testbench_populate_testcase(&zone_testcase_remove);
 }
