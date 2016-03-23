@@ -55,7 +55,7 @@ typedef enum {
  *              enter a new password that is not at least as restrictive as what has been set.
  * @since_tizen 3.0
  * @privlevel   public
- * @privelege   %http://tizen.org/privilege/dpm.password
+ * @privilege   %http://tizen.org/privilege/dpm.password
  * @param[in]   handle Device Policy Client handle
  * @param[in]   username User name
  * @param[in]   quality Password Quality Type
@@ -78,7 +78,7 @@ DPM_API int dpm_set_password_quality(dpm_client_h handle, const char *username, 
  *              shorter than the setting length.
  * @since_tizen 3.0
  * @privlevel   public
- * @privelege   %http://tizen.org/privilege/dpm.password
+ * @privilege   %http://tizen.org/privilege/dpm.password
  * @param[in]   handle Device Policy Client handle
  * @param[in]   username User name
  * @param[in]   value Allowed minimum password length
@@ -101,7 +101,7 @@ DPM_API int dpm_set_password_minimum_length(dpm_client_h handle, const char *use
  *              setting and make the password more secure.
  * @since_tizen 3.0
  * @privlevel   public
- * @privelege   %http://tizen.org/privilege/dpm.password
+ * @privilege   %http://tizen.org/privilege/dpm.password
  * @param[in]   handle Device Policy Client handle
  * @param[in]   username User name
  * @param[in]   value Num of minimum complex char in password.
@@ -123,7 +123,7 @@ DPM_API int dpm_set_min_password_complex_chars(dpm_client_h handle, const char *
  * @details     If user fails the last attempt, device will be wiped.
  * @since_tizen 3.0
  * @privlevel   public
- * @privelege   %http://tizen.org/privilege/dpm.password
+ * @privilege   %http://tizen.org/privilege/dpm.password
  * @param[in]   handle Device Policy Client handle
  * @param[in]   username User name
  * @param[in]   value Maximum count for failed passwords.
@@ -145,7 +145,7 @@ DPM_API int dpm_set_maximum_failed_password_for_wipe(dpm_client_h handle, const 
  *              the user to enter a new password after every expiration period.
  * @since_tizen 3.0
  * @privlevel   public
- * @privelege   %http://tizen.org/privilege/dpm.password
+ * @privilege   %http://tizen.org/privilege/dpm.password
  * @param[in]   handle Device Policy Client handle
  * @param[in]   username User name
  * @param[in]   value Num of days after which the password expires.
@@ -168,7 +168,7 @@ DPM_API int dpm_set_password_expires(dpm_client_h handle, const char *username, 
  *              passwords which cannot be used when entering a new password.
  * @since_tizen 3.0
  * @privlevel   public
- * @privelege   %http://tizen.org/privilege/dpm.password
+ * @privilege   %http://tizen.org/privilege/dpm.password
  * @param[in]   handle Device Policy Client handle
  * @param[in]   username User name
  * @param[in]   value Num of previous passwords which cannot be used when
@@ -191,7 +191,7 @@ DPM_API int dpm_set_password_history(dpm_client_h handle, const char *username, 
  *              a regular expression.
  * @since_tizen 3.0
  * @privlevel   public
- * @privelege   %http://tizen.org/privilege/dpm.password
+ * @privilege   %http://tizen.org/privilege/dpm.password
  * @param[in]   handle Device Policy Client handle
  * @param[in]   username User name
  * @param[in]   pattern Password Pattern. If regular expression is
@@ -216,7 +216,7 @@ DPM_API int dpm_set_password_pattern(dpm_client_h handle, const char *username, 
  * @details     This takes effect immediately to the device password.
  * @since_tizen 3.0
  * @privlevel   public
- * @privelege   %http://tizen.org/privilege/dpm.password
+ * @privilege   %http://tizen.org/privilege/dpm.password
  * @param[in]   handle Device Policy Client handle
  * @param[in]   username User name
  * @param[in]   password New Password
@@ -238,7 +238,7 @@ DPM_API int dpm_reset_password(dpm_client_h handle, const char *username, const 
  *              change setting is launched.
  * @since_tizen 3.0
  * @privlevel   public
- * @privelege   %http://tizen.org/privilege/dpm.password
+ * @privilege   %http://tizen.org/privilege/dpm.password
  * @param[in]   handle Device Policy Client handle
  * @param[in]   username User name
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
@@ -261,7 +261,7 @@ DPM_API int dpm_enforce_password_change(dpm_client_h handle, const char *usernam
  *              type the password to unlock the device.
  * @since_tizen 3.0
  * @privlevel   public
- * @privelege   %http://tizen.org/privilege/dpm.password
+ * @privilege   %http://tizen.org/privilege/dpm.password
  * @param[in]   handle Device Policy Client handle
  * @param[in]   username User name
  * @param[in]   value Maximum inactivity time for device lock. Specifies how soon
@@ -305,7 +305,7 @@ DPM_API int dpm_get_max_inactivity_time_device_lock(dpm_client_h handle, const c
  * @details     An administrator can know password status for this API.
  * @since_tizen 3.0
  * @privlevel   public
- * @privelege   %http://tizen.org/privilege/dpm.password
+ * @privilege   %http://tizen.org/privilege/dpm.password
  * @param[in]   handle Device Policy Client handle
  * @param[in]   username User name
  * @param[in]   status Password Status
@@ -326,7 +326,7 @@ DPM_API int dpm_set_password_status(dpm_client_h handle, const char *username, c
  * @details     An administrator can remove all password patterns.
  * @since_tizen 3.0
  * @privlevel   public
- * @privelege   %http://tizen.org/privilege/dpm.password
+ * @privilege   %http://tizen.org/privilege/dpm.password
  * @param[in]   handle Device Policy Client handle
  * @param[in]   username User name
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
@@ -370,7 +370,7 @@ DPM_API char *dpm_get_password_pattern(dpm_client_h handle, const char *username
  *              applied
  * @since_tizen 3.0
  * @privlevel   public
- * @privelege   %http://tizen.org/privilege/dpm.password
+ * @privilege   %http://tizen.org/privilege/dpm.password
  * @param[in]   handle Device Policy Client handle
  * @param[in]   username User name
  * @param[in]   value Maximum Character Occurences
@@ -426,7 +426,7 @@ DPM_API int dpm_get_maximum_character_occurrences(dpm_client_h handle, const cha
  *              restrictions are applied.
  * @since_tizen 3.0
  * @privlevel   public
- * @privelege   %http://tizen.org/privilege/dpm.password
+ * @privilege   %http://tizen.org/privilege/dpm.password
  * @param[in]   handle Device Policy Client handle
  * @param[in]   username User name
  * @param[in]   value Maximum Numeric Sequence Length

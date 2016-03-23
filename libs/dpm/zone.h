@@ -42,7 +42,7 @@ extern "C" {
  * @remark
  * @since_tizen 3.0
  * @privlevel   public
- * @privelege   %http://tizen.org/privilege/dpm.zone
+ * @privilege   %http://tizen.org/privilege/dpm.zone
  * @param[in]   handle The device policy client handle
  * @param[in]   name The zone name to be created
  * @param[in]   pkgid The package id to be run for zone creation
@@ -66,7 +66,7 @@ DPM_API int dpm_create_zone(dpm_client_h handle, const char* name, const char* p
  *              All of directories of zone will be also erased.
  * @since_tizen 3.0
  * @privlevel   public
- * @privelege   %http://tizen.org/privilege/dpm.zone
+ * @privilege   %http://tizen.org/privilege/dpm.zone
  * @param[in]   handle The device policy client handle
  * @param[in]   name The zone name to be removed
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
