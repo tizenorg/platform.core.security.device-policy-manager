@@ -55,7 +55,7 @@ User::User(const std::string& user)
     if (bufsize == -1)
         bufsize = 16384;
 
-    std::unique_ptr<char[]> buf(new char [bufsize]);
+    std::unique_ptr<char[]> buf(new char[bufsize]);
 
     ::getpwnam_r(user.c_str(), &pwd, buf.get(), bufsize, &result);
     if (result == NULL) {
@@ -76,7 +76,7 @@ User::User(const uid_t user)
     if (bufsize == -1)
         bufsize = 16384;
 
-    std::unique_ptr<char[]> buf(new char [bufsize]);
+    std::unique_ptr<char[]> buf(new char[bufsize]);
     ::getpwuid_r(user, &pwd, buf.get(), bufsize, &result);
     if (result == NULL) {
         throw runtime::Exception("User " + std::to_string(user) + "doesn't exist");
@@ -106,7 +106,7 @@ User User::create(const std::string& name, const std::string& group_name,
     if (bufsize == -1)
         bufsize = 16384;
 
-    std::unique_ptr<char[]> buf(new char [bufsize]);
+    std::unique_ptr<char[]> buf(new char[bufsize]);
 
     ::getpwnam_r(name.c_str(), &tmppwd, buf.get(), bufsize, &result);
     if (result != NULL) {

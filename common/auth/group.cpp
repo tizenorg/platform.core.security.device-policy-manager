@@ -50,7 +50,7 @@ Group::Group(const std::string& group)
     if (bufsize == -1)
         bufsize = 16384;
 
-    std::unique_ptr<char[]> buf(new char [bufsize]);
+    std::unique_ptr<char[]> buf(new char[bufsize]);
 
     ::getgrnam_r(group.c_str(), &grp, buf.get(), bufsize, &result);
     if (result == NULL) {
@@ -70,7 +70,7 @@ Group::Group(const gid_t group)
     if (bufsize == -1)
         bufsize = 16384;
 
-    std::unique_ptr<char[]> buf(new char [bufsize]);
+    std::unique_ptr<char[]> buf(new char[bufsize]);
 
     ::getgrgid_r(group, &grp, buf.get(), bufsize, &result);
     if (result == NULL) {
@@ -94,7 +94,7 @@ Group Group::create(const std::string& name, const gid_t min, const gid_t max)
     if (bufsize == -1)
         bufsize = 16384;
 
-    std::unique_ptr<char[]> buf(new char [bufsize]);
+    std::unique_ptr<char[]> buf(new char[bufsize]);
     ::getgrnam_r(name.c_str(), &tmpgrp, buf.get(), bufsize, &result);
     if (result != NULL) {
         return Group(name);
