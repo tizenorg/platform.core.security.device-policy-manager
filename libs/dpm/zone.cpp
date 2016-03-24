@@ -32,7 +32,12 @@ int dpm_create_zone(dpm_client_h handle, const char* name, const char* pkgid)
 
     DevicePolicyClient &client = GetDevicePolicyClient(handle);
     Zone zone = client.createPolicyInterface<Zone>();
-    return zone.create(name, pkgid);
+
+    if (zone.create(name, pkgid) == 0) {
+        return DPM_ERROR_NONE;
+    }
+
+    return DPM_ERROR_INVALID;
 }
 
 int dpm_remove_zone(dpm_client_h handle, const char* name)
@@ -42,7 +47,12 @@ int dpm_remove_zone(dpm_client_h handle, const char* name)
 
     DevicePolicyClient &client = GetDevicePolicyClient(handle);
     Zone zone = client.createPolicyInterface<Zone>();
-    return zone.remove(name);
+
+    if (zone.remove(name) == 0) {
+        return DPM_ERROR_NONE;
+    }
+
+    return DPM_ERROR_INVALID;
 }
 
 typedef runtime::Array<std::string> dpm_zone_iterator;
@@ -82,8 +92,6 @@ int dpm_get_zone_state(dpm_client_h handle, const char* name)
 
     DevicePolicyClient &client = GetDevicePolicyClient(handle);
     Zone zone = client.createPolicyInterface<Zone>();
-
-    /* TODO : should implement */
 
     return DPM_ERROR_INVALID;
 }

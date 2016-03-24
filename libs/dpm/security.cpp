@@ -29,7 +29,11 @@ int dpm_lockout_device(dpm_client_h handle)
 
     DevicePolicyClient &client = GetDevicePolicyClient(handle);
     Security security = client.createPolicyInterface<Security>();
-    return security.lockoutDevice();
+    if (security.lockoutDevice() == 0) {
+        return DPM_ERROR_NONE;
+    }
+
+    return DPM_ERROR_INVALID;
 }
 
 int dpm_lockout_screen(dpm_client_h handle)
@@ -38,7 +42,11 @@ int dpm_lockout_screen(dpm_client_h handle)
 
     DevicePolicyClient &client = GetDevicePolicyClient(handle);
     Security security = client.createPolicyInterface<Security>();
-    return security.lockoutScreen();
+    if (security.lockoutScreen() == 0) {
+        return DPM_ERROR_NONE;
+    }
+
+    return DPM_ERROR_INVALID;
 }
 
 int dpm_wipe_data(dpm_client_h handle, const dpm_wipe_type_e type)
@@ -47,7 +55,11 @@ int dpm_wipe_data(dpm_client_h handle, const dpm_wipe_type_e type)
 
     DevicePolicyClient &client = GetDevicePolicyClient(handle);
     Security security = client.createPolicyInterface<Security>();
-    return security.wipeData(type);
+    if (security.wipeData(type) == 0) {
+        return DPM_ERROR_NONE;
+    }
+
+    return DPM_ERROR_INVALID;
 }
 
 int dpm_reboot(dpm_client_h handle)
@@ -56,7 +68,11 @@ int dpm_reboot(dpm_client_h handle)
 
     DevicePolicyClient &client = GetDevicePolicyClient(handle);
     Security security = client.createPolicyInterface<Security>();
-    return security.reboot();
+    if (security.reboot() == 0) {
+        return DPM_ERROR_NONE;
+    }
+
+    return DPM_ERROR_INVALID;
 }
 
 int dpm_poweroff_device(dpm_client_h handle)
@@ -65,7 +81,11 @@ int dpm_poweroff_device(dpm_client_h handle)
 
     DevicePolicyClient &client = GetDevicePolicyClient(handle);
     Security security = client.createPolicyInterface<Security>();
-    return security.powerOffDevice();
+    if (security.powerOffDevice() == 0) {
+        return DPM_ERROR_NONE;
+    }
+
+    return DPM_ERROR_INVALID;
 }
 
 int dpm_set_internal_storage_encryption(dpm_client_h handle, const int encrypt)
@@ -74,7 +94,11 @@ int dpm_set_internal_storage_encryption(dpm_client_h handle, const int encrypt)
 
     DevicePolicyClient &client = GetDevicePolicyClient(handle);
     Security security = client.createPolicyInterface<Security>();
-    return security.setInternalStorageEncryption(encrypt);
+    if (security.setInternalStorageEncryption(encrypt) == 0) {
+        return DPM_ERROR_NONE;
+    }
+
+    return DPM_ERROR_INVALID;
 }
 
 int dpm_is_internal_storage_encrypted(dpm_client_h handle)
@@ -83,7 +107,11 @@ int dpm_is_internal_storage_encrypted(dpm_client_h handle)
 
     DevicePolicyClient &client = GetDevicePolicyClient(handle);
     Security security = client.createPolicyInterface<Security>();
-    return security.isInternalStorageEncrypted();
+    if (security.isInternalStorageEncrypted() == 0) {
+        return DPM_ERROR_NONE;
+    }
+
+    return DPM_ERROR_INVALID;
 }
 
 int dpm_set_external_storage_encryption(dpm_client_h handle, const int encrypt)
@@ -92,7 +120,11 @@ int dpm_set_external_storage_encryption(dpm_client_h handle, const int encrypt)
 
     DevicePolicyClient &client = GetDevicePolicyClient(handle);
     Security security = client.createPolicyInterface<Security>();
-    return security.setExternalStorageEncryption(encrypt);
+    if (security.setExternalStorageEncryption(encrypt) == 0) {
+        return DPM_ERROR_NONE;
+    }
+
+    return DPM_ERROR_INVALID;
 }
 
 int dpm_is_external_storage_encrypted(dpm_client_h handle)
@@ -101,6 +133,10 @@ int dpm_is_external_storage_encrypted(dpm_client_h handle)
 
     DevicePolicyClient &client = GetDevicePolicyClient(handle);
     Security security = client.createPolicyInterface<Security>();
-    return security.isExternalStorageEncrypted();
+    if (security.isExternalStorageEncrypted() == 0) {
+        return DPM_ERROR_NONE;
+    }
+
+    return DPM_ERROR_INVALID;
 }
 
