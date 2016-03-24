@@ -17,8 +17,6 @@
 #ifndef __CAPI_PASSWORD_POLICY_H__
 #define __CAPI_PASSWORD_POLICY_H__
 
-#include <glib.h>
-
 #include <dpm/device-policy-client.h>
 
 /**
