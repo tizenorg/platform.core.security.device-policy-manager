@@ -19,6 +19,7 @@
 #include "dpm/zone.h"
 
 #include "zone.hxx"
+#include "array.h"
 #include "policy-client.h"
 
 using namespace DevicePolicyManager;
@@ -44,21 +45,37 @@ int dpm_remove_zone(dpm_client_h handle, const char* name)
     return zone.remove(name);
 }
 
+typedef runtime::Array<std::string> dpm_zone_iterator;
+
 dpm_zone_iterator_h dpm_get_zone_iterator(dpm_client_h handle)
 {
-    return NULL;
+    assert(handle);
+
+    DevicePolicyClient &client = GetDevicePolicyClient(handle);
+    Zone zone = client.createPolicyInterface<Zone>();
+
+    return reinterpret_cast<dpm_zone_iterator_h>(new dpm_zone_iterator(zone.getList()));
 }
 
 const char* dpm_zone_iterator_next(dpm_zone_iterator_h iter)
 {
-    return NULL;
+    assert(iter);
+
+    std::string* result = reinterpret_cast<dpm_zone_iterator*>(iter)->next();
+
+    if (result == NULL) {
+        return NULL;
+    }
+
+    return result->c_str();
 }
 
 void dpm_free_zone_iterator(dpm_zone_iterator_h iter)
 {
+    delete reinterpret_cast<dpm_zone_iterator*>(iter);
 }
 
-int dpm_get_zone_state(dpm_client_h handle, const char *name)
+int dpm_get_zone_state(dpm_client_h handle, const char* name)
 {
     assert(handle);
     assert(name);
