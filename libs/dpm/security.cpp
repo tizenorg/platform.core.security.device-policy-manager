@@ -14,18 +14,17 @@
  *  limitations under the License
  */
 
-#include <cassert>
-
+#include "security.h"
 #include "security.hxx"
 
-#include "security.h"
+#include "capi-assert.h"
 #include "policy-client.h"
 
 using namespace DevicePolicyManager;
 
 int dpm_lockout_device(dpm_client_h handle)
 {
-    assert(handle);
+    ASSERT(handle, DPM_ERROR_INVALID);
 
     DevicePolicyClient &client = GetDevicePolicyClient(handle);
     Security security = client.createPolicyInterface<Security>();
@@ -34,7 +33,7 @@ int dpm_lockout_device(dpm_client_h handle)
 
 int dpm_lockout_screen(dpm_client_h handle)
 {
-    assert(handle);
+    ASSERT(handle, DPM_ERROR_INVALID);
 
     DevicePolicyClient &client = GetDevicePolicyClient(handle);
     Security security = client.createPolicyInterface<Security>();
@@ -43,7 +42,7 @@ int dpm_lockout_screen(dpm_client_h handle)
 
 int dpm_wipe_data(dpm_client_h handle, const dpm_wipe_type_e type)
 {
-    assert(handle);
+    ASSERT(handle, DPM_ERROR_INVALID);
 
     DevicePolicyClient &client = GetDevicePolicyClient(handle);
     Security security = client.createPolicyInterface<Security>();
@@ -52,7 +51,7 @@ int dpm_wipe_data(dpm_client_h handle, const dpm_wipe_type_e type)
 
 int dpm_reboot(dpm_client_h handle)
 {
-    assert(handle);
+    ASSERT(handle, DPM_ERROR_INVALID);
 
     DevicePolicyClient &client = GetDevicePolicyClient(handle);
     Security security = client.createPolicyInterface<Security>();
@@ -61,7 +60,7 @@ int dpm_reboot(dpm_client_h handle)
 
 int dpm_poweroff_device(dpm_client_h handle)
 {
-    assert(handle);
+    ASSERT(handle, DPM_ERROR_INVALID);
 
     DevicePolicyClient &client = GetDevicePolicyClient(handle);
     Security security = client.createPolicyInterface<Security>();
@@ -70,7 +69,7 @@ int dpm_poweroff_device(dpm_client_h handle)
 
 int dpm_set_internal_storage_encryption(dpm_client_h handle, const int encrypt)
 {
-    assert(handle);
+    ASSERT(handle, DPM_ERROR_INVALID);
 
     DevicePolicyClient &client = GetDevicePolicyClient(handle);
     Security security = client.createPolicyInterface<Security>();
@@ -79,7 +78,7 @@ int dpm_set_internal_storage_encryption(dpm_client_h handle, const int encrypt)
 
 int dpm_is_internal_storage_encrypted(dpm_client_h handle)
 {
-    assert(handle);
+    ASSERT(handle, DPM_ERROR_INVALID);
 
     DevicePolicyClient &client = GetDevicePolicyClient(handle);
     Security security = client.createPolicyInterface<Security>();
@@ -88,7 +87,7 @@ int dpm_is_internal_storage_encrypted(dpm_client_h handle)
 
 int dpm_set_external_storage_encryption(dpm_client_h handle, const int encrypt)
 {
-    assert(handle);
+    ASSERT(handle, DPM_ERROR_INVALID);
 
     DevicePolicyClient &client = GetDevicePolicyClient(handle);
     Security security = client.createPolicyInterface<Security>();
@@ -97,7 +96,7 @@ int dpm_set_external_storage_encryption(dpm_client_h handle, const int encrypt)
 
 int dpm_is_external_storage_encrypted(dpm_client_h handle)
 {
-    assert(handle);
+    ASSERT(handle, DPM_ERROR_INVALID);
 
     DevicePolicyClient &client = GetDevicePolicyClient(handle);
     Security security = client.createPolicyInterface<Security>();

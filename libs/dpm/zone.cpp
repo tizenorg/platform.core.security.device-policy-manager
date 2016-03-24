@@ -14,21 +14,20 @@
  *  limitations under the License
  */
 
-#include <cassert>
-
-#include "dpm/zone.h"
-
+#include "zone.h"
 #include "zone.hxx"
+
 #include "array.h"
+#include "capi-assert.h"
 #include "policy-client.h"
 
 using namespace DevicePolicyManager;
 
 int dpm_create_zone(dpm_client_h handle, const char* name, const char* pkgid)
 {
-    assert(handle);
-    assert(name);
-    assert(pkgid);
+    ASSERT(handle, DPM_ERROR_INVALID);
+    ASSERT(name, DPM_ERROR_INVALID);
+    ASSERT(pkgid, DPM_ERROR_INVALID);
 
     DevicePolicyClient &client = GetDevicePolicyClient(handle);
     Zone zone = client.createPolicyInterface<Zone>();
@@ -37,8 +36,8 @@ int dpm_create_zone(dpm_client_h handle, const char* name, const char* pkgid)
 
 int dpm_remove_zone(dpm_client_h handle, const char* name)
 {
-    assert(handle);
-    assert(name);
+    ASSERT(handle, DPM_ERROR_INVALID);
+    ASSERT(name, DPM_ERROR_INVALID);
 
     DevicePolicyClient &client = GetDevicePolicyClient(handle);
     Zone zone = client.createPolicyInterface<Zone>();
@@ -49,7 +48,7 @@ typedef runtime::Array<std::string> dpm_zone_iterator;
 
 dpm_zone_iterator_h dpm_get_zone_iterator(dpm_client_h handle)
 {
-    assert(handle);
+    ASSERT(handle, NULL);
 
     DevicePolicyClient &client = GetDevicePolicyClient(handle);
     Zone zone = client.createPolicyInterface<Zone>();
@@ -59,26 +58,26 @@ dpm_zone_iterator_h dpm_get_zone_iterator(dpm_client_h handle)
 
 const char* dpm_zone_iterator_next(dpm_zone_iterator_h iter)
 {
-    assert(iter);
+    ASSERT(iter, NULL);
 
     std::string* result = reinterpret_cast<dpm_zone_iterator*>(iter)->next();
 
-    if (result == NULL) {
-        return NULL;
-    }
+    ASSERT(result, NULL);
 
     return result->c_str();
 }
 
 void dpm_free_zone_iterator(dpm_zone_iterator_h iter)
 {
+    ASSERT(iter, void());
+
     delete reinterpret_cast<dpm_zone_iterator*>(iter);
 }
 
 int dpm_get_zone_state(dpm_client_h handle, const char* name)
 {
-    assert(handle);
-    assert(name);
+    ASSERT(handle, DPM_ERROR_INVALID);
+    ASSERT(name, DPM_ERROR_INVALID);
 
     DevicePolicyClient &client = GetDevicePolicyClient(handle);
     Zone zone = client.createPolicyInterface<Zone>();
@@ -90,8 +89,8 @@ int dpm_get_zone_state(dpm_client_h handle, const char* name)
 
 int dpm_subscribe_zone_signal(dpm_client_h handle, dpm_zone_signal_cb callback, void* user_data)
 {
-    assert(handle);
-    assert(callback);
+    ASSERT(handle, DPM_ERROR_INVALID);
+    ASSERT(callback, DPM_ERROR_INVALID);
 
     /* TODO : should implement */
 
@@ -100,8 +99,8 @@ int dpm_subscribe_zone_signal(dpm_client_h handle, dpm_zone_signal_cb callback, 
 
 int dpm_unsubscribe_zone_signal(dpm_client_h handle, dpm_zone_signal_cb callback)
 {
-    assert(handle);
-    assert(callback);
+    ASSERT(handle, DPM_ERROR_INVALID);
+    ASSERT(callback, DPM_ERROR_INVALID);
 
     /* TODO : should implement */
 
