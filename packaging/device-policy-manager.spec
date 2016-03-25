@@ -89,6 +89,7 @@ The libdpm package contains the libraries needed to run DPM client.
 %postun -n libdpm -p /sbin/ldconfig
 
 %files -n libdpm
+%manifest device-policy-manager.manifest
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libdpm.so.%{version}
 %{_libdir}/libdpm.so.0
@@ -105,6 +106,7 @@ The libdpm-devel package includes the libraries and header files necessary for
 developing the DPM client program.
 
 %files -n libdpm-devel
+%manifest device-policy-manager.manifest
 %defattr(644,root,root,755)
 %{_libdir}/libdpm.so
 %{_includedir}/dpm
