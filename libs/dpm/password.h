@@ -60,6 +60,7 @@ typedef enum {
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
@@ -83,6 +84,7 @@ DPM_API int dpm_set_password_quality(dpm_client_h handle, const char *username, 
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
@@ -106,6 +108,7 @@ DPM_API int dpm_set_password_minimum_length(dpm_client_h handle, const char *use
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
@@ -128,6 +131,7 @@ DPM_API int dpm_set_min_password_complex_chars(dpm_client_h handle, const char *
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
@@ -150,6 +154,7 @@ DPM_API int dpm_set_maximum_failed_password_for_wipe(dpm_client_h handle, const 
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
@@ -174,6 +179,7 @@ DPM_API int dpm_set_password_expires(dpm_client_h handle, const char *username, 
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
@@ -200,6 +206,7 @@ DPM_API int dpm_set_password_history(dpm_client_h handle, const char *username, 
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
@@ -221,6 +228,7 @@ DPM_API int dpm_set_password_pattern(dpm_client_h handle, const char *username, 
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
@@ -242,6 +250,7 @@ DPM_API int dpm_reset_password(dpm_client_h handle, const char *username, const 
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
@@ -268,6 +277,7 @@ DPM_API int dpm_enforce_password_change(dpm_client_h handle, const char *usernam
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
@@ -289,6 +299,7 @@ DPM_API int dpm_set_max_inactivity_time_device_lock(dpm_client_h handle, const c
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
@@ -310,6 +321,7 @@ DPM_API int dpm_get_max_inactivity_time_device_lock(dpm_client_h handle, const c
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
@@ -330,6 +342,7 @@ DPM_API int dpm_set_password_status(dpm_client_h handle, const char *username, c
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
@@ -345,10 +358,7 @@ DPM_API int dpm_delete_password_pattern(dpm_client_h handle, const char *usernam
  * @since_tizen 3.0
  * @param[in]   handle Device Policy Client handle
  * @param[in]   username User name
- * @return      DPM Data Structure
- * @retval      ret: DPM ERROR TYPE
- * @retval      mem_header: Header type and Free function pointer
- * @retval      data: real Password Pattern data
+ * @return      Password Pattern data, otherwise a null pointer if there is no password pattern.
  * @pre         handle must be created by dpm_create_client()
  * @post
  * @see         dpm_create_client()
@@ -375,6 +385,7 @@ DPM_API char *dpm_get_password_pattern(dpm_client_h handle, const char *username
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
@@ -398,6 +409,7 @@ DPM_API int dpm_set_maximum_character_occurrences(dpm_client_h handle, const cha
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
@@ -431,6 +443,7 @@ DPM_API int dpm_get_maximum_character_occurrences(dpm_client_h handle, const cha
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
@@ -457,6 +470,7 @@ DPM_API int dpm_set_maximum_numeric_sequence_length(dpm_client_h handle, const c
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
