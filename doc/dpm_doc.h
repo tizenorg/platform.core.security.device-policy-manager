@@ -72,7 +72,7 @@
   * </table>
   *
   * <br>
-  * @section CAPI_DPM_FRAMEWORK_ARCHITECTURE Architecture
+  * @subsection Architecture
   * The Device Policy Management framework consists of the device policy
   * manager and policy client library as shown in the figure.
   * The device policy manager manages all policies enforced on the device
@@ -82,7 +82,7 @@
   * <br>
   * @image html dpm.png "Tizen Device Policy Management Framework"
   * <br>
-  * @section PolicyGroup Policy Groups
+  * @subsection PolicyGroup Policy Groups
   * The Device Policy Management framework supposts following policy groups.
   * Each policy group has dedicated header file. So, you should include it
   * to use any API associated to the policy group.
@@ -111,41 +111,57 @@
   * </tr>
   * </table>
   * </center>
-  *<br>
-  *<br>
-  *<br>
-  * @section Priviliges
-  * Only privileged client, which is registered to the policy manager can
-  * enforce policies. Other unprivileged application are only allowed to
+  *
+  * @subsection Privilege
+  * In order to use privileged APIs, the client must be registered to the device policy
+  * manager as the device policy client. Other unregistered application are only allowed to
   * subscribe policy change notification published by the device policy manager.
   *<br>
   * @defgroup CAPI_DPM_POLICY_CLIENT_MODULE Policy Client Interface
-  * @brief Client interface to access policy APIs.
+  * @brief The policy client provides functions required to access the device policy APIs.
   * @ingroup CAPI_DPM_FRAMEWORK
   * @section CAPI_DPM_POLICY_CLIENT_MODULE_HEADER Required Header
   *  \#include <dpm/device-policy-client.h>
+  * @section CAPI_DPM_POLICY_CLIENT_MODULE_OVERVIEW Overview
+  * The Policy Client module provides Device Policy Client handle which keeps track of
+  * state between the device policy client and the device policy manager.
+  * The device policy clients must create the handle by using dpm_create_client()
+  * before attempting to use almost any of the device policy APIs, and the handle should be
+  * freed by using dpm_destroy_client() when interaction with the device policy manager
+  * is no longer required.
   *
   * @defgroup CAPI_DPM_PASSWORD_POLICY_MODULE Password policy group
   * @brief Password policy group provides APIs to control password policies.
   * @ingroup CAPI_DPM_FRAMEWORK
-  * @section CAPI_DPM_POLICY_CLIENT_MODULE_HEADER Required Header
+  * @section CAPI_DPM_PASSWORD_POLICY_MODULE_HEADER Required Header
   *  \#include <dpm/password.h>
+  * @section CAPI_DPM_PASSWORD_POLICY_MODULE_OVERVIEW Overview
+  * Password policy group provides APIs to control password policies such as
+  * password type, password quality and expiration date. Any API which requires privileges
+  * is only available for the registered device policy client which is enrolled to the device
+  * by enrollment process.
   *
   * @defgroup CAPI_DPM_SECURITY_POLICY_MODULE Security policy group
   * @brief Security policy group provides APIs to control security related
-  * functionality on the device
-  *  such as device encryption, and wipe.
+  * functionality on the device such as device encryption, and wipe.
   * @ingroup CAPI_DPM_FRAMEWORK
   * @section CAPI_DPM_SECURITY_POLICY_MODULE_HEADER Required Header
   * \#include <dpm/security.h>
+  * @section CAPI_DPM_SECURITY_POLICY_MODULE_OVERVIEW Overview
+  * This module provides APIs to control security functionality such as device encryption and
+  * wipe. Any API which requires privileges is only available for the registered device policy
+  * client which is enrolled to the device by enrollment process.
   *
   * @defgroup CAPI_DPM_ZONE_POLICY_MODULE Zone policy group
   * @brief Zone policy group provides APIs to control containers
   * @ingroup CAPI_DPM_FRAMEWORK
   * @section CAPI_DPM_ZONE_POLICY_MODULE_HEADER Required Header
   * \#include <dpm/zone.h>
+  * @section CAPI_DPM_ZONE_POLICY_MODULE_OVERVIEW Overview
+  * This module provides APIs to manage application containers. Any API which requires
+  * privileges is only available for the registered device policy client which is enrolled to
+  * the device by enrollment process.
   *
   */
 
 #endif /* __DPM_DOC_H__ */
-
