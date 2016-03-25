@@ -23,32 +23,14 @@ SET(INTEGRATION_TEST_SOURCES main.cpp
 							 ${DPM_LIBS}/administration.cpp
 							 ${DPM_LIBS}/security.cpp
 							 ${DPM_LIBS}/zone.cpp
-							 ${DPM_COMMON}/error.cpp
-							 ${DPM_COMMON}/mainloop.cpp
-							 ${DPM_COMMON}/thread-pool.cpp
-							 ${DPM_COMMON}/eventfd.cpp
-							 ${DPM_COMMON}/audit/logger.cpp
-							 ${DPM_COMMON}/audit/null-sink.cpp
-							 ${DPM_COMMON}/audit/console-sink.cpp
-							 ${DPM_COMMON}/rmi/socket.cpp
-							 ${DPM_COMMON}/rmi/connection.cpp
-							 ${DPM_COMMON}/rmi/message.cpp
-							 ${DPM_COMMON}/rmi/service.cpp
-							 ${DPM_COMMON}/rmi/client.cpp
-							 ${DPM_COMMON}/rmi/notification.cpp
 							 ${DPM_TESTBENCH}/testbench.cpp
 )
 
 ADD_EXECUTABLE(${INTEGRATION_TEST_TARGET} ${INTEGRATION_TEST_SOURCES})
 
-PKG_CHECK_MODULES(TESTS_DEPS REQUIRED glib-2.0)
-INCLUDE_DIRECTORIES(SYSTEM ${TESTS_DEPS_INCLUDE_DIRS} ${DPM_COMMON} ${DPM_POLICY} ${DPM_LIBS} ${DPM_TESTS})
+INCLUDE_DIRECTORIES(SYSTEM ${DPM_COMMON} ${DPM_POLICY} ${DPM_LIBS} ${DPM_TESTS})
 
-SET_TARGET_PROPERTIES(${INTEGRATION_TEST_TARGET} PROPERTIES
-	COMPILE_FLAGS "-pthread"
-	LINK_FLAGS "-pthread"
-)
 
-TARGET_LINK_LIBRARIES(${INTEGRATION_TEST_TARGET} ${TESTS_DEPS_LIBRARIES})
+TARGET_LINK_LIBRARIES(${INTEGRATION_TEST_TARGET}    dpm-common)
 
 INSTALL(TARGETS ${INTEGRATION_TEST_TARGET} DESTINATION bin)
