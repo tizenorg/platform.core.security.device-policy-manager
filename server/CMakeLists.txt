@@ -28,40 +28,22 @@ SET(SOURCES	main.cpp
 			app-bundle.cpp
 			syspopup.cpp
 			launchpad.cpp
-			${DPM_COMMON}/error.cpp
-			${DPM_COMMON}/mainloop.cpp
-			${DPM_COMMON}/process.cpp
-			${DPM_COMMON}/filesystem.cpp
-			${DPM_COMMON}/smack.cpp
-			${DPM_COMMON}/thread-pool.cpp
-            ${DPM_COMMON}/eventfd.cpp
-			${DPM_COMMON}/auth/user.cpp
-			${DPM_COMMON}/auth/group.cpp
-			${DPM_COMMON}/auth/shadow.cpp
-			${DPM_COMMON}/audit/logger.cpp
-			${DPM_COMMON}/audit/null-sink.cpp
-			${DPM_COMMON}/audit/console-sink.cpp
-			${DPM_COMMON}/rmi/socket.cpp
-			${DPM_COMMON}/rmi/service.cpp
-			${DPM_COMMON}/rmi/message.cpp
-			${DPM_COMMON}/rmi/connection.cpp
-			${DPM_COMMON}/rmi/notification.cpp
-			${DPM_COMMON}/db/connection.cpp
-			${DPM_COMMON}/db/statement.cpp
-			${DPM_COMMON}/db/column.cpp
-			${DPM_COMMON}/xml/parser.cpp
-			${DPM_COMMON}/xml/document.cpp
-			${DPM_COMMON}/xml/node.cpp
-			${DPM_COMMON}/xml/keepblanks.cpp
 )
 
 ADD_EXECUTABLE(${TARGET} ${SOURCES} ${INCLUDE_SRCS})
 
-PKG_CHECK_MODULES(SERVER_DEPS REQUIRED glib-2.0 gio-2.0 libxml-2.0 sqlite3 bundle aul appsvc vconf syspopup-caller deviced libsmack libtzplatform-config auth-fw-admin)
+PKG_CHECK_MODULES(SERVER_DEPS REQUIRED glib-2.0 gio-2.0 bundle aul appsvc vconf syspopup-caller deviced libtzplatform-config auth-fw-admin)
 
 INCLUDE_DIRECTORIES(SYSTEM ${SERVER_DEPS_INCLUDE_DIRS} ${DPM_COMMON} ${DPM_POLICY} ${DPM_SERVER})
 
-TARGET_LINK_LIBRARIES(${TARGET} ${SERVER_DEPS_LIBRARIES} pthread)
+TARGET_LINK_LIBRARIES(${TARGET} ${SERVER_DEPS_LIBRARIES}
+                                dpm-common-audit
+                                dpm-common-rmi-server
+                                dpm-common-xml
+                                dpm-common-db
+                                dpm-common-util
+)
+
 SET_TARGET_PROPERTIES(${TARGET} PROPERTIES COMPILE_FLAGS "-fPIE")
 SET_TARGET_PROPERTIES(${TARGET} PROPERTIES LINK_FLAGS "-pie")
 
