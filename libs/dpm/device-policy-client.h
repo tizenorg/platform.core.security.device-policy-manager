@@ -66,15 +66,15 @@ typedef void* dpm_client_h;
  * @since_tizen 3.0
  */
 typedef enum {
-    DPM_ERROR_NONE          = TIZEN_ERROR_NONE,                 /**< The operation was successful */
-    DPM_ERROR_INVALID       = TIZEN_ERROR_INVALID_PARAMETER,    /**< Invalid parameter */
-    DPM_ERROR_REFUSED       = TIZEN_ERROR_CONNECTION_REFUSED,   /**< Connection refused */
-    DPM_ERROR_TIMEOUT       = TIZEN_ERROR_TIMED_OUT,            /**< Timeout */
-    DPM_ERROR_ACCESS_DENIED = TIZEN_ERROR_PERMISSION_DENIED,    /**< Access privilege is not sufficient */
-    DPM_ERROR_NOT_SUPPORTED = TIZEN_ERROR_NOT_SUPPORTED,        /**< Operation is not supported */
-    DPM_ERROR_NO_SUCH_FILE  = TIZEN_ERROR_NO_SUCH_FILE,         /**< No such file or directory */
-    DPM_ERROR_FILE_EXISTS   = TIZEN_ERROR_FILE_EXISTS,          /**< File exists */
-    DPM_ERROR_OUT_OF_MEMORY = TIZEN_ERROR_OUT_OF_MEMORY         /**< Out of memory */
+    DPM_ERROR_NONE                 = TIZEN_ERROR_NONE,                 /**< The operation was successful */
+    DPM_ERROR_INVALID_PARAMETER    = TIZEN_ERROR_INVALID_PARAMETER,    /**< Invalid parameter */
+    DPM_ERROR_CONNECTION_REFUSED   = TIZEN_ERROR_CONNECTION_REFUSED,   /**< Connection refused */
+    DPM_ERROR_TIMED_OUT            = TIZEN_ERROR_TIMED_OUT,            /**< Timeout */
+    DPM_ERROR_PERMISSION_DENIED    = TIZEN_ERROR_PERMISSION_DENIED,    /**< Access privilege is not sufficient */
+    DPM_ERROR_NOT_SUPPORTED        = TIZEN_ERROR_NOT_SUPPORTED,        /**< Operation is not supported */
+    DPM_ERROR_NO_SUCH_FILE         = TIZEN_ERROR_NO_SUCH_FILE,         /**< No such file or directory */
+    DPM_ERROR_FILE_EXISTS          = TIZEN_ERROR_FILE_EXISTS,          /**< File exists */
+    DPM_ERROR_OUT_OF_MEMORY        = TIZEN_ERROR_OUT_OF_MEMORY         /**< Out of memory */
 } dpm_error_type_e;
 
 /**
@@ -89,8 +89,8 @@ typedef enum {
  *              get_last_result() method. Error codes are described in
  *              exception section.
  * @exception   #DPM_ERROR_NONE No error
- * @exception   #DPM_ERROR_REFUSED Connection refused
- * @exception   #DPM_ERROR_ACCESS_DENIED The application does not have
+ * @exception   #DPM_ERROR_CONNECTION_REFUSED Connection refused
+ * @exception   #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         N/A
  * @post        N/A

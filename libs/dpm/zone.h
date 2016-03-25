@@ -49,7 +49,7 @@ extern "C" {
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_INVALID Invalid parameter
- * @retval      #DPM_ERROR_ACCESS_DENIED The application does not have
+ * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
  * @post
@@ -72,7 +72,7 @@ DPM_API int dpm_create_zone(dpm_client_h handle, const char* name, const char* p
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_INVALID Invalid parameter
- * @retval      #DPM_ERROR_ACCESS_DENIED The application does not have
+ * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
  * @pre         The zone corresponding to the given name must be
@@ -156,7 +156,7 @@ typedef enum {
  * @since_tizen 3.0
  * @param[in]   handle The device policy client handle
  * @param[in]   name The zone name
- * @return      #DPM_ERROR_INVALID if the given zone name is not valid,
+ * @return      #DPM_ERROR_INVALID_PARAMETER if the given zone name is not valid,
  *              otherwise a zone state
  * @retval      #DPM_ZONE_DEFINED Zone has been defined.
  * @retval      #DPM_ZONE_RUNNING Zone is running
@@ -187,8 +187,8 @@ typedef void(*dpm_zone_signal_cb)(zone_state_e event, const char* name, void *in
  * @param[in]   user_data The user data passed to the listener function
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_INVALID Invalid parameter
- * @retval      #DPM_ERROR_ACCESS_DENIED The application does not have
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
  * @post
@@ -207,8 +207,8 @@ DPM_API int dpm_subscribe_zone_signal(dpm_client_h handle, dpm_zone_signal_cb ca
  * @param[in]   callback The listener function to be removed
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_INVALID Invalid parameter
- * @retval      #DPM_ERROR_ACCESS_DENIED The application does not have
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
  * @post

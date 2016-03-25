@@ -85,7 +85,7 @@ int dpm_get_zone_state(dpm_client_h handle, const char* name)
 
     /* TODO : should implement */
 
-    return DPM_ERROR_INVALID;
+    return DPM_ERROR_INVALID_PARAMETER;
 }
 
 int dpm_subscribe_zone_signal(dpm_client_h handle, dpm_zone_signal_cb callback, void* user_data)

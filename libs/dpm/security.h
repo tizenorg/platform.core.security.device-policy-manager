@@ -54,7 +54,7 @@ typedef enum {
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
- * @retval      #DPM_ERROR_ACCESS_DENIED The application does not have
+ * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
  * @post
@@ -77,7 +77,7 @@ DPM_API int dpm_lockout_screen(dpm_client_h handle);
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
- * @retval      #DPM_ERROR_ACCESS_DENIED The application does not have
+ * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
  * @post
@@ -96,7 +96,7 @@ DPM_API int dpm_wipe_data(dpm_client_h handle, const dpm_wipe_type_e type);
  * @param[in]   handle Device Policy Client handle
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_ACCESS_DENIED The application does not have
+ * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
  * @post
@@ -115,7 +115,7 @@ DPM_API int dpm_reboot(dpm_client_h handle);
  * @param[in]   handle Device Policy Client handle
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_ACCESS_DENIED The application does not have
+ * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
  * @post
@@ -141,7 +141,7 @@ DPM_API int dpm_poweroff_device(dpm_client_h handle);
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
- * @retval      #DPM_ERROR_ACCESS_DENIED The application does not have
+ * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
  * @post
@@ -182,7 +182,7 @@ DPM_API int dpm_is_internal_storage_encrypted(dpm_client_h handle);
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
- * @retval      #DPM_ERROR_ACCESS_DENIED The application does not have
+ * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
  * @post
