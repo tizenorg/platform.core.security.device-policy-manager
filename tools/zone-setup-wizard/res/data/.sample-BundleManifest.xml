@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<bundle-manifest>
+<version>0.1.0</version>
+    <version>0.1.0</version>
+    <require>
+        <os>tizen3.0</os>
+    </require>
+
+    <namspace>
+        <dropped-capability>CAP_SYS_ADMIN</dropped-capability>
+        <hostname>ZoneName</hostname>
+        <!--<init>/sbin/init</init>-->
+        <filesystem root="/">
+            <!--<entry source="/home/ZoneName" target="/home/.zone/ZoneName" type="bind" option="rw" />-->
+        </filesystem>
+        <network>
+            <!--<interface name="eth0" address="10.254.34.232" netmask="" gateway="" />-->
+       </network>
+        <ipc />
+    </namspace>
+</bundle-manifest>
