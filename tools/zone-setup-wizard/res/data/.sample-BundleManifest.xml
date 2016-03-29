@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<bundle-manifest>
+<version>0.1.0</version>
+<platform>
+    <os>tizen3.0</os>
+</platform>
+<mounts>
+    <mount>
+        <destination create="dir">%HOME%/.zone/%USER%</destination>
+        <source>%HOME%</source>
+        <type>none</type>
+        <option>rw,bind</option>
+    </mount>
+    <mount>
+        <destination>/home</destination>
+        <source>%HOME%/.zone</source>
+        <type>none</type>
+        <option>rw,rbind</option>
+    </mount>
+    <mount>
+        <destination create="dir">%RUN%/.zone/%UID%</destination>
+        <source>%RUN%</source>
+        <type>none</type>
+        <option>rw,bind</option>
+    </mount>
+    <mount>
+        <destination>/run/user</destination>
+        <source>%RUN%/.zone</source>
+        <type>none</type>
+        <option>rw,rbind</option>
+    </mount>
+</mounts>
+<hooks>
+    <create>
+        <exec>
+            <path>/usr/bin/pkg_initdb</path>
+            <args>
+                <arg>pkg_initdb</arg>
+                <arg>%UID%</arg>
+            </args>
+        </exec>
+        <exec>
+            <path>/usr/bin/security-manager-cmd</path>
+            <args>
+                <arg>security-manager-cmd</arg>
+                <arg>--manage-users=add</arg>
+                <arg>--uid=%UID%</arg>
+                <arg>--usertype=normal</arg>
+            </args>
+        </exec>
+    </create>
+    <destroy>
+        <exec>
+            <path>/usr/bin/security-manager-cmd</path>
+            <args>
+                <arg>security-manager-cmd</arg>
+                <arg>--manage-users=remove</arg>
+                <arg>--uid=%UID%</arg>
+                <arg>--usertype=normal</arg>
+            </args>
+        </exec>
+        <exec>
+            <path>/usr/bin/ckm_tool</path>
+            <args>
+                <arg>-d</arg>
+                <arg>%UID%</arg>
+            </args>
+        </exec>
+    </destroy>
+</hooks>
+<namespaces>
+    <mount />
+    <network />
+    <ipc />
+    <uts />
+</namespaces>
+<policies>
+</policies>
+<packages>
+</packages>
+</bundle-manifest>
