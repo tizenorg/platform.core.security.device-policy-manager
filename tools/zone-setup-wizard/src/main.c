@@ -1,0 +1,90 @@
+/*
+ * Tizen Zone Setup-Wizard application
+ *
+ * Copyright (c) 2016 Samsung Electronics Co., Ltd All Rights Reserved
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+#include "zone-setup.h"
+#include "widget.h"
+
+static void __create_zone_done(zone_state_e event, const char *name, void *info, void *user_data)
+{
+	appdata_s *ad = (appdata_s *) user_data;
+	if (event == DPM_ZONE_DEFINED)
+		ad->create_done = true;
+	return ;
+}
+
+static bool __app_create(void *data)
+{
+	int ret = true;
+	appdata_s *ad = (appdata_s *)data;
+
+	ad->dpm_client = dpm_create_client();
+	if (ad->dpm_client == NULL) {
+		dlog_print(DLOG_ERROR, LOG_TAG, "failed to get dpm client");
+		return false;
+	}
+
+	if (dpm_subscribe_zone_signal(ad->dpm_client, __create_zone_done, ad) != 0) {
+		dlog_print(DLOG_ERROR, LOG_TAG, "failed to set signal callback");
+		return false;
+	}
+
+	elm_app_base_scale_set(1.8);
+	_create_base_window(ad);
+
+	return ret;
+}
+
+static void __app_pause(void *data)
+{
+	return ;
+}
+
+static void __app_resume(void *data)
+{
+	return ;
+}
+
+static void __app_terminate(void *data)
+{
+	appdata_s *ad = (appdata_s *) data;
+
+	dpm_unsubscribe_zone_signal(ad->dpm_client, __create_zone_done);
+	dpm_destroy_client(ad->dpm_client);
+	ad->dpm_client = NULL;
+	return ;
+}
+
+int main(int argc, char *argv[])
+{
+	appdata_s ad = {0, };
+	int ret = 0;
+
+	ui_app_lifecycle_callback_s event_callback = {0, };
+
+	event_callback.create = __app_create;
+	event_callback.terminate = __app_terminate;
+	event_callback.pause = __app_pause;
+	event_callback.resume = __app_resume;
+
+	ret = ui_app_main(argc, argv, &event_callback, &ad);
+	if (ret != APP_ERROR_NONE)
+		dlog_print(DLOG_ERROR, LOG_TAG, "ui_app_main is failed. err = %d", ret);
+
+	return ret;
+}
