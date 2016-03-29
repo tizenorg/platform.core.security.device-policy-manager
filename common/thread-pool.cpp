@@ -20,7 +20,7 @@
 #include "thread-pool.h"
 #include "exception.h"
 
-#define __BEGIN_CRITICAL__  { std::unique_lock<std::mutex> lock(this->queueMutex);
+#define __BEGIN_CRITICAL__  { std::lock_guard<std::mutex> lock(this->queueMutex);
 #define __END_CRITICAL__    }
 
 namespace runtime {
@@ -29,11 +29,12 @@ ThreadPool::ThreadPool(size_t threads)
     : stop(false)
 {
     for (size_t i = 0; i < threads; i++) {
-       workers.emplace_back([this] {
+        workers.emplace_back([this] {
             while (true) {
                 std::function<void()> task;
 
-                __BEGIN_CRITICAL__
+                std::unique_lock<std::mutex> lock(queueMutex);
+
                 condition.wait(lock, [this]{ return stop || !tasks.empty();});
                 if (stop && tasks.empty()) {
                     return;
@@ -41,7 +42,8 @@ ThreadPool::ThreadPool(size_t threads)
 
                 task = std::move(tasks.front());
                 tasks.pop_front();
-                __END_CRITICAL__
+
+                lock.unlock();
 
                 task();
             }
