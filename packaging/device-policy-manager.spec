@@ -57,13 +57,14 @@ managing device policies.
          -DDB_INSTALL_DIR=%{TZ_SYS_DB} \
          -DRUN_INSTALL_DIR=%{TZ_SYS_RUN} \
          -DAPP_INSTALL_PREFIX="%{TZ_SYS_RO_APP}" \
-         -DAPP_SHARE_PACKAGES_DIR="%{TZ_SYS_RW_PACKAGES}" \
+         -DAPP_SHARE_PACKAGES_DIR="%{TZ_SYS_RO_PACKAGES}" \
          -DPAMD_INSTALL_DIR=/etc/pam.d
 
 make %{?jobs:-j%jobs}
 
 %install
 rm -rf %{buildroot}
+mkdir -p %{buildroot}/usr/apps/org.tizen.zone-setup-wizard/data
 %make_install
 
 %clean
@@ -152,7 +153,38 @@ Tizen ODE User Interface for device policy management
 %files -n org.tizen.ode
 %defattr(-,root,root,-)
 %{odeapp_home}/bin/*
-%{TZ_SYS_RW_PACKAGES}/org.tizen.ode.xml
+%{TZ_SYS_RO_PACKAGES}/org.tizen.ode.xml
+
+## ZONE Setup Wizard Package #################################################
+%package -n org.tizen.zone-setup-wizard
+Summary: Tizen ZONE Setup wizard Interface
+Group: Security/Other
+BuildRequires: pkgconfig(efl-extension)
+BuildRequires: pkgconfig(elementary)
+BuildRequires: pkgconfig(capi-appfw-application)
+BuildRequires: pkgconfig(evas)
+Requires: libdpm = %{version}-%{release}
+
+%description -n org.tizen.zone-setup-wizard
+Tizen ZONE setup wizard interface for zone
+
+%post -n org.tizen.zone-setup-wizard
+%{_sbindir}/ldconfig
+%postun -n org.tizen.zone-setup-wizard
+%{_sbindir}/ldconfig
+
+%define setup_home %{TZ_SYS_RO_APP}/org.tizen.zone-setup-wizard
+
+mkdir -p %{setup_home}/data
+
+%files -n org.tizen.zone-setup-wizard
+%defattr(-,root,root,-)
+%manifest tools/zone-setup-wizard/org.tizen.zone-setup-wizard.manifest
+%{setup_home}/bin/*
+%{setup_home}/res/*
+%{setup_home}/res/data/.sample-BundleManifest.xml
+%{setup_home}/data
+%{TZ_SYS_RO_PACKAGES}/org.tizen.zone-setup-wizard.xml
 
 ## PAM Plugin Package #######################################################
 %package -n dpm-pam-zone

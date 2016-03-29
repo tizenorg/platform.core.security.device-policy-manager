@@ -1,0 +1,106 @@
+/*
+ * Tizen Zone Setup-Wizard Layout
+ *
+ * Copyright (c) 2016 Samsung Electronics Co., Ltd All Rights Reserved
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+group { name: "setup_complete_layout";
+	images {
+		image : "../images/icon.png" COMP;
+	}
+	styles {
+		style { name: "complete_title_style";
+			base: "font=Tizen:style=Regular align=left font_size="32" color=#000000 wrap=mixed ellipsis=1.0 text_class=tizen";
+			tag: "br" "\n";
+			tag: "tab" "\t";
+		}
+		style { name: "complete_content_style";
+			base: "font=Tizen:style=Regular font_size="20" color=#000000 wrap=mixed ellipsis=1.0 text_class=tizen";
+			tag: "br" "\n";
+			tag: "tab" "\t";
+		}
+	}
+	parts {
+		part { name: "base";
+			type: RECT;
+			scale: 1;
+			description { state: "default" 0.0;
+				rel1 {relative: 0.0 0.0;}
+				rel2 {relative: 1.0 1.0;}
+				color: 246 246 246 255;
+			}
+		}
+		part { name: "main_title";
+			type: TEXT;
+			scale: 1;
+			effect: SHADOW;
+			description { state: "default" 0.0;
+				color: 68 68 68 255;
+				color3: 85 88 88 255;
+				rel1 { relative: 0.0 0.0; to: "base"; offset: 22 150;}
+				rel2 { relative: 1.0 0.0; to: "base"; offset: -22 300;}
+				text { font: "Tizen:style=Regular"; size: "52"; align: 0.5 0.5; text: "Tizen ZONE";}
+			}
+		}
+		part { name: "main_image";
+			type: IMAGE;
+			scale: 1;
+			description { state: "default" 0.0;
+				rel1 {relative: 0.0 1.0; to_x: "base"; to_y: "main_title"; offset: 0 35;}
+				rel2 {relative: 1.0 1.0; to_x: "base"; to_y: "main_title"; offset: 0 400;}
+				max: 230 230;
+				image.normal: "../images/icon.png";
+			}
+		}
+		part { name: "sub_title_base";
+			type: RECT;
+			scale: 1;
+			description { state: "default" 0.0;
+				rel1 {relative: 0.0 1.0; to_x: "base"; to_y: "main_image"; offset: 22 50;}
+				rel2 {relative: 1.0 1.0; to_x: "base"; to_y: "main_image"; offset: -22 130;}
+				visible: 0;
+			}
+		}
+		part { name: "sub_title_icon";
+			type: IMAGE;
+			scale: 1;
+			description { state: "default" 0.0;
+				rel1 {relative: 0.0 0.0; to: "sub_title_base";}
+				rel2 {relative: 0.0 1.0; to: "sub_title_base"; offset: 90 0;}
+				image.normal: "../images/icon.png";
+			}
+		}
+		part { name: "sub_title_text";
+			type: TEXTBLOCK;
+			scale: 1;
+			description { state: "default" 0.0;
+				rel1 {relative: 1.0 0.0; to_x:"sub_title_icon"; to_y:"sub_title_base"; offset: 22 0;}
+				rel2 {relative: 1.0 1.0; to: "sub_title_base";}
+				text {style: "complete_title_style"; min: 0 1;}
+				color: 0 0 0 255;
+			}
+		}
+		part { name: "content_text";
+			type: TEXTBLOCK;
+			scale: 1;
+			description { state: "default" 0.0;
+				rel1 {relative: 0.0 1.0; to_x: "base"; to_y: "sub_title_base"; offset: 22 20;}
+				rel2 {relative: 1.0 1.0; to: "base"; offset: -22 0;}
+				text {style: "complete_content_style"; min: 0 1; align: 0.0 0.0;}
+				color: 0 0 0 255;
+			}
+		}
+	}
+}
