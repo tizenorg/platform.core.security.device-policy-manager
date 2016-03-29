@@ -1,0 +1,47 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+PROJECT(org.tizen.zone-setup-wizard C)
+
+INCLUDE_DIRECTORIES(./include)
+
+FIND_PACKAGE(PkgConfig REQUIRED)
+PKG_CHECK_MODULES(tools_pkgs REQUIRED
+        dlog
+        glib-2.0
+	efl-extension
+	elementary
+	capi-appfw-application
+	evas
+)
+
+INCLUDE_DIRECTORIES(${tools_pkgs_INCLUDE_DIRS} ${DPM_LIBS})
+LINK_DIRECTORIES(${tools_pkgs_LIBRARY_DIRS})
+
+SET(PKG_NAME "${PROJECT_NAME}")
+SET(PKG_SRC ./src/setup-wizard.c
+            ./src/setup-wizard-ui.c
+            ./src/setup-wizard-util.c
+            common/widget.c)
+
+SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIE")
+SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pie")
+
+ADD_EXECUTABLE(${PKG_NAME} ${PKG_SRC})
+INSTALL(TARGETS ${PKG_NAME} DESTINATION ${APP_INSTALL_PREFIX}/${PKG_NAME}/bin)
+
+TARGET_LINK_LIBRARIES(${PKG_NAME} ${tools_pkgs_LIBRARIES} dpm)
+
+#Create edj file
+ADD_CUSTOM_TARGET(org.tizen.zone-setup-wizard.edj
+	COMMAND edje_cc -no-save -id ${CMAKE_CURRENT_SOURCE_DIR}/res/images
+	${CMAKE_CURRENT_SOURCE_DIR}/res/org.tizen.zone-setup-wizard.edc
+	${CMAKE_BINARY_DIR}/org.tizen.zone-setup-wizard.edj
+	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/res/org.tizen.zone-setup-wizard.edc)
+
+ADD_DEPENDENCIES(${PROJECT_NAME} org.tizen.zone-setup-wizard.edj)
+INSTALL(FILES ${CMAKE_BINARY_DIR}/org.tizen.zone-setup-wizard.edj DESTINATION ${APP_INSTALL_PREFIX}/${PKG_NAME}/res)
+
+#Install app data
+INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PKG_NAME}.xml DESTINATION ${APP_SHARE_PACKAGES_DIR})
+INSTALL(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/shared/res/ DESTINATION ${APP_INSTALL_PREFIX}/${PKG_NAME}/shared/res FILES_MATCHING PATTERN "*.png")
+INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/res/data/.sample-BundleManifest.xml DESTINATION ${APP_INSTALL_PREFIX}/${PKG_NAME}/res/data)
+INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/shared/res/${PKG_NAME}.png DESTINATION ${APP_DESKTOP_ICON_DIR}/org.tizen.zone-setup-wizard)
