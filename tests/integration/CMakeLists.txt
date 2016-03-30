@@ -17,9 +17,11 @@ SET(INTEGRATION_TEST_TARGET	"dpm-integration-tests")
 
 SET(INTEGRATION_TEST_SOURCES main.cpp
 							 administration.cpp
+							 application.cpp
 							 security.cpp
 							 zone.cpp
 							 ${DPM_LIBS}/policy-client.cpp
+							 ${DPM_LIBS}/application.cpp
 							 ${DPM_LIBS}/administration.cpp
 							 ${DPM_LIBS}/security.cpp
 							 ${DPM_LIBS}/zone.cpp
