@@ -22,6 +22,7 @@ SET(SOURCES	main.cpp
 			policy-storage.cpp
 			client-manager.cpp
 			administration.cpp
+			application.cpp
 			security.cpp
 			password.cpp
 			zone.cpp
