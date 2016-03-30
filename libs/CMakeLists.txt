@@ -22,6 +22,7 @@ SET(PC_FILE "${PROJECT_NAME}.pc")
 
 SET(SOURCES policy-client.cpp
 			administration.cpp
+			application.cpp
 			security.cpp
 			password.cpp
 			zone.cpp
@@ -29,10 +30,12 @@ SET(SOURCES policy-client.cpp
             dpm/security.cpp
 			dpm/password.cpp
 			dpm/zone.cpp
+			dpm/application.cpp
 )
 
 SET(CAPI_INCLUDE_FILES  dpm/dpm.h
 						dpm/device-policy-client.h
+						dpm/application.h
 						dpm/security.h
 						dpm/password.h
 						dpm/zone.h
