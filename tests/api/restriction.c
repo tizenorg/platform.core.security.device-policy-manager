@@ -1,0 +1,216 @@
+/*
+ *  Copyright (c) 2016 Samsung Electronics Co., Ltd All Rights Reserved
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License
+ */
+
+#include <stdio.h>
+#include <stdbool.h>
+#include <dpm/restriction.h>
+#include "testbench.h"
+
+static int restriction_clipboard(struct testcase* tc)
+{
+	dpm_client_h handle;
+	bool allow = false;
+
+	handle = dpm_create_client();
+	if (handle == NULL) {
+		printf("Failed to create client handle\n");
+		return TEST_FAILED;
+	}
+
+	if (dpm_set_clipboard_restriction(handle, true) != 0) {
+		dpm_destroy_client(handle);
+		return TEST_FAILED;
+	}
+
+	allow = dpm_is_clipboard_restricted(handle);
+	if (allow == true) {
+		dpm_destroy_client(handle);
+		return TEST_SUCCESSED;
+	}
+
+	dpm_destroy_client(handle);
+	return TEST_FAILED;
+}
+
+static int restriction_settings_changes(struct testcase* tc)
+{
+	dpm_client_h handle;
+	bool allow = false;
+
+	handle = dpm_create_client();
+	if (handle == NULL) {
+		printf("Failed to create client handle\n");
+		return TEST_FAILED;
+	}
+
+	if (dpm_set_settings_changes_restriction(handle, true) != 0) {
+		dpm_destroy_client(handle);
+		return TEST_FAILED;
+	}
+
+	allow = dpm_is_settings_changes_restricted(handle);
+	if (allow == true) {
+		dpm_destroy_client(handle);
+		return TEST_SUCCESSED;
+	}
+
+	dpm_destroy_client(handle);
+	return TEST_FAILED;
+}
+
+static int restriction_background_data(struct testcase* tc)
+{
+	dpm_client_h handle;
+	bool allow = false;
+
+	handle = dpm_create_client();
+	if (handle == NULL) {
+		printf("Failed to create client handle\n");
+		return TEST_FAILED;
+	}
+
+	if (dpm_set_background_data_restriction(handle, true) != 0) {
+		dpm_destroy_client(handle);
+		return TEST_FAILED;
+	}
+
+	allow = dpm_is_background_data_restricted(handle);
+	if (allow == true) {
+		dpm_destroy_client(handle);
+		return TEST_SUCCESSED;
+	}
+
+	dpm_destroy_client(handle);
+	return TEST_FAILED;
+}
+
+static int restriction_usb_debugging(struct testcase* tc)
+{
+	dpm_client_h handle;
+	bool allow = false;
+
+	handle = dpm_create_client();
+	if (handle == NULL) {
+		printf("Failed to create client handle\n");
+		return TEST_FAILED;
+	}
+
+	if (dpm_set_usb_debugging_restriction(handle, true) != 0) {
+		dpm_destroy_client(handle);
+		return TEST_FAILED;
+	}
+
+	allow = dpm_is_usb_debugging_restricted(handle);
+	if (allow == true) {
+		dpm_destroy_client(handle);
+		return TEST_SUCCESSED;
+	}
+
+	dpm_destroy_client(handle);
+	return TEST_FAILED;
+}
+
+static int restriction_usb_mass_storage(struct testcase* tc)
+{
+	dpm_client_h handle;
+	bool allow = false;
+
+	handle = dpm_create_client();
+	if (handle == NULL) {
+		printf("Failed to create client handle\n");
+		return TEST_FAILED;
+	}
+
+	if (dpm_set_usb_mass_storage_restriction(handle, true) != 0) {
+		dpm_destroy_client(handle);
+		return TEST_FAILED;
+	}
+
+	allow = dpm_is_usb_mass_storage_restricted(handle);
+	if (allow == true) {
+		dpm_destroy_client(handle);
+		return TEST_SUCCESSED;
+	}
+
+	dpm_destroy_client(handle);
+	return TEST_FAILED;
+}
+
+static int restriction_factory_reset(struct testcase* tc)
+{
+	dpm_client_h handle;
+	bool allow = false;
+
+	handle = dpm_create_client();
+	if (handle == NULL) {
+		printf("Failed to create client handle\n");
+		return TEST_FAILED;
+	}
+
+	if (dpm_set_factory_reset_restriction(handle, true) != 0) {
+		dpm_destroy_client(handle);
+		return TEST_FAILED;
+	}
+
+	allow = dpm_is_factory_reset_restricted(handle);
+	if (allow == true) {
+		dpm_destroy_client(handle);
+		return TEST_SUCCESSED;
+	}
+
+	dpm_destroy_client(handle);
+	return TEST_FAILED;
+}
+
+struct testcase restriction_testcase_clipboard = {
+	.description = "dpm_clipboard",
+	.handler = restriction_clipboard
+};
+
+struct testcase restriction_testcase_settings_changes = {
+	.description = "dpm_settings_changes",
+	.handler = restriction_settings_changes
+};
+
+struct testcase restriction_testcase_background_data = {
+	.description = "dpm_background_data",
+	.handler = restriction_background_data
+};
+
+struct testcase restriction_testcase_usb_debugging = {
+	.description = "dpm_usb_debugging",
+	.handler = restriction_usb_debugging
+};
+
+struct testcase restriction_testcase_usb_mass_storage = {
+	.description = "dpm_usb_mass_storage",
+	.handler = restriction_usb_mass_storage
+};
+
+struct testcase restriction_testcase_factory_reset = {
+	.description = "dpm_factory_reset",
+	.handler = restriction_factory_reset
+};
+
+void TESTCASE_CONSTRUCTOR restriction_policy_build_testcase(void)
+{
+	testbench_populate_testcase(&restriction_testcase_clipboard);
+	testbench_populate_testcase(&restriction_testcase_settings_changes);
+	testbench_populate_testcase(&restriction_testcase_background_data);
+	testbench_populate_testcase(&restriction_testcase_usb_debugging);
+	testbench_populate_testcase(&restriction_testcase_usb_mass_storage);
+	testbench_populate_testcase(&restriction_testcase_factory_reset);
+}
