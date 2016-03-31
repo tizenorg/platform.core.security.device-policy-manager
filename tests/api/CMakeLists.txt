@@ -21,6 +21,7 @@ SET(API_TEST_SOURCES main.c
                      password.c
                      testbench.c
                      restriction.c
+                     misc.c
 )
 
 ADD_EXECUTABLE(${API_TEST_TARGET} ${API_TEST_SOURCES})
