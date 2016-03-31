@@ -25,10 +25,12 @@ SET(SOURCES policy-client.cpp
 			security.cpp
 			password.cpp
 			zone.cpp
+			misc.cpp
 			dpm/client-handle.cpp
             dpm/security.cpp
 			dpm/password.cpp
 			dpm/zone.cpp
+			dpm/misc.cpp
 )
 
 SET(CAPI_INCLUDE_FILES  dpm/dpm.h
@@ -36,6 +38,7 @@ SET(CAPI_INCLUDE_FILES  dpm/dpm.h
 						dpm/security.h
 						dpm/password.h
 						dpm/zone.h
+						dpm/misc.h
 )
 
 SET (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,noexecstack")
