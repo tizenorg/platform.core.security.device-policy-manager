@@ -160,7 +160,20 @@ int Zone::unlock(const std::string& name)
 
 std::vector<std::string> Zone::getList()
 {
-    return std::vector<std::string>();
+    std::vector<std::string> list;
+    try {
+        runtime::DirectoryIterator iter(runtime::Path(ZONE_MANIFEST_DIR)), end;
+
+        while (iter != end) {
+            const std::string& path = (*iter).getPath();
+            size_t name = path.rfind('/') + 1;
+            size_t ext = path.rfind(".xml");
+            list.push_back(path.substr(name, ext - name));
+            ++iter;
+        }
+    } catch (runtime::Exception& e) {}
+
+    return list;
 }
 
 int Zone::getState(const std::string& name)
