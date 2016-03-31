@@ -20,11 +20,13 @@ SET(INTEGRATION_TEST_SOURCES main.cpp
 							 application.cpp
 							 security.cpp
 							 zone.cpp
+							 misc.cpp
 							 ${DPM_LIBS}/policy-client.cpp
 							 ${DPM_LIBS}/application.cpp
 							 ${DPM_LIBS}/administration.cpp
 							 ${DPM_LIBS}/security.cpp
 							 ${DPM_LIBS}/zone.cpp
+							 ${DPM_LIBS}/misc.cpp
 							 ${DPM_TESTBENCH}/testbench.cpp
 )
 
