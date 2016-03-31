@@ -32,6 +32,7 @@ public:
     User(const std::string& name);
     User(const uid_t user);
     User(const User& user);
+    User();
 
     const std::string& getName() const
     {

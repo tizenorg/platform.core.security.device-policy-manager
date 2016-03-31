@@ -87,6 +87,11 @@ User::User(const uid_t user)
     gid = result->pw_gid;
 }
 
+User::User() :
+    User(::getuid())
+{
+}
+
 
 static std::regex userNamePattern(NAME_PATTERN);
 

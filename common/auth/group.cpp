@@ -81,6 +81,11 @@ Group::Group(const gid_t group)
     gid = result->gr_gid;
 }
 
+Group::Group() :
+    Group(::getgid())
+{
+}
+
 
 static std::regex groupNamePattern(NAME_PATTERN);
 
