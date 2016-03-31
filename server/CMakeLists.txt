@@ -29,6 +29,7 @@ SET(SOURCES	main.cpp
 			syspopup.cpp
 			launchpad.cpp
 			restriction.cpp
+			misc.cpp
 )
 
 ADD_EXECUTABLE(${TARGET} ${SOURCES} ${INCLUDE_SRCS})
