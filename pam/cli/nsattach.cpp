@@ -81,8 +81,8 @@ static inline int attach_program(runtime::User& user, char** args)
             throw runtime::Exception("gethostname error");
         pam_app.setItem(PAM_RHOST, buf);
 
-        if (getlogin_r(buf, sizeof(buf)) != 0)
-            throw runtime::Exception("getlogin_r error");
+        runtime::User ruser;
+        strncpy(buf, ruser.getName().c_str(), sizeof(buf) - 1);
         pam_app.setItem(PAM_RUSER, buf);
 
         if (ttyname_r(STDERR_FILENO, buf, sizeof(buf)) != 0)
@@ -100,7 +100,7 @@ static inline int attach_program(runtime::User& user, char** args)
             std::cerr << "failed to change authentication token" << std::endl;
             return EXIT_FAILURE;
         }
-    } else {
+    } else if (ret != PAM_SUCCESS) {
         std::cerr << "failed to validate account" << std::endl;
         return EXIT_FAILURE;
     }
@@ -121,6 +121,7 @@ static inline int attach_program(runtime::User& user, char** args)
     } catch (runtime::Exception& e) {
         std::cerr << "failed to set environment variables" << std::endl;
     }
+
 
     int status;
     pid_t pid;
