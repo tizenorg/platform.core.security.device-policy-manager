@@ -56,18 +56,12 @@
   *  <tr>
   *   <td>Maximum failed password attempts</td>
   *   <td>Specifies how many times a user can enter the wrong password before
-  *       the device wipes its data.The Device Policy API also allows to
-  *       remotely reset the device to factory defaults.</td>
+  *       the device wipes its data.</td>
   *  </tr>
   *  <tr>
   *   <td>Maximum inactivity time lock</td>
-  *   <td>Specifies the maximum number of secoinds of inactivity time before
+  *   <td>Specifies the maximum number of seconds of inactivity time before
   *       the screen timeout occurs</td>
-  *  </tr>
-  *  <tr>
-  *   <td>Require storage encryption</td>
-  *   <td>Specifies that the storage should be encrypted, if the device
-  *       supports it.</td>
   *  </tr>
   * </table>
   *
@@ -99,14 +93,8 @@
   *     <td>dpm/password.h</td>
   * </tr>
   * <tr>
-  *     <td>Security</td>
-  *     <td>Provide functionality to control security such as encryption
-  *         and device wipe</td>
-  *     <td>dpm/security.h</td>
-  * </tr>
-  * <tr>
   *     <td>Zone</td>
-  *     <td>Provide functionality to control application containers</td>
+  *     <td>Provide functionality to interact with application container</td>
   *     <td>dpm/zone.h</td>
   * </tr>
   * </table>
@@ -114,8 +102,9 @@
   *
   * @subsection Privilege
   * In order to use privileged APIs, the client must be registered to the device policy
-  * manager as the device policy client. Other unregistered application are only allowed to
-  * subscribe policy change notification published by the device policy manager.
+  * manager as the device policy client by enrollment process. Other unregistered
+  * application are only allowed to subscribe policy change notification published by
+  * the device policy manager.
   *<br>
   * @defgroup CAPI_DPM_POLICY_CLIENT_MODULE Policy Client Interface
   * @brief The policy client provides functions required to access the device policy APIs.
@@ -140,17 +129,6 @@
   * password type, password quality and expiration date. Any API which requires privileges
   * is only available for the registered device policy client which is enrolled to the device
   * by enrollment process.
-  *
-  * @defgroup CAPI_DPM_SECURITY_POLICY_MODULE Security policy group
-  * @brief Security policy group provides APIs to control security related
-  * functionality on the device such as device encryption, and wipe.
-  * @ingroup CAPI_DPM_FRAMEWORK
-  * @section CAPI_DPM_SECURITY_POLICY_MODULE_HEADER Required Header
-  * \#include <dpm/security.h>
-  * @section CAPI_DPM_SECURITY_POLICY_MODULE_OVERVIEW Overview
-  * This module provides APIs to control security functionality such as device encryption and
-  * wipe. Any API which requires privileges is only available for the registered device policy
-  * client which is enrolled to the device by enrollment process.
   *
   * @defgroup CAPI_DPM_ZONE_POLICY_MODULE Zone policy group
   * @brief Zone policy group provides APIs to control containers
