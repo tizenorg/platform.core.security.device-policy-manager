@@ -31,6 +31,7 @@ SET(SOURCES	main.cpp
 			launchpad.cpp
 			packman.cpp
 			misc.cpp
+			restriction.cpp
 )
 
 ADD_EXECUTABLE(${TARGET} ${SOURCES} ${INCLUDE_SRCS})

@@ -28,6 +28,7 @@ SET(SOURCES policy-client.cpp
 			wifi.cpp
 			zone.cpp
 			misc.cpp
+			restriction.cpp
 			dpm/client-handle.cpp
             dpm/security.cpp
 			dpm/password.cpp
@@ -35,6 +36,7 @@ SET(SOURCES policy-client.cpp
 			dpm/zone.cpp
 			dpm/application.cpp
 			dpm/misc.cpp
+			dpm/restriction.cpp
 )
 
 SET(CAPI_INCLUDE_FILES  dpm/dpm.h
