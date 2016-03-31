@@ -26,11 +26,13 @@ SET(SOURCES policy-client.cpp
 			password.cpp
 			zone.cpp
 			restriction.cpp
+			misc.cpp
 			dpm/client-handle.cpp
             dpm/security.cpp
 			dpm/password.cpp
 			dpm/zone.cpp
 			dpm/restriction.cpp
+			dpm/misc.cpp
 )
 
 SET(CAPI_INCLUDE_FILES  dpm/dpm.h
