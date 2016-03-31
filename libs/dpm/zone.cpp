@@ -82,9 +82,15 @@ int dpm_get_zone_state(dpm_client_h handle, const char* name)
     DevicePolicyClient &client = GetDevicePolicyClient(handle);
     Zone zone = client.createPolicyInterface<Zone>();
 
-    /* TODO : should implement */
-
-    return DPM_ERROR_INVALID_PARAMETER;
+    switch (zone.getState(name)) {
+    case Zone::State::DPM_ZONE_DEFINED:
+        return DPM_ZONE_DEFINED;
+    case Zone::State::DPM_ZONE_RUNNING:
+        return DPM_ZONE_RUNNING;
+    case Zone::State::DPM_ZONE_LOCKED:
+        return DPM_ZONE_LOCKED;
+    }
+    return DPM_ERROR_NO_SUCH_FILE;
 }
 
 int dpm_subscribe_zone_signal(dpm_client_h handle, const char* signal, dpm_zone_signal_cb callback, void* user_data)

@@ -28,6 +28,13 @@ namespace DevicePolicyManager {
 
 class Zone {
 public:
+    enum State{
+        DPM_ZONE_DEFINED,
+        DPM_ZONE_RUNNING,
+        DPM_ZONE_LOCKED,
+        DPM_ZONE_NOT_FOUND
+    };
+
     Zone(PolicyControlContext& ctxt);
     ~Zone();
 
