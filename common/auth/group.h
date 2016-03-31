@@ -32,6 +32,7 @@ public:
     Group(const std::string& name);
     Group(const gid_t group);
     Group(const Group& group);
+    Group();
 
     const std::string& getName() const
     {
