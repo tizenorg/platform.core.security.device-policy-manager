@@ -28,6 +28,7 @@ SET(SOURCES	main.cpp
 			app-bundle.cpp
 			syspopup.cpp
 			launchpad.cpp
+			misc.cpp
 )
 
 ADD_EXECUTABLE(${TARGET} ${SOURCES} ${INCLUDE_SRCS})
