@@ -21,13 +21,13 @@
 
 TESTCASE(DeviceRestriction)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
     int error = -1;
     bool status = false;
 
     TEST_EXPECT(0, client.connect());
 
-    DevicePolicyManager::Bluetooth bluetooth = client.createPolicyInterface<DevicePolicyManager::Bluetooth>();
+    DevicePolicyManager::BluetoothPolicy bluetooth = client.createPolicyInterface<DevicePolicyManager::BluetoothPolicy>();
 
     error = bluetooth.setDeviceRestriction(true);
     TEST_EXPECT(0, error);
@@ -45,13 +45,13 @@ TESTCASE(DeviceRestriction)
 
 TESTCASE(UuidRestriction)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
     int error = -1;
     bool status = false;
 
     TEST_EXPECT(0, client.connect());
 
-    DevicePolicyManager::Bluetooth bluetooth = client.createPolicyInterface<DevicePolicyManager::Bluetooth>();
+    DevicePolicyManager::BluetoothPolicy bluetooth = client.createPolicyInterface<DevicePolicyManager::BluetoothPolicy>();
 
     error = bluetooth.setUuidRestriction(true);
     TEST_EXPECT(0, error);
