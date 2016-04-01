@@ -31,7 +31,7 @@ int dpm_create_zone(dpm_client_h handle, const char* name, const char* pkgid)
 
     DevicePolicyClient &client = GetDevicePolicyClient(handle);
     Zone zone = client.createPolicyInterface<Zone>();
-    return zone.create(name, pkgid);
+    return zone.createZone(name, pkgid);
 }
 
 int dpm_remove_zone(dpm_client_h handle, const char* name)
@@ -41,7 +41,7 @@ int dpm_remove_zone(dpm_client_h handle, const char* name)
 
     DevicePolicyClient &client = GetDevicePolicyClient(handle);
     Zone zone = client.createPolicyInterface<Zone>();
-    return zone.remove(name);
+    return zone.removeZone(name);
 }
 
 typedef runtime::Array<std::string> dpm_zone_iterator;
@@ -53,7 +53,7 @@ dpm_zone_iterator_h dpm_get_zone_iterator(dpm_client_h handle)
     DevicePolicyClient &client = GetDevicePolicyClient(handle);
     Zone zone = client.createPolicyInterface<Zone>();
 
-    return reinterpret_cast<dpm_zone_iterator_h>(new dpm_zone_iterator(zone.getList()));
+    return reinterpret_cast<dpm_zone_iterator_h>(new dpm_zone_iterator(zone.getZoneList()));
 }
 
 const char* dpm_zone_iterator_next(dpm_zone_iterator_h iter)

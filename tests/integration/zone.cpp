@@ -37,7 +37,7 @@ TESTCASE(ZoneCreateTest)
 
     DevicePolicyManager::Zone zone = client.createPolicyInterface<DevicePolicyManager::Zone>();
 
-    int error = zone.create(testZoneName, testSetupWizardAppid);
+    int error = zone.createZone(testZoneName, testSetupWizardAppid);
     TEST_EXPECT(0, error);
 }
 
@@ -49,7 +49,7 @@ TESTCASE(GetZoneListTest)
 
     DevicePolicyManager::Zone zone = client.createPolicyInterface<DevicePolicyManager::Zone>();
 
-    std::vector<std::string> list = zone.getList();
+    std::vector<std::string> list = zone.getZoneList();
 
     for (std::string &word : list) {
         if (word == testZoneName) {
@@ -68,7 +68,7 @@ TESTCASE(GetZoneStateTest)
 
     DevicePolicyManager::Zone zone = client.createPolicyInterface<DevicePolicyManager::Zone>();
 
-    zone.getState(testZoneName);
+    zone.getZoneState(testZoneName);
 
     //TODO : should implement checking if the zone exists
 }
@@ -81,6 +81,6 @@ TESTCASE(ZoneRemoveTest)
 
     DevicePolicyManager::Zone zone = client.createPolicyInterface<DevicePolicyManager::Zone>();
 
-    int error = zone.remove(testZoneName);
+    int error = zone.removeZone(testZoneName);
     TEST_EXPECT(0, error);
 }

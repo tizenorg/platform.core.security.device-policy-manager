@@ -31,14 +31,14 @@ public:
     Zone(PolicyControlContext& ctxt);
     ~Zone();
 
-    int create(const std::string& name, const std::string& setupWizardAppid);
-    int remove(const std::string& name);
-    int lock(const std::string& name);
-    int unlock(const std::string& name);
+    int createZone(const std::string& name, const std::string& setupWizardAppid);
+    int removeZone(const std::string& name);
+    int lockZone(const std::string& name);
+    int unlockZone(const std::string& name);
 
-    std::vector<std::string> getList();
+    std::vector<std::string> getZoneList();
 
-    int getState(const std::string& name);
+    int getZoneState(const std::string& name);
 
 private:
     PolicyControlContext& context;

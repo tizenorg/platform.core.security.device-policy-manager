@@ -97,30 +97,30 @@ Zone::Zone(PolicyControlContext& ctx)
 {
     rmi::Service& manager = context.getServiceManager();
 
-    manager.registerParametricMethod(this, (int)(Zone::create)(std::string, std::string));
-    manager.registerParametricMethod(this, (int)(Zone::remove)(std::string));
-    manager.registerParametricMethod(this, (int)(Zone::lock)(std::string));
-    manager.registerParametricMethod(this, (int)(Zone::unlock)(std::string));
-    manager.registerNonparametricMethod(this, (std::vector<std::string>)(Zone::getList)());
+    manager.registerParametricMethod(this, (int)(Zone::createZone)(std::string, std::string));
+    manager.registerParametricMethod(this, (int)(Zone::removeZone)(std::string));
+    manager.registerParametricMethod(this, (int)(Zone::lockZone)(std::string));
+    manager.registerParametricMethod(this, (int)(Zone::unlockZone)(std::string));
+    manager.registerNonparametricMethod(this, (std::vector<std::string>)(Zone::getZoneList)());
 
-    manager.registerParametricMethod(this, (int)(Zone::getState)(std::string));
+    manager.registerParametricMethod(this, (int)(Zone::getZoneState)(std::string));
 }
 
 Zone::~Zone()
 {
 }
 
-int Zone::create(const std::string& name, const std::string& setupWizAppid)
+int Zone::createZone(const std::string& name, const std::string& setupWizAppid)
 {
     return -1;
 }
 
-int Zone::remove(const std::string& name)
+int Zone::removeZone(const std::string& name)
 {
     return -1;
 }
 
-int Zone::lock(const std::string& name)
+int Zone::lockZone(const std::string& name)
 {
     int result;
 
@@ -139,7 +139,7 @@ int Zone::lock(const std::string& name)
     return 0;
 }
 
-int Zone::unlock(const std::string& name)
+int Zone::unlockZone(const std::string& name)
 {
     int result;
 
@@ -158,12 +158,12 @@ int Zone::unlock(const std::string& name)
     return 0;
 }
 
-std::vector<std::string> Zone::getList()
+std::vector<std::string> Zone::getZoneList()
 {
     return std::vector<std::string>();
 }
 
-int Zone::getState(const std::string& name)
+int Zone::getZoneState(const std::string& name)
 {
     return 0;
 }

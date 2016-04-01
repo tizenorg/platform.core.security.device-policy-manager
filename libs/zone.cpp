@@ -27,56 +27,56 @@ Zone::~Zone()
 {
 }
 
-int Zone::create(const std::string& name, const std::string& setupWizAppid)
+int Zone::createZone(const std::string& name, const std::string& setupWizAppid)
 {
     try {
-        return context->methodCall<int>("Zone::create", name, setupWizAppid);
+        return context->methodCall<int>("Zone::createZone", name, setupWizAppid);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Zone::remove(const std::string& name)
+int Zone::removeZone(const std::string& name)
 {
     try {
-        return context->methodCall<int>("Zone::remove", name);
+        return context->methodCall<int>("Zone::removeZone", name);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Zone::lock(const std::string& name)
+int Zone::lockZone(const std::string& name)
 {
     try {
-        return context->methodCall<int>("Zone::lock", name);
+        return context->methodCall<int>("Zone::lockZone", name);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Zone::unlock(const std::string& name)
+int Zone::unlockZone(const std::string& name)
 {
     try {
-        return context->methodCall<int>("Zone::unlock", name);
+        return context->methodCall<int>("Zone::unlockZone", name);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-std::vector<std::string> Zone::getList()
+std::vector<std::string> Zone::getZoneList()
 {
     std::vector<std::string> empty;
     try {
-        return  context->methodCall<std::vector<std::string>>("Zone::getList");
+        return  context->methodCall<std::vector<std::string>>("Zone::getZoneList");
     } catch (runtime::Exception& e) {
         return empty;
     }
 }
 
-int Zone::getState(const std::string& name)
+int Zone::getZoneState(const std::string& name)
 {
     try {
-        return context->methodCall<int>("Zone::getState", name);
+        return context->methodCall<int>("Zone::getZoneState", name);
     } catch (runtime::Exception& e) {
         return -1;
     }
