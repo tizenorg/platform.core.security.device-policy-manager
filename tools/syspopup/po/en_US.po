@@ -1,11 +1,11 @@
 msgid "IDS_DPM_POP_RESTRICTION_LOCATION_CONTENT"
-msgstr "Security policy restricts use of location data."
+msgstr "SecurityPolicy policy restricts use of location data."
 
 msgid "IDS_DPM_POP_RESTRICTION_LOCATION_TITLE"
 msgstr "Location Data Policy"
 
 msgid "IDS_DPM_POP_RESTRICTION_CAMERA_CONTENT"
-msgstr "Security policy restricts use of camera."
+msgstr "SecurityPolicy policy restricts use of camera."
 
 msgid "IDS_DPM_POP_RESTRICTION_CAMERA_TITLE"
 msgstr "Camera Policy"

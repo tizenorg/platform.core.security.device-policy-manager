@@ -1,5 +1,5 @@
 /*
- * Tizen Zone Setup-Wizard application
+ * Tizen ZonePolicy Setup-Wizard application
  *
  * Copyright (c) 2016 Samsung Electronics Co., Ltd All Rights Reserved
  *
@@ -44,8 +44,8 @@ static void __app_terminate(void *data)
 {
 	appdata_s *ad = (appdata_s *) data;
 
-	dpm_unsubscribe_zone_signal(ad->dpm_client, ad->dpm_zone_signal_cb_id);
-	dpm_destroy_client(ad->dpm_client);
+	dpm_context_remove_signal_cb(ad->dpm_client, ad->dpm_zone_signal_cb_id);
+	dpm_context_destroy(ad->dpm_client);
 	ad->dpm_client = NULL;
 	return ;
 }
@@ -53,7 +53,7 @@ static void __app_terminate(void *data)
 static void __app_control(app_control_h app_control, void *data)
 {
 	appdata_s *ad = (appdata_s *) data;
-	int ret = 0;
+	int id, ret = 0;
 
 	ret = app_control_get_extra_data(app_control, "Name", &ad->zone_name);
 	if (ret != APP_CONTROL_ERROR_NONE) {
@@ -67,18 +67,18 @@ static void __app_control(app_control_h app_control, void *data)
 		ui_app_exit();
 	}
 
-	ad->dpm_client = dpm_create_client();
+	ad->dpm_client = dpm_context_create();
 	if (ad->dpm_client == NULL) {
 		dlog_print(DLOG_ERROR, LOG_TAG, "failed to get dpm client");
 		ui_app_exit();
 	}
 
-        ad->dpm_zone_signal_cb_id = dpm_subscribe_zone_signal(ad->dpm_client, "created", __create_zone_done, ad);
-
-	if (ad-> dpm_zone_signal_cb_id < 0) {
-		dlog_print(DLOG_ERROR, LOG_TAG, "failed to set signal callback");
+	if (dpm_context_add_signal_cb(ad->dpm_client, "created", __create_zone_done, ad, &id) != DPM_ERROR_NONE) {
+		dlog_print(DLOG_ERROR, LOG_TAG, "Failed to add zone signal callback");
 		ui_app_exit();
 	}
+
+	ad->dpm_zone_signal_cb_id = id;
 
 	elm_app_base_scale_set(1.8);
 	_create_base_window(ad);

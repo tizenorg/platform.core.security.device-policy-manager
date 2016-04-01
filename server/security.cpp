@@ -52,32 +52,32 @@ void WipeExternalMemoryCallback(int ret, void *user_data)
 
 } // namespace
 
-Security::Security(PolicyControlContext& ctxt) :
+SecurityPolicy::SecurityPolicy(PolicyControlContext& ctxt) :
     context(ctxt)
 {
-    ctxt.registerNonparametricMethod(this, (int)(Security::lockoutDevice));
-    ctxt.registerNonparametricMethod(this, (int)(Security::lockoutScreen));
-    ctxt.registerNonparametricMethod(this, (int)(Security::reboot));
-    ctxt.registerNonparametricMethod(this, (int)(Security::powerOffDevice));
-    ctxt.registerNonparametricMethod(this, (bool)(Security::isInternalStorageEncrypted));
-    ctxt.registerNonparametricMethod(this, (bool)(Security::isExternalStorageEncrypted));
-    ctxt.registerParametricMethod(this, (int)(Security::wipeData)(int));
-    ctxt.registerParametricMethod(this, (int)(Security::setInternalStorageEncryption)(bool));
-    ctxt.registerParametricMethod(this, (int)(Security::setExternalStorageEncryption)(bool));
-    ctxt.registerParametricMethod(this, (std::vector<std::string>)(Security::getFileNamesOnDevice)(std::string));
-    ctxt.registerParametricMethod(this, (std::vector<std::string>)(Security::getFileNamesWithAttributes)(std::string));
+    ctxt.registerNonparametricMethod(this, (int)(SecurityPolicy::lockoutDevice));
+    ctxt.registerNonparametricMethod(this, (int)(SecurityPolicy::lockoutScreen));
+    ctxt.registerNonparametricMethod(this, (int)(SecurityPolicy::reboot));
+    ctxt.registerNonparametricMethod(this, (int)(SecurityPolicy::powerOffDevice));
+    ctxt.registerNonparametricMethod(this, (bool)(SecurityPolicy::isInternalStorageEncrypted));
+    ctxt.registerNonparametricMethod(this, (bool)(SecurityPolicy::isExternalStorageEncrypted));
+    ctxt.registerParametricMethod(this, (int)(SecurityPolicy::wipeData)(int));
+    ctxt.registerParametricMethod(this, (int)(SecurityPolicy::setInternalStorageEncryption)(bool));
+    ctxt.registerParametricMethod(this, (int)(SecurityPolicy::setExternalStorageEncryption)(bool));
+    ctxt.registerParametricMethod(this, (std::vector<std::string>)(SecurityPolicy::getFileNamesOnDevice)(std::string));
+    ctxt.registerParametricMethod(this, (std::vector<std::string>)(SecurityPolicy::getFileNamesWithAttributes)(std::string));
 }
 
-Security::~Security()
+SecurityPolicy::~SecurityPolicy()
 {
 }
 
-int Security::lockoutDevice()
+int SecurityPolicy::lockoutDevice()
 {
     return 0;
 }
 
-int Security::lockoutScreen()
+int SecurityPolicy::lockoutScreen()
 {
     Launchpad launchpad(context.getPeerUid());
 
@@ -89,7 +89,7 @@ int Security::lockoutScreen()
     return 0;
 }
 
-int Security::wipeData(const int id)
+int SecurityPolicy::wipeData(const int id)
 {
     int ret = 0;
     if (id & WIPE_INTERNAL_MEMORY) {
@@ -131,7 +131,7 @@ int Security::wipeData(const int id)
     return ret;
 }
 
-int Security::reboot()
+int SecurityPolicy::reboot()
 {
     if (::reboot(RB_AUTOBOOT) < 0) {
         ERROR("Failed to reboot device");
@@ -141,7 +141,7 @@ int Security::reboot()
     return 0;
 }
 
-int Security::powerOffDevice()
+int SecurityPolicy::powerOffDevice()
 {
     int ret = 0;
 
@@ -158,7 +158,7 @@ int Security::powerOffDevice()
     return ret;
 }
 
-int Security::setInternalStorageEncryption(const bool encrypt)
+int SecurityPolicy::setInternalStorageEncryption(const bool encrypt)
 {
     try {
         Bundle bundle;
@@ -176,13 +176,13 @@ int Security::setInternalStorageEncryption(const bool encrypt)
     return 0;
 }
 
-bool Security::isInternalStorageEncrypted()
+bool SecurityPolicy::isInternalStorageEncrypted()
 {
     INFO("Not implemented yet");
     return false;
 }
 
-int Security::setExternalStorageEncryption(const bool encrypt)
+int SecurityPolicy::setExternalStorageEncryption(const bool encrypt)
 {
     int status;
 
@@ -218,12 +218,12 @@ int Security::setExternalStorageEncryption(const bool encrypt)
     return 0;
 }
 
-bool Security::isExternalStorageEncrypted()
+bool SecurityPolicy::isExternalStorageEncrypted()
 {
     return false;
 }
 
-std::vector<std::string> Security::getFileNamesOnDevice(const std::string& path)
+std::vector<std::string> SecurityPolicy::getFileNamesOnDevice(const std::string& path)
 {
     std::vector<std::string> files;
 
@@ -242,7 +242,7 @@ std::vector<std::string> Security::getFileNamesOnDevice(const std::string& path)
     return files;
 }
 
-std::vector<std::string> Security::getFileNamesWithAttributes(const std::string& path)
+std::vector<std::string> SecurityPolicy::getFileNamesWithAttributes(const std::string& path)
 {
     std::vector<std::string> files;
 
@@ -261,6 +261,6 @@ std::vector<std::string> Security::getFileNamesWithAttributes(const std::string&
     return files;
 }
 
-Security securityPolicy(Server::instance());
+SecurityPolicy securityPolicy(Server::instance());
 
 } // namespace DevicePolicyManager

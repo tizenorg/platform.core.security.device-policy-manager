@@ -23,83 +23,91 @@
 
 using namespace DevicePolicyManager;
 
-int dpm_set_package_installation_mode(dpm_client_h handle, int mode)
+dpm_application_policy_h dpm_context_acquire_application_policy(dpm_context_h handle, const char* zone)
 {
     assert(handle);
 
-    DevicePolicyClient& client = GetDevicePolicyClient(handle);
-    Application application = client.createPolicyInterface<Application>();
-    return application.setApplicationInstallationMode(mode);
+    DevicePolicyContext& client = GetDevicePolicyContext(handle);
+    //return client.createPolicyInterface<ApplicationPolicy>(zone);
+    return client.createPolicyInterface<ApplicationPolicy>();
 }
 
-int dpm_set_package_uninstallation_mode(dpm_client_h handle, int mode)
+int dpm_context_release_application_policy(dpm_application_policy_h handle)
 {
     assert(handle);
 
-    DevicePolicyClient& client = GetDevicePolicyClient(handle);
-    Application application = client.createPolicyInterface<Application>();
-    return application.setApplicationUninstallationMode(mode);
+    delete &GetPolicyInterface<ApplicationPolicy>(handle);
+    return 0;
 }
 
-int dpm_get_package_installation_mode(dpm_client_h handle)
+int dpm_application_set_installation_mode(dpm_application_policy_h handle, int mode)
 {
     assert(handle);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Application application = client.createPolicyInterface<Application>();
-    return application.getApplicationInstallationMode();
+    ApplicationPolicy& application = GetPolicyInterface<ApplicationPolicy>(handle);
+    return application.setApplicationPolicyInstallationMode(mode);
 }
 
-int dpm_get_package_uninstallation_mode(dpm_client_h handle)
+int dpm_application_set_uninstallation_mode(dpm_application_policy_h handle, int mode)
 {
     assert(handle);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Application application = client.createPolicyInterface<Application>();
-    return application.getApplicationUninstallationMode();
+    ApplicationPolicy& application = GetPolicyInterface<ApplicationPolicy>(handle);
+    return application.setApplicationPolicyUninstallationMode(mode);
 }
 
-int dpm_set_application_state(dpm_client_h handle, const char* pkgid, dpm_application_state_e state)
+int dpm_application_get_installation_mode(dpm_application_policy_h handle)
 {
     assert(handle);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Application application = client.createPolicyInterface<Application>();
-    return application.setApplicationState(pkgid, state);
+    ApplicationPolicy& application = GetPolicyInterface<ApplicationPolicy>(handle);
+    return application.getApplicationPolicyInstallationMode();
 }
 
-int dpm_get_application_state(dpm_client_h handle, const char* pkgid)
+int dpm_application_get_uninstallation_mode(dpm_application_policy_h handle)
 {
     assert(handle);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Application application = client.createPolicyInterface<Application>();
-    return application.getApplicationState(pkgid);
+    ApplicationPolicy& application = GetPolicyInterface<ApplicationPolicy>(handle);
+    return application.getApplicationPolicyUninstallationMode();
 }
 
-int dpm_add_package_to_blacklist(dpm_client_h handle, const char* pkgid)
+int dpm_application_set_package_state(dpm_application_policy_h handle, const char* pkgid, dpm_package_state_e state)
 {
     assert(handle);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Application application = client.createPolicyInterface<Application>();
+    ApplicationPolicy& application = GetPolicyInterface<ApplicationPolicy>(handle);
+    return application.setApplicationPolicyState(pkgid, state);
+}
+
+int dpm_application_get_package_state(dpm_application_policy_h handle, const char* pkgid)
+{
+    assert(handle);
+
+    ApplicationPolicy& application = GetPolicyInterface<ApplicationPolicy>(handle);
+    return application.getApplicationPolicyState(pkgid);
+}
+
+int dpm_application_add_package_to_blacklist(dpm_application_policy_h handle, const char* pkgid)
+{
+    assert(handle);
+
+    ApplicationPolicy& application = GetPolicyInterface<ApplicationPolicy>(handle);
     return application.addPackageToBlacklist(pkgid);
 }
 
-int dpm_remove_package_from_blacklist(dpm_client_h handle, const char* pkgid)
+int dpm_application_remove_package_from_blacklist(dpm_application_policy_h handle, const char* pkgid)
 {
     assert(handle);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Application application = client.createPolicyInterface<Application>();
+    ApplicationPolicy& application = GetPolicyInterface<ApplicationPolicy>(handle);
     return application.removePackageFromBlacklist(pkgid);
 }
 
-int dpm_check_package_is_blacklisted(dpm_client_h handle, const char* pkgid)
+int dpm_application_check_package_is_blacklisted(dpm_application_policy_h handle, const char* pkgid)
 {
     assert(handle);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Application application = client.createPolicyInterface<Application>();
+    ApplicationPolicy& application = GetPolicyInterface<ApplicationPolicy>(handle);
     return application.checkPackageIsBlacklisted(pkgid);
 }

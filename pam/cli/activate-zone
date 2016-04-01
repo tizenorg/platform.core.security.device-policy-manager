@@ -2,8 +2,8 @@
 
 usage() {
         echo "Usage :"
-        echo "   Zone-enable        : $0 y" >&2
-        echo "   Zone-disable       : $0 n" >&2
+        echo "   ZonePolicy-enable        : $0 y" >&2
+        echo "   ZonePolicy-disable       : $0 n" >&2
         echo "   Activation state   : $0 info" >&2
         exit 1
 }

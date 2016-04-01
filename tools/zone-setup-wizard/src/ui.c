@@ -1,5 +1,5 @@
 /*
- * Tizen Zone Setup-Wizard application
+ * Tizen ZonePolicy Setup-Wizard application
  *
  * Copyright (c) 2016 Samsung Electronics Co., Ltd All Rights Reserved
  *
@@ -21,7 +21,7 @@
 
 #define SETUP_TITLE "Tizen ZONE"
 #define WELCOME_TEXT "Welcome<br>Keep your applications and content safe<br>with ZONE."
-#define POPUP_CONTENT_TEXT "Creating Zone..."
+#define POPUP_CONTENT_TEXT "Creating ZonePolicy..."
 #define COMPLETE_SUB_TEXT "The application shortcut will be created<br>on your personal home screen."
 
 typedef struct {

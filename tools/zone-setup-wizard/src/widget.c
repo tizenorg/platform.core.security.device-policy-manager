@@ -1,5 +1,5 @@
 /*
- * Tizen Zone Setup-Wizard application
+ * Tizen ZonePolicy Setup-Wizard application
  *
  * Copyright (c) 2016 Samsung Electronics Co., Ltd All Rights Reserved
  *

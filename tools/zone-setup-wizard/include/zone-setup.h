@@ -1,5 +1,5 @@
 /*
- * Tizen Zone Setup-Wizard application
+ * Tizen ZonePolicy Setup-Wizard application
  *
  * Copyright (c) 2016 Samsung Electronics Co., Ltd All Rights Reserved
  *
@@ -50,7 +50,7 @@ typedef enum {
 typedef struct {
 	char *zone_name;
 	char *provision_path;
-	dpm_client_h dpm_client;
+	dpm_context_h dpm_client;
 	int dpm_zone_signal_cb_id;
 	bool create_done;
 } appdata_s;
