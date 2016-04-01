@@ -14,12 +14,12 @@
  *  limitations under the License
  */
 
-#ifndef __CAPI_DPM_H__
-#define __CAPI_DPM_H__
+#ifndef __CAPI_DEVICE_POLICY_MANAGER_H__
+#define __CAPI_DEVICE_POLICY_MANAGER_H__
 
-#include <dpm/device-policy-client.h>
+#include <dpm/context.h>
 #include <dpm/password.h>
 #include <dpm/security.h>
 #include <dpm/zone.h>
 
-#endif //! __CAPI_DPM_H__
+#endif //! __CAPI_DEVICE_POLICY_MANAGER_H__
