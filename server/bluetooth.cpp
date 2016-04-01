@@ -19,63 +19,63 @@
 
 namespace DevicePolicyManager {
 
-Bluetooth::Bluetooth(PolicyControlContext& ctxt) :
+BluetoothPolicy::BluetoothPolicy(PolicyControlContext& ctxt) :
     context(ctxt)
 {
-    ctxt.registerParametricMethod(this, (int)(Bluetooth::addDeviceToBlacklist)(std::string));
-    ctxt.registerParametricMethod(this, (int)(Bluetooth::removeDeviceFromBlacklist)(std::string));
-    ctxt.registerParametricMethod(this, (int)(Bluetooth::setDeviceRestriction)(bool));
-    ctxt.registerNonparametricMethod(this, (bool)(Bluetooth::isDeviceRestricted));
-    ctxt.registerParametricMethod(this, (int)(Bluetooth::addUuidToBlacklist)(std::string));
-    ctxt.registerParametricMethod(this, (int)(Bluetooth::removeUuidFromBlacklist)(std::string));
-    ctxt.registerParametricMethod(this, (int)(Bluetooth::setUuidRestriction)(bool));
-    ctxt.registerNonparametricMethod(this, (bool)(Bluetooth::isUuidRestricted));
+    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::addDeviceToBlacklist)(std::string));
+    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::removeDeviceFromBlacklist)(std::string));
+    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::setDeviceRestriction)(bool));
+    ctxt.registerNonparametricMethod(this, (bool)(BluetoothPolicy::isDeviceRestricted));
+    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::addUuidToBlacklist)(std::string));
+    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::removeUuidFromBlacklist)(std::string));
+    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::setUuidRestriction)(bool));
+    ctxt.registerNonparametricMethod(this, (bool)(BluetoothPolicy::isUuidRestricted));
 }
 
-Bluetooth::~Bluetooth()
+BluetoothPolicy::~BluetoothPolicy()
 {
 }
 
-int Bluetooth::addDeviceToBlacklist(const std::string& mac_address)
-{
-    return 0;
-}
-
-int Bluetooth::removeDeviceFromBlacklist(const std::string& mac_address)
+int BluetoothPolicy::addDeviceToBlacklist(const std::string& mac_address)
 {
     return 0;
 }
 
-int Bluetooth::setDeviceRestriction(const bool enable)
+int BluetoothPolicy::removeDeviceFromBlacklist(const std::string& mac_address)
 {
     return 0;
 }
 
-bool Bluetooth::isDeviceRestricted()
+int BluetoothPolicy::setDeviceRestriction(const bool enable)
+{
+    return 0;
+}
+
+bool BluetoothPolicy::isDeviceRestricted()
 {
     return true;
 }
 
-int Bluetooth::addUuidToBlacklist(const std::string& uuid)
+int BluetoothPolicy::addUuidToBlacklist(const std::string& uuid)
 {
     return 0;
 }
 
-int Bluetooth::removeUuidFromBlacklist(const std::string& uuid)
+int BluetoothPolicy::removeUuidFromBlacklist(const std::string& uuid)
 {
     return 0;
 }
 
-int Bluetooth::setUuidRestriction(const bool enable)
+int BluetoothPolicy::setUuidRestriction(const bool enable)
 {
     return 0;
 }
 
-bool Bluetooth::isUuidRestricted()
+bool BluetoothPolicy::isUuidRestricted()
 {
     return true;
 }
 
-Bluetooth bluetoothPolicy(Server::instance());
+BluetoothPolicy bluetoothPolicy(Server::instance());
 
 } // namespace DevicePolicyManager

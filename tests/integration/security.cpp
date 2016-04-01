@@ -22,11 +22,11 @@
 
 TESTCASE(ScreenLockTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     TEST_EXPECT(0, client.connect());
 
-    DevicePolicyManager::Security security = client.createPolicyInterface<DevicePolicyManager::Security>();
+    DevicePolicyManager::SecurityPolicy security = client.createPolicyInterface<DevicePolicyManager::SecurityPolicy>();
 
     int error = security.lockoutScreen();
     TEST_EXPECT(0, error);
@@ -34,11 +34,11 @@ TESTCASE(ScreenLockTest)
 
 TESTCASE(InternalMemoryEncryptionTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     TEST_EXPECT(0, client.connect());
 
-    DevicePolicyManager::Security security = client.createPolicyInterface<DevicePolicyManager::Security>();
+    DevicePolicyManager::SecurityPolicy security = client.createPolicyInterface<DevicePolicyManager::SecurityPolicy>();
 
     int error = security.setInternalStorageEncryption(true);
     TEST_EXPECT(0, error);
@@ -46,11 +46,11 @@ TESTCASE(InternalMemoryEncryptionTest)
 
 TESTCASE(ExternalMemoryEncryptionTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     TEST_EXPECT(0, client.connect());
 
-    DevicePolicyManager::Security security = client.createPolicyInterface<DevicePolicyManager::Security>();
+    DevicePolicyManager::SecurityPolicy security = client.createPolicyInterface<DevicePolicyManager::SecurityPolicy>();
 
     int error = security.setExternalStorageEncryption(true);
     TEST_EXPECT(0, error);
@@ -58,35 +58,35 @@ TESTCASE(ExternalMemoryEncryptionTest)
 
 TESTCASE(DeviceWipeTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     TEST_EXPECT(0, client.connect());
 
-    DevicePolicyManager::Security security = client.createPolicyInterface<DevicePolicyManager::Security>();
+    DevicePolicyManager::SecurityPolicy security = client.createPolicyInterface<DevicePolicyManager::SecurityPolicy>();
 
-    int error = security.wipeData(DevicePolicyManager::Security::WIPE_INTERNAL_MEMORY);
+    int error = security.wipeData(DevicePolicyManager::SecurityPolicy::WIPE_INTERNAL_MEMORY);
     TEST_EXPECT(0, error);
 }
 
 TESTCASE(ExternalMemoryWipeTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     TEST_EXPECT(0, client.connect());
 
-    DevicePolicyManager::Security security = client.createPolicyInterface<DevicePolicyManager::Security>();
+    DevicePolicyManager::SecurityPolicy security = client.createPolicyInterface<DevicePolicyManager::SecurityPolicy>();
 
-    int error = security.wipeData(DevicePolicyManager::Security::WIPE_EXTERNAL_MEMORY);
+    int error = security.wipeData(DevicePolicyManager::SecurityPolicy::WIPE_EXTERNAL_MEMORY);
     TEST_EXPECT(0, error);
 }
 
 TESTCASE(EmptyDirectoryIterationTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     TEST_EXPECT(0, client.connect());
 
-    DevicePolicyManager::Security security = client.createPolicyInterface<DevicePolicyManager::Security>();
+    DevicePolicyManager::SecurityPolicy security = client.createPolicyInterface<DevicePolicyManager::SecurityPolicy>();
 
     std::vector<std::string> files = security.getFileNamesOnDevice("/etc");
     TEST_EXPECT(true, files.empty());
@@ -97,11 +97,11 @@ TESTCASE(EmptyDirectoryIterationTest)
 
 TESTCASE(NonemptyDirectoryIterationTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     TEST_EXPECT(0, client.connect());
 
-    DevicePolicyManager::Security security = client.createPolicyInterface<DevicePolicyManager::Security>();
+    DevicePolicyManager::SecurityPolicy security = client.createPolicyInterface<DevicePolicyManager::SecurityPolicy>();
 
     std::vector<std::string> files = security.getFileNamesOnDevice("/etc");
     TEST_EXPECT(false, files.empty());
@@ -112,11 +112,11 @@ TESTCASE(NonemptyDirectoryIterationTest)
 
 TESTCASE(InvalidDirectoryIterationTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     TEST_EXPECT(0, client.connect());
 
-    DevicePolicyManager::Security security = client.createPolicyInterface<DevicePolicyManager::Security>();
+    DevicePolicyManager::SecurityPolicy security = client.createPolicyInterface<DevicePolicyManager::SecurityPolicy>();
 
     std::vector<std::string> files = security.getFileNamesOnDevice("/invalid");
     TEST_EXPECT(true, files.empty());
