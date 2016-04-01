@@ -28,6 +28,13 @@ namespace DevicePolicyManager {
 
 class Zone {
 public:
+    enum Signal {
+        CreateSucceed   = 0x001,
+        CreateFailed    = 0x002,
+        RemoveSucceed   = 0x004,
+        RemoveFailed    = 0x008,
+    };
+
     Zone(PolicyControlContext& ctxt);
     ~Zone();
 
