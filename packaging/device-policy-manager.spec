@@ -21,10 +21,16 @@ BuildRequires: pkgconfig(syspopup-caller)
 BuildRequires: pkgconfig(deviced)
 BuildRequires: pkgconfig(vconf)
 BuildRequires: pkgconfig(vconf-internal-keys)
-BuildRequires: pkgconfig(capi-base-common)
+BuildRequires: pkgconfig(bluetooth-api)
 BuildRequires: pkgconfig(libsmack)
 BuildRequires: pkgconfig(libtzplatform-config)
 BuildRequires: pkgconfig(auth-fw-admin)
+BuildRequires: pkgconfig(capi-base-common)
+BuildRequires: pkgconfig(capi-system-info)
+BuildRequires: pkgconfig(capi-network-wifi)
+BuildRequires: pkgconfig(capi-network-connection)
+BuildRequires: pkgconfig(capi-location-manager)
+BuildRequires: pkgconfig(capi-system-system-settings)
 
 %description
 The device-policy-manager package provides a daemon which is responsible for

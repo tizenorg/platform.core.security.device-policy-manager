@@ -16,35 +16,44 @@
 
 #include "policy-client.h"
 
-#include "administration.hxx"
+#include "storage.hxx"
 
 namespace DevicePolicyManager {
 
-AdministrationPolicy::AdministrationPolicy(PolicyControlContext& ctx) :
+StoragePolicy::StoragePolicy(PolicyControlContext& ctx) :
     context(ctx)
 {
 }
 
-AdministrationPolicy::~AdministrationPolicy()
+StoragePolicy::~StoragePolicy()
 {
 }
 
-int AdministrationPolicy::registerPolicyClient(const std::string& name)
+int StoragePolicy::setExternalStorageState(int state)
 {
-    try {
-        return context->methodCall<int>("AdministrationPolicy::registerPolicyClient", name);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<int>("StoragePolicy::setExternalStorageState", state);
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 
-int AdministrationPolicy::deregisterPolicyClient(const std::string& name)
+int StoragePolicy::getExternalStorageState()
 {
-    try {
-        return context->methodCall<int>("AdministrationPolicy::deregisterPolicyClient", name);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<int>("StoragePolicy::getExternalStorageState");
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 
-} // namespace DevicePolicyManager
+int StoragePolicy::wipeData(int type)
+{
+	try {
+		return context->methodCall<int>("StoragePolicy::wipeData", type);
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
+}
+
+} //namespace DevicePolicyManager

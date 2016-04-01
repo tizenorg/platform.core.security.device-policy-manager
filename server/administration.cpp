@@ -21,18 +21,18 @@
 
 namespace DevicePolicyManager {
 
-Administration::Administration(PolicyControlContext& ctx) :
+AdministrationPolicy::AdministrationPolicy(PolicyControlContext& ctx) :
     context(ctx)
 {
-    context.registerParametricMethod(this, (int)(Administration::registerPolicyClient)(std::string));
-    context.registerParametricMethod(this, (int)(Administration::deregisterPolicyClient)(std::string));
+    context.registerParametricMethod(this, (int)(AdministrationPolicy::registerPolicyClient)(std::string));
+    context.registerParametricMethod(this, (int)(AdministrationPolicy::deregisterPolicyClient)(std::string));
 }
 
-Administration::~Administration()
+AdministrationPolicy::~AdministrationPolicy()
 {
 }
 
-int Administration::registerPolicyClient(const std::string& name)
+int AdministrationPolicy::registerPolicyClient(const std::string& name)
 {
     ClientManager& manager = ClientManager::instance();
 
@@ -46,7 +46,7 @@ int Administration::registerPolicyClient(const std::string& name)
     return 0;
 }
 
-int Administration::deregisterPolicyClient(const std::string& name)
+int AdministrationPolicy::deregisterPolicyClient(const std::string& name)
 {
     ClientManager& manager = ClientManager::instance();
 
@@ -60,6 +60,6 @@ int Administration::deregisterPolicyClient(const std::string& name)
     return 0;
 }
 
-Administration adminPolicy(Server::instance());
+AdministrationPolicy adminPolicy(Server::instance());
 
 } // namespace DevicePolicyManager
