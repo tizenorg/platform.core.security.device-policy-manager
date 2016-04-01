@@ -145,10 +145,6 @@ static gboolean callbackMMCMountTimer(void *data)
 Misc::Misc(PolicyControlContext &ctxt) :
     context(ctxt)
 {
-	context.registerParametricMethod(this, (int)(Misc::setCameraRestriction)(bool));
-	context.registerNonparametricMethod(this, (bool)(Misc::isCameraRestricted));
-	context.registerParametricMethod(this, (int)(Misc::setMicrophoneRestriction)(bool));
-	context.registerNonparametricMethod(this, (bool)(Misc::isMicrophoneRestricted));
 	context.registerParametricMethod(this, (int)(Misc::setLocationRestriction)(bool));
 	context.registerNonparametricMethod(this, (bool)(Misc::isLocationRestricted));
 	context.registerParametricMethod(this, (int)(Misc::setSdCardRestriction)(bool));
@@ -157,28 +153,6 @@ Misc::Misc(PolicyControlContext &ctxt) :
 
 Misc::~Misc()
 {
-}
-
-int Misc::setCameraRestriction(bool enable)
-{
-	return 0;
-}
-
-bool Misc::isCameraRestricted()
-{
-	bool ret = true;
-	return ret;
-}
-
-int Misc::setMicrophoneRestriction(bool enable)
-{
-	return 0;
-}
-
-bool Misc::isMicrophoneRestricted()
-{
-	bool ret = true;
-	return ret;
 }
 
 int Misc::setLocationRestriction(bool enable)

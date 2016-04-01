@@ -26,7 +26,7 @@
  namespace {
 
 /*
- int ApplicationListCallback(pkgmgrinfo_appinfo_h handle, void *data)
+ int ApplicationPolicyListCallback(pkgmgrinfo_appinfo_h handle, void *data)
  {
      char* appid = nullptr;
      ::pkgmgrinfo_appinfo_get_appid(handle, &appid);

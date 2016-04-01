@@ -15,25 +15,39 @@
  */
 
 #include <cstring>
+#include <cassert>
 
 #include "administration.h"
 #include "administration.hxx"
 
-#include "capi-assert.h"
+#include "debug.h"
 #include "policy-client.h"
 
 using namespace DevicePolicyManager;
 
-int dpm_register_client(dpm_client_h handle, const char* name)
+dpm_admin_policy_h dpm_context_acquire_admin_policy(dpm_context_h handle)
 {
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Administration admin = client.createPolicyInterface<Administration>();
+    assert(handle);
+
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    return client.createPolicyInterface<AdministrationPolicy>();
+}
+
+int dpm_context_release_admin_policy(dpm_admin_policy_h handle)
+{
+    assert(handle);
+    delete &GetPolicyInterface<AdministrationPolicy>(handle);
+    return 0;
+}
+
+int dpm_admin_register_client(dpm_admin_policy_h handle, const char* name)
+{
+    AdministrationPolicy& admin = GetPolicyInterface<AdministrationPolicy>(handle);
     return admin.registerPolicyClient(name);
 }
 
-int dpm_deregister_client(dpm_client_h handle, const char* name)
+int dpm_admin_deregister_client(dpm_admin_policy_h handle, const char* name)
 {
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Administration admin = client.createPolicyInterface<Administration>();
+    AdministrationPolicy& admin = GetPolicyInterface<AdministrationPolicy>(handle);
     return admin.deregisterPolicyClient(name);
 }
