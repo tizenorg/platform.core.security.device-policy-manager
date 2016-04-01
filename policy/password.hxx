@@ -22,7 +22,7 @@
 
 namespace DevicePolicyManager {
 
-class Password {
+class PasswordPolicy {
 public:
     typedef enum {
         DPM_PASSWORD_QUALITY_UNSPECIFIED     = 0x00,    /**< No requirements for password. */
@@ -31,38 +31,38 @@ public:
         DPM_PASSWORD_QUALITY_NUMERIC         = 0x20,    /**< Containing at least numeric characters */
         DPM_PASSWORD_QUALITY_ALPHABETIC      = 0x40,    /**< Containing at least alphabetic (or other symbol) characters */
         DPM_PASSWORD_QUALITY_ALPHANUMERIC    = 0x80,    /**< Containing at least numeric and alphabetic characters */
-    } PasswordQuality;
+    } PasswordPolicyQuality;
 
-    Password(PolicyControlContext &ctxt);
-    ~Password();
+    PasswordPolicy(PolicyControlContext &ctxt);
+    ~PasswordPolicy();
 
-    int setPasswordQuality(const std::string& username, const int quality);
-    int getPasswordQuality(const std::string& username);
-    int setPasswordMinimumLength(const std::string& username, const int value);
-    int getPasswordMinimumLength(const std::string& username);
-    int setMinPasswordComplexChars(const std::string& username, const int value);
-    int getMinPasswordComplexChars(const std::string& username);
-    int setMaximumFailedPasswordForWipe(const std::string& username, const int value);
-    int getMaximumFailedPasswordForWipe(const std::string& username);
-    int setPasswordExpires(const std::string& username, const int value);
-    int getPasswordExpires(const std::string& username);
-    int setPasswordHistory(const std::string& username, const int value);
-    int getPasswordHistory(const std::string& username);
-    int setPasswordPattern(const std::string& username, const std::string& pattern);
-    int resetPassword(const std::string& username, const std::string& passwd);
-    int enforcePasswordChange(const std::string& username);
-    int setMaxInactivityTimeDeviceLock(const std::string& username, const int value);
-    int getMaxInactivityTimeDeviceLock(const std::string& username);
-    std::string getPasswordPolicy(const std::string& username);
-    int setPasswordStatus(const std::string& username, const int status);
-    int deletePasswordPattern(const std::string& username);
-    std::string getPasswordPattern(const std::string& username);
-    int setMaximumCharacterOccurrences(const std::string& username, const int value);
-    int getMaximumCharacterOccurrences(const std::string& username);
-    int setMaximumNumericSequenceLength(const std::string& username, const int value);
-    int getMaximumNumericSequenceLength(const std::string& username);
-    int setForbiddenStrings(const std::string& username, const std::vector<std::string>& forbiddenPasswds);
-    std::vector<std::string> getForbiddenStrings(const std::string& username);
+    int setPasswordPolicyQuality(const int quality);
+    int getPasswordPolicyQuality();
+    int setPasswordPolicyMinimumLength(const int value);
+    int getPasswordPolicyMinimumLength();
+    int setMinPasswordPolicyComplexChars(const int value);
+    int getMinPasswordPolicyComplexChars();
+    int setMaximumFailedPasswordPolicyForWipe(const int value);
+    int getMaximumFailedPasswordPolicyForWipe();
+    int setPasswordPolicyExpires(const int value);
+    int getPasswordPolicyExpires();
+    int setPasswordPolicyHistory(const int value);
+    int getPasswordPolicyHistory();
+    int setPasswordPolicyPattern(const std::string& pattern);
+    int resetPasswordPolicy(const std::string& passwd);
+    int enforcePasswordPolicyChange();
+    int setMaxInactivityTimeDeviceLock(const int value);
+    int getMaxInactivityTimeDeviceLock();
+    std::string getPasswordPolicyPolicy();
+    int setPasswordPolicyStatus(const int status);
+    int deletePasswordPolicyPattern();
+    std::string getPasswordPolicyPattern();
+    int setMaximumCharacterOccurrences(const int value);
+    int getMaximumCharacterOccurrences();
+    int setMaximumNumericSequenceLength(const int value);
+    int getMaximumNumericSequenceLength();
+    int setForbiddenStrings(const std::vector<std::string>& forbiddenPasswds);
+    std::vector<std::string> getForbiddenStrings();
 
 private:
     PolicyControlContext& __context;

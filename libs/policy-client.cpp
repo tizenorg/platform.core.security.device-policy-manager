@@ -26,15 +26,15 @@ const std::string POLICY_MANAGER_ADDRESS = "/tmp/.device-policy-manager";
 } // namespace
 
 
-DevicePolicyClient::DevicePolicyClient() noexcept
+DevicePolicyContext::DevicePolicyContext() noexcept
 {
 }
 
-DevicePolicyClient::~DevicePolicyClient() noexcept
+DevicePolicyContext::~DevicePolicyContext() noexcept
 {
 }
 
-int DevicePolicyClient::connect(const std::string& address) noexcept
+int DevicePolicyContext::connect(const std::string& address) noexcept
 {
     try {
         client.reset(new rmi::Client(address));
@@ -46,17 +46,17 @@ int DevicePolicyClient::connect(const std::string& address) noexcept
     return 0;
 }
 
-int DevicePolicyClient::connect() noexcept
+int DevicePolicyContext::connect() noexcept
 {
     return connect(POLICY_MANAGER_ADDRESS);
 }
 
-void DevicePolicyClient::disconnect() noexcept
+void DevicePolicyContext::disconnect() noexcept
 {
     client.reset();
 }
 
-int DevicePolicyClient::subscribePolicyChange(const std::string& name,
+int DevicePolicyContext::subscribePolicyChange(const std::string& name,
                                               const PolicyChangeListener& listener,
                                               void* data)
 {
@@ -68,12 +68,12 @@ int DevicePolicyClient::subscribePolicyChange(const std::string& name,
                                                        name, listenerDispatcher);
 }
 
-int DevicePolicyClient::unsubscribePolicyChange(int subscriberId)
+int DevicePolicyContext::unsubscribePolicyChange(int subscriberId)
 {
     return client->unsubscribe(SUBSCRIBER_UNREGISTER, subscriberId);
 }
 
-int DevicePolicyClient::subscribeSignal(const std::string& name,
+int DevicePolicyContext::subscribeSignal(const std::string& name,
                                         const SignalListener& listener,
                                         void* data)
 {
@@ -85,7 +85,7 @@ int DevicePolicyClient::subscribeSignal(const std::string& name,
                             (SUBSCRIBER_REGISTER, name, listenerDispatcher);
 }
 
-int DevicePolicyClient::unsubscribeSignal(int subscriberId)
+int DevicePolicyContext::unsubscribeSignal(int subscriberId)
 {
     return client->unsubscribe(SUBSCRIBER_UNREGISTER, subscriberId);
 }
