@@ -19,11 +19,12 @@
 
 
  /**
-  * @defgroup CAPI_DPM_FRAMEWORK Device Policy Manager
+  * @defgroup CAPI_SECURITY_DPM_MODULE Device Policy Manager
   * @brief The Device Policy Management framework provides APIs to create
   * security-aware applications that are useful in enterprise settings.
+  * @ingroup CAPI_SECURITY_FRAMEWORK
   * <br>
-  * @section CAPI_DPM_FRAMEWORK_OVERVIEW Overview
+  * @section CAPI_SECURITY_DPM_MODULE_OVERVIEW Overview
   * The primary purpose of the DPM(Device Policy Management) framework is
   * to support enterprise applications, which require integration with
   * policies enforced on the device to restrict their operations on
@@ -77,7 +78,7 @@
   * @image html dpm.png "Tizen Device Policy Management Framework"
   * <br>
   * @subsection PolicyGroup Policy Groups
-  * The Device Policy Management framework supposts following policy groups.
+  * The Device Policy Management framework supports following policy groups.
   * Each policy group has dedicated header file. So, you should include it
   * to use any API associated to the policy group.
   * <center>
@@ -106,12 +107,12 @@
   * application are only allowed to subscribe policy change notification published by
   * the device policy manager.
   *<br>
-  * @defgroup CAPI_DPM_POLICY_CLIENT_MODULE Policy Client Interface
+  * @defgroup CAPI_SECURITY_DPM_POLICY_CLIENT_MODULE Policy Client Interface
   * @brief The policy client provides functions required to access the device policy APIs.
-  * @ingroup CAPI_DPM_FRAMEWORK
-  * @section CAPI_DPM_POLICY_CLIENT_MODULE_HEADER Required Header
+  * @ingroup CAPI_SECURITY_DPM_MODULE
+  * @section CAPI_SECURITY_DPM_POLICY_CLIENT_MODULE_HEADER Required Header
   *  \#include <dpm/device-policy-client.h>
-  * @section CAPI_DPM_POLICY_CLIENT_MODULE_OVERVIEW Overview
+  * @section CAPI_SECURITY_DPM_POLICY_CLIENT_MODULE_OVERVIEW Overview
   * The Policy Client module provides Device Policy Client handle which keeps track of
   * state between the device policy client and the device policy manager.
   * The device policy clients must create the handle by using dpm_create_client()
@@ -119,23 +120,23 @@
   * freed by using dpm_destroy_client() when interaction with the device policy manager
   * is no longer required.
   *
-  * @defgroup CAPI_DPM_PASSWORD_POLICY_MODULE Password policy group
+  * @defgroup CAPI_SECURITY_DPM_PASSWORD_POLICY_MODULE Password policy group
   * @brief Password policy group provides APIs to control password policies.
-  * @ingroup CAPI_DPM_FRAMEWORK
-  * @section CAPI_DPM_PASSWORD_POLICY_MODULE_HEADER Required Header
+  * @ingroup CAPI_SECURITY_DPM_MODULE
+  * @section CAPI_SECURITY_DPM_PASSWORD_POLICY_MODULE_HEADER Required Header
   *  \#include <dpm/password.h>
-  * @section CAPI_DPM_PASSWORD_POLICY_MODULE_OVERVIEW Overview
+  * @section CAPI_SECURITY_DPM_PASSWORD_POLICY_MODULE_OVERVIEW Overview
   * Password policy group provides APIs to control password policies such as
   * password type, password quality and expiration date. Any API which requires privileges
   * is only available for the registered device policy client which is enrolled to the device
   * by enrollment process.
   *
-  * @defgroup CAPI_DPM_ZONE_POLICY_MODULE Zone policy group
+  * @defgroup CAPI_SECURITY_DPM_ZONE_POLICY_MODULE Zone policy group
   * @brief Zone policy group provides APIs to control containers
-  * @ingroup CAPI_DPM_FRAMEWORK
-  * @section CAPI_DPM_ZONE_POLICY_MODULE_HEADER Required Header
+  * @ingroup CAPI_SECURITY_DPM_MODULE
+  * @section CAPI_SECURITY_DPM_ZONE_POLICY_MODULE_HEADER Required Header
   * \#include <dpm/zone.h>
-  * @section CAPI_DPM_ZONE_POLICY_MODULE_OVERVIEW Overview
+  * @section CAPI_SECURITY_DPM_ZONE_POLICY_MODULE_OVERVIEW Overview
   * This module provides APIs to manage application containers. Any API which requires
   * privileges is only available for the registered device policy client which is enrolled to
   * the device by enrollment process.
