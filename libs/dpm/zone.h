@@ -21,7 +21,7 @@
 
 /**
  * @file zone.h
- * @brief This file provides APIs to control app containers
+ * @brief This file provides APIs to control containers
  */
 
 #ifdef __cplusplus
@@ -34,69 +34,115 @@ extern "C" {
  */
 
 /**
- * @brief       API to create a new application container.
- * @details     This API calls zone admin package to start zone provisioning
- *              process according to the enterprise policy. Thus, the zone
- *              admin package should be able to dispatch zone policy which are
- *              required to configure the zone.
- * @remark
+ * @brief       The Zone Policy handle
+ * @details     The Zone Policy Handle is an abstraction of the
+ *              logical connection between the device policy manager and
+ *              it's client. The Zone Policy handle must be
+ *              created by using dpm_context_acquire_zone_policy() before attempting to
+ *              use almost any of the device policy zone APIs, and it should
+ *              be freed when interaction with the Device Policy Manager
+ *              is no longer required.
+ *              To release the handle, use dpm_context_release_zone_policy().
  * @since_tizen 3.0
- * @privlevel   public
- * @privilege   %http://tizen.org/privilege/dpm.zone
- * @param[in]   handle The device policy client handle
- * @param[in]   name The zone name to be created
- * @param[in]   pkgid The package id to be run for zone creation
- * @return      #DPM_ERROR_NONE on success, otherwise a negative value
- * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_INVALID Invalid parameter
- * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
- *              the privilege to call this API
- * @pre         handle must be created by dpm_create_client()
- * @post
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_remove_zone()
- * @see         dpm_zone_list_get_iterator()
+ * @see         dpm_context_acquire_zone_policy()
+ * @see         dpm_context_release_zone_policy()
  */
-DPM_API int dpm_create_zone(dpm_client_h handle, const char* name, const char* pkgid);
+typedef void* dpm_zone_policy_h;
 
 /**
- * @brief       API to remove existing zone.
- * @details     If specified zone exists, it will be removed.
- *              All of directories of zone will be also erased.
+ * @brief       Acquires the Zone Policy handle
+ * @details     This API acquires zone policy handle required to call
+ *              the zone policy APIs.
+ * @since_tizen 3.0
+ * @param[in]   handle Device Policy Context Handle
+ * @return      Zone Policy handle on success, otherwise NULL
+ * @remark      The specific error code can be obtained by using the
+ *              get_last_result() method. Error codes are described in
+ *              exception section.
+ * @exception   #DPM_ERROR_NONE No error
+ * @exception   #DPM_ERROR_CONNECTION_REFUSED Connection refused
+ * @exception   #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @see         dpm_context_release_zone_policy()
+ * @see         get_last_result()
+ */
+DPM_API dpm_zone_policy_h dpm_context_acquire_zone_policy(dpm_context_h handle);
+
+/**
+ * @brief       Releases the Zone Policy Handle
+ * @details     This API must be called if interaction with the Device
+ *              Policy Manager is no longer required.
+ * @since_tizen 3.0
+ * @param[in]   handle Zone Policy Handle
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @pre         The handle must be created by dpm_context_acquire_zone_policy()
+ * @see         dpm_context_acquire_zone_policy()
+ */
+DPM_API int dpm_context_release_zone_policy(dpm_zone_policy_h handle);
+
+/**
+ * @brief       Creates a new container.
+ * @details     An administrator can use this API to create container. This API
+ *              can initiate UI flow, which user has to complete before the actual
+ *              container can be created.
  * @since_tizen 3.0
  * @privlevel   public
  * @privilege   %http://tizen.org/privilege/dpm.zone
- * @param[in]   handle The device policy client handle
+ * @param[in]   handle The zone policy handle
+ * @param[in]   name The zone name to be created
+ * @param[in]   pkgid The package id used to setup the container
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
+ *              the privilege to call this API
+ * @pre         The handle must be created by dpm_context_acquire_zone_policy().
+ * @see         dpm_context_acquire_zone_policy()
+ * @see         dpm_context_release_zone_policy()
+ * @see         dpm_zone_destroy()
+ * @see         dpm_zone_create_iterator()
+ */
+DPM_API int dpm_zone_create(dpm_zone_policy_h handle, const char* name, const char* pkgid);
+
+/**
+ * @brief       Removes existing zone.
+ * @details     If specified zone exists, it will be removed.
+ *              All file system objects created for the zone will be also erased.
+ * @since_tizen 3.0
+ * @privlevel   public
+ * @privilege   %http://tizen.org/privilege/dpm.zone
+ * @param[in]   handle The zone policy handle
  * @param[in]   name The zone name to be removed
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_INVALID Invalid parameter
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
- *              the privilege to call this API
- * @pre         handle must be created by dpm_create_client()
+ *              the privilege to call this API or the caller is not the owner
+ *              of the zone
+ * @pre         The handle must be created by dpm_context_acquire_zone_policy().
  * @pre         The zone corresponding to the given name must be
  *              created before use of this API.
- * @post
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_remove_zone()
- * @see         dpm_zone_list_get_iterator()
+ * @see         dpm_context_acquire_zone_policy()
+ * @see         dpm_context_release_zone_policy()
+ * @see         dpm_zone_create()
+ * @see         dpm_zone_create_iterator()
  */
-DPM_API int dpm_remove_zone(dpm_client_h handle, const char* name);
+DPM_API int dpm_zone_destroy(dpm_zone_policy_h handle, const char* name);
 
 /**
  * @brief       Zone list iterator handle
+ * @since_tizen 3.0
  */
 typedef void* dpm_zone_iterator_h;
 
 /**
- * @brief       API to get an iterator to traverse the list of zone.
+ * @brief       Gets an iterator to traverse the list of zone.
  * @details     The list contains all of created zones.
  *              The iterator indicates the begin of the list first.
  *              It can be used for getting a value in list and traversing.
  * @since_tizen 3.0
- * @param[in]   handle The device policy client handle
+ * @param[in]   handle The zone policy handle
  * @return      A new iterator handle of zone list on success, otherwise
  *              null value
  * @remark      The specific error code can be obtained by using the
@@ -104,117 +150,122 @@ typedef void* dpm_zone_iterator_h;
  *              exception section.
  * @exception   #DPM_ERROR_NONE No error
  * @exception   #DPM_ERROR_OUT_OF_MEMORY Out of memory
- * @pre         handle must be created by dpm_create_client()
- * @post
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_create_zone()
- * @see         dpm_remove_zone()
+ * @exception   #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @pre         The handle must be created by dpm_context_acquire_zone_policy().
+ * @see         dpm_context_acquire_zone_policy()
+ * @see         dpm_context_release_zone_policy()
+ * @see         dpm_zone_create()
+ * @see         dpm_zone_destroy()
  * @see         dpm_zone_iterator_next()
- * @see         dpm_free_zone_iterator()
+ * @see         dpm_zone_destroy_iterator()
  */
-DPM_API dpm_zone_iterator_h dpm_get_zone_iterator(dpm_client_h handle);
+DPM_API dpm_zone_iterator_h dpm_zone_create_iterator(dpm_zone_policy_h handle);
 
 /**
- * @brief       API to get a value and move the iterator to next.
+ * @brief       Get a value and move the iterator to next.
  * @details     First, API gets the value indicated by the iterator, and then
  *              API moves the iterator to the next position.
  * @since_tizen 3.0
  * @param[in]   iter The iterator to be controlled
- * @return      The value if the iterater has object, otherwise null value
- * @pre         iter must be created by dpm_zone_list_get_iterator()
- * @post
- * @see         dpm_zone_list_get_iterator()
- * @see         dpm_zone_free_iterator()
+ * @return      The value if the iterator has object, otherwise null value
+ * @pre         The iter must be created by dpm_zone_create_iterator().
+ * @see         dpm_zone_create_iterator()
+ * @see         dpm_zone_destroy_iterator()
  */
 DPM_API const char* dpm_zone_iterator_next(dpm_zone_iterator_h iter);
 
 /**
- * @brief       API to free the iterator.
- * @details     The iterator and what it indicates are freed from memory.
+ * @brief       Frees the iterator.
+ * @details     This API frees the iterator.
  * @since_tizen 3.0
- * @param[in]   iter The interator to be removed
- * @pre         iter must be created by dpm_zone_list_get_iterator()
- * @post
- * @see         dpm_get_zone_iterator()
+ * @param[in]   iter The iterator to be removed
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @pre         The iter must be created by dpm_zone_create_iterator()
+ * @see         dpm_zone_create_iterator()
  * @see         dpm_zone_iterator_next()
  */
-DPM_API void dpm_free_zone_iterator(dpm_zone_iterator_h iter);
+DPM_API int dpm_zone_destroy_iterator(dpm_zone_iterator_h iter);
 
 /*
  * @brief       Enumeration for zone state
+ * @since_tizen 3.0
  */
 typedef enum {
-    DPM_ZONE_DEFINED,     /**< Zone has been defined, but it is not running. */
-    DPM_ZONE_RUNNING,     /**< Zone has been started. */
-    DPM_ZONE_LOCKED       /**< Zone has been defined, but it can not start. */
-} zone_state_e;
+    DPM_ZONE_STATE_DEFINED      = 0x01, /**< Zone has been defined, but it is not running. */
+    DPM_ZONE_STATE_RUNNING      = 0x02, /**< Zone has been started. */
+    DPM_ZONE_STATE_LOCKED       = 0x03  /**< Zone has been defined, but it can not start. */
+} dpm_zone_state_e;
 
 /**
- * @brief       API to get the zone state
+ * @brief       Gets the zone state.
  * @details     The zone can have one of the three states(defined, running, locked).
  * @since_tizen 3.0
- * @param[in]   handle The device policy client handle
+ * @param[in]   handle The zone policy handle
  * @param[in]   name The zone name
- * @return      #DPM_ERROR_INVALID_PARAMETER if the given zone name is not valid,
- *              otherwise a zone state
- * @retval      #DPM_ZONE_DEFINED Zone has been defined.
- * @retval      #DPM_ZONE_RUNNING Zone is running
- * @retval      #DPM_ZONE_LOCKED zone was locked.
- * @pre         handle must be created by dpm_create_client()
- * @post
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_create_zone()
- * @see         dpm_remove_zone()
- * @see         dpm_subscribe_zone_signal()
- * @see         dpm_unsubscribe_zone_signal()
+ * @param[out]  state The zone state
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_NO_DATA No such zone to get state
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @pre         The handle must be created by dpm_context_acquire_zone_policy().
+ * @see         dpm_context_acquire_zone_policy()
+ * @see         dpm_context_release_zone_policy()
+ * @see         dpm_zone_create()
+ * @see         dpm_zone_destroy()
+ * @see         dpm_zone_add_signal_cb()
+ * @see         dpm_zone_remove_signal_cb()
  */
-DPM_API int dpm_get_zone_state(dpm_client_h handle, const char *name);
+DPM_API int dpm_zone_get_state(dpm_zone_policy_h handle, const char *name, dpm_zone_state_e *state);
 
 /**
- * @brief       Called when a zone signal occurs
+ * @brief       Called when a zone raises a signal.
+ * @since_tizen 3.0
+ * @param[in]   name The container name
+ * @param[in]   object The object name triggered the signal
+ * @param[in]   user_data The user data passed from dpm_zone_add_signal_cb
+ * @see         dpm_zone_add_signal_cb()
+ * @see         dpm_zone_remove_signal_cb()
  */
 typedef void(*dpm_zone_signal_cb)(const char* name, const char* object, void *user_data);
 
 /**
- * @brief       API to attach a listener to get zone signal.
- * @details     Each zone signals are sent when zone state is changed.
- *              To catch the events, listener should be added in advance.
+ * @brief       Adds zone signal callback.
+ * @details     This API can be used to receive zone signal. The callback specified to
+ *              this function is automatically called when a zone raises signal.
  * @since_tizen 3.0
- * @param[in]   handle the device policy client handlei
- * @param[in]   signal The signal of the container to be monitored
- * @param[in]   callback The listener function to be called
- * @param[in]   user_data The user data passed to the listener function
- * @return      Listener identifier on success, otherwise negative value
+ * @param[in]   handle The zone policy handle
+ * @param[in]   signal The signal name of the container to be monitored
+ * @param[in]   callback The zone signal callback
+ * @param[in]   user_data The user data passed to the callback function
+ * @return      Zone signal id on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
- *              the privilege to call this API
- * @pre         handle must be created by dpm_create_client()
- * @post
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_subscribe_zone_signal()
+ * @pre         The handle must be created by dpm_context_acquire_zone_policy().
+ * @see         dpm_context_acquire_zone_policy()
+ * @see         dpm_context_release_zone_policy()
+ * @see         dpm_zone_remove_signal_cb()
  */
-DPM_API int dpm_subscribe_zone_signal(dpm_client_h handle, const char* signal, dpm_zone_signal_cb callback, void* user_data);
+DPM_API int dpm_zone_add_signal_cb(dpm_zone_policy_h handle, const char* signal,
+                                   dpm_zone_signal_cb callback, void* user_data);
 
 /**
- * @brief       API to detach the listener from zone signal.
- * @details     After removed, listner function will be no longer called even
- *              though zone state is changed.
+ * @brief       Removes zone signal callback.
+ * @details     This API removes signal callback.
  * @since_tizen 3.0
- * @param[in]   handle the device policy client handle
- * @param[in]   callback_id The listener identifier to be removed
+ * @param[in]   handle The zone policy handle
+ * @param[in]   id Zone signal id
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
- *              the privilege to call this API
- * @pre         handle must be created by dpm_create_client()
- * @post
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_unsubscribe_zone_signal()
+ * @pre         The handle must be created by dpm_context_acquire_zone_policy().
+ * @pre         The id must be created by dpm_zone_add_signal_cb(). 
+ * @see         dpm_context_aquire_zone_policy()
+ * @see         dpm_context_release_zone_policy()
+ * @see         dpm_zone_add_signal_cb()
  */
-DPM_API int dpm_unsubscribe_zone_signal(dpm_client_h handle, int callback_id);
+DPM_API int dpm_zone_remove_signal_cb(dpm_zone_policy_h handle, int id);
 
 /**
  * @}
@@ -224,4 +275,4 @@ DPM_API int dpm_unsubscribe_zone_signal(dpm_client_h handle, int callback_id);
 }
 #endif
 
-#endif //! __CAPI_ZONE_POLICY__
+#endif /* __CAPI_ZONE_POLICY__ */
