@@ -22,7 +22,7 @@
 
 TESTCASE(ScreenLockTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     TEST_EXPECT(0, client.connect());
 
@@ -34,7 +34,7 @@ TESTCASE(ScreenLockTest)
 
 TESTCASE(InternalMemoryEncryptionTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     TEST_EXPECT(0, client.connect());
 
@@ -46,7 +46,7 @@ TESTCASE(InternalMemoryEncryptionTest)
 
 TESTCASE(ExternalMemoryEncryptionTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     TEST_EXPECT(0, client.connect());
 
@@ -58,7 +58,7 @@ TESTCASE(ExternalMemoryEncryptionTest)
 
 TESTCASE(DeviceWipeTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     TEST_EXPECT(0, client.connect());
 
@@ -70,7 +70,7 @@ TESTCASE(DeviceWipeTest)
 
 TESTCASE(ExternalMemoryWipeTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     TEST_EXPECT(0, client.connect());
 
@@ -82,7 +82,7 @@ TESTCASE(ExternalMemoryWipeTest)
 
 TESTCASE(EmptyDirectoryIterationTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     TEST_EXPECT(0, client.connect());
 
@@ -97,7 +97,7 @@ TESTCASE(EmptyDirectoryIterationTest)
 
 TESTCASE(NonemptyDirectoryIterationTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     TEST_EXPECT(0, client.connect());
 
@@ -112,7 +112,7 @@ TESTCASE(NonemptyDirectoryIterationTest)
 
 TESTCASE(InvalidDirectoryIterationTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     TEST_EXPECT(0, client.connect());
 

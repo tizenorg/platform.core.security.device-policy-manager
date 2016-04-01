@@ -23,34 +23,36 @@ SET(PC_FILE "${PROJECT_NAME}.pc")
 SET(SOURCES policy-client.cpp
 			administration.cpp
 			application.cpp
-			security.cpp
+			bluetooth.cpp
+			misc.cpp
 			password.cpp
+			restriction.cpp
+			security.cpp
 			wifi.cpp
 			zone.cpp
-			misc.cpp
-			restriction.cpp
-			bluetooth.cpp
 			dpm/client-handle.cpp
-            dpm/security.cpp
+			dpm/administration.cpp
+			dpm/application.cpp
+			dpm/bluetooth.cpp
+			dpm/misc.cpp
 			dpm/password.cpp
+			dpm/restriction.cpp
+            dpm/security.cpp
 			dpm/wifi.cpp
 			dpm/zone.cpp
-			dpm/application.cpp
-			dpm/misc.cpp
-			dpm/restriction.cpp
-			dpm/bluetooth.cpp
 )
 
 SET(CAPI_INCLUDE_FILES  dpm/dpm.h
 						dpm/device-policy-client.h
 						dpm/administration.h
 						dpm/application.h
-						dpm/security.h
+						dpm/bluetooth.h
+						dpm/misc.h
 						dpm/password.h
 						dpm/restriction.h
+						dpm/security.h
 						dpm/wifi.h
 						dpm/zone.h
-						dpm/misc.h
 )
 
 SET (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,noexecstack")

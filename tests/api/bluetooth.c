@@ -21,29 +21,39 @@
 
 static int bluetooth_add_device_to_blacklist(struct testcase* tc)
 {
-    dpm_client_h handle;
+    dpm_context_h context;
 
-    handle = dpm_create_client();
-    if (handle == NULL) {
+    context = dpm_context_create();
+    if (context == NULL) {
         printf("Failed to create client handle\n");
         return TEST_FAILED;
     }
 
-    const char* dummy_mac_address = "e8:11:32:30:78:9c";
-    if (dpm_add_bluetooth_device_to_blacklist(handle, dummy_mac_address) != 0) {
-        dpm_destroy_client(handle);
+    dpm_bluetooth_policy_h policy = dpm_context_acquire_bluetooth_policy(context);
+    if (policy == NULL) {
+        printf("Failed to get bluetooth policy interface\n");
+        dpm_context_destroy(context);
         return TEST_FAILED;
     }
 
-    dpm_destroy_client(handle);
+    const char* dummy_mac_address = "e8:11:32:30:78:9c";
+    if (dpm_add_bluetooth_device_to_blacklist(policy, dummy_mac_address) != 0) {
+        dpm_context_release_bluetooth_policy(policy);
+        dpm_context_destroy(handle);
+        return TEST_FAILED;
+    }
+
+    dpm_context_release_bluetooth_policy(policy);
+    dpm_context_destroy(handle);
+
     return TEST_SUCCESSED;
 }
 
 static int bluetooth_remove_device_from_blacklist(struct testcase* tc)
 {
-    dpm_client_h handle;
+    dpm_context_h context;
 
-    handle = dpm_create_client();
+    handle = dpm_context_create();
     if (handle == NULL) {
         printf("Failed to create client handle\n");
         return TEST_FAILED;
@@ -51,20 +61,20 @@ static int bluetooth_remove_device_from_blacklist(struct testcase* tc)
 
     const char* dummy_mac_address = "e8:11:32:30:78:9c";
     if (dpm_remove_bluetooth_device_from_blacklist(handle, dummy_mac_address) != 0) {
-        dpm_destroy_client(handle);
+        dpm_context_destroy(handle);
         return TEST_FAILED;
     }
 
-    dpm_destroy_client(handle);
+    dpm_context_destroy(handle);
     return TEST_SUCCESSED;
 }
 
 static int bluetooth_device_restriction(struct testcase* tc)
 {
     bool allow = false;
-    dpm_client_h handle;
+    dpm_context_h handle;
 
-    handle = dpm_create_client();
+    handle = dpm_context_create();
     if (handle == NULL) {
         printf("Failed to create client handle\n");
         return TEST_FAILED;
@@ -77,19 +87,19 @@ static int bluetooth_device_restriction(struct testcase* tc)
     // the 'allow' will be always 'true' before server/bluetooth.cpp has been implemented.
     allow = dpm_is_bluetooth_device_restricted(handle);
     if (allow == true) {
-        dpm_destroy_client(handle);
+        dpm_context_destroy(handle);
         return TEST_SUCCESSED;
     }
 
-    dpm_destroy_client(handle);
+    dpm_context_destroy(handle);
     return TEST_FAILED;
 }
 
 static int bluetooth_add_uuid_to_blacklist(struct testcase* tc)
 {
-    dpm_client_h handle;
+    dpm_context_h handle;
 
-    handle = dpm_create_client();
+    handle = dpm_context_create();
     if (handle == NULL) {
         printf("Failed to create client handle\n");
         return TEST_FAILED;
@@ -97,19 +107,19 @@ static int bluetooth_add_uuid_to_blacklist(struct testcase* tc)
 
     const char* dummy_uuid = "ff8ca1f3-0221-40c9-91fd-25ebbbfa68c3";
     if (dpm_add_bluetooth_uuid_to_blacklist(handle, dummy_uuid) != 0) {
-        dpm_destroy_client(handle);
+        dpm_context_destroy(handle);
         return TEST_FAILED;
     }
 
-    dpm_destroy_client(handle);
+    dpm_context_destroy(handle);
     return TEST_SUCCESSED;
 }
 
 static int bluetooth_remove_uuid_from_blacklist(struct testcase* tc)
 {
-    dpm_client_h handle;
+    dpm_context_h handle;
 
-    handle = dpm_create_client();
+    handle = dpm_context_create();
     if (handle == NULL) {
         printf("Failed to create client handle\n");
         return TEST_FAILED;
@@ -117,20 +127,20 @@ static int bluetooth_remove_uuid_from_blacklist(struct testcase* tc)
 
     const char* dummy_uuid = "ff8ca1f3-0221-40c9-91fd-25ebbbfa68c3";
     if (dpm_remove_bluetooth_uuid_from_blacklist(handle, dummy_uuid) != 0) {
-        dpm_destroy_client(handle);
+        dpm_context_destroy(handle);
         return TEST_FAILED;
     }
 
-    dpm_destroy_client(handle);
+    dpm_context_destroy(handle);
     return TEST_SUCCESSED;
 }
 
 static int bluetooth_uuid_restriction(struct testcase* tc)
 {
     bool allow = false;
-    dpm_client_h handle;
+    dpm_context_h handle;
 
-    handle = dpm_create_client();
+    handle = dpm_context_create();
     if (handle == NULL) {
         printf("Failed to create client handle\n");
         return TEST_FAILED;
@@ -143,11 +153,11 @@ static int bluetooth_uuid_restriction(struct testcase* tc)
     // the 'allow' will be always 'true' before server/bluetooth.cpp has been implemented.
     allow = dpm_is_bluetooth_uuid_restricted(handle);
     if (allow == true) {
-        dpm_destroy_client(handle);
+        dpm_context_destroy(handle);
         return TEST_SUCCESSED;
     }
 
-    dpm_destroy_client(handle);
+    dpm_context_destroy(handle);
     return TEST_FAILED;
 }
 
