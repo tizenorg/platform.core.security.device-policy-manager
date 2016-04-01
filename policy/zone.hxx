@@ -26,19 +26,19 @@ namespace DevicePolicyManager {
  * This class provides APIs to create/remove and manage zones.
  */
 
-class Zone {
+class ZonePolicy {
 public:
-    Zone(PolicyControlContext& ctxt);
-    ~Zone();
+    ZonePolicy(PolicyControlContext& ctxt);
+    ~ZonePolicy();
 
-    int createZone(const std::string& name, const std::string& setupWizardAppid);
-    int removeZone(const std::string& name);
-    int lockZone(const std::string& name);
-    int unlockZone(const std::string& name);
+    int createZonePolicy(const std::string& name, const std::string& setupWizardAppid);
+    int removeZonePolicy(const std::string& name);
+    int lockZonePolicy(const std::string& name);
+    int unlockZonePolicy(const std::string& name);
 
-    std::vector<std::string> getZoneList();
+    std::vector<std::string> getZonePolicyList();
 
-    int getZoneState(const std::string& name);
+    int getZonePolicyState(const std::string& name);
 
 private:
     PolicyControlContext& context;
