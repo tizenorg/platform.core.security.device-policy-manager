@@ -25,176 +25,54 @@
 
 static int zone_create(struct testcase* tc)
 {
-    dpm_client_h handle;
+    int ret;
+    dpm_context_h context;
+    dpm_zone_policy_h policy;
+    dpm_zone_state_e state;
 
-    handle = dpm_create_client();
-    if (handle == NULL) {
-        printf("Failed to create client handle\n");
+    context = dpm_context_create();
+    if (context == NULL) {
+        printf("Failed to create client context\n");
         return TEST_FAILED;
     }
 
-    if (dpm_create_zone(handle, TEST_ZONE_ID, TEST_SETUP_WIZARD_PKG_ID) == 0) {
-        dpm_destroy_client(handle);
-        return TEST_SUCCESSED;
-    }
-
-    dpm_destroy_client(handle);
-    return TEST_FAILED;
-}
-
-static int zone_remove(struct testcase* tc)
-{
-    dpm_client_h handle;
-
-    handle = dpm_create_client();
-    if (handle == NULL) {
-        printf("Failed to create client handle\n");
+    policy = dpm_context_acquire_zone_policy(context);
+    if (policy == NULL) {
+        printf("Failed to get zone policy");
+        dpm_context_destroy(context);
         return TEST_FAILED;
     }
 
-    if (dpm_remove_zone(handle, TEST_ZONE_ID) == 0) {
-        dpm_destroy_client(handle);
-        return TEST_SUCCESSED;
+    ret = TEST_SUCCESSED;
+    if (dpm_zone_create(policy, TEST_ZONE_ID, TEST_SETUP_WIZARD_PKG_ID) != DPM_ERROR_NONE) {
+        ret = TEST_FAILED;
+        goto out;
     }
 
-    dpm_destroy_client(handle);
-    return TEST_FAILED;
+    if (dpm_zone_get_state(policy, TEST_ZONE_ID, &state) != DPM_ERROR_NONE) {
+        ret = TEST_FAILED;
+        goto remove;
+    }
+
+remove:
+    if (dpm_zone_destroy(policy, TEST_ZONE_ID) == DPM_ERROR_NONE) {
+        ret = TEST_FAILED;
+        goto out;
+    }
+
+out:
+    dpm_context_release_zone_policy(context, policy);
+    dpm_context_destroy(context);
+
+    return ret;
 }
 
-static int zone_get_state(struct testcase* tc)
-{
-    dpm_client_h handle;
-
-    handle = dpm_create_client();
-    if (handle == NULL) {
-        printf("Failed to create client handle\n");
-        return TEST_FAILED;
-    }
-
-    if (dpm_get_zone_state(handle, TEST_ZONE_ID) != DPM_ERROR_INVALID_PARAMETER) {
-        dpm_destroy_client(handle);
-        return TEST_SUCCESSED;
-    }
-
-    dpm_destroy_client(handle);
-    return TEST_FAILED;
-}
-
-static int zone_get_list(struct testcase* tc)
-{
-    dpm_client_h handle;
-    dpm_zone_iterator_h it;
-
-    handle = dpm_create_client();
-    if (handle == NULL) {
-        printf("Failed to create client handle\n");
-        return TEST_FAILED;
-    }
-
-    it = dpm_get_zone_iterator(handle);
-
-    dpm_destroy_client(handle);
-
-    if (it != NULL) {
-        dpm_free_zone_iterator(it);
-        return TEST_SUCCESSED;
-    }
-
-    return TEST_FAILED;
-}
-
-static int zone_traverse_list(struct testcase* tc)
-{
-    dpm_client_h handle;
-    dpm_zone_iterator_h it;
-    const char* zone;
-
-    handle = dpm_create_client();
-    if (handle == NULL) {
-        printf("Failed to create client handle\n");
-        return TEST_FAILED;
-    }
-
-    it = dpm_get_zone_iterator(handle);
-
-    dpm_destroy_client(handle);
-
-    if (it != NULL) {
-        printf("Traversing zone list started\n");
-        while ((zone = dpm_zone_iterator_next(it)) != NULL) {
-            printf("%s\n", zone);
-            if (!strcmp(zone, TEST_ZONE_ID)) {
-                printf("%s is found!\n", TEST_ZONE_ID);
-                break;
-            }
-        }
-        printf("Traversing zone list was completed\n");
-
-        dpm_free_zone_iterator(it);
-
-        if (zone != NULL) {
-            return TEST_SUCCESSED;
-        } else {
-            return TEST_FAILED;
-        }
-    }
-
-    return TEST_FAILED;
-}
-
-static int zone_signal(struct testcase* tc)
-{
-    dpm_client_h handle;
-
-    handle = dpm_create_client();
-    if (handle == NULL) {
-        printf("Failed to create client handle\n");
-        return TEST_FAILED;
-    }
-
-    dpm_destroy_client(handle);
-
-    return TEST_FAILED;
-}
-
-struct testcase zone_testcase_create = {
-    .description = "dpm_zone_create",
+struct testcase zone_testcase_lifecycle = {
+    .description = "dpm_zone",
     .handler = zone_create
 };
 
-struct testcase zone_testcase_remove = {
-    .description = "dpm_zone_remove",
-    .handler = zone_remove
-};
-
-struct testcase zone_testcase_get_state = {
-    .description = "dpm_get_zone_state",
-    .handler = zone_get_state
-};
-
-struct testcase zone_testcase_get_list = {
-    .description = "dpm_get_zone_iterator, dpm_free_zone_iterator",
-    .handler = zone_get_list
-};
-
-struct testcase zone_testcase_traverse_list = {
-    .description = "dpm_zone_iterator_next",
-    .handler = zone_traverse_list
-};
-
-struct testcase zone_testcase_signal = {
-    .description = "dpm_subscribe_zone_signal, dpm_unsubscribe_zone_signal",
-    .handler = zone_signal
-};
-
-
 void TESTCASE_CONSTRUCTOR zone_policy_build_testcase(void)
 {
-    testbench_populate_testcase(&zone_testcase_signal);
-    testbench_populate_testcase(&zone_testcase_remove);
-    testbench_populate_testcase(&zone_testcase_traverse_list);
-    testbench_populate_testcase(&zone_testcase_get_list);
-    testbench_populate_testcase(&zone_testcase_get_state);
-    testbench_populate_testcase(&zone_testcase_create);
+    testbench_populate_testcase(&zone_testcase_lifecycle);
 }
-

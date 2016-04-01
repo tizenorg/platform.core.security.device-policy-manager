@@ -23,31 +23,38 @@
 namespace DevicePolicyManager
 {
 
-class Restriction
+class RestrictionPolicy
 {
 public:
-	Restriction(PolicyControlContext& ctxt);
-	~Restriction();
+	RestrictionPolicy(PolicyControlContext& ctxt);
+	~RestrictionPolicy();
 
-	int setClipboardRestriction(bool enable);
-	bool isClipboardRestricted();
-	int setClipboardShareRestriction(bool enable);
-	bool isClipboardShareRestricted();
+	int setCameraState(int enable);
+	int getCameraState();
 
-	int setSettingsChangesRestriction(bool enable);
-	bool isSettingsChangesRestricted();
+	int setMicrophoneState(int enable);
+	int getMicrophoneState();
 
-	int setBackgroundDataRestriction(bool enable);
-	bool isBackgroundDataRestricted();
+	int setClipboardState(int enable);
+	int getClipboardState();
 
-	int setUsbDebuggingRestriction(bool enable);
-	bool isUsbDebuggingRestricted();
+	int setSettingsChangesState(int enable);
+	int getSettingsChangesState();
 
-	int setUsbMassStorageRestriction(bool enable);
-	bool isUsbMassStorageRestricted();
+	int setUsbDebuggingState(int enable);
+	int getUsbDebuggingState();
 
-	int setFactoryResetRestriction(bool enable);
-	bool isFactoryResetRestricted();
+	int setExternalStorageState(int enable);
+	int getExternalStorageState();
+
+	int setLocationState(int enable);
+	int getLocationState();
+
+	int setWifiState(bool enable);
+	bool getWifiState();
+
+	int setWifiHotspotState(bool enable);
+	bool getWifiHotspotState();
 
 private:
 	PolicyControlContext& context;
