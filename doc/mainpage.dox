@@ -23,17 +23,17 @@ The device policy manager manages all policies enforced on the device and expose
        <td><b>Related header file</b></td>
    </tr>
    <tr>
-       <td>Password</td>
+       <td>PasswordPolicy</td>
        <td>Provide functionality to control password policy</td>
        <td>dpm/password.h</td>
    </tr>
    <tr>
-       <td>Security</td>
+       <td>SecurityPolicy</td>
        <td>Provide functionality to control security such as encryption and device wipe</td>
        <td>dpm/security.h</td>
    </tr>
    <tr>
-       <td>Zone</td>
+       <td>ZonePolicy</td>
        <td>Provide functionality to control application containers</td>
        <td>dpm/zone.h</td>
    </tr>

@@ -22,10 +22,10 @@
 
 namespace DevicePolicyManager {
 
-class Application {
+class ApplicationPolicy {
 public:
-    Application(PolicyControlContext& ctxt);
-    ~Application();
+    ApplicationPolicy(PolicyControlContext& ctxt);
+    ~ApplicationPolicy();
 
     int setApplicationInstallationMode(const bool mode);
     bool getApplicationInstallationMode();
