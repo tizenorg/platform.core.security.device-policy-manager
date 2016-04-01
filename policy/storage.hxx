@@ -14,35 +14,33 @@
  *  limitations under the License
  */
 
-#ifndef __MISC_POLICY__
-#define __MISC_POLICY__
+#ifndef __STORAGE_POLICY__
+#define __STORAGE_POLICY__
 
 #include "data-type.h"
 #include "policy-context.hxx"
 
 namespace DevicePolicyManager {
 
-class Misc {
+class StoragePolicy {
 public:
-	Misc(PolicyControlContext& ctxt);
-	~Misc();
+    enum {
+        WIPE_INTERNAL_STORAGE = (1 << 1),
+        WIPE_EXTERNAL_STORAGE = (1 << 0)
+    };
 
-	int setCameraRestriction(bool enable);
-	bool isCameraRestricted();
+    StoragePolicy(PolicyControlContext& ctxt);
+    ~StoragePolicy();
 
-	int setMicrophoneRestriction(bool enable);
-	bool isMicrophoneRestricted();
+	int setExternalStorageState(int state);
+    int getExternalStorageState();
 
-	int setLocationRestriction(bool enable);
-	bool isLocationRestricted();
-
-	int setSdCardRestriction(bool enable);
-	bool isSdCardRestricted();
+	int wipeData(int id);
 
 private:
-	PolicyControlContext& context;
+    PolicyControlContext& context;
 };
 
-} // namespace DevicePolicyManager
+} // namespace DeivcePolicyManager
 
-#endif /* __MISC_POLICY__ */
+#endif //!__STORAGE_POLICY__
