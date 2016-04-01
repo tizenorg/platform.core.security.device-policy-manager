@@ -59,7 +59,7 @@ extern "C" {
  * @see         wifi_activate()
  * @see         wifi_deactivate()
  */
-DPM_API int dpm_set_wifi_state_change_restriction(dpm_client_h handle, int enable);
+DPM_API int dpm_wifi_set_state_change_restriction(dpm_wifi_policy_h handle, int enable);
 
 /**
  * @brief       Checks whether the user is restricted to change the Wi-Fi state.
@@ -80,7 +80,7 @@ DPM_API int dpm_set_wifi_state_change_restriction(dpm_client_h handle, int enabl
  * @see         dpm_destroy_client()
  * @see         dpm_set_wifi_state_change_restriction()
  */
-DPM_API int dpm_is_wifi_state_change_restricted(dpm_client_h handle, int *enable);
+DPM_API int dpm_wifi_is_state_change_restricted(dpm_wifi_h handle, int *enable);
 
 /**
  * @brief       Allows or disallows user to modify some Wi-Fi settings of network settings.
@@ -118,7 +118,7 @@ DPM_API int dpm_is_wifi_state_change_restricted(dpm_client_h handle, int *enable
  * @see         wifi_ap_set_encryption_type()
  * @see         wifi_ap_set_passphrase()
  */
-DPM_API int dpm_set_wifi_setting_changes_restriction(dpm_client_h handle, int enable);
+DPM_API int dpm_wifi_set_setting_changes_restriction(dpm_wifi_policy_h handle, int enable);
 
 /**
  * @brief       Checks if the user is allowed to modify certain Wi-Fi network settings.
@@ -139,7 +139,7 @@ DPM_API int dpm_set_wifi_setting_changes_restriction(dpm_client_h handle, int en
  * @see         dpm_destroy_client()
  * @see         dpm_set_wifi_setting_changes_restriction()
  */
-DPM_API int dpm_is_wifi_setting_changes_restricted(dpm_client_h handle, int *enable);
+DPM_API int dpm_wifi_is_setting_changes_restricted(dpm_wifi_policy_h handle, int *enable);
 
 /**
  * @brief       Allows or disallows the user to change Wi-Fi hotspot settings
@@ -163,7 +163,7 @@ DPM_API int dpm_is_wifi_setting_changes_restricted(dpm_client_h handle, int *ena
  * @see         dpm_destroy_client()
  * @see         dpm_is_wifi_hostspot_restricted()
  */
-DPM_API int dpm_set_wifi_hotspot_restriction(dpm_client_h handle, int enable);
+DPM_API int dpm_wifi_set_hotspot_restriction(dpm_wifi_policy_h handle, int enable);
 
 /**
  * @brief       Checks whether the the Wi-Fi hotspot is restricted.
@@ -186,7 +186,7 @@ DPM_API int dpm_set_wifi_hotspot_restriction(dpm_client_h handle, int enable);
  * @see         dpm_destroy_client()
  * @see         dpm_set_wifi_hotspot_restriction()
  */
-DPM_API int dpm_is_wifi_hotspot_restricted(dpm_client_h handle, int *enable);
+DPM_API int dpm_wifi_is_hotspot_restricted(dpm_wifi_policy_h handle, int *enable);
 
 /**
  * @brief       Restricts network accessed based on the Wi-Fi network service set
@@ -214,7 +214,7 @@ DPM_API int dpm_is_wifi_hotspot_restricted(dpm_client_h handle, int *enable);
  * @see         dpm_add_wifi_ssid_to_blocklist()
  * @see         dpm_remove_wifi_ssid_from_blocklist()
  */
-DPM_API int dpm_set_wifi_network_access_restriction(dpm_client_h handle, int enable);
+DPM_API int dpm_wifi_set_network_access_restriction(dpm_wifi_policy_h handle, int enable);
 
 /**
  * @brief       Checks whether the SSID-based Wi-Fi network access restriction is
@@ -235,7 +235,7 @@ DPM_API int dpm_set_wifi_network_access_restriction(dpm_client_h handle, int ena
  * @see         dpm_destroy_client()
  * @see         dpm_set_wifi_network_access_restriction()
  */
-DPM_API int dpm_is_wifi_network_access_restricted(dpm_client_h handle, int *enable);
+DPM_API int dpm_wifi_is_network_access_restricted(dpm_wifi_policy_h handle, int *enable);
 
 /**
  * @brief       Adds a service set identifier(SSID) to the list of blocked network.
@@ -263,7 +263,7 @@ i* @post        dpm_set_wifi_network_access_restriction() must be called
  * @see         dpm_remove_wifi_ssid_to_blocklist()
  * @see         dpm_set_wifi_network_access_restriction()
  */
-DPM_API int dpm_add_wifi_ssid_to_blocklist(dpm_client_h handle, const char* ssid);
+DPM_API int dpm_wifi_add_ssid_to_blocklist(dpm_wifi_policy_h handle, const char* ssid);
 
 /**
  * @brief       Removes a service set identifier(SSID) from the list of blocked
@@ -288,7 +288,7 @@ DPM_API int dpm_add_wifi_ssid_to_blocklist(dpm_client_h handle, const char* ssid
  * @see         dpm_add_wifi_ssid_to_blocklist()
  * @see         dpm_set_wifi_network_access_restriction()
  */
-DPM_API int dpm_remove_wifi_ssid_from_blocklist(dpm_client_h handle, const char* ssid);
+DPM_API int dpm_wifi_remove_ssid_from_blocklist(dpm_wifi_policy_h handle, const char* ssid);
 
 /**
  * @}
@@ -298,4 +298,4 @@ DPM_API int dpm_remove_wifi_ssid_from_blocklist(dpm_client_h handle, const char*
 }
 #endif
 
-#endif //! __CAPI_SECURITY_POLICY_H__
+#endif //! __CAPI_WIFI_POLICY_H__

@@ -22,7 +22,7 @@
 
 using namespace DevicePolicyManager;
 
-int dpm_set_wifi_state_change_restriction(dpm_client_h handle, int enable)
+int dpm_wifi_set_state_change_restriction(dpm_client_h handle, int enable)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
@@ -31,7 +31,7 @@ int dpm_set_wifi_state_change_restriction(dpm_client_h handle, int enable)
     return wifi.setStateChangeRestriction(enable);
 }
 
-int dpm_is_wifi_state_change_restricted(dpm_client_h handle, int *enable)
+int dpm_wifi_wifi_state_change_restricted(dpm_client_h handle, int *enable)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(enable, DPM_ERROR_INVALID_PARAMETER);
@@ -42,7 +42,7 @@ int dpm_is_wifi_state_change_restricted(dpm_client_h handle, int *enable)
     return DPM_ERROR_NONE;
 }
 
-int dpm_set_wifi_setting_changes_restriction(dpm_client_h handle, int enable)
+int dpm_wifi_set_setting_changes_restriction(dpm_client_h handle, int enable)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
@@ -51,7 +51,7 @@ int dpm_set_wifi_setting_changes_restriction(dpm_client_h handle, int enable)
     return wifi.setSettingChangesRestriction(enable);
 }
 
-int dpm_is_wifi_setting_changes_restricted(dpm_client_h handle, int *enable)
+int dpm_wifi_is_setting_changes_restricted(dpm_client_h handle, int *enable)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(enable, DPM_ERROR_INVALID_PARAMETER);
@@ -62,7 +62,7 @@ int dpm_is_wifi_setting_changes_restricted(dpm_client_h handle, int *enable)
     return DPM_ERROR_NONE;
 }
 
-int dpm_allow_wifi_hotspot_restriction(dpm_client_h handle, int enable)
+int dpm_wifi_set_wifi_hotspot_restriction(dpm_client_h handle, int enable)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
@@ -71,7 +71,7 @@ int dpm_allow_wifi_hotspot_restriction(dpm_client_h handle, int enable)
     return wifi.setHotspotRestriction(enable);
 }
 
-int dpm_is_wifi_hotspot_restricted(dpm_client_h handle, int *enable)
+int dpm_wifi_is_hotspot_restricted(dpm_client_h handle, int *enable)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(enable, DPM_ERROR_INVALID_PARAMETER);
@@ -82,7 +82,7 @@ int dpm_is_wifi_hotspot_restricted(dpm_client_h handle, int *enable)
     return DPM_ERROR_NONE;
 }
 
-int dpm_set_wifi_network_access_restriction(dpm_client_h handle, int enable)
+int dpm_wifi_set_network_access_restriction(dpm_client_h handle, int enable)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
@@ -91,7 +91,7 @@ int dpm_set_wifi_network_access_restriction(dpm_client_h handle, int enable)
     return wifi.setNetworkAccessRestriction(enable);
 }
 
-int dpm_is_wifi_network_access_restricted(dpm_client_h handle, int *enable)
+int dpm_wifi_is_network_access_restricted(dpm_client_h handle, int *enable)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(enable, DPM_ERROR_INVALID_PARAMETER);
@@ -102,7 +102,7 @@ int dpm_is_wifi_network_access_restricted(dpm_client_h handle, int *enable)
     return DPM_ERROR_NONE;
 }
 
-int dpm_add_wifi_ssid_to_blocklist(dpm_client_h handle, const char* ssid)
+int dpm_wifi_wifi_ssid_to_blocklist(dpm_client_h handle, const char* ssid)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(ssid, DPM_ERROR_INVALID_PARAMETER);
@@ -112,7 +112,7 @@ int dpm_add_wifi_ssid_to_blocklist(dpm_client_h handle, const char* ssid)
     return wifi.addSsidFromBlacklist(ssid);
 }
 
-int dpm_remove_wifi_ssid_from_blocklist(dpm_client_h handle, const char* ssid)
+int dpm_wifi_remove_ssid_from_blocklist(dpm_client_h handle, const char* ssid)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(ssid, DPM_ERROR_INVALID_PARAMETER);
