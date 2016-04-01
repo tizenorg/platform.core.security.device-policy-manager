@@ -47,25 +47,6 @@ bool Restriction::isClipboardRestricted()
 	}
 }
 
-int Restriction::setClipboardShareRestriction(bool enable)
-{
-	try {
-		return context->methodCall<int>("Restriction::setClipboardShareRestriction", enable);
-	} catch (runtime::Exception& e) {
-		return -1;
-	}
-}
-
-bool Restriction::isClipboardShareRestricted()
-{
-	try {
-		return context->methodCall<bool>("Restriction::isClipboardShareRestricted");
-	} catch (runtime::Exception& e) {
-		return -1;
-	}
-}
-
-
 int Restriction::setSettingsChangesRestriction(bool enable)
 {
 	try {
@@ -79,24 +60,6 @@ bool Restriction::isSettingsChangesRestricted()
 {
 	try {
 		return context->methodCall<bool>("Restriction::isSettingsChangesRestricted");
-	} catch (runtime::Exception& e) {
-		return -1;
-	}
-}
-
-int Restriction::setBackgroundDataRestriction(bool enable)
-{
-	try {
-		return context->methodCall<int>("Restriction::setBackgroundDataRestriction", enable);
-	} catch (runtime::Exception& e) {
-		return -1;
-	}
-}
-
-bool Restriction::isBackgroundDataRestricted()
-{
-	try {
-		return context->methodCall<bool>("Restriction::isBackgroundDataRestricted");
 	} catch (runtime::Exception& e) {
 		return -1;
 	}
@@ -138,19 +101,10 @@ bool Restriction::isUsbMassStorageRestricted()
 	}
 }
 
-int Restriction::setFactoryResetRestriction(bool enable)
+int Restriction::wipeData()
 {
 	try {
-		return context->methodCall<int>("Restriction::setFactoryResetRestriction", enable);
-	} catch (runtime::Exception& e) {
-		return -1;
-	}
-}
-
-bool Restriction::isFactoryResetRestricted()
-{
-	try {
-		return context->methodCall<bool>("Restriction::isFactoryResetRestricted");
+		return context->methodCall<int>("Restriction::wipeData");
 	} catch (runtime::Exception& e) {
 		return -1;
 	}
