@@ -20,8 +20,8 @@
 #include <tizen.h>
 
 /**
- * @file security.h
- * @brief This file defines common data types required to device policy APIs
+ * @file device-policy-client.h
+ * @brief This file defines common data types required to device policy APIs.
  */
 
 #ifndef DPM_API
@@ -50,7 +50,7 @@ extern "C" {
  * @details     The Device Policy Client Handle is an abstraction of the
  *              logical connection between the device policy manager and
  *              it's client. The Device Policy Client handle must be
- *              created by using dpm_create_client() brefore attempting to
+ *              created by using dpm_create_client() before attempting to
  *              use almost any of the device policy APIs, and it should
  *              be freed when interaction with the Device Policy Manager
  *              is no longer required.
@@ -78,10 +78,10 @@ typedef enum {
 } dpm_error_type_e;
 
 /**
- * @brief       Create the Device Policy Client handle
+ * @brief       Creates the Device Policy Client handle
  * @details     This API creates device policy client handle required to
  *              the device policy APIs.
- *              This API is also used to verity whether caller is authorized
+ *              This API is also used to verify whether caller is authorized
  *              or not
  * @since_tizen 3.0
  * @return      Device Policy Client handle on success, otherwise NULL
@@ -90,8 +90,6 @@ typedef enum {
  *              exception section.
  * @exception   #DPM_ERROR_NONE No error
  * @exception   #DPM_ERROR_CONNECTION_REFUSED Connection refused
- * @exception   #DPM_ERROR_PERMISSION_DENIED The application does not have
- *              the privilege to call this API
  * @pre         N/A
  * @post        N/A
  * @see         dpm_destroy_client()
@@ -100,14 +98,13 @@ typedef enum {
 DPM_API dpm_client_h dpm_create_client(void);
 
 /**
- * @brief       Release the Device Policy Client Handle
+ * @brief       Releases the Device Policy Client Handle
  * @details     This API must be called if interaction with the Device
  *              Policy Manager is no longer required.
  * @since_tizen 3.0
  * @param[in]   handle Device Policy Client Handle
  * @return      None
  * @pre         The handle must be created by dpm_create_client()
- * @post
  * @see         dpm_create_client()
  */
 DPM_API void dpm_destroy_client(dpm_client_h handle);
