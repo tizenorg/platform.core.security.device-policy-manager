@@ -4,7 +4,7 @@ Release: 0
 License: Apache-2.0
 Source0: file://%{name}-%{version}.tar.gz
 Summary: Tizen Device Policy Manager
-Group:   Security/Other
+Group:   SecurityPolicy/Other
 BuildRequires: gcc
 BuildRequires: cmake
 BuildRequires: pam-devel
@@ -21,10 +21,16 @@ BuildRequires: pkgconfig(syspopup-caller)
 BuildRequires: pkgconfig(deviced)
 BuildRequires: pkgconfig(vconf)
 BuildRequires: pkgconfig(vconf-internal-keys)
-BuildRequires: pkgconfig(capi-base-common)
+BuildRequires: pkgconfig(bluetooth-api)
 BuildRequires: pkgconfig(libsmack)
 BuildRequires: pkgconfig(libtzplatform-config)
 BuildRequires: pkgconfig(auth-fw-admin)
+BuildRequires: pkgconfig(capi-base-common)
+BuildRequires: pkgconfig(capi-system-info)
+BuildRequires: pkgconfig(capi-network-wifi)
+BuildRequires: pkgconfig(capi-network-connection)
+BuildRequires: pkgconfig(capi-location-manager)
+BuildRequires: pkgconfig(capi-system-system-settings)
 
 %description
 The device-policy-manager package provides a daemon which is responsible for
@@ -138,7 +144,7 @@ Testcases for device policy manager and device policy client
 ## Tools Package ############################################################
 %package -n org.tizen.ode
 Summary: Tizen ODE User Interface
-Group: Security/Other
+Group: SecurityPolicy/Other
 BuildRequires: pkgconfig(ui-gadget-1)
 BuildRequires: pkgconfig(efl-extension)
 BuildRequires: pkgconfig(elementary)
@@ -163,7 +169,7 @@ Tizen ODE User Interface for device policy management
 ## ZONE Setup Wizard Package #################################################
 %package -n org.tizen.zone-setup-wizard
 Summary: Tizen ZONE Setup wizard Interface
-Group: Security/Other
+Group: SecurityPolicy/Other
 BuildRequires: pkgconfig(efl-extension)
 BuildRequires: pkgconfig(elementary)
 BuildRequires: pkgconfig(capi-appfw-application)
@@ -194,7 +200,7 @@ mkdir -p %{setup_home}/data
 ## DPM Syspopup Package #####################################################
 %package -n org.tizen.dpm-syspopup
 Summary: Tizen DPM system popup Interface
-Group: Security/Other
+Group: SecurityPolicy/Other
 BuildRequires: pkgconfig(efl-extension)
 BuildRequires: pkgconfig(elementary)
 BuildRequires: pkgconfig(capi-appfw-application)

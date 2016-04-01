@@ -18,7 +18,7 @@
  */
 #include "zone-setup.h"
 
-#define TARGET_ZONE "ZoneName"
+#define TARGET_ZONE "ZonePolicyName"
 #define PROVISION_DATA "/manifest.xml"
 #define PROVISION_COMPLETE "/.completed"
 
