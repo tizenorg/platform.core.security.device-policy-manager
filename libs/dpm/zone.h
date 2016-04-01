@@ -142,10 +142,10 @@ DPM_API void dpm_free_zone_iterator(dpm_zone_iterator_h iter);
  * @since_tizen 3.0
  */
 typedef enum {
-    DPM_ZONE_DEFINED,     /**< Zone has been defined, but it is not running. */
-    DPM_ZONE_RUNNING,     /**< Zone has been started. */
-    DPM_ZONE_LOCKED       /**< Zone has been defined, but it can not start. */
-} zone_state_e;
+    DPM_ZONE_STATE_DEFINED, /**< Zone has been defined, but it is not running. */
+    DPM_ZONE_STATE_RUNNING, /**< Zone has been started. */
+    DPM_ZONE_STATE_LOCKED   /**< Zone has been defined, but it can not start. */
+} dpm_zone_state_e;
 
 /**
  * @brief       API to get the zone state
@@ -153,11 +153,11 @@ typedef enum {
  * @since_tizen 3.0
  * @param[in]   handle The device policy client handle
  * @param[in]   name The zone name
- * @return      #DPM_ERROR_INVALID_PARAMETER if the given zone name is not valid,
- *              otherwise a zone state
- * @retval      #DPM_ZONE_DEFINED Zone has been defined.
- * @retval      #DPM_ZONE_RUNNING Zone is running
- * @retval      #DPM_ZONE_LOCKED zone was locked.
+ * @param[out]  state The zone state
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_NO_DATA No such zone to get state
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @pre         handle must be created by dpm_create_client()
  * @see         dpm_create_client()
  * @see         dpm_destroy_client()
@@ -166,13 +166,13 @@ typedef enum {
  * @see         dpm_subscribe_zone_signal()
  * @see         dpm_unsubscribe_zone_signal()
  */
-DPM_API int dpm_get_zone_state(dpm_client_h handle, const char *name);
+DPM_API int dpm_get_zone_state(dpm_client_h handle, const char *name, dpm_zone_state_e *state);
 
 /**
  * @brief       Called when a zone signal occurs
  * @since_tizen 3.0
  */
-typedef void(*dpm_zone_signal_cb)(zone_state_e event, const char* name, void *info, void *user_data);
+typedef void(*dpm_zone_signal_cb)(dpm_zone_state_e event, const char* name, void *info, void *user_data);
 
 /**
  * @brief       API to attach a listener to get zone signal.

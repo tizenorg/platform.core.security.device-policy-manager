@@ -74,7 +74,7 @@ void dpm_free_zone_iterator(dpm_zone_iterator_h iter)
     delete reinterpret_cast<dpm_zone_iterator*>(iter);
 }
 
-int dpm_get_zone_state(dpm_client_h handle, const char* name)
+int dpm_get_zone_state(dpm_client_h handle, const char* name, dpm_zone_state_e *state)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(name, DPM_ERROR_INVALID_PARAMETER);
