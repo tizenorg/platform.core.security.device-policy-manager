@@ -22,6 +22,7 @@
   * @defgroup CAPI_DPM_FRAMEWORK Device Policy Manager
   * @brief The Device Policy Management framework provides APIs to create
   * security-aware applications that are useful in enterprise settings.
+  * @ingroup CAPI_SECURITY_FRAMEWORK
   * <br>
   * @section CAPI_DPM_FRAMEWORK_OVERVIEW Overview
   * The primary purpose of the DPM(Device Policy Management) framework is
@@ -77,7 +78,7 @@
   * @image html dpm.png "Tizen Device Policy Management Framework"
   * <br>
   * @subsection PolicyGroup Policy Groups
-  * The Device Policy Management framework supposts following policy groups.
+  * The Device Policy Management framework supports following policy groups.
   * Each policy group has dedicated header file. So, you should include it
   * to use any API associated to the policy group.
   * <center>
