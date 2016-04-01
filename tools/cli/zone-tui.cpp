@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
-    dpm_client_h handle = dpm_create_client();
+    dpm_context_h handle = dpm_create_context();
     if (handle == NULL) {
         std::cerr << "Failed to create client handle" << std::endl;
         return EXIT_FAILURE;
@@ -116,7 +116,7 @@ int main(int argc, char* argv[])
                   << "  ex) --wizard org.tizen.zone-setup-wizard" << std::endl;
     }
 
-    dpm_destroy_client(handle);
+    dpm_destroy_context(handle);
 
     return EXIT_SUCCESS;
 }

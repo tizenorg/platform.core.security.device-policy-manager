@@ -45,7 +45,7 @@ static void __app_terminate(void *data)
 	appdata_s *ad = (appdata_s *) data;
 
 	dpm_unsubscribe_zone_signal(ad->dpm_client, ad->dpm_zone_signal_cb_id);
-	dpm_destroy_client(ad->dpm_client);
+	dpm_destroy_context(ad->dpm_client);
 	ad->dpm_client = NULL;
 	return ;
 }
@@ -67,7 +67,7 @@ static void __app_control(app_control_h app_control, void *data)
 		ui_app_exit();
 	}
 
-	ad->dpm_client = dpm_create_client();
+	ad->dpm_client = dpm_create_context();
 	if (ad->dpm_client == NULL) {
 		dlog_print(DLOG_ERROR, LOG_TAG, "failed to get dpm client");
 		ui_app_exit();

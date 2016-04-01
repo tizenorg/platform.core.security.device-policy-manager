@@ -44,6 +44,50 @@ typedef enum {
 } dpm_wipe_type_e;
 
 /**
+ * @brief       The Bluetooth Policy handle
+ * @since_tizen 3.0
+ * @see         dpm_context_acquire_bluetooth_policy()
+ * @see         dpm_context_release_bluetooth_policy()
+ */
+typedef void* dpm_security_policy_h;
+
+/**
+ * @brief       Acquires the Bluetooth Policy handle.
+ * @details     This API acquires device bluetooth policy handle required to call
+ *              the bluetooth policy APIs.
+ * @since_tizen 3.0
+ * @param[in]   handle Device Policy Context Handle
+ * @param[in]   zone Target container name.
+ * @return      Password Policy handle on success, otherwise NULL
+ * @remark      The specific error code can be obtained by using the
+ *              get_last_result() method. Error codes are described in
+ *              exception section.
+ * @exception   #DPM_ERROR_NONE No error
+ * @exception   #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @exception   #DPM_ERROR_TIMED_OUT Time out
+ * @exception   #DPM_ERROR_PERMISSION_DENIED The application does not have
+ *              the privilege to access the target container.
+ * @see         dpm_context_release_password_policy()
+ * @see         get_last_result()
+ */
+DPM_API dpm_security_policy_h dpm_context_acquire_security_policy(dpm_context_h handle);
+
+/**
+ * @brief       Releases the Device Administration Policy Handle.
+ * @details     This API must be called if interaction with the Device
+ *              Policy Manager is no longer required.
+ * @since_tizen 3.0
+ * @param[in]   handle Password Policy Handle
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @pre         The handle must be created by dpm_context_acquire_password_policy().
+ * @see         dpm_context_acquire_password_policy()
+ */
+DPM_API int dpm_context_release_security_policy(dpm_security_policy_h handle);
+
+/**
  * @brief       API to immediately lock device screen
  * @details     An administrator can use this API to lock the device screen
  *              immediately
@@ -56,12 +100,12 @@ typedef enum {
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
- * @pre         handle must be created by dpm_create_client()
+ * @pre         handle must be created by dpm_create_context()
  * @post
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
+ * @see         dpm_create_context()
+ * @see         dpm_destroy_context()
  */
-DPM_API int dpm_lockout_screen(dpm_client_h handle);
+DPM_API int dpm_security_lockout_screen(dpm_security_policy_h handle);
 
 /**
  * @brief       API to selectively wipe external memory, internal memory,
@@ -79,50 +123,12 @@ DPM_API int dpm_lockout_screen(dpm_client_h handle);
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
- * @pre         handle must be created by dpm_create_client()
+ * @pre         handle must be created by dpm_create_context()
  * @post
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
+ * @see         dpm_create_context()
+ * @see         dpm_destroy_context()
  */
-DPM_API int dpm_wipe_data(dpm_client_h handle, const dpm_wipe_type_e type);
-
-/**
- * @brief       API to reboot the device
- * @details     An administrator can use this API to reboot the device
- *              wthout user interaction
- * @since_tizen 3.0
- * @privlevel   public
- * @privilege   %http://tizen.org/privilege/dpm.security
- * @param[in]   handle Device Policy Client handle
- * @return      #DPM_ERROR_NONE on success, otherwise a negative value
- * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
- *              the privilege to call this API
- * @pre         handle must be created by dpm_create_client()
- * @post
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- */
-DPM_API int dpm_reboot(dpm_client_h handle);
-
-/**
- * @brief       API to poweroff the device
- * @details     An administrator can use this API to turn off the device
- *              without user interaction
- * @since_tizen 3.0
- * @privlevel   public
- * @privilege   %http://tizen.org/privilege/dpm.security
- * @param[in]   handle Device Policy Client handle
- * @return      #DPM_ERROR_NONE on success, otherwise a negative value
- * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
- *              the privilege to call this API
- * @pre         handle must be created by dpm_create_client()
- * @post
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- */
-DPM_API int dpm_poweroff_device(dpm_client_h handle);
+DPM_API int dpm_security_wipe_data(dpm_security_policy_h handle, const dpm_wipe_type_e type);
 
 /**
  * @brief       API to encrypt internal storage
@@ -143,12 +149,12 @@ DPM_API int dpm_poweroff_device(dpm_client_h handle);
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
- * @pre         handle must be created by dpm_create_client()
+ * @pre         handle must be created by dpm_create_context()
  * @post
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
+ * @see         dpm_create_context()
+ * @see         dpm_destroy_context()
  */
-DPM_API int dpm_set_internal_storage_encryption(dpm_client_h handle, const int encrypt);
+DPM_API int dpm_security_set_encryption(dpm_security_policy_h handle, const int encrypt);
 
 /**
  * @brief       API to check the state of internal storage encryption
@@ -158,13 +164,13 @@ DPM_API int dpm_set_internal_storage_encryption(dpm_client_h handle, const int e
  * @param[in]   handle Device Policy Client handle
  * @return      TRUE if internal storage is encrypted or being encrypted,
  *              else false.
- * @pre         handle must be created by dpm_create_client()
+ * @pre         handle must be created by dpm_create_context()
  * @post
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
+ * @see         dpm_create_context()
+ * @see         dpm_destroy_context()
  * @see         dpm_set_password_quality()
  */
-DPM_API int dpm_is_internal_storage_encrypted(dpm_client_h handle);
+DPM_API int dpm_security_is_encrypted(dpm_security_policy_h handle);
 
 /**
  * @brief       API to encrypt external storage
@@ -184,13 +190,13 @@ DPM_API int dpm_is_internal_storage_encrypted(dpm_client_h handle);
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
- * @pre         handle must be created by dpm_create_client()
+ * @pre         handle must be created by dpm_create_context()
  * @post
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
+ * @see         dpm_create_context()
+ * @see         dpm_destroy_context()
  * @see         dpm_set_password_quality()
  */
-DPM_API int dpm_set_external_storage_encryption(dpm_client_h handle, const int encrypt);
+DPM_API int dpm_security_set_external_storage_encryption(dpm_security_policy_h handle, const int encrypt);
 
 /**
  * @brief       API to check the state of external storage encryption
@@ -200,12 +206,12 @@ DPM_API int dpm_set_external_storage_encryption(dpm_client_h handle, const int e
  * @param[in]   handle Device Policy Client handle
  * @return      TRUE if external storage is encrypted or being encrypted,
  *              else FALSE
- * @pre         handle must be created by dpm_create_client()
+ * @pre         handle must be created by dpm_create_context()
  * @post
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
+ * @see         dpm_create_context()
+ * @see         dpm_destroy_context()
  */
-DPM_API int dpm_is_external_storage_encrypted(dpm_client_h handle);
+DPM_API int dpm_security_is_external_storage_encrypted(dpm_security_policy_h handle);
 
 /**
  * @}

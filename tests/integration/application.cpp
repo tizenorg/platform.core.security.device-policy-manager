@@ -27,23 +27,20 @@ const std::string TestAppId = "org.tizen.music-player";
 
 TESTCASE(AppInfoTest)
 {
-    DevicePolicyClient client;
-    std::cout << "Begin connection" << std::endl;
-    TEST_EXPECT(0, client.connect());
+    DevicePolicyContext context;
+    TEST_EXPECT(0, context.connect());
 
-    std::cout << "End connection" << std::endl;
-    DevicePolicyManager::Application app = client.createPolicyInterface<DevicePolicyManager::Application>();
+    DevicePolicyManager::Application* app = client.createPolicyInterface<DevicePolicyManager::Application>();
 
-    bool ret = app.isApplicationInstalled(TestAppId);
-    TEST_EXPECT(true, ret);
+    app->isApplicationInstalled(TestAppId);
+    app->isApplicationInstalled("unknown-application");
 
-    ret = app.isApplicationInstalled("unknown-application");
-    TEST_EXPECT(false, ret);
+    delete app;
 }
 
 TESTCASE(PkgInfoTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     TEST_EXPECT(0, client.connect());
 
@@ -64,7 +61,7 @@ TESTCASE(PkgInfoTest)
 
 TESTCASE(AppRunStateTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     TEST_EXPECT(0, client.connect());
 
@@ -82,7 +79,7 @@ TESTCASE(AppRunStateTest)
 
 TESTCASE(AppActivationTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     TEST_EXPECT(0, client.connect());
 
@@ -94,7 +91,7 @@ TESTCASE(AppActivationTest)
 
 TESTCASE(AppStartTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     TEST_EXPECT(0, client.connect());
 
@@ -109,7 +106,7 @@ TESTCASE(AppStartTest)
 
 TESTCASE(BlacklistTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     TEST_EXPECT(0, client.connect());
 
