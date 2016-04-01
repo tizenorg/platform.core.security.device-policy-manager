@@ -39,7 +39,7 @@ extern "C" {
  */
 typedef enum {
     DPM_PASSWORD_QUALITY_UNSPECIFIED     = 0x00,    /**< No requirements for password. */
-    DPM_PASSWORD_QUALITY_SIMPLE_PASSWORD = 0x01,    /**< Eas requirement for simple password */
+    DPM_PASSWORD_QUALITY_SIMPLE_PASSWORD = 0x01,    /**< EAS(Exchanage ActiveSync) requirement for simple password */
     DPM_PASSWORD_QUALITY_SOMETHING       = 0x10,    /**< Some kind password is required, but doesn't care what it is */
     DPM_PASSWORD_QUALITY_NUMERIC         = 0x20,    /**< Containing at least numeric characters */
     DPM_PASSWORD_QUALITY_ALPHABETIC      = 0x40,    /**< Containing at least alphabetic (or other symbol) characters */
@@ -47,7 +47,7 @@ typedef enum {
 } dpm_password_quality_e;
 
 /**
- * @brief       API to set password quality.
+ * @brief       Sets password quality.
  * @details     An administrator can set the password restrictions it is imposing.
  *              After setting this, the user will not be able to
  *              enter a new password that is not at least as restrictive as what has been set.
@@ -59,20 +59,18 @@ typedef enum {
  * @param[in]   quality Password Quality Type
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
- * @post
  * @see         dpm_create_client()
  * @see         dpm_destroy_client()
  */
 DPM_API int dpm_set_password_quality(dpm_client_h handle, const char *username, dpm_password_quality_e quality);
 
 /**
- * @brief       API to set password minimum length.
- * @details     set the minimum allowed password length. After setting this,
+ * @brief       Sets password minimum length.
+ * @details     Sets the minimum allowed password length. After setting this,
  *              the user will not be able to enter a new password that is
  *              shorter than the setting length.
  * @since_tizen 3.0
@@ -83,19 +81,17 @@ DPM_API int dpm_set_password_quality(dpm_client_h handle, const char *username, 
  * @param[in]   value Allowed minimum password length
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
- * @post
  * @see         dpm_create_client()
  * @see         dpm_destroy_client()
  */
 DPM_API int dpm_set_password_minimum_length(dpm_client_h handle, const char *username, const int value);
 
 /**
- * @brief       API to set minimum complex char in password.
+ * @brief       Sets minimum complex char in password.
  * @details     Complex characters are all non-alphabetic characters;
  *              that is, numbers and symbols. Admin can configure this
  *              setting and make the password more secure.
@@ -104,22 +100,20 @@ DPM_API int dpm_set_password_minimum_length(dpm_client_h handle, const char *use
  * @privilege   %http://tizen.org/privilege/dpm.password
  * @param[in]   handle Device Policy Client handle
  * @param[in]   username User name
- * @param[in]   value Num of minimum complex char in password.
+ * @param[in]   value Number of minimum complex char in password.
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
- * @post
  * @see         dpm_create_client()
  * @see         dpm_destroy_client()
  */
 DPM_API int dpm_set_min_password_complex_chars(dpm_client_h handle, const char *username, const int value);
 
 /**
- * @brief       API to set maximum number of failed attempts before
+ * @brief       Sets maximum number of failed attempts before
  *              device is wiped.
  * @details     If user fails the last attempt, device will be wiped.
  * @since_tizen 3.0
@@ -130,19 +124,17 @@ DPM_API int dpm_set_min_password_complex_chars(dpm_client_h handle, const char *
  * @param[in]   value Maximum count for failed passwords.
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
- * @post
  * @see         dpm_create_client()
  * @see         dpm_destroy_client()
  */
 DPM_API int dpm_set_maximum_failed_password_for_wipe(dpm_client_h handle, const char *username, const int value);
 
 /**
- * @brief       API to set the number of days password expires.
+ * @brief       Sets the number of days password expires.
  * @details     An administrator can configure the password age to force
  *              the user to enter a new password after every expiration period.
  * @since_tizen 3.0
@@ -150,22 +142,20 @@ DPM_API int dpm_set_maximum_failed_password_for_wipe(dpm_client_h handle, const 
  * @privilege   %http://tizen.org/privilege/dpm.password
  * @param[in]   handle Device Policy Client handle
  * @param[in]   username User name
- * @param[in]   value Num of days after which the password expires.
+ * @param[in]   value Number of days after which the password expires.
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
- * @post
  * @see         dpm_create_client()
  * @see         dpm_destroy_client()
  */
 DPM_API int dpm_set_password_expires(dpm_client_h handle, const char *username, const int value);
 
 /**
- * @brief       API to set the number of min password history to avoid
+ * @brief       Sets the number of min password history to avoid
  *              previous password.
  * @details     An administrator can configure the number of previous
  *              passwords which cannot be used when entering a new password.
@@ -174,23 +164,21 @@ DPM_API int dpm_set_password_expires(dpm_client_h handle, const char *username, 
  * @privilege   %http://tizen.org/privilege/dpm.password
  * @param[in]   handle Device Policy Client handle
  * @param[in]   username User name
- * @param[in]   value Num of previous passwords which cannot be used when
+ * @param[in]   value Number of previous passwords which cannot be used when
  *              settings a new password.
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
- * @post
  * @see         dpm_create_client()
  * @see         dpm_destroy_client()
  */
 DPM_API int dpm_set_password_history(dpm_client_h handle, const char *username, const int value);
 
 /**
- * @brief       API to set the required password pattern.
+ * @brief       Sets the required password pattern.
  * @details     An administrator can force User to enter password based on
  *              a regular expression.
  * @since_tizen 3.0
@@ -205,19 +193,17 @@ DPM_API int dpm_set_password_history(dpm_client_h handle, const char *username, 
  *              setting this pattern.
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
- * @post
  * @see         dpm_create_client()
  * @see         dpm_destroy_client()
  */
 DPM_API int dpm_set_password_pattern(dpm_client_h handle, const char *username, const char *pattern);
 
 /**
- * @brief       API to reset password.
+ * @brief       Resets password.
  * @details     This takes effect immediately to the device password.
  * @since_tizen 3.0
  * @privlevel   public
@@ -227,19 +213,17 @@ DPM_API int dpm_set_password_pattern(dpm_client_h handle, const char *username, 
  * @param[in]   password New Password
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
- * @post
  * @see         dpm_create_client()
  * @see         dpm_destroy_client()
  */
 DPM_API int dpm_reset_password(dpm_client_h handle, const char *username, const char *password);
 
 /**
- * @brief       API to enforce password change.
+ * @brief       Enforces password change.
  * @details     An administrator can enforce password change. Password
  *              change setting is launched.
  * @since_tizen 3.0
@@ -249,19 +233,17 @@ DPM_API int dpm_reset_password(dpm_client_h handle, const char *username, const 
  * @param[in]   username User name
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
- * @post
  * @see         dpm_create_client()
  * @see         dpm_destroy_client()
  */
 DPM_API int dpm_enforce_password_change(dpm_client_h handle, const char *username);
 
 /**
- * @brief       API to set the maximum number of seconds of inactivity time
+ * @brief       Sets the maximum number of seconds of inactivity time
  *              before the screen timeout occurs.
  * @details     An administrator sets the maximum number of seconds of inactivity
  *              time before the screen timeout occurs and a device user must
@@ -276,19 +258,17 @@ DPM_API int dpm_enforce_password_change(dpm_client_h handle, const char *usernam
  *              the passcode.
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
- * @post
  * @see         dpm_create_client()
  * @see         dpm_destroy_client()
  */
 DPM_API int dpm_set_max_inactivity_time_device_lock(dpm_client_h handle, const char *username, const int value);
 
 /**
- * @brief       API to get the maximum number of seconds of inactivity time
+ * @brief       Gets the maximum number of seconds of inactivity time
  *              before the screen timeout occurs.
  * @details     Called by an application that is managing the device to get
  *              the value of timeout period.
@@ -298,19 +278,15 @@ DPM_API int dpm_set_max_inactivity_time_device_lock(dpm_client_h handle, const c
  * @param[in]   value Pointer of Maximum inactivity time for device lock.
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
- * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
- *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
- * @post
  * @see         dpm_create_client()
  * @see         dpm_destroy_client()
  */
 DPM_API int dpm_get_max_inactivity_time_device_lock(dpm_client_h handle, const char *username, int *value);
 
 /**
- * @brief       API to set password status
+ * @brief       Sets password status
  * @details     An administrator can know password status for this API.
  * @since_tizen 3.0
  * @privlevel   public
@@ -320,19 +296,17 @@ DPM_API int dpm_get_max_inactivity_time_device_lock(dpm_client_h handle, const c
  * @param[in]   status Password Status
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
- * @post
  * @see         dpm_create_client()
  * @see         dpm_destroy_client()
  */
 DPM_API int dpm_set_password_status(dpm_client_h handle, const char *username, const int status);
 
 /**
- * @brief       API to remove all password patterns.
+ * @brief       Removes all password patterns.
  * @details     An administrator can remove all password patterns.
  * @since_tizen 3.0
  * @privlevel   public
@@ -341,33 +315,30 @@ DPM_API int dpm_set_password_status(dpm_client_h handle, const char *username, c
  * @param[in]   username User name
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
- * @post
  * @see         dpm_create_client()
  * @see         dpm_destroy_client()
  */
 DPM_API int dpm_delete_password_pattern(dpm_client_h handle, const char *username);
 
 /**
- * @brief       API to get password pattern.
+ * @brief       Gets password pattern.
  * @details     This API can be used for applying complexity on new password value.
  * @since_tizen 3.0
  * @param[in]   handle Device Policy Client handle
  * @param[in]   username User name
  * @return      Password Pattern data, otherwise a null pointer if there is no password pattern.
  * @pre         handle must be created by dpm_create_client()
- * @post
  * @see         dpm_create_client()
  * @see         dpm_destroy_client()
  */
 DPM_API char *dpm_get_password_pattern(dpm_client_h handle, const char *username);
 
 /**
- * @brief       API to set the maximum number of times a character can occur in
+ * @brief       Sets the maximum number of times a character can occur in
  *              the device password.
  * @details     Called by an admin that is managing the device to specify that
  *              any character in the device password cannot occur more than
@@ -384,19 +355,17 @@ DPM_API char *dpm_get_password_pattern(dpm_client_h handle, const char *username
  * @param[in]   value Maximum Character Occurences
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
- * @post
  * @see         dpm_create_client()
  * @see         dpm_destroy_client()
  */
 DPM_API int dpm_set_maximum_character_occurrences(dpm_client_h handle, const char *username, const int value);
 
 /**
- * @brief       API to get the maximum number of times a character can occur in
+ * @brief       Gets the maximum number of times a character can occur in
  *              the device password.
  * @details     An administrator can retrieve the maximum number of times
  *              a character can occur in the device password. If more than
@@ -408,19 +377,15 @@ DPM_API int dpm_set_maximum_character_occurrences(dpm_client_h handle, const cha
  * @param[in]   value Pointer of Maximum Character Occurences
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
- * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
- *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
- * @post
  * @see         dpm_create_client()
  * @see         dpm_destroy_client()
  */
 DPM_API int dpm_get_maximum_character_occurrences(dpm_client_h handle, const char *username, int *value);
 
 /**
- * @brief       API to set the maximum length of the numeric sequence
+ * @brief       Sets the maximum length of the numeric sequence
  *              which is allowed in the device password.
  * @details     Called by an administrator that is managing the device to set
  *              the maximum numeric sequence length. This specifies that
@@ -442,19 +407,17 @@ DPM_API int dpm_get_maximum_character_occurrences(dpm_client_h handle, const cha
  * @param[in]   value Maximum Numeric Sequence Length
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
- * @post
  * @see         dpm_create_client()
  * @see         dpm_destroy_client()
  */
 DPM_API int dpm_set_maximum_numeric_sequence_length(dpm_client_h handle, const char *username, const int value);
 
 /**
- * @brief       API to get the maximum numeric sequence length allowed in
+ * @brief       Gets the maximum numeric sequence length allowed in
  *              the device password.
  * @details     An administrator can retrieve the length of numeric sequences
  *              which are allowed in the device password.
@@ -469,12 +432,8 @@ DPM_API int dpm_set_maximum_numeric_sequence_length(dpm_client_h handle, const c
  * @param[in]   value Pointer of Maximum Numeric Sequence Length
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
- * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
- *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
- * @post
  * @see         dpm_create_client()
  * @see         dpm_destroy_client()
  */
