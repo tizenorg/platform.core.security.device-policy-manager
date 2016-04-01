@@ -20,8 +20,8 @@
 #include <tizen.h>
 
 /**
- * @file security.h
- * @brief This file defines common data types required to device policy APIs
+ * @file device-policy-client.h
+ * @brief This file defines common data types required to device policy APIs.
  */
 
 #ifndef DPM_API
@@ -47,24 +47,30 @@ extern "C" {
 
  /**
   * @brief       Called when a policy is changed
+  * @since_tizen 3.0
+  * @param[in]   name The name of the policy
+  * @param[in]   state The current state of the policy
+  * @param[in]   user_data The user data passed from dpm_context_add_policy_change_cb
+ * @see         dpm_context_add_policy_change_cb()
+ * @see         dpm_context_remove_policy_change_cb()
   */
- typedef void (*dpm_policy_change_cb)(const char* name, const char* state, void *user_data);
+typedef void (*dpm_context_policy_change_cb)(const char* name, const char* state, void *user_data);
 
 /**
- * @brief       The Device Policy Client handle
- * @details     The Device Policy Client Handle is an abstraction of the
+ * @brief       The Device Policy Context handle
+ * @details     The Device Policy Context Handle is an abstraction of the
  *              logical connection between the device policy manager and
- *              it's client. The Device Policy Client handle must be
- *              created by using dpm_create_client() brefore attempting to
+ *              it's client. The Device Policy Context handle must be
+ *              created by using dpm_context_create() before attempting to
  *              use almost any of the device policy APIs, and it should
  *              be freed when interaction with the Device Policy Manager
  *              is no longer required.
- *              To release the handle, use dpm_destroy_client().
+ *              To release the handle, use dpm_context_destroy().
  * @since_tizen 3.0
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
+ * @see         dpm_context_create()
+ * @see         dpm_context_destroy()
  */
-typedef void* dpm_client_h;
+typedef void* dpm_context_h;
 
 /**
  * @brief       Enumeration of device policy API errors
@@ -83,80 +89,78 @@ typedef enum {
 } dpm_error_type_e;
 
 /**
- * @brief       Create the Device Policy Client handle
- * @details     This API creates device policy client handle required to
+ * @brief       Creates the Device Policy Context handle
+ * @details     This API creates device policy context handle required to
  *              the device policy APIs.
- *              This API is also used to verity whether caller is authorized
+ *              This API is also used to verify whether caller is authorized
  *              or not
  * @since_tizen 3.0
- * @return      Device Policy Client handle on success, otherwise NULL
+ * @return      Device Policy Context handle on success, otherwise NULL
  * @remark      The specific error code can be obtained by using the
  *              get_last_result() method. Error codes are described in
  *              exception section.
  * @exception   #DPM_ERROR_NONE No error
  * @exception   #DPM_ERROR_CONNECTION_REFUSED Connection refused
- * @exception   #DPM_ERROR_PERMISSION_DENIED The application does not have
- *              the privilege to call this API
- * @pre         N/A
- * @post        N/A
- * @see         dpm_destroy_client()
+ * @see         dpm_context_destroy()
  * @see         get_last_result()
  */
-DPM_API dpm_client_h dpm_create_client(void);
+DPM_API dpm_context_h dpm_context_create(void);
 
 /**
- * @brief       Release the Device Policy Client Handle
+ * @brief       Releases the Device Policy Context Handle
  * @details     This API must be called if interaction with the Device
  *              Policy Manager is no longer required.
  * @since_tizen 3.0
- * @param[in]   handle Device Policy Client Handle
- * @return      None
- * @pre         The handle must be created by dpm_create_client()
- * @post
- * @see         dpm_create_client()
+ * @param[in]   handle Device Policy Context Handle
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @pre         The handle must be created by dpm_context_create()
+ * @see         dpm_context_create()
  */
-DPM_API void dpm_destroy_client(dpm_client_h handle);
+DPM_API int dpm_context_destroy(dpm_context_h handle);
 
 /**
- * @brief       Adds policy change notification listener to the Device Policy
+ * @brief       Adds policy change callback to the Device Policy
  *              Manager
- * @details     This API can be used to subscribe policy change notification.
- *              The handler specified to this API is asynchronously called when
+ * @details     This API can be used to subscribe policy change callback.
+ *              The callback specified to this API is asynchronously called when
  *              policy is changed on runtime.
  * @since_tizen 3.0
- * @param[in]   handle Device Policy Client Handle
+ * @param[in]   handle Device Policy Context Handle
  * @param[in]   name Policy name to subscribe
- * @param[in]   listener Policy change notification listener
- * @param[in]   user_data User specified data passed to the listener
- * @return      Listener identifier on success, otherwise negative value
+ * @param[in]   callback Policy change callback
+ * @param[in]   user_data User specified data passed to the callback
+ * @return      Callback identifier on success, otherwise negative value
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid policy name
- * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
- *              the privilege to subscribe the policy change notification
- *              corresponding to the given policy name.
- * @pre         The handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_remove_policy_change_listener()
+ * @pre         The handle must be created by dpm_context_create()
+ * @see         dpm_context_create()
+ * @see         dpm_context_remove_policy_change_cb()
  */
-DPM_API int dpm_add_policy_change_listener(dpm_client_h handle,
+DPM_API int dpm_context_add_policy_change_cb(dpm_context_h handle,
                                            const char* name,
-                                           dpm_policy_change_cb listener,
+                                           dpm_context_policy_change_cb callback,
                                            void* user_data);
 
 /**
- * @brief       Removes policy change notification listener from the Device Policy
+ * @brief       Removes policy change callback from the Device Policy
  *              Manager
  * @details     This API should be called if policy change subscription is no longer
  *              required.
  * @since_tizen 3.0
- * @param[in]   handle Device Policy Client Handle
+ * @param[in]   handle Device Policy Context Handle
  * @param[in]   name Policy policy name to unsubscribe
- * @param[in]   id Policy change listener identifier
- * @return      None
- * @pre         The handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_add_policy_change_listener()
+ * @param[in]   id Policy change callback identifier
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @pre         The handle must be created by dpm_context_create()
+ * @pre         The id must be creadted by dpm_context_add_policy_change_cb()
+ * @see         dpm_context_create()
+ * @see         dpm_context_add_policy_change_cb()
  */
-DPM_API void dpm_remove_policy_change_listener(dpm_client_h handle, const char* name, int id);
+DPM_API int dpm_context_remove_policy_change_cb(dpm_context_h handle, const char* name, int id);
+
 /**
  * @}
  */
@@ -165,4 +169,4 @@ DPM_API void dpm_remove_policy_change_listener(dpm_client_h handle, const char* 
 }
 #endif
 
-#endif //! __DEVICE_POLICY_CLIENT_H__
+#endif /* __DEVICE_POLICY_CLIENT_H__ */

@@ -64,6 +64,7 @@ static int zone_remove(struct testcase* tc)
 static int zone_get_state(struct testcase* tc)
 {
     dpm_client_h handle;
+    dpm_zone_state_e state;
 
     handle = dpm_create_client();
     if (handle == NULL) {
@@ -71,7 +72,7 @@ static int zone_get_state(struct testcase* tc)
         return TEST_FAILED;
     }
 
-    if (dpm_get_zone_state(handle, TEST_ZONE_ID) != DPM_ERROR_INVALID_PARAMETER) {
+    if (dpm_get_zone_state(handle, TEST_ZONE_ID, &state) != DPM_ERROR_NONE) {
         dpm_destroy_client(handle);
         return TEST_SUCCESSED;
     }
