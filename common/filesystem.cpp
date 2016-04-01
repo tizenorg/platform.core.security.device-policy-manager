@@ -353,10 +353,6 @@ void DirectoryIterator::next()
     std::string name;
     struct dirent entry, *ent;
 
-    if (readdir_r(directoryHandle, &entry, &ent) != 0) {
-        throw runtime::Exception(runtime::GetSystemErrorMessage());
-    }
-
     while (1) {
         if (readdir_r(directoryHandle, &entry, &ent) != 0) {
             throw runtime::Exception(runtime::GetSystemErrorMessage());
