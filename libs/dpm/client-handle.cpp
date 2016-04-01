@@ -49,3 +49,18 @@ DPM_API void dpm_destroy_client(dpm_client_h handle)
 
     delete &GetDevicePolicyClient(handle);
 }
+
+DPM_API int dpm_add_policy_change_listener(dpm_client_h handle, const char* name, dpm_policy_change_cb handler, void* user_data)
+{
+    assert(handle);
+
+    DevicePolicyClient &client = GetDevicePolicyClient(handle);
+    client.subscribePolicyChange(name, handler, user_data);
+
+    return 0;
+}
+
+DPM_API void dpm_remove_policy_change_listener(dpm_client_h handle, const char* name, int id)
+{
+    assert(handle);
+}

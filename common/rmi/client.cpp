@@ -35,9 +35,9 @@ void Client::connect()
     dispatcher = std::thread([this] { mainloop.run(); });
 }
 
-int Client::subscribe(const std::string& name)
+int Client::subscribe(const std::string& provider, const std::string& name)
 {
-    Message request = connection->createMessage(Message::MethodCall, "Server::subscribeNotification");
+    Message request = connection->createMessage(Message::MethodCall, provider);
     request.packParameters(name);
     connection->send(request);
 

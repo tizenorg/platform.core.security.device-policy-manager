@@ -45,6 +45,11 @@ extern "C" {
  * @{
  */
 
+ /**
+  * @brief       Called when a policy has changed
+  */
+ typedef void (*dpm_policy_change_cb)(const char* name, int state, void *user_data);
+
 /**
  * @brief       The Device Policy Client handle
  * @details     The Device Policy Client Handle is an abstraction of the
@@ -112,6 +117,40 @@ DPM_API dpm_client_h dpm_create_client(void);
  */
 DPM_API void dpm_destroy_client(dpm_client_h handle);
 
+/**
+ * @brief       Adds policy change notification listener to the Device Policy Manager
+ * @details     This API can be used to subscribe policy change notification.
+ *              The handler will be asynchronously called when policy is changed on runtime.
+ * @since_tizen 3.0
+ * @param[in]   handle Device Policy Client Handle
+ * @param[in]   name Policy name to subscribe
+ * @param[in]   callback handler to be invoked
+ * @param[in]   user_data User specified data passed to the listener
+ * @return      Listener identifier on success, otherwise negative value
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid policy name
+ * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
+ *              the privilege to subscribe the policy change notification
+ * @pre         The handle must be created by dpm_create_client()
+ * @see         dpm_create_client()
+ * @see         dpm_remove_policy_change_listener()
+ */
+DPM_API int dpm_add_policy_change_listener(dpm_client_h handle, const char* name, dpm_policy_change_cb listener, void* user_data);
+
+/**
+ * @brief       Removes policy change notification listener from the Device Policy Manager
+ * @details     This API must be called if interaction with the Device
+ *              Policy Manager is no longer required.
+ * @since_tizen 3.0
+ * @param[in]   handle Device Policy Client Handle
+ * @param[in]   name Policy policy name to subscribe
+ * @param[in]   callback handler to be invoked
+ * @param[in]   user_data User specified data passed to the listener
+ * @return      None
+ * @pre         The handle must be created by dpm_create_client()
+ * @see         dpm_create_client()
+ * @see         dpm_add_policy_change_listener()
+ */
+DPM_API void dpm_remove_policy_change_listener(dpm_client_h handle, const char* name, int id);
 /**
  * @}
  */

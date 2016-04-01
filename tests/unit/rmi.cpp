@@ -25,6 +25,7 @@
 #include <utility>
 
 #include "data-type.h"
+#include "file-descriptor.h"
 #include "rmi/service.h"
 #include "rmi/client.h"
 #include "audit/logger.h"
@@ -43,6 +44,15 @@ public:
         service->registerMethod(this, (String)(TestServer::method2)(String, String));
         service->registerMethod(this, (String)(TestServer::method3)(String, String, String));
         service->registerMethod(this, (String)(TestServer::method4)(String, String, String, String));
+
+        service->registerMethod(this, (FileDescriptor)(TestServer::signalProvider)(std::string));
+        service->registerMethod(this, (FileDescriptor)(TestServer::policyNotificationProvider)(std::string));
+
+        service->registerNonparametricMethod(this, (int)(TestServer::sendSignal)());
+        service->registerNonparametricMethod(this, (int)(TestServer::sendPolicyChangeNotification)());
+
+        service->createNotification("TestPolicyChanged");
+        service->createNotification("TestSignal");
     }
 
     void run()
@@ -74,6 +84,28 @@ public:
         return String("Method4 result");
     }
 
+    int sendPolicyChangeNotification()
+    {
+        service->notify("TestPolicyChanged", 1234);
+        return 0;
+    }
+
+    int sendSignal()
+    {
+        service->notify("TestSignal");
+        return 0;
+    }
+
+    FileDescriptor signalProvider(const std::string& name)
+    {
+        return service->subscribeNotification(name);
+    }
+
+    FileDescriptor policyNotificationProvider(const std::string& name)
+    {
+        return service->subscribeNotification(name);
+    }
+
 private:
     std::unique_ptr<rmi::Service> service;
 };
@@ -86,8 +118,21 @@ public:
 
     void connect()
     {
+        auto policyChangedListener = [](const std::string& name, int value) {
+            std::cout << "Policy Changed: " << name << " : " << value << std::endl;
+        };
+
+        auto policySignalListener = [](const std::string& name) {
+            std::cout << "Signal Triggered" << std::endl;
+        };
+
         client.reset(new rmi::Client(IPC_TEST_ADDRESS));
         client->connect();
+
+        client->subscribe<std::string, int>("TestServer::policyNotificationProvider",
+                                            "TestPolicyChanged", policyChangedListener);
+        client->subscribe<std::string>("TestServer::signalProvider",
+                                       "TestSignal", policySignalListener);
     }
 
     void disconnect()
@@ -115,12 +160,32 @@ public:
         return client->methodCall<String>("TestServer::method4", arg1, arg2, arg3, arg4);
     }
 
+    void requestSignal()
+    {
+        signalTriggered = false;
+        client->methodCall<int>("TestServer::sendSignal");
+        while (!signalTriggered) {
+            ::sleep(1);
+        }
+    }
+
+    void requestPolicyChangeNotification()
+    {
+        policyChangeNotificationTriggered = false;
+        client->methodCall<int>("TestServer::sendPolicyChangeNotification");
+        while (!policyChangeNotificationTriggered) {
+            sleep(1);
+        }
+    }
+
     String invalidMethod(String& arg)
     {
         return client->methodCall<String>("TestServer::invalidMethod", arg);
     }
 
 private:
+    volatile bool signalTriggered;
+    volatile bool policyChangeNotificationTriggered;
     std::unique_ptr<rmi::Client> client;
 };
 
@@ -196,6 +261,7 @@ public:
     {
         addTest(IpcTestSuite::connectionTest);
         addTest(IpcTestSuite::remoteMethodCallTest);
+        addTest(IpcTestSuite::notificationTest);
     }
 
     void setup()
@@ -232,6 +298,21 @@ public:
         }
     }
 
+    void notificationTest()
+    {
+        try {
+            TestClient client;
+            client.connect();
+
+            client.requestSignal();
+            client.requestPolicyChangeNotification();
+
+            client.disconnect();
+        } catch (runtime::Exception& e) {
+            ERROR(e.what());
+        }
+    }
+
     void remoteMethodCallTest()
     {
         try {
@@ -247,6 +328,11 @@ public:
             String result2 = client.method2(param1, param2);
             String result3 = client.method3(param1, param2, param3);
             String result4 = client.method4(param1, param2, param3, param4);
+
+            client.requestSignal();
+            client.requestPolicyChangeNotification();
+
+            sleep(5);
 
             client.disconnect();
         } catch (runtime::Exception& e) {

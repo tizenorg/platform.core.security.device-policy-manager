@@ -168,10 +168,9 @@ template <typename... Args>
 void Service::notify(const std::string& name, Args&&... args)
 {
     Notification& slot = notificationRegistry[name];
-    slot.notify(std::forward<Args>(args)...);
+    slot.notify(name, std::forward<Args>(args)...);
 }
 
 } // namespace rmi
 
 #endif //__RMI_SERVICE_H__
-
