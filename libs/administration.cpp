@@ -20,28 +20,28 @@
 
 namespace DevicePolicyManager {
 
-Administration::Administration(PolicyControlContext& ctx) :
+AdministrationPolicy::AdministrationPolicy(PolicyControlContext& ctx) :
     context(ctx)
 {
 }
 
-Administration::~Administration()
+AdministrationPolicy::~AdministrationPolicy()
 {
 }
 
-int Administration::registerPolicyClient(const std::string& name)
+int AdministrationPolicy::registerPolicyClient(const std::string& name)
 {
     try {
-        return context->methodCall<int>("Administration::registerPolicyClient", name);
+        return context->methodCall<int>("AdministrationPolicy::registerPolicyClient", name);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Administration::deregisterPolicyClient(const std::string& name)
+int AdministrationPolicy::deregisterPolicyClient(const std::string& name)
 {
     try {
-        return context->methodCall<int>("Administration::deregisterPolicyClient", name);
+        return context->methodCall<int>("AdministrationPolicy::deregisterPolicyClient", name);
     } catch (runtime::Exception& e) {
         return -1;
     }

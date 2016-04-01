@@ -27,10 +27,10 @@ namespace DevicePolicyManager {
  * such as bluetooth device or uuid restriction
  */
 
-class Bluetooth {
+class BluetoothPolicy {
 public:
-    Bluetooth(PolicyControlContext& ctxt);
-    ~Bluetooth();
+    BluetoothPolicy(PolicyControlContext& ctxt);
+    ~BluetoothPolicy();
 
     int addDeviceToBlacklist(const std::string& mac_address);
     int removeDeviceFromBlacklist(const std::string& mac_address);
