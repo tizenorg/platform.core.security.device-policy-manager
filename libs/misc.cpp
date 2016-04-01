@@ -28,42 +28,6 @@ Misc::~Misc()
 {
 }
 
-int Misc::setCameraRestriction(bool enable)
-{
-	try {
-		return context->methodCall<int>("Misc::setCameraRestriction", enable);
-	} catch (runtime::Exception &e) {
-		return -1;
-	}
-}
-
-bool Misc::isCameraRestricted()
-{
-	try {
-		return context->methodCall<bool>("Misc::isCameraRestricted");
-	} catch (runtime::Exception &e) {
-		return -1;
-	}
-}
-
-int Misc::setMicrophoneRestriction(bool enable)
-{
-	try {
-		return context->methodCall<int>("Misc::setMicrophoneRestriction", enable);
-	} catch (runtime::Exception &e) {
-		return -1;
-	}
-}
-
-bool Misc::isMicrophoneRestricted()
-{
-	try {
-		return context->methodCall<bool>("Misc::isMicrophoneRestricted");
-	} catch (runtime::Exception &e) {
-		return -1;
-	}
-}
-
 int Misc::setLocationRestriction(bool enable)
 {
 	try {

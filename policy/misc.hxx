@@ -27,12 +27,6 @@ public:
 	Misc(PolicyControlContext& ctxt);
 	~Misc();
 
-	int setCameraRestriction(bool enable);
-	bool isCameraRestricted();
-
-	int setMicrophoneRestriction(bool enable);
-	bool isMicrophoneRestricted();
-
 	int setLocationRestriction(bool enable);
 	bool isLocationRestricted();
 

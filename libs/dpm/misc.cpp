@@ -22,74 +22,34 @@
 
 using namespace DevicePolicyManager;
 
-int dpm_set_camera_restriction(dpm_client_h handle, int enable)
+int dpm_location_allow_state_change(dpm_location_policy_h handle, int enable)
 {
 	assert(handle);
 
-	DevicePolicyClient &client = GetDevicePolicyClient(handle);
-	Misc misc = client.createPolicyInterface<Misc>();
-	return misc.setCameraRestriction(enable);
-}
-
-int dpm_is_camera_restricted(dpm_client_h handle)
-{
-	assert(handle);
-
-	DevicePolicyClient &client = GetDevicePolicyClient(handle);
-	Misc misc = client.createPolicyInterface<Misc>();
-	return misc.isCameraRestricted();
-}
-
-int dpm_set_microphone_restriction(dpm_client_h handle, int enable)
-{
-	assert(handle);
-
-	DevicePolicyClient &client = GetDevicePolicyClient(handle);
-	Misc misc = client.createPolicyInterface<Misc>();
-	return misc.setMicrophoneRestriction(enable);
-}
-
-int dpm_is_microphone_restricted(dpm_client_h handle)
-{
-	assert(handle);
-
-	DevicePolicyClient &client = GetDevicePolicyClient(handle);
-	Misc misc = client.createPolicyInterface<Misc>();
-	return misc.isMicrophoneRestricted();
-}
-
-int dpm_set_location_restriction(dpm_client_h handle, int enable)
-{
-	assert(handle);
-
-	DevicePolicyClient &client = GetDevicePolicyClient(handle);
-	Misc misc = client.createPolicyInterface<Misc>();
+	Misc& misc = GetPolicyInterface<Misc>(handle);
 	return misc.setLocationRestriction(enable);
 }
 
-int dpm_is_location_restricted(dpm_client_h handle)
+int dpm_location_is_state_change_allowed(dpm_location_policy_h handle)
 {
 	assert(handle);
 
-	DevicePolicyClient &client = GetDevicePolicyClient(handle);
-	Misc misc = client.createPolicyInterface<Misc>();
+	Misc& misc = GetPolicyInterface<Misc>(handle);
 	return misc.isLocationRestricted();
 }
 
-int dpm_set_sd_card_restriction(dpm_client_h handle, int enable)
+int dpm_storage_set_sdcard_restriction(dpm_storage_policy_h handle, int enable)
 {
 	assert(handle);
 
-	DevicePolicyClient &client = GetDevicePolicyClient(handle);
-	Misc misc = client.createPolicyInterface<Misc>();
+	Misc& misc = GetPolicyInterface<Misc>(handle);
 	return misc.setSdCardRestriction(enable);
 }
 
-int dpm_is_sd_card_restricted(dpm_client_h handle)
+int dpm_storage_is_sdcard_restricted(dpm_storage_policy_h handle)
 {
 	assert(handle);
 
-	DevicePolicyClient &client = GetDevicePolicyClient(handle);
-	Misc misc = client.createPolicyInterface<Misc>();
+	Misc& misc = GetPolicyInterface<Misc>(handle);
 	return misc.isSdCardRestricted();
 }
