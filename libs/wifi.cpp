@@ -19,103 +19,13 @@
 
 namespace DevicePolicyManager {
 
-Wifi::Wifi(PolicyControlContext& ctxt) :
+WifiPolicy::WifiPolicy(PolicyControlContext& ctxt) :
     context(ctxt)
 {
 }
 
-Wifi::~Wifi()
+WifiPolicy::~WifiPolicy()
 {
-}
-
-int Wifi::setStateChangeRestriction(bool enable)
-{
-    try {
-        return context->methodCall<int>("Wifi::setStateChangeRestriction", enable);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
-}
-
-bool Wifi::isStateChangeRestricted()
-{
-    try {
-        return context->methodCall<bool>("Wifi::isStateChangeRestricted");
-    } catch (runtime::Exception& e) {
-        return false;
-    }
-}
-
-int Wifi::setSettingChangesRestriction(bool enable)
-{
-    try {
-        return context->methodCall<int>("Wifi::setSettingChangesRestriction", enable);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
-}
-
-bool Wifi::isSettingChangesRestricted()
-{
-    try {
-        return context->methodCall<bool>("Wifi::isSettingChangesRestricted");
-    } catch (runtime::Exception& e) {
-        return false;
-    }
-}
-
-int Wifi::setHotspotRestriction(bool enable)
-{
-    try {
-        return context->methodCall<int>("Wifi::setHotspotRestriction", enable);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
-}
-
-bool Wifi::isHotspotRestricted()
-{
-    try {
-        return context->methodCall<bool>("Wifi::isHotspotRestricted");
-    } catch (runtime::Exception& e) {
-        return false;
-    }
-}
-
-int Wifi::setNetworkAccessRestriction(bool enable)
-{
-    try {
-        return context->methodCall<int>("Wifi::setNetworkAccessRestriction", enable);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
-}
-
-bool Wifi::isNetworkAccessRestricted()
-{
-    try {
-        return context->methodCall<bool>("Wifi::isNetworkAccessRestricted");
-    } catch (runtime::Exception& e) {
-        return false;
-    }
-}
-
-int Wifi::addSsidFromBlacklist(const std::string& ssid)
-{
-    try {
-        return context->methodCall<int>("Wifi::addSsidFromBlacklist", ssid);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
-}
-
-int Wifi::removeSsidFromBlacklist(const std::string& ssid)
-{
-    try {
-        return context->methodCall<int>("Wifi::removeSsidFromBlacklist", ssid);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
 }
 
 } // namespace DevicePolicyManager

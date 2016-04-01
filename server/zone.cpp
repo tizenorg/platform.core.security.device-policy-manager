@@ -56,7 +56,7 @@ namespace DevicePolicyManager {
 static const char *defaultGroups[] = {"audio", "video", "display", "log", NULL};
 static const char *defaultAppDir[] = {"cache", "data", "shared", NULL};
 
-static int setZoneState(uid_t id, int state)
+static int setZonePolicyState(uid_t id, int state)
 {
     GDBusConnection* connection;
     GError* error = NULL;
@@ -103,25 +103,25 @@ void execute(const std::string& path, Args&&... args)
 
 
 
-Zone::Zone(PolicyControlContext& ctx)
+ZonePolicy::ZonePolicy(PolicyControlContext& ctx)
     : context(ctx)
 {
-    context.registerParametricMethod(this, (int)(Zone::createZone)(std::string, std::string));
-    context.registerParametricMethod(this, (int)(Zone::removeZone)(std::string));
-    context.registerParametricMethod(this, (int)(Zone::lockZone)(std::string));
-    context.registerParametricMethod(this, (int)(Zone::unlockZone)(std::string));
-    context.registerNonparametricMethod(this, (std::vector<std::string>)(Zone::getZoneList)());
-    context.registerParametricMethod(this, (int)(Zone::getZoneState)(std::string));
+    context.registerParametricMethod(this, (int)(ZonePolicy::createZonePolicy)(std::string, std::string));
+    context.registerParametricMethod(this, (int)(ZonePolicy::removeZonePolicy)(std::string));
+    context.registerParametricMethod(this, (int)(ZonePolicy::lockZonePolicy)(std::string));
+    context.registerParametricMethod(this, (int)(ZonePolicy::unlockZonePolicy)(std::string));
+    context.registerNonparametricMethod(this, (std::vector<std::string>)(ZonePolicy::getZonePolicyList)());
+    context.registerParametricMethod(this, (int)(ZonePolicy::getZonePolicyState)(std::string));
 
-    context.createNotification("Zone::created");
-    context.createNotification("Zone::removed");
+    context.createNotification("ZonePolicy::created");
+    context.createNotification("ZonePolicy::removed");
 }
 
-Zone::~Zone()
+ZonePolicy::~ZonePolicy()
 {
 }
 
-int Zone::createZone(const std::string& name, const std::string& setupWizAppid)
+int ZonePolicy::createZonePolicy(const std::string& name, const std::string& setupWizAppid)
 {
     std::string provisionDirPath(ZONE_PROVISION_DIR + name);
     runtime::File provisionDir(provisionDirPath);
@@ -301,9 +301,9 @@ int Zone::createZone(const std::string& name, const std::string& setupWizAppid)
             bundleXml->write(ZONE_MANIFEST_DIR + name + ".xml", "UTF-8", true);
 
             //unlock the user
-            setZoneState(user.getUid(), 1);
+            setZonePolicyState(user.getUid(), 1);
 
-            context.notify("Zone::created", name, std::string());
+            context.notify("ZonePolicy::created", name, std::string());
         } catch (runtime::Exception& e) {
             ERROR(e.what());
         }
@@ -316,12 +316,12 @@ int Zone::createZone(const std::string& name, const std::string& setupWizAppid)
     return 0;
 }
 
-int Zone::removeZone(const std::string& name)
+int ZonePolicy::removeZonePolicy(const std::string& name)
 {
     int ret;
 
     //lock the user
-    ret = lockZone(name);
+    ret = lockZonePolicy(name);
     if (ret != 0) {
         return -1;
     }
@@ -365,7 +365,7 @@ int Zone::removeZone(const std::string& name)
 
             bundle.remove();
 
-            context.notify("Zone::removed", name, std::string());
+            context.notify("ZonePolicy::removed", name, std::string());
         } catch (runtime::Exception& e) {
             ERROR(e.what());
             return;
@@ -378,14 +378,14 @@ int Zone::removeZone(const std::string& name)
     return 0;
 }
 
-int Zone::lockZone(const std::string& name)
+int ZonePolicy::lockZonePolicy(const std::string& name)
 {
     int result;
 
     try {
         runtime::User user(name);
 
-        result = setZoneState(user.getUid(), 0);
+        result = setZonePolicyState(user.getUid(), 0);
         if (result != 0) {
             return -1;
         }
@@ -397,14 +397,14 @@ int Zone::lockZone(const std::string& name)
     return 0;
 }
 
-int Zone::unlockZone(const std::string& name)
+int ZonePolicy::unlockZonePolicy(const std::string& name)
 {
     int result;
 
     try {
         runtime::User user(name);
 
-        result = setZoneState(user.getUid(), 1);
+        result = setZonePolicyState(user.getUid(), 1);
         if (result != 0) {
             return -1;
         }
@@ -416,16 +416,16 @@ int Zone::unlockZone(const std::string& name)
     return 0;
 }
 
-std::vector<std::string> Zone::getZoneList()
+std::vector<std::string> ZonePolicy::getZonePolicyList()
 {
     return std::vector<std::string>();
 }
 
-int Zone::getZoneState(const std::string& name)
+int ZonePolicy::getZonePolicyState(const std::string& name)
 {
     return 0;
 }
 
-Zone zonePolicy(Server::instance());
+ZonePolicy zonePolicy(Server::instance());
 
 } // namespace DevicePolicyManager
