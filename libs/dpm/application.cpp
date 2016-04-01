@@ -14,92 +14,128 @@
  *  limitations under the License
  */
 
-#include <cassert>
-
+#include "application.h"
 #include "application.hxx"
 
-#include "application.h"
+#include "debug.h"
 #include "policy-client.h"
 
 using namespace DevicePolicyManager;
 
-int dpm_set_package_installation_mode(dpm_client_h handle, int mode)
+dpm_application_policy_h dpm_context_acquire_application_policy(dpm_context_h handle, const char* zone)
 {
-    assert(handle);
+    RET_ON_FAILURE(handle, NULL);
 
-    DevicePolicyClient& client = GetDevicePolicyClient(handle);
-    Application application = client.createPolicyInterface<Application>();
+    DevicePolicyContext& client = GetDevicePolicyContext(handle);
+    //return client.createPolicyInterface<ApplicationPolicy>(zone);
+    return client.createPolicyInterface<ApplicationPolicy>();
+}
+
+int dpm_context_release_application_policy(dpm_context_h context, dpm_application_policy_h handle)
+{
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+
+    delete &GetPolicyInterface<ApplicationPolicy>(handle);
+    return DPM_ERROR_NONE;
+}
+
+int dpm_application_set_installation_mode(dpm_application_policy_h handle, int mode)
+{
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+
+    ApplicationPolicy& application = GetPolicyInterface<ApplicationPolicy>(handle);
     return application.setApplicationInstallationMode(mode);
 }
 
-int dpm_set_package_uninstallation_mode(dpm_client_h handle, int mode)
+int dpm_application_set_uninstallation_mode(dpm_application_policy_h handle, int mode)
 {
-    assert(handle);
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyClient& client = GetDevicePolicyClient(handle);
-    Application application = client.createPolicyInterface<Application>();
+    ApplicationPolicy& application = GetPolicyInterface<ApplicationPolicy>(handle);
     return application.setApplicationUninstallationMode(mode);
 }
 
-int dpm_get_package_installation_mode(dpm_client_h handle)
+int dpm_application_get_installation_mode(dpm_application_policy_h handle, int *mode)
 {
-    assert(handle);
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Application application = client.createPolicyInterface<Application>();
-    return application.getApplicationInstallationMode();
+    ApplicationPolicy& application = GetPolicyInterface<ApplicationPolicy>(handle);
+    int ret = application.getApplicationInstallationMode();
+    if (ret < 0) {
+        return -1;
+    }
+    *mode = ret;
+    return DPM_ERROR_NONE;
 }
 
-int dpm_get_package_uninstallation_mode(dpm_client_h handle)
+int dpm_application_get_uninstallation_mode(dpm_application_policy_h handle, int *mode)
 {
-    assert(handle);
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(mode, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Application application = client.createPolicyInterface<Application>();
-    return application.getApplicationUninstallationMode();
+    ApplicationPolicy& application = GetPolicyInterface<ApplicationPolicy>(handle);
+    int ret = application.getApplicationUninstallationMode();
+    if (ret < 0) {
+        return -1;
+    }
+    *mode = ret;
+    return DPM_ERROR_NONE;
 }
 
-int dpm_set_application_state(dpm_client_h handle, const char* pkgid, dpm_application_state_e state)
+int dpm_application_set_package_state(dpm_application_policy_h handle, const char* pkgid, dpm_package_state_e state)
 {
-    assert(handle);
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(pkgid, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Application application = client.createPolicyInterface<Application>();
+    ApplicationPolicy& application = GetPolicyInterface<ApplicationPolicy>(handle);
     return application.setApplicationState(pkgid, state);
 }
 
-int dpm_get_application_state(dpm_client_h handle, const char* pkgid)
+int dpm_application_get_package_state(dpm_application_policy_h handle, const char* pkgid, int *state)
 {
-    assert(handle);
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(pkgid, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(state, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Application application = client.createPolicyInterface<Application>();
-    return application.getApplicationState(pkgid);
+    ApplicationPolicy& application = GetPolicyInterface<ApplicationPolicy>(handle);
+    int ret = application.getApplicationState(pkgid);
+    if (ret < 0) {
+        return -1;
+    }
+    *state = ret;
+    return DPM_ERROR_NONE;
 }
 
-int dpm_add_package_to_blacklist(dpm_client_h handle, const char* pkgid)
+int dpm_application_add_package_to_blacklist(dpm_application_policy_h handle, const char* pkgid)
 {
-    assert(handle);
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(pkgid, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Application application = client.createPolicyInterface<Application>();
+    ApplicationPolicy& application = GetPolicyInterface<ApplicationPolicy>(handle);
     return application.addPackageToBlacklist(pkgid);
 }
 
-int dpm_remove_package_from_blacklist(dpm_client_h handle, const char* pkgid)
+int dpm_application_remove_package_from_blacklist(dpm_application_policy_h handle, const char* pkgid)
 {
-    assert(handle);
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(pkgid, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Application application = client.createPolicyInterface<Application>();
+    ApplicationPolicy& application = GetPolicyInterface<ApplicationPolicy>(handle);
     return application.removePackageFromBlacklist(pkgid);
 }
 
-int dpm_check_package_is_blacklisted(dpm_client_h handle, const char* pkgid)
+int dpm_application_check_package_is_blacklisted(dpm_application_policy_h handle, const char* pkgid, int *blacklisted)
 {
-    assert(handle);
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(pkgid, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(blacklisted, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Application application = client.createPolicyInterface<Application>();
-    return application.checkPackageIsBlacklisted(pkgid);
+    ApplicationPolicy& application = GetPolicyInterface<ApplicationPolicy>(handle);
+    int ret = application.checkPackageIsBlacklisted(pkgid);
+    if (ret < 0) {
+        return -1;
+    }
+
+    *blacklisted = ret;
+    return DPM_ERROR_NONE;
 }

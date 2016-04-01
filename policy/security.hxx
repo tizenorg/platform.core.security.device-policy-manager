@@ -27,10 +27,10 @@ namespace DevicePolicyManager {
  * such as certificate installation, encryption and wipe
  */
 
-class Security {
+class SecurityPolicy {
 public:
-    Security(PolicyControlContext& ctxt);
-    ~Security();
+    SecurityPolicy(PolicyControlContext& ctxt);
+    ~SecurityPolicy();
 
     int lockoutDevice();
     int lockoutScreen();
@@ -43,11 +43,6 @@ public:
     bool isExternalStorageEncrypted();
     std::vector<std::string> getFileNamesOnDevice(const std::string& path);
     std::vector<std::string> getFileNamesWithAttributes(const std::string& path);
-
-    enum {
-        WIPE_INTERNAL_MEMORY = (1 << 1),
-        WIPE_EXTERNAL_MEMORY = (1 << 0)
-    };
 
 private:
     PolicyControlContext& context;
