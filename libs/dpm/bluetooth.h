@@ -34,6 +34,50 @@ extern "C" {
  * @{
  */
 
+ /**
+  * @brief       The Bluetooth Policy handle
+  * @since_tizen 3.0
+  * @see         dpm_context_acquire_bluetooth_policy()
+  * @see         dpm_context_release_bluetooth_policy()
+  */
+ typedef void* dpm_bluetooth_policy_h;
+
+ /**
+  * @brief       Acquires the Bluetooth Policy handle.
+  * @details     This API acquires device bluetooth policy handle required to call
+  *              the bluetooth policy APIs.
+  * @since_tizen 3.0
+  * @param[in]   handle Device Policy Context Handle
+  * @param[in]   zone Target container name.
+  * @return      Password Policy handle on success, otherwise NULL
+  * @remark      The specific error code can be obtained by using the
+  *              get_last_result() method. Error codes are described in
+  *              exception section.
+  * @exception   #DPM_ERROR_NONE No error
+  * @exception   #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+  * @exception   #DPM_ERROR_TIMED_OUT Time out
+  * @exception   #DPM_ERROR_PERMISSION_DENIED The application does not have
+  *              the privilege to access the target container.
+  * @see         dpm_context_release_password_policy()
+  * @see         get_last_result()
+  */
+ DPM_API dpm_bluetooth_policy_h dpm_context_acquire_bluetooth_policy(dpm_context_h handle);
+
+ /**
+  * @brief       Releases the Device Administration Policy Handle.
+  * @details     This API must be called if interaction with the Device
+  *              Policy Manager is no longer required.
+  * @since_tizen 3.0
+  * @param[in]   handle Password Policy Handle
+  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+  * @retval      #DPM_ERROR_NONE Successful
+  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+  * @retval      #DPM_ERROR_TIMED_OUT Time out
+  * @pre         The handle must be created by dpm_context_acquire_password_policy().
+  * @see         dpm_context_acquire_password_policy()
+  */
+ DPM_API int dpm_context_release_bluetooth_policy(dpm_bluetooth_policy_h handle);
+
 /**
  * @brief       Adds MAC address to blacklist
  * @details     An administrator can use this API to add new MAC address to
@@ -53,7 +97,7 @@ extern "C" {
  * @see         dpm_destroy_client()
  * @see         dpm_remove_bluetooth_device_from_blacklist()
  */
-DPM_API int dpm_add_bluetooth_device_to_blacklist(dpm_client_h handle, const char* mac_address);
+DPM_API int dpm_bluetooth_add_device_to_blacklist(dpm_bluetooth_policy_h handle, const char* mac_address);
 
 /**
  * @brief       Removes MAC address from blacklist
@@ -74,7 +118,7 @@ DPM_API int dpm_add_bluetooth_device_to_blacklist(dpm_client_h handle, const cha
  * @see         dpm_destroy_client()
  * @see         dpm_add_bluetooth_device_to_blacklist()
  */
-DPM_API int dpm_remove_bluetooth_device_from_blacklist(dpm_client_h handle, const char* mac_address);
+DPM_API int dpm_bluetooth_remove_device_from_blacklist(dpm_bluetooth_policy_h handle, const char* mac_address);
 
 /**
  * @brief       Enables or disables device restriction of bluetooth
@@ -95,7 +139,7 @@ DPM_API int dpm_remove_bluetooth_device_from_blacklist(dpm_client_h handle, cons
  * @see         dpm_destroy_client()
  * @see         dpm_is_bluetooth_device_restricted()
  */
-DPM_API int dpm_set_bluetooth_device_restriction(dpm_client_h handle, const int enable);
+DPM_API int dpm_bluetooth_set_device_restriction(dpm_bluetooth_h handle, const int enable);
 
 /**
  * @brief       Gets the allow status of the bluetooth's device restriction
@@ -112,7 +156,7 @@ DPM_API int dpm_set_bluetooth_device_restriction(dpm_client_h handle, const int 
  * @see         dpm_destroy_client()
  * @see         dpm_set_bluetooth_device_restriction()
  */
-DPM_API int dpm_is_bluetooth_device_restricted(dpm_client_h handle);
+DPM_API int dpm_bluetooth_is_device_restricted(dpm_bluetooth_policy_h handle);
 
 /**
  * @brief       Adds UUID to blacklist
@@ -132,7 +176,7 @@ DPM_API int dpm_is_bluetooth_device_restricted(dpm_client_h handle);
  * @see         dpm_destroy_client()
  * @see         dpm_remove_bluetooth_uuid_from_blacklist()
  */
-DPM_API int dpm_add_bluetooth_uuid_to_blacklist(dpm_client_h handle, const char* uuid);
+DPM_API int dpm_bluetooth_add_uuid_to_blacklist(dpm_bluetooth_policy_h handle, const char* uuid);
 
 /**
  * @brief       Removes UUID from blacklist
@@ -152,7 +196,7 @@ DPM_API int dpm_add_bluetooth_uuid_to_blacklist(dpm_client_h handle, const char*
  * @see         dpm_destroy_client()
  * @see         dpm_add_bluetooth_uuid_to_blacklist()
  */
-DPM_API int dpm_remove_bluetooth_uuid_from_blacklist(dpm_client_h handle, const char* uuid);
+DPM_API int dpm_bluetooth_remove_uuid_from_blacklist(dpm_bluetooth_policy_h handle, const char* uuid);
 
 /**
  * @brief       Enables or disables UUID restriction of bluetooth
@@ -173,7 +217,7 @@ DPM_API int dpm_remove_bluetooth_uuid_from_blacklist(dpm_client_h handle, const 
  * @see         dpm_destroy_client()
  * @see         dpm_is_bluetooth_uuid_restricted()
  */
-DPM_API int dpm_set_bluetooth_uuid_restriction(dpm_client_h handle, const int enable);
+DPM_API int dpm_bluetooth_set_uuid_restriction(dpm_bluetooth_policy_h handle, const int enable);
 
 /**
  * @brief       Gets the allow status of the bluetooth's UUID restriction
@@ -190,7 +234,7 @@ DPM_API int dpm_set_bluetooth_uuid_restriction(dpm_client_h handle, const int en
  * @see         dpm_destroy_client()
  * @see         dpm_set_bluetooth_uuid_restriction()
  */
-DPM_API int dpm_is_bluetooth_uuid_restricted(dpm_client_h handle);
+DPM_API int dpm_bluetooth_is_uuid_restricted(dpm_bluetooth_policy_h handle);
 
 /**
  * @}
