@@ -21,7 +21,7 @@
 
 TESTCASE(DeviceRestriction)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
     int error = -1;
     bool status = false;
 
@@ -45,7 +45,7 @@ TESTCASE(DeviceRestriction)
 
 TESTCASE(UuidRestriction)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
     int error = -1;
     bool status = false;
 

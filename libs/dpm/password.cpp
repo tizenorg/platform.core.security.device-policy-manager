@@ -15,25 +15,41 @@
  */
 
 #include <cstring>
+#include <cassert>
 
 #include "password.h"
 #include "password.hxx"
 
-#include "capi-assert.h"
+#include "debug.h"
 #include "policy-client.h"
 
 using namespace DevicePolicyManager;
 
-int dpm_set_password_quality(dpm_client_h handle, const char *username, dpm_password_quality_e quality)
+dpm_password_policy_h dpm_context_acquire_password_policy(dpm_context_h handle, const char* zone)
+{
+    RET_ON_FAILURE(handle, NULL);
+
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    return client.createPolicyInterface<Password>();
+}
+
+DPM_API int dpm_context_release_password_policy(dpm_password_policy_h handle)
+{
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+
+    delete &GetPolicyInterface<Password>(handle);
+    return 0;
+}
+
+int dpm_set_password_quality(dpm_password_policy_h handle, dpm_password_quality_e quality)
 {
     int ret = 0;
 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Password password = client.createPolicyInterface<Password>();
+    Password& password = GetPolicyInterface<Password>(handle);
 
-    if (password.setPasswordQuality(username, quality) == 0)
+    if (password.setPasswordQuality(quality) == 0)
         ret = DPM_ERROR_NONE;
     else
         ret = DPM_ERROR_NOT_SUPPORTED;
@@ -41,17 +57,15 @@ int dpm_set_password_quality(dpm_client_h handle, const char *username, dpm_pass
     return ret;
 }
 
-int dpm_set_password_minimum_length(dpm_client_h handle, const char *username, const int value)
+int dpm_set_password_minimum_length(dpm_password_policy_h handle, const int value)
 {
     int ret = 0;
 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(username, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Password password = client.createPolicyInterface<Password>();
+    Password& password = GetPolicyInterface<Password>(handle);
 
-    if (password.setPasswordMinimumLength(username, value) == 0)
+    if (password.setPasswordMinimumLength(value) == 0)
         ret = DPM_ERROR_NONE;
     else
         ret = DPM_ERROR_NOT_SUPPORTED;
@@ -59,17 +73,15 @@ int dpm_set_password_minimum_length(dpm_client_h handle, const char *username, c
     return ret;
 }
 
-int dpm_set_min_password_complex_chars(dpm_client_h handle, const char *username, const int value)
+int dpm_set_min_password_complex_chars(dpm_password_policy_h handle, const int value)
 {
     int ret = 0;
 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(username, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Password password = client.createPolicyInterface<Password>();
+    Password& password = GetPolicyInterface<Password>(handle);
 
-    if (password.setMinPasswordComplexChars(username, value) == 0)
+    if (password.setMinPasswordComplexChars(value) == 0)
         ret = DPM_ERROR_NONE;
     else
         ret = DPM_ERROR_NOT_SUPPORTED;
@@ -77,17 +89,15 @@ int dpm_set_min_password_complex_chars(dpm_client_h handle, const char *username
     return ret;
 }
 
-int dpm_set_maximum_failed_password_for_wipe(dpm_client_h handle, const char *username, const int value)
+int dpm_set_maximum_failed_password_for_wipe(dpm_password_policy_h handle, const int value)
 {
     int ret = 0;
 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(username, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Password password = client.createPolicyInterface<Password>();
+    Password& password = GetPolicyInterface<Password>(handle);
 
-    if (password.setMaximumFailedPasswordForWipe(username, value) == 0)
+    if (password.setMaximumFailedPasswordForWipe(value) == 0)
         ret = DPM_ERROR_NONE;
     else
         ret = DPM_ERROR_NOT_SUPPORTED;
@@ -95,17 +105,15 @@ int dpm_set_maximum_failed_password_for_wipe(dpm_client_h handle, const char *us
     return ret;
 }
 
-int dpm_set_password_expires(dpm_client_h handle, const char *username, const int value)
+int dpm_set_password_expires(dpm_password_policy_h handle, const int value)
 {
     int ret = 0;
 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(username, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Password password = client.createPolicyInterface<Password>();
+    Password& password = GetPolicyInterface<Password>(handle);
 
-    if (password.setPasswordExpires(username, value) == 0)
+    if (password.setPasswordExpires(value) == 0)
         ret = DPM_ERROR_NONE;
     else
         ret = DPM_ERROR_NOT_SUPPORTED;
@@ -113,17 +121,15 @@ int dpm_set_password_expires(dpm_client_h handle, const char *username, const in
     return ret;
 }
 
-int dpm_set_password_history(dpm_client_h handle, const char *username, const int value)
+int dpm_set_password_history(dpm_password_policy_h handle, const int value)
 {
     int ret = 0;
 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(username, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Password password = client.createPolicyInterface<Password>();
+    Password& password = GetPolicyInterface<Password>(handle);
 
-    if (password.setPasswordHistory(username, value) == 0)
+    if (password.setPasswordHistory(value) == 0)
         ret = DPM_ERROR_NONE;
     else
         ret = DPM_ERROR_NOT_SUPPORTED;
@@ -131,18 +137,16 @@ int dpm_set_password_history(dpm_client_h handle, const char *username, const in
     return ret;
 }
 
-int dpm_set_password_pattern(dpm_client_h handle, const char *username, const char *pattern)
+int dpm_set_password_pattern(dpm_password_policy_h handle, const char *pattern)
 {
     int ret = 0;
 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(username, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(pattern, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Password password = client.createPolicyInterface<Password>();
+    Password& password = GetPolicyInterface<Password>(handle);
 
-    if (password.setPasswordPattern(username, pattern) == 0)
+    if (password.setPasswordPattern(pattern) == 0)
         ret = DPM_ERROR_NONE;
     else
         ret = DPM_ERROR_NOT_SUPPORTED;
@@ -150,18 +154,16 @@ int dpm_set_password_pattern(dpm_client_h handle, const char *username, const ch
     return ret;
 }
 
-int dpm_reset_password(dpm_client_h handle, const char *username, const char *passwd)
+int dpm_reset_password(dpm_password_policy_h handle, const char *passwd)
 {
     int ret = 0;
 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(username, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(passwd, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Password password = client.createPolicyInterface<Password>();
+    Password& password = GetPolicyInterface<Password>(handle);
 
-    if (password.resetPassword(username, passwd) == 0)
+    if (password.resetPassword(passwd) == 0)
         ret = DPM_ERROR_NONE;
     else
         ret = DPM_ERROR_NOT_SUPPORTED;
@@ -169,17 +171,15 @@ int dpm_reset_password(dpm_client_h handle, const char *username, const char *pa
     return ret;
 }
 
-int dpm_enforce_password_change(dpm_client_h handle, const char *username)
+int dpm_enforce_password_change(dpm_password_policy_h handle)
 {
     int ret = 0;
 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(username, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Password password = client.createPolicyInterface<Password>();
+    Password& password = GetPolicyInterface<Password>(handle);
 
-    if (password.enforcePasswordChange(username) == 0)
+    if (password.enforcePasswordChange() == 0)
         ret = DPM_ERROR_NONE;
     else
         ret = DPM_ERROR_NOT_SUPPORTED;
@@ -187,17 +187,15 @@ int dpm_enforce_password_change(dpm_client_h handle, const char *username)
     return ret;
 }
 
-int dpm_set_max_inactivity_time_device_lock(dpm_client_h handle, const char *username, const int value)
+int dpm_set_max_inactivity_time_device_lock(dpm_password_policy_h handle, const int value)
 {
     int ret = 0;
 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(username, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Password password = client.createPolicyInterface<Password>();
+    Password& password = GetPolicyInterface<Password>(handle);
 
-    if (password.setMaxInactivityTimeDeviceLock(username, value) == 0)
+    if (password.setMaxInactivityTimeDeviceLock(value) == 0)
         ret = DPM_ERROR_NONE;
     else
         ret = DPM_ERROR_NOT_SUPPORTED;
@@ -205,18 +203,16 @@ int dpm_set_max_inactivity_time_device_lock(dpm_client_h handle, const char *use
     return ret;
 }
 
-int dpm_get_max_inactivity_time_device_lock(dpm_client_h handle, const char *username, int *p_value)
+int dpm_get_max_inactivity_time_device_lock(dpm_password_policy_h handle, int *p_value)
 {
     int ret = 0;
 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(username, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(p_value, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Password password = client.createPolicyInterface<Password>();
+    Password& password = GetPolicyInterface<Password>(handle);
 
-    *p_value = password.getMaxInactivityTimeDeviceLock(username);
+    *p_value = password.getMaxInactivityTimeDeviceLock();
 
     if (*p_value > 0)
         ret = DPM_ERROR_NONE;
@@ -226,17 +222,15 @@ int dpm_get_max_inactivity_time_device_lock(dpm_client_h handle, const char *use
     return ret;
 }
 
-int dpm_set_password_status(dpm_client_h handle, const char *username, const int status)
+int dpm_set_password_status(dpm_password_policy_h handle, const int status)
 {
     int ret = 0;
 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(username, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Password password = client.createPolicyInterface<Password>();
+    Password& password = GetPolicyInterface<Password>(handle);
 
-    if (password.setPasswordStatus(username, status) == 0)
+    if (password.setPasswordStatus(status) == 0)
         ret = DPM_ERROR_NONE;
     else
         ret = DPM_ERROR_NOT_SUPPORTED;
@@ -244,17 +238,15 @@ int dpm_set_password_status(dpm_client_h handle, const char *username, const int
     return ret;
 }
 
-int dpm_delete_password_pattern(dpm_client_h handle, const char *username)
+int dpm_delete_password_pattern(dpm_password_policy_h handle)
 {
     int ret = 0;
 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(username, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Password password = client.createPolicyInterface<Password>();
+    Password& password = GetPolicyInterface<Password>(handle);
 
-    if (password.deletePasswordPattern(username) == 0)
+    if (password.deletePasswordPattern() == 0)
         ret = DPM_ERROR_NONE;
     else
         ret = DPM_ERROR_NOT_SUPPORTED;
@@ -262,32 +254,28 @@ int dpm_delete_password_pattern(dpm_client_h handle, const char *username)
     return ret;
 }
 
-char *dpm_get_password_pattern(dpm_client_h handle, const char *username)
+char *dpm_get_password_pattern(dpm_password_policy_h handle)
 {
     RET_ON_FAILURE(handle, NULL);
-    RET_ON_FAILURE(username, NULL);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Password password = client.createPolicyInterface<Password>();
+    Password& password = GetPolicyInterface<Password>(handle);
 
-    if (password.getPasswordPattern(username).size() > 0) {
-        return ::strdup(password.getPasswordPattern(username).c_str());
+    if (password.getPasswordPattern().size() > 0) {
+        return ::strdup(password.getPasswordPattern().c_str());
     }
 
     return NULL;
 }
 
-int dpm_set_maximum_character_occurrences(dpm_client_h handle, const char *username, const int value)
+int dpm_set_maximum_character_occurrences(dpm_password_policy_h handle, const int value)
 {
     int ret = 0;
 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(username, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Password password = client.createPolicyInterface<Password>();
+    Password& password = GetPolicyInterface<Password>(handle);
 
-    if (password.setMaximumCharacterOccurrences(username, value) == 0)
+    if (password.setMaximumCharacterOccurrences(value) == 0)
         ret = DPM_ERROR_NONE;
     else
         ret = DPM_ERROR_NOT_SUPPORTED;
@@ -295,17 +283,15 @@ int dpm_set_maximum_character_occurrences(dpm_client_h handle, const char *usern
     return ret;
 }
 
-int dpm_get_maximum_character_occurrences(dpm_client_h handle, const char *username, int *p_value)
+int dpm_get_maximum_character_occurrences(dpm_password_policy_h handle, int *p_value)
 {
     int ret = 0;
 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(username, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(p_value, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Password password = client.createPolicyInterface<Password>();
-    *p_value = password.getMaximumCharacterOccurrences(username);
+    Password& password = GetPolicyInterface<Password>(handle);
+    *p_value = password.getMaximumCharacterOccurrences();
 
     if (*p_value > 0)
         ret = DPM_ERROR_NONE;
@@ -315,17 +301,15 @@ int dpm_get_maximum_character_occurrences(dpm_client_h handle, const char *usern
     return ret;
 }
 
-int dpm_set_maximum_numeric_sequence_length(dpm_client_h handle, const char *username, const int value)
+int dpm_set_maximum_numeric_sequence_length(dpm_password_policy_h handle, const int value)
 {
     int ret = 0;
 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(username, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Password password = client.createPolicyInterface<Password>();
+    Password& password = GetPolicyInterface<Password>(handle);
 
-    if (password.setMaximumNumericSequenceLength(username, value) == 0)
+    if (password.setMaximumNumericSequenceLength(value) == 0)
         ret = DPM_ERROR_NONE;
     else
         ret = DPM_ERROR_NOT_SUPPORTED;
@@ -333,17 +317,15 @@ int dpm_set_maximum_numeric_sequence_length(dpm_client_h handle, const char *use
     return ret;
 }
 
-int dpm_get_maximum_numeric_sequence_length(dpm_client_h handle, const char *username, int *value)
+int dpm_get_maximum_numeric_sequence_length(dpm_password_policy_h handle, int *value)
 {
     int ret = 0;
 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(username, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(value, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Password password = client.createPolicyInterface<Password>();
-    *value = password.getMaximumNumericSequenceLength(username);
+    Password& password = GetPolicyInterface<Password>(handle);
+    *value = password.getMaximumNumericSequenceLength();
 
     if (*value > 0)
         ret = DPM_ERROR_NONE;

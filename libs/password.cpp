@@ -28,235 +28,235 @@ Password::~Password()
 {
 }
 
-int Password::setPasswordQuality(const std::string& username, const int quality)
+int Password::setPasswordQuality(const int quality)
 {
     try {
-        return __context->methodCall<int>("Password::setPasswordQuality", username, quality);
+        return __context->methodCall<int>("Password::setPasswordQuality", quality);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Password::getPasswordQuality(const std::string& username)
+int Password::getPasswordQuality()
 {
     try {
-        return __context->methodCall<int>("Password::getPasswordQuality", username);
+        return __context->methodCall<int>("Password::getPasswordQuality");
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Password::setPasswordMinimumLength(const std::string& username, const int value)
+int Password::setPasswordMinimumLength(const int value)
 {
     try {
-        return __context->methodCall<int>("Password::setPasswordMinimumLength", username, value);
+        return __context->methodCall<int>("Password::setPasswordMinimumLength", value);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Password::getPasswordMinimumLength(const std::string& username)
+int Password::getPasswordMinimumLength()
 {
     try {
-        return __context->methodCall<int>("Password::getPasswordMinimumLength", username);
+        return __context->methodCall<int>("Password::getPasswordMinimumLength");
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Password::setMinPasswordComplexChars(const std::string& username, const int value)
+int Password::setMinPasswordComplexChars(const int value)
 {
     try {
-        return __context->methodCall<int>("Password::setMinPasswordComplexChars", username, value);
+        return __context->methodCall<int>("Password::setMinPasswordComplexChars", value);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Password::getMinPasswordComplexChars(const std::string& username)
+int Password::getMinPasswordComplexChars()
 {
     try {
-        return __context->methodCall<int>("Password::getMinPasswordComplexChars", username);
+        return __context->methodCall<int>("Password::getMinPasswordComplexChars");
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Password::setMaximumFailedPasswordForWipe(const std::string& username, const int value)
+int Password::setMaximumFailedPasswordForWipe(const int value)
 {
     try {
-        return __context->methodCall<int>("Password::setMaximumFailedPasswordForWipe", username, value);
+        return __context->methodCall<int>("Password::setMaximumFailedPasswordForWipe", value);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
-int Password::getMaximumFailedPasswordForWipe(const std::string& username)
+int Password::getMaximumFailedPasswordForWipe()
 {
     try {
-        return __context->methodCall<int>("Password::getMaximumFailedPasswordForWipe", username);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
-}
-
-int Password::setPasswordExpires(const std::string& username, const int value)
-{
-    try {
-        return __context->methodCall<int>("Password::setPasswordExpires", username, value);
+        return __context->methodCall<int>("Password::getMaximumFailedPasswordForWipe");
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Password::getPasswordExpires(const std::string& username)
+int Password::setPasswordExpires(const int value)
 {
     try {
-        return __context->methodCall<int>("Password::getPasswordExpires", username);
+        return __context->methodCall<int>("Password::setPasswordExpires", value);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Password::setPasswordHistory(const std::string& username, const int value)
+int Password::getPasswordExpires()
 {
     try {
-        return __context->methodCall<int>("Password::setPasswordHistory", username, value);
+        return __context->methodCall<int>("Password::getPasswordExpires");
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Password::getPasswordHistory(const std::string& username)
+int Password::setPasswordHistory(const int value)
 {
     try {
-        return __context->methodCall<int>("Password::getPasswordHistory", username);
+        return __context->methodCall<int>("Password::setPasswordHistory", value);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Password::setPasswordPattern(const std::string& username, const std::string& pattern)
+int Password::getPasswordHistory()
 {
     try {
-        return __context->methodCall<int>("Password::setPasswordPattern", username, pattern);
+        return __context->methodCall<int>("Password::getPasswordHistory");
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Password::resetPassword(const std::string& username, const std::string& passwd)
+int Password::setPasswordPattern(const std::string& pattern)
 {
     try {
-        return __context->methodCall<int>("Password::resetPassword", username, passwd);
+        return __context->methodCall<int>("Password::setPasswordPattern", pattern);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Password::enforcePasswordChange(const std::string& username)
+int Password::resetPassword(const std::string& passwd)
 {
     try {
-        return __context->methodCall<int>("Password::enforcePasswordChange", username);
+        return __context->methodCall<int>("Password::resetPassword", passwd);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Password::setMaxInactivityTimeDeviceLock(const std::string& username, const int value)
+int Password::enforcePasswordChange()
 {
     try {
-        return __context->methodCall<int>("Password::setMaxInactivityTimeDeviceLock", username, value);
+        return __context->methodCall<int>("Password::enforcePasswordChange");
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Password::getMaxInactivityTimeDeviceLock(const std::string& username)
+int Password::setMaxInactivityTimeDeviceLock(const int value)
 {
     try {
-        return __context->methodCall<int>("Password::getMaxInactivityTimeDeviceLock", username);;
+        return __context->methodCall<int>("Password::setMaxInactivityTimeDeviceLock", value);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Password::setPasswordStatus(const std::string& username, const int status)
+int Password::getMaxInactivityTimeDeviceLock()
 {
     try {
-        return __context->methodCall<int>("Password::setPasswordStatus", username, status);
+        return __context->methodCall<int>("Password::getMaxInactivityTimeDeviceLock");;
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Password::deletePasswordPattern(const std::string& username)
+int Password::setPasswordStatus(const int status)
 {
     try {
-        return __context->methodCall<int>("Password::deletePasswordPattern", username);
+        return __context->methodCall<int>("Password::setPasswordStatus", status);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-std::string Password::getPasswordPattern(const std::string& username)
+int Password::deletePasswordPattern()
+{
+    try {
+        return __context->methodCall<int>("Password::deletePasswordPattern");
+    } catch (runtime::Exception& e) {
+        return -1;
+    }
+}
+
+std::string Password::getPasswordPattern()
 {
     std::string error("Error");
     try {
-        return __context->methodCall<std::string>("Password::getPasswordPattern", username);
+        return __context->methodCall<std::string>("Password::getPasswordPattern");
     } catch (runtime::Exception& e) {
         return error;
     }
 }
 
-int Password::setMaximumCharacterOccurrences(const std::string& username, const int value)
+int Password::setMaximumCharacterOccurrences(const int value)
 {
     try {
-        return __context->methodCall<int>("Password::setMaximumCharacterOccurrences", username, value);
+        return __context->methodCall<int>("Password::setMaximumCharacterOccurrences", value);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Password::getMaximumCharacterOccurrences(const std::string& username)
+int Password::getMaximumCharacterOccurrences()
 {
     try {
-        return __context->methodCall<int>("Password::getMaximumCharacterOccurrences", username);
+        return __context->methodCall<int>("Password::getMaximumCharacterOccurrences");
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Password::setMaximumNumericSequenceLength(const std::string& username, const int value)
+int Password::setMaximumNumericSequenceLength(const int value)
 {
     try {
-        return __context->methodCall<int>("Password::setMaximumNumericSequenceLength", username, value);
+        return __context->methodCall<int>("Password::setMaximumNumericSequenceLength", value);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Password::getMaximumNumericSequenceLength(const std::string& username)
+int Password::getMaximumNumericSequenceLength()
 {
     try {
-        return __context->methodCall<int>("Password::getMaximumNumericSequenceLength", username);
+        return __context->methodCall<int>("Password::getMaximumNumericSequenceLength");
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Password::setForbiddenStrings(const std::string& username, const std::vector<std::string>& forbiddenStrings)
+int Password::setForbiddenStrings(const std::vector<std::string>& forbiddenStrings)
 {
     try {
-        return __context->methodCall<int>("Password::setForbiddenStrings", username, forbiddenStrings);
+        return __context->methodCall<int>("Password::setForbiddenStrings", forbiddenStrings);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-std::vector<std::string> Password::getForbiddenStrings(const std::string& username)
+std::vector<std::string> Password::getForbiddenStrings()
 {
     try {
-        return __context->methodCall<std::vector<std::string>>("Password::getForbiddenStrings", username);
+        return __context->methodCall<std::vector<std::string>>("Password::getForbiddenStrings");
     } catch (runtime::Exception& e) {
         return std::vector<std::string>();
     }
