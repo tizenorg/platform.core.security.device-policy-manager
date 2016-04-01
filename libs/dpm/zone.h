@@ -39,7 +39,6 @@ extern "C" {
  *              process according to the enterprise policy. Thus, the zone
  *              admin package should be able to dispatch zone policy which are
  *              required to configure the zone.
- * @remark
  * @since_tizen 3.0
  * @privlevel   public
  * @privilege   %http://tizen.org/privilege/dpm.zone
@@ -52,7 +51,6 @@ extern "C" {
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
- * @post
  * @see         dpm_create_client()
  * @see         dpm_destroy_client()
  * @see         dpm_remove_zone()
@@ -77,7 +75,6 @@ DPM_API int dpm_create_zone(dpm_client_h handle, const char* name, const char* p
  * @pre         handle must be created by dpm_create_client()
  * @pre         The zone corresponding to the given name must be
  *              created before use of this API.
- * @post
  * @see         dpm_create_client()
  * @see         dpm_destroy_client()
  * @see         dpm_remove_zone()
@@ -87,6 +84,7 @@ DPM_API int dpm_remove_zone(dpm_client_h handle, const char* name);
 
 /**
  * @brief       Zone list iterator handle
+ * @since_tizen 3.0
  */
 typedef void* dpm_zone_iterator_h;
 
@@ -105,7 +103,6 @@ typedef void* dpm_zone_iterator_h;
  * @exception   #DPM_ERROR_NONE No error
  * @exception   #DPM_ERROR_OUT_OF_MEMORY Out of memory
  * @pre         handle must be created by dpm_create_client()
- * @post
  * @see         dpm_create_client()
  * @see         dpm_destroy_client()
  * @see         dpm_create_zone()
@@ -121,7 +118,7 @@ DPM_API dpm_zone_iterator_h dpm_get_zone_iterator(dpm_client_h handle);
  *              API moves the iterator to the next position.
  * @since_tizen 3.0
  * @param[in]   iter The iterator to be controlled
- * @return      The value if the iterater has object, otherwise null value
+ * @return      The value if the iterator has object, otherwise null value
  * @pre         iter must be created by dpm_zone_list_get_iterator()
  * @post
  * @see         dpm_zone_list_get_iterator()
@@ -133,9 +130,8 @@ DPM_API const char* dpm_zone_iterator_next(dpm_zone_iterator_h iter);
  * @brief       API to free the iterator.
  * @details     The iterator and what it indicates are freed from memory.
  * @since_tizen 3.0
- * @param[in]   iter The interator to be removed
+ * @param[in]   iter The iterator to be removed
  * @pre         iter must be created by dpm_zone_list_get_iterator()
- * @post
  * @see         dpm_get_zone_iterator()
  * @see         dpm_zone_iterator_next()
  */
@@ -143,6 +139,7 @@ DPM_API void dpm_free_zone_iterator(dpm_zone_iterator_h iter);
 
 /*
  * @brief       Enumeration for zone state
+ * @since_tizen 3.0
  */
 typedef enum {
     DPM_ZONE_DEFINED,     /**< Zone has been defined, but it is not running. */
@@ -162,7 +159,6 @@ typedef enum {
  * @retval      #DPM_ZONE_RUNNING Zone is running
  * @retval      #DPM_ZONE_LOCKED zone was locked.
  * @pre         handle must be created by dpm_create_client()
- * @post
  * @see         dpm_create_client()
  * @see         dpm_destroy_client()
  * @see         dpm_create_zone()
@@ -174,6 +170,7 @@ DPM_API int dpm_get_zone_state(dpm_client_h handle, const char *name);
 
 /**
  * @brief       Called when a zone signal occurs
+ * @since_tizen 3.0
  */
 typedef void(*dpm_zone_signal_cb)(zone_state_e event, const char* name, void *info, void *user_data);
 
@@ -182,16 +179,13 @@ typedef void(*dpm_zone_signal_cb)(zone_state_e event, const char* name, void *in
  * @details     Each zone signals are sent when zone state is changed.
  *              To catch the events, listener should be added in advance.
  * @since_tizen 3.0
- * @param[in]   handle the device policy client handle
+ * @param[in]   handle The device policy client handle
  * @param[in]   callback The listener function to be called
  * @param[in]   user_data The user data passed to the listener function
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
- * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
- *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
- * @post
  * @see         dpm_create_client()
  * @see         dpm_destroy_client()
  * @see         dpm_subscribe_zone_signal()
@@ -200,18 +194,15 @@ DPM_API int dpm_subscribe_zone_signal(dpm_client_h handle, dpm_zone_signal_cb ca
 
 /**
  * @brief       API to detach the listener from zone signal.
- * @details     After removed, listner function will be no longer called even
+ * @details     After removed, listener function will be no longer called even
  *              though zone state is changed.
  * @since_tizen 3.0
- * @param[in]   handle the device policy client handle
+ * @param[in]   handle The device policy client handle
  * @param[in]   callback The listener function to be removed
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
- * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
- *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
- * @post
  * @see         dpm_create_client()
  * @see         dpm_destroy_client()
  * @see         dpm_unsubscribe_zone_signal()
