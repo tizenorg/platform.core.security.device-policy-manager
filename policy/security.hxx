@@ -27,10 +27,10 @@ namespace DevicePolicyManager {
  * such as certificate installation, encryption and wipe
  */
 
-class Security {
+class SecurityPolicy {
 public:
-    Security(PolicyControlContext& ctxt);
-    ~Security();
+    SecurityPolicy(PolicyControlContext& ctxt);
+    ~SecurityPolicy();
 
     int lockoutDevice();
     int lockoutScreen();

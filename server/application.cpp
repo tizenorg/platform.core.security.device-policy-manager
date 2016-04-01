@@ -27,57 +27,57 @@
 
 namespace DevicePolicyManager {
 
-Application::Application(PolicyControlContext& ctxt) :
+ApplicationPolicy::ApplicationPolicy(PolicyControlContext& ctxt) :
     context(ctxt)
 {
-    context.registerNonparametricMethod(this, (bool)(Application::getApplicationInstallationMode)());
-    context.registerNonparametricMethod(this, (bool)(Application::getApplicationUninstallationMode)());
-    context.registerNonparametricMethod(this, (std::vector<std::string>)(Application::getInstalledPackageList)());
+    context.registerNonparametricMethod(this, (bool)(ApplicationPolicy::getApplicationPolicyInstallationMode)());
+    context.registerNonparametricMethod(this, (bool)(ApplicationPolicy::getApplicationPolicyUninstallationMode)());
+    context.registerNonparametricMethod(this, (std::vector<std::string>)(ApplicationPolicy::getInstalledPackageList)());
 
-    context.registerParametricMethod(this, (int)(Application::setApplicationInstallationMode)(bool));
-    context.registerParametricMethod(this, (int)(Application::setApplicationUninstallationMode)(bool));
-    context.registerParametricMethod(this, (bool)(Application::isPackageInstalled)(std::string));
-    context.registerParametricMethod(this, (bool)(Application::isApplicationInstalled)(std::string));
-    context.registerParametricMethod(this, (bool)(Application::isApplicationRunning)(std::string));
-    context.registerParametricMethod(this, (int)(Application::installPackage)(std::string));
-    context.registerParametricMethod(this, (int)(Application::uninstallPackage)(std::string));
-    context.registerParametricMethod(this, (int)(Application::disableApplication)(std::string));
-    context.registerParametricMethod(this, (int)(Application::enableApplication)(std::string));
-    context.registerParametricMethod(this, (int)(Application::getApplicationState)(std::string));
-    context.registerParametricMethod(this, (int)(Application::setApplicationState)(std::string, int));
-    context.registerParametricMethod(this, (int)(Application::startApplication)(std::string));
-    context.registerParametricMethod(this, (int)(Application::stopApplication)(std::string));
-    context.registerParametricMethod(this, (int)(Application::wipeApplicationData)(std::string));
-    context.registerParametricMethod(this, (int)(Application::addPackageToBlacklist)(std::string));
-    context.registerParametricMethod(this, (int)(Application::removePackageFromBlacklist)(std::string));
-    context.registerParametricMethod(this, (int)(Application::checkPackageIsBlacklisted)(std::string));
+    context.registerParametricMethod(this, (int)(ApplicationPolicy::setApplicationPolicyInstallationMode)(bool));
+    context.registerParametricMethod(this, (int)(ApplicationPolicy::setApplicationPolicyUninstallationMode)(bool));
+    context.registerParametricMethod(this, (bool)(ApplicationPolicy::isPackageInstalled)(std::string));
+    context.registerParametricMethod(this, (bool)(ApplicationPolicy::isApplicationPolicyInstalled)(std::string));
+    context.registerParametricMethod(this, (bool)(ApplicationPolicy::isApplicationPolicyRunning)(std::string));
+    context.registerParametricMethod(this, (int)(ApplicationPolicy::installPackage)(std::string));
+    context.registerParametricMethod(this, (int)(ApplicationPolicy::uninstallPackage)(std::string));
+    context.registerParametricMethod(this, (int)(ApplicationPolicy::disableApplicationPolicy)(std::string));
+    context.registerParametricMethod(this, (int)(ApplicationPolicy::enableApplicationPolicy)(std::string));
+    context.registerParametricMethod(this, (int)(ApplicationPolicy::getApplicationPolicyState)(std::string));
+    context.registerParametricMethod(this, (int)(ApplicationPolicy::setApplicationPolicyState)(std::string, int));
+    context.registerParametricMethod(this, (int)(ApplicationPolicy::startApplicationPolicy)(std::string));
+    context.registerParametricMethod(this, (int)(ApplicationPolicy::stopApplicationPolicy)(std::string));
+    context.registerParametricMethod(this, (int)(ApplicationPolicy::wipeApplicationPolicyData)(std::string));
+    context.registerParametricMethod(this, (int)(ApplicationPolicy::addPackageToBlacklist)(std::string));
+    context.registerParametricMethod(this, (int)(ApplicationPolicy::removePackageFromBlacklist)(std::string));
+    context.registerParametricMethod(this, (int)(ApplicationPolicy::checkPackageIsBlacklisted)(std::string));
 }
 
-Application::~Application()
+ApplicationPolicy::~ApplicationPolicy()
 {
 }
 
-int Application::setApplicationInstallationMode(const bool mode)
-{
-    return 0;
-}
-
-bool Application::getApplicationInstallationMode()
-{
-    return true;
-}
-
-int Application::setApplicationUninstallationMode(const bool mode)
+int ApplicationPolicy::setApplicationPolicyInstallationMode(const bool mode)
 {
     return 0;
 }
 
-bool Application::getApplicationUninstallationMode()
+bool ApplicationPolicy::getApplicationPolicyInstallationMode()
 {
     return true;
 }
 
-std::vector<std::string> Application::getInstalledPackageList()
+int ApplicationPolicy::setApplicationPolicyUninstallationMode(const bool mode)
+{
+    return 0;
+}
+
+bool ApplicationPolicy::getApplicationPolicyUninstallationMode()
+{
+    return true;
+}
+
+std::vector<std::string> ApplicationPolicy::getInstalledPackageList()
 {
     try {
         PackageManager& packman = PackageManager::instance();
@@ -88,7 +88,7 @@ std::vector<std::string> Application::getInstalledPackageList()
     }
 }
 
-bool Application::isApplicationInstalled(const std::string& appid)
+bool ApplicationPolicy::isApplicationPolicyInstalled(const std::string& appid)
 {
     try {
         AppInfo appInfo(appid, context.getPeerUid());
@@ -99,13 +99,13 @@ bool Application::isApplicationInstalled(const std::string& appid)
     }
 }
 
-bool Application::isApplicationRunning(const std::string& appid)
+bool ApplicationPolicy::isApplicationPolicyRunning(const std::string& appid)
 {
     Launchpad launchpad(context.getPeerUid());
     return launchpad.instantiated(appid);
 }
 
-bool Application::isPackageInstalled(const std::string& pkgid)
+bool ApplicationPolicy::isPackageInstalled(const std::string& pkgid)
 {
     try {
         PackageInfo pkgInfo(pkgid);
@@ -117,7 +117,7 @@ bool Application::isPackageInstalled(const std::string& pkgid)
 }
 
 
-int Application::installPackage(const std::string& pkgpath)
+int ApplicationPolicy::installPackage(const std::string& pkgpath)
 {
     try {
         PackageManager& packman = PackageManager::instance();
@@ -130,7 +130,7 @@ int Application::installPackage(const std::string& pkgpath)
     return 0;
 }
 
-int Application::uninstallPackage(const std::string& pkgid)
+int ApplicationPolicy::uninstallPackage(const std::string& pkgid)
 {
     try {
         PackageManager& packman = PackageManager::instance();
@@ -143,7 +143,7 @@ int Application::uninstallPackage(const std::string& pkgid)
     return 0;
 }
 
-int Application::disableApplication(const std::string& appid)
+int ApplicationPolicy::disableApplicationPolicy(const std::string& appid)
 {
     try {
         Launchpad launchpad(context.getPeerUid());
@@ -160,7 +160,7 @@ int Application::disableApplication(const std::string& appid)
     return 0;
 }
 
-int Application::enableApplication(const std::string& appid)
+int ApplicationPolicy::enableApplicationPolicy(const std::string& appid)
 {
     try {
         PackageManager& packman = PackageManager::instance();
@@ -172,17 +172,17 @@ int Application::enableApplication(const std::string& appid)
     return 0;
 }
 
-int Application::getApplicationState(const std::string& appid)
+int ApplicationPolicy::getApplicationPolicyState(const std::string& appid)
 {
     return true;
 }
 
-int Application::setApplicationState(const std::string& appid, const int state)
+int ApplicationPolicy::setApplicationPolicyState(const std::string& appid, const int state)
 {
     return true;
 }
 
-int Application::startApplication(const std::string& appid)
+int ApplicationPolicy::startApplicationPolicy(const std::string& appid)
 {
     Launchpad launchpad(context.getPeerUid());
     if (launchpad.launch(appid) < 0) {
@@ -193,7 +193,7 @@ int Application::startApplication(const std::string& appid)
     return 0;
 }
 
-int Application::stopApplication(const std::string& appid)
+int ApplicationPolicy::stopApplicationPolicy(const std::string& appid)
 {
     Launchpad launchpad(context.getPeerUid());
     if (launchpad.instantiated(appid)) {
@@ -203,7 +203,7 @@ int Application::stopApplication(const std::string& appid)
     return 0;
 }
 
-int Application::wipeApplicationData(const std::string& appid)
+int ApplicationPolicy::wipeApplicationPolicyData(const std::string& appid)
 {
     try {
         PackageManager& packman = PackageManager::instance();
@@ -217,7 +217,7 @@ int Application::wipeApplicationData(const std::string& appid)
 }
 
 
-int Application::addPackageToBlacklist(const std::string& pkgid)
+int ApplicationPolicy::addPackageToBlacklist(const std::string& pkgid)
 {
     try {
         PackageManager& packman = PackageManager::instance();
@@ -230,7 +230,7 @@ int Application::addPackageToBlacklist(const std::string& pkgid)
     return 0;
 }
 
-int Application::removePackageFromBlacklist(const std::string& pkgid)
+int ApplicationPolicy::removePackageFromBlacklist(const std::string& pkgid)
 {
     try {
         PackageManager& packman = PackageManager::instance();
@@ -243,7 +243,7 @@ int Application::removePackageFromBlacklist(const std::string& pkgid)
     return 0;
 }
 
-int Application::checkPackageIsBlacklisted(const std::string& pkgid)
+int ApplicationPolicy::checkPackageIsBlacklisted(const std::string& pkgid)
 {
     try {
         PackageManager& packman = PackageManager::instance();
@@ -254,6 +254,6 @@ int Application::checkPackageIsBlacklisted(const std::string& pkgid)
     }
 }
 
-Application applicationPolicy(Server::instance());
+ApplicationPolicy applicationPolicy(Server::instance());
 
 } // namespace DevicePolicyManager
