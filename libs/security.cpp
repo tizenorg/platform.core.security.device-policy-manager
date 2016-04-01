@@ -19,109 +19,109 @@
 
 namespace DevicePolicyManager {
 
-Security::Security(PolicyControlContext& ctxt) :
+SecurityPolicy::SecurityPolicy(PolicyControlContext& ctxt) :
     context(ctxt)
 {
 }
 
-Security::~Security()
+SecurityPolicy::~SecurityPolicy()
 {
 }
 
-int Security::lockoutDevice()
+int SecurityPolicy::lockoutDevice()
 {
     try {
-        return context->methodCall<int>("Security::lockoutDevice");
+        return context->methodCall<int>("SecurityPolicy::lockoutDevice");
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Security::lockoutScreen()
+int SecurityPolicy::lockoutScreen()
 {
     try {
-        return context->methodCall<int>("Security::lockoutScreen");
+        return context->methodCall<int>("SecurityPolicy::lockoutScreen");
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Security::wipeData(const int id)
+int SecurityPolicy::wipeData(const int id)
 {
     try {
-        return context->methodCall<int>("Security::wipeData", id);
+        return context->methodCall<int>("SecurityPolicy::wipeData", id);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Security::reboot()
+int SecurityPolicy::reboot()
 {
     try {
-        return context->methodCall<int>("Security::reboot");
+        return context->methodCall<int>("SecurityPolicy::reboot");
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Security::powerOffDevice()
+int SecurityPolicy::powerOffDevice()
 {
     try {
-        return context->methodCall<int>("Security::powerOffDevice");
+        return context->methodCall<int>("SecurityPolicy::powerOffDevice");
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Security::setInternalStorageEncryption(const bool encrypt)
+int SecurityPolicy::setInternalStorageEncryption(const bool encrypt)
 {
     try {
-        return context->methodCall<int>("Security::setInternalStorageEncryption", encrypt);
+        return context->methodCall<int>("SecurityPolicy::setInternalStorageEncryption", encrypt);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-bool Security::isInternalStorageEncrypted()
+bool SecurityPolicy::isInternalStorageEncrypted()
 {
     try {
-        return context->methodCall<bool>("Security::isInternalStorageEncrypted");
+        return context->methodCall<bool>("SecurityPolicy::isInternalStorageEncrypted");
     } catch (runtime::Exception& e) {
         return false;
     }
 }
 
-int Security::setExternalStorageEncryption(const bool encrypt)
+int SecurityPolicy::setExternalStorageEncryption(const bool encrypt)
 {
     try {
-        return context->methodCall<int>("Security::setExternalStorageEncryption", encrypt);
+        return context->methodCall<int>("SecurityPolicy::setExternalStorageEncryption", encrypt);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-bool Security::isExternalStorageEncrypted()
+bool SecurityPolicy::isExternalStorageEncrypted()
 {
     try {
-        return context->methodCall<bool>("Security::isExternalStorageEncrypted");
+        return context->methodCall<bool>("SecurityPolicy::isExternalStorageEncrypted");
     } catch (runtime::Exception& e) {
         return false;
     }
 }
 
-std::vector<std::string> Security::getFileNamesOnDevice(const std::string& path)
+std::vector<std::string> SecurityPolicy::getFileNamesOnDevice(const std::string& path)
 {
     try {
-        return context->methodCall<std::vector<std::string>>("Security::getFileNamesOnDevice", path);
+        return context->methodCall<std::vector<std::string>>("SecurityPolicy::getFileNamesOnDevice", path);
     } catch (runtime::Exception& e) {
         return std::vector<std::string>();
     }
 }
 
-std::vector<std::string> Security::getFileNamesWithAttributes(const std::string& path)
+std::vector<std::string> SecurityPolicy::getFileNamesWithAttributes(const std::string& path)
 {
     try {
-        return context->methodCall<std::vector<std::string>>("Security::getFileNamesWithAttributes", path);
+        return context->methodCall<std::vector<std::string>>("SecurityPolicy::getFileNamesWithAttributes", path);
     } catch (runtime::Exception& e) {
         return std::vector<std::string>();
     }
