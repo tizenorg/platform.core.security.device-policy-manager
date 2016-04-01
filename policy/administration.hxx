@@ -24,10 +24,10 @@
 
 namespace DevicePolicyManager {
 
-class Administration {
+class AdministrationPolicy {
 public:
-    Administration(PolicyControlContext& ctxt);
-    ~Administration();
+    AdministrationPolicy(PolicyControlContext& ctxt);
+    ~AdministrationPolicy();
 
     int registerPolicyClient(const std::string& name);
     int deregisterPolicyClient(const std::string& name);

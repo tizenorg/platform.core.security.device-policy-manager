@@ -20,140 +20,176 @@
 namespace DevicePolicyManager
 {
 
-Restriction::Restriction(PolicyControlContext& ctxt)
+RestrictionPolicy::RestrictionPolicy(PolicyControlContext& ctxt)
 	: context(ctxt)
 {
 }
 
-Restriction::~Restriction()
+RestrictionPolicy::~RestrictionPolicy()
 {
 }
 
-int Restriction::setClipboardRestriction(bool enable)
+int RestrictionPolicy::setMicrophoneState(int enable)
 {
 	try {
-		return context->methodCall<int>("Restriction::setClipboardRestriction", enable);
+		return context->methodCall<int>("RestrictionPolicy::setMicrophoneState", enable);
+	} catch (runtime::Exception &e) {
+		return -1;
+	}
+}
+
+int RestrictionPolicy::getMicrophoneState()
+{
+	try {
+		return context->methodCall<int>("RestrictionPolicy::getMicrophoneState");
+	} catch (runtime::Exception &e) {
+		return -1;
+	}
+}
+
+int RestrictionPolicy::setCameraState(int enable)
+{
+	try {
+		return context->methodCall<int>("RestrictionPolicy::setCameraState", enable);
+	} catch (runtime::Exception &e) {
+		return -1;
+	}
+}
+
+int RestrictionPolicy::getCameraState()
+{
+	try {
+		return context->methodCall<int>("RestrictionPolicy::getCameraState");
+	} catch (runtime::Exception &e) {
+		return -1;
+	}
+}
+
+int RestrictionPolicy::setClipboardState(int enable)
+{
+	try {
+		return context->methodCall<int>("RestrictionPolicy::setClipboardState", enable);
 	} catch (runtime::Exception& e) {
 		return -1;
 	}
 }
 
-bool Restriction::isClipboardRestricted()
+int RestrictionPolicy::getClipboardState()
 {
 	try {
-		return context->methodCall<bool>("Restriction::isClipboardRestricted");
+		return context->methodCall<int>("RestrictionPolicy::getClipboardState");
 	} catch (runtime::Exception& e) {
 		return -1;
 	}
 }
 
-int Restriction::setClipboardShareRestriction(bool enable)
+int RestrictionPolicy::setSettingsChangesState(int enable)
 {
 	try {
-		return context->methodCall<int>("Restriction::setClipboardShareRestriction", enable);
+		return context->methodCall<int>("RestrictionPolicy::setSettingsChangesState", enable);
 	} catch (runtime::Exception& e) {
 		return -1;
 	}
 }
 
-bool Restriction::isClipboardShareRestricted()
+int RestrictionPolicy::getSettingsChangesState()
 {
 	try {
-		return context->methodCall<bool>("Restriction::isClipboardShareRestricted");
+		return context->methodCall<int>("RestrictionPolicy::getSettingsChangesState");
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
+}
+
+int RestrictionPolicy::setUsbDebuggingState(int enable)
+{
+	try {
+		return context->methodCall<int>("RestrictionPolicy::setUsbDebuggingState", enable);
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
+}
+
+int RestrictionPolicy::getUsbDebuggingState()
+{
+	try {
+		return context->methodCall<int>("RestrictionPolicy::getUsbDebuggingState");
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
+}
+
+int RestrictionPolicy::setExternalStorageState(int enable)
+{
+	try {
+		return context->methodCall<int>("RestrictionPolicy::setExternalStorageState", enable);
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
+}
+
+int RestrictionPolicy::getExternalStorageState()
+{
+	try {
+		return context->methodCall<int>("RestrictionPolicy::getExternalStorageState");
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
+}
+
+int RestrictionPolicy::setLocationState(int enable)
+{
+	try {
+		return context->methodCall<int>("RestrictionPolicy::setLocationState", enable);
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
+}
+
+int RestrictionPolicy::getLocationState()
+{
+	try {
+		return context->methodCall<int>("RestrictionPolicy::getLocationState");
 	} catch (runtime::Exception& e) {
 		return -1;
 	}
 }
 
 
-int Restriction::setSettingsChangesRestriction(bool enable)
+int RestrictionPolicy::setWifiState(bool enable)
 {
-	try {
-		return context->methodCall<int>("Restriction::setSettingsChangesRestriction",enable);
-	} catch (runtime::Exception& e) {
-		return -1;
-	}
+    try {
+        return context->methodCall<int>("RestrictionPolicy::setWifiState", enable);
+    } catch (runtime::Exception& e) {
+        return -1;
+    }
 }
 
-bool Restriction::isSettingsChangesRestricted()
+bool RestrictionPolicy::getWifiState()
 {
-	try {
-		return context->methodCall<bool>("Restriction::isSettingsChangesRestricted");
-	} catch (runtime::Exception& e) {
-		return -1;
-	}
+    try {
+        return context->methodCall<bool>("RestrictionPolicy::getWifiState");
+    } catch (runtime::Exception &e) {
+        return -1;
+    }
 }
 
-int Restriction::setBackgroundDataRestriction(bool enable)
+int RestrictionPolicy::setWifiHotspotState(bool enable)
 {
-	try {
-		return context->methodCall<int>("Restriction::setBackgroundDataRestriction", enable);
-	} catch (runtime::Exception& e) {
-		return -1;
-	}
+    try {
+        return context->methodCall<int>("RestrictionPolicy::setWifiHotspotState", enable);
+    } catch (runtime::Exception& e) {
+        return -1;
+    }
 }
 
-bool Restriction::isBackgroundDataRestricted()
+bool RestrictionPolicy::getWifiHotspotState()
 {
-	try {
-		return context->methodCall<bool>("Restriction::isBackgroundDataRestricted");
-	} catch (runtime::Exception& e) {
-		return -1;
-	}
-}
-
-int Restriction::setUsbDebuggingRestriction(bool enable)
-{
-	try {
-		return context->methodCall<int>("Restriction::setUsbDebuggingRestriction", enable);
-	} catch (runtime::Exception& e) {
-		return -1;
-	}
-}
-
-bool Restriction::isUsbDebuggingRestricted()
-{
-	try {
-		return context->methodCall<bool>("Restriction::isUsbDebuggingRestricted");
-	} catch (runtime::Exception& e) {
-		return -1;
-	}
-}
-
-int Restriction::setUsbMassStorageRestriction(bool enable)
-{
-	try {
-		return context->methodCall<int>("Restriction::setUsbMassStorageRestriction", enable);
-	} catch (runtime::Exception& e) {
-		return -1;
-	}
-}
-
-bool Restriction::isUsbMassStorageRestricted()
-{
-	try {
-		return context->methodCall<bool>("Restriction::isUsbMassStorageRestricted");
-	} catch (runtime::Exception& e) {
-		return -1;
-	}
-}
-
-int Restriction::setFactoryResetRestriction(bool enable)
-{
-	try {
-		return context->methodCall<int>("Restriction::setFactoryResetRestriction", enable);
-	} catch (runtime::Exception& e) {
-		return -1;
-	}
-}
-
-bool Restriction::isFactoryResetRestricted()
-{
-	try {
-		return context->methodCall<bool>("Restriction::isFactoryResetRestricted");
-	} catch (runtime::Exception& e) {
-		return -1;
-	}
+    try {
+        return context->methodCall<bool>("RestrictionPolicy::getWifiHotspotState");
+    } catch (runtime::Exception &e) {
+        return -1;
+    }
 }
 
 } //namespace DevicePolicyManager
