@@ -19,11 +19,12 @@
 
 
  /**
-  * @defgroup CAPI_DPM_FRAMEWORK Device Policy Manager
+  * @defgroup CAPI_SECURITY_DPM_MODULE Device Policy Manager
   * @brief The Device Policy Management framework provides APIs to create
   * security-aware applications that are useful in enterprise settings.
+  * @ingroup CAPI_SECURITY_FRAMEWORK
   * <br>
-  * @section CAPI_DPM_FRAMEWORK_OVERVIEW Overview
+  * @section CAPI_SECURITY_DPM_MODULE_OVERVIEW Overview
   * The primary purpose of the DPM(Device Policy Management) framework is
   * to support enterprise applications, which require integration with
   * policies enforced on the device to restrict their operations on
@@ -77,7 +78,7 @@
   * @image html dpm.png "Tizen Device Policy Management Framework"
   * <br>
   * @subsection PolicyGroup Policy Groups
-  * The Device Policy Management framework supposts following policy groups.
+  * The Device Policy Management framework supports following policy groups.
   * Each policy group has dedicated header file. So, you should include it
   * to use any API associated to the policy group.
   * <center>
@@ -108,7 +109,7 @@
   *<br>
   * @defgroup CAPI_DPM_POLICY_CLIENT_MODULE Policy Client Interface
   * @brief The policy client provides functions required to access the device policy APIs.
-  * @ingroup CAPI_DPM_FRAMEWORK
+  * @ingroup CAPI_SECURITY_DPM_MODULE
   * @section CAPI_DPM_POLICY_CLIENT_MODULE_HEADER Required Header
   *  \#include <dpm/device-policy-client.h>
   * @section CAPI_DPM_POLICY_CLIENT_MODULE_OVERVIEW Overview
@@ -121,7 +122,7 @@
   *
   * @defgroup CAPI_DPM_PASSWORD_POLICY_MODULE Password policy group
   * @brief Password policy group provides APIs to control password policies.
-  * @ingroup CAPI_DPM_FRAMEWORK
+  * @ingroup CAPI_SECURITY_DPM_MODULE
   * @section CAPI_DPM_PASSWORD_POLICY_MODULE_HEADER Required Header
   *  \#include <dpm/password.h>
   * @section CAPI_DPM_PASSWORD_POLICY_MODULE_OVERVIEW Overview
@@ -132,7 +133,7 @@
   *
   * @defgroup CAPI_DPM_ZONE_POLICY_MODULE Zone policy group
   * @brief Zone policy group provides APIs to control containers
-  * @ingroup CAPI_DPM_FRAMEWORK
+  * @ingroup CAPI_SECURITY_DPM_MODULE
   * @section CAPI_DPM_ZONE_POLICY_MODULE_HEADER Required Header
   * \#include <dpm/zone.h>
   * @section CAPI_DPM_ZONE_POLICY_MODULE_OVERVIEW Overview
