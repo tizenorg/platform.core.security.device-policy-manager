@@ -24,14 +24,14 @@
 
 using namespace DevicePolicyManager;
 
-int dpm_register_client(dpm_client_h handle, const char* name)
+int dpm_admin_register_client(dpm_admin_policy_h handle, const char* name)
 {
     DevicePolicyClient &client = GetDevicePolicyClient(handle);
     Administration admin = client.createPolicyInterface<Administration>();
     return admin.registerPolicyClient(name);
 }
 
-int dpm_deregister_client(dpm_client_h handle, const char* name)
+int dpm_admin_deregister_client(dpm_admin_policy_h handle, const char* name)
 {
     DevicePolicyClient &client = GetDevicePolicyClient(handle);
     Administration admin = client.createPolicyInterface<Administration>();

@@ -49,24 +49,6 @@ int dpm_wipe_data(dpm_client_h handle, const dpm_wipe_type_e type)
     return security.wipeData(type);
 }
 
-int dpm_reboot(dpm_client_h handle)
-{
-    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Security security = client.createPolicyInterface<Security>();
-    return security.reboot();
-}
-
-int dpm_poweroff_device(dpm_client_h handle)
-{
-    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Security security = client.createPolicyInterface<Security>();
-    return security.powerOffDevice();
-}
-
 int dpm_set_internal_storage_encryption(dpm_client_h handle, const int encrypt)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
@@ -102,4 +84,3 @@ int dpm_is_external_storage_encrypted(dpm_client_h handle)
     Security security = client.createPolicyInterface<Security>();
     return security.isExternalStorageEncrypted();
 }
-
