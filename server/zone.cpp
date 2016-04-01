@@ -21,6 +21,7 @@
 #include <gio/gio.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/inotify.h>
 
 #include "zone.hxx"
 
@@ -38,6 +39,7 @@
 #define ZONE_GROUP         "zones"
 
 #define ZONE_MANIFEST_DIR   CONF_PATH "/zone/"
+#define ZONE_PROVISION_DIR  "/tmp/zone/provision/"
 
 #define FREEDESKTOP_LOGIN_INTERFACE \
     "org.freedesktop.login1",   \
@@ -46,6 +48,7 @@
 
 #define HOME_SMACKLABEL     "User::Home"
 #define SHARED_SMACKLABEL   "User::App::Shared"
+#define APP_SMACKLABEL   "User::Pkg::"
 
 #define TEMPORARY_UMASK(mode)   \
         std::unique_ptr<mode_t, void(*)(mode_t *)> umask_##mode(new mode_t, \
@@ -69,7 +72,7 @@ static int setZoneState(uid_t id, int state)
 
     GVariant* var;
     var = g_dbus_connection_call_sync(connection, FREEDESKTOP_LOGIN_INTERFACE,
-                                      "SetLingerUser", param,
+                                      "SetUserLinger", param,
                                       NULL, G_DBUS_CALL_FLAGS_NONE, -1, NULL,
                                       &error);
     if (var == NULL) {
@@ -112,11 +115,154 @@ Zone::~Zone()
 
 int Zone::createZone(const std::string& name, const std::string& setupWizAppid)
 {
-    return -1;
+    rmi::Service& manager = context.getServiceManager();
+    runtime::File provisionDir(ZONE_PROVISION_DIR + name);
+    std::unique_ptr<xml::Document> bundleXml;
+    xml::Node::NodeList nodes;
+    int ret;
+
+    try {
+        provisionDir.remove(true);
+    } catch (runtime::Exception& e) {}
+
+    try {
+        // Create a directory for zone setup
+        TEMPORARY_UMASK(0000);
+        provisionDir.makeDirectory(true);
+        runtime::Smack::setAccess(provisionDir, APP_SMACKLABEL + setupWizAppid);
+
+        // Launch setup-wizard app
+        bundle *b = ::bundle_create();
+        ::bundle_add_str(b, "Zone", name.c_str());
+        ::bundle_add_str(b, "ProvisionDir", provisionDir.getPath().c_str());
+
+        ret = ::aul_launch_app_for_uid(setupWizAppid.c_str(), b, manager.getPeerUid());
+        ::bundle_free(b);
+
+        if (ret < 0) {
+            throw runtime::Exception("Failed to launch application: " + std::to_string(ret));
+        }
+
+        // Attach a directory for inotify
+        int fd = inotify_init();
+        if (fd < 0) {
+            throw runtime::Exception("Failed to initialize inotify");
+        }
+
+        std::string createfile;
+        char inotifyBuf[sizeof (struct inotify_event) + PATH_MAX + 1];
+        struct inotify_event *event = reinterpret_cast<struct inotify_event *>((void*)inotifyBuf);
+           
+        int wd = inotify_add_watch(fd, provisionDir.getPath().c_str(), IN_CREATE);
+
+        while (createfile != ".complete") {
+            ret = read(fd, inotifyBuf, sizeof(inotifyBuf));
+            if (ret < 0) {
+                throw runtime::Exception("Failed to get inotify");
+            }
+            createfile = event->name;
+        }
+
+        inotify_rm_watch(fd, wd);
+        close(fd);
+
+        // Create zone user
+        runtime::User user = runtime::User::create
+                            (name, ZONE_GROUP, ZONE_UID_MIN, ZONE_UID_MAX);
+
+        // Create zone home's directories
+        const struct {
+            enum tzplatform_variable dir;
+            const char* smack;
+        } dirs[] = {
+            {TZ_USER_HOME, HOME_SMACKLABEL},
+            {TZ_USER_CACHE, SHARED_SMACKLABEL},
+            {TZ_USER_APPROOT, HOME_SMACKLABEL},
+            {TZ_USER_DB, HOME_SMACKLABEL},
+            {TZ_USER_PACKAGES, HOME_SMACKLABEL},
+            {TZ_USER_ICONS, HOME_SMACKLABEL},
+            {TZ_USER_CONFIG, SHARED_SMACKLABEL},
+            {TZ_USER_DATA, HOME_SMACKLABEL},
+            {TZ_USER_SHARE, SHARED_SMACKLABEL},
+            {TZ_USER_ETC, HOME_SMACKLABEL},
+            {TZ_USER_LIVE, HOME_SMACKLABEL},
+            {TZ_USER_UG, HOME_SMACKLABEL},
+            {TZ_USER_APP, HOME_SMACKLABEL},
+            {TZ_USER_CONTENT, SHARED_SMACKLABEL},
+            {TZ_USER_CAMERA, SHARED_SMACKLABEL},
+            {TZ_USER_VIDEOS, SHARED_SMACKLABEL},
+            {TZ_USER_IMAGES, SHARED_SMACKLABEL},
+            {TZ_USER_SOUNDS, SHARED_SMACKLABEL},
+            {TZ_USER_MUSIC, SHARED_SMACKLABEL},
+            {TZ_USER_GAMES, SHARED_SMACKLABEL},
+            {TZ_USER_DOCUMENTS, SHARED_SMACKLABEL},
+            {TZ_USER_OTHERS, SHARED_SMACKLABEL},
+            {TZ_USER_DOWNLOADS, SHARED_SMACKLABEL},
+            {TZ_SYS_HOME, NULL},
+        };
+
+        TEMPORARY_UMASK(0022);
+
+        ::tzplatform_set_user(user.getUid());
+        for (int i = 0; dirs[i].dir != TZ_SYS_HOME; i++) {
+            runtime::File dir(std::string(::tzplatform_getenv(dirs[i].dir)));
+            try {
+                dir.makeDirectory();
+            } catch (runtime::Exception& e) {}
+            dir.chown(user.getUid(), user.getGid());
+            runtime::Smack::setAccess(dir, dirs[i].smack);
+            runtime::Smack::setTransmute(dir, true);
+        }
+        ::tzplatform_reset_user();
+
+        bundleXml = std::unique_ptr<xml::Document>(xml::Parser::parseFile(provisionDir.getPath() + "/manifest.xml"));
+
+        // write manifest file
+        bundleXml->write(ZONE_MANIFEST_DIR + name + ".xml", "UTF-8", true);
+
+    } catch (runtime::Exception& e) {
+        ERROR(e.what());
+        return -1;
+    }
+
+    //unlock the user
+    ret = unlockZone(name);
+    if (ret != 0) {
+        return -1;
+    }
+
+    return 0;
 }
 
 int Zone::removeZone(const std::string& name)
 {
+    std::string manifestPath = ZONE_MANIFEST_DIR + name + ".xml";
+    std::unique_ptr<xml::Document> bundleXml;
+    xml::Node::NodeList nodes;
+    int ret;
+
+    //lock the user
+    ret = lockZone(name);
+    if (ret != 0) {
+        return -1;
+    }
+
+    try {
+        runtime::User user(name);
+        user.remove();
+
+        ::tzplatform_set_user(user.getUid());
+        runtime::File home(::std::string(::tzplatform_getenv(TZ_USER_HOME)));
+        home.remove(true);
+        ::tzplatform_reset_user();
+
+        runtime::File bundle(manifestPath);
+        bundle.remove();
+    } catch (runtime::Exception& e) {
+        ERROR(e.what());
+        return -1;
+    }
+
     return -1;
 }
 
