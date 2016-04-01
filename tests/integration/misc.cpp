@@ -21,7 +21,7 @@
 
 TESTCASE(CameraTest)
 {
-	DevicePolicyClient client;
+	DevicePolicyContext client;
 	int error = -1;
 	bool status = false;
 
@@ -38,7 +38,7 @@ TESTCASE(CameraTest)
 
 TESTCASE(MicrophoneTest)
 {
-	DevicePolicyClient client;
+	DevicePolicyContext client;
 	int error = -1;
 	bool status = false;
 
@@ -55,7 +55,7 @@ TESTCASE(MicrophoneTest)
 
 TESTCASE(LocationTest)
 {
-	DevicePolicyClient client;
+	DevicePolicyContext client;
 	int error = -1;
 	bool status = false;
 
@@ -72,7 +72,7 @@ TESTCASE(LocationTest)
 
 TESTCASE(SDCardTest)
 {
-	DevicePolicyClient client;
+	DevicePolicyContext client;
 	int error = -1;
 	bool status = false;
 
