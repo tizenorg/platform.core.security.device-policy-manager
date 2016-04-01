@@ -112,18 +112,22 @@ private:
 
 class TestClient {
 public:
-    TestClient()
+    TestClient() :
+        signalTriggered(false),
+        policyChangeNotificationTriggered(false)
     {
     }
 
     void connect()
     {
-        auto policyChangedListener = [](const std::string& name, int value) {
+        auto policyChangedListener = [this](const std::string& name, int value) {
             std::cout << "Policy Changed: " << name << " : " << value << std::endl;
+            policyChangeNotificationTriggered = true;
         };
 
-        auto policySignalListener = [](const std::string& name) {
+        auto policySignalListener = [this](const std::string& name) {
             std::cout << "Signal Triggered" << std::endl;
+            signalTriggered = true;
         };
 
         client.reset(new rmi::Client(IPC_TEST_ADDRESS));

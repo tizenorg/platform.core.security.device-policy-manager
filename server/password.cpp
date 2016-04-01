@@ -27,7 +27,7 @@ namespace DevicePolicyManager {
 
 namespace {
 
-Password::PasswordQuality qualityType;
+PasswordPolicy::PasswordPolicyQuality qualityType;
 unsigned int minLength;
 unsigned int minComplexCharNumber;
 unsigned int maxAttempts;
@@ -40,23 +40,23 @@ unsigned int maxCharOccurrences;
 unsigned int maxNumSeqLength;
 std::vector<std::string> forbiddenPasswds;
 
-int transformValueFromIntToQualityType(const int quality, Password::PasswordQuality &changed_quality)
+int transformValueFromIntToQualityType(const int quality, PasswordPolicy::PasswordPolicyQuality &changed_quality)
 {
     switch (quality) {
-    case Password::DPM_PASSWORD_QUALITY_UNSPECIFIED:
-        changed_quality = Password::DPM_PASSWORD_QUALITY_UNSPECIFIED;
+    case PasswordPolicy::DPM_PASSWORD_QUALITY_UNSPECIFIED:
+        changed_quality = PasswordPolicy::DPM_PASSWORD_QUALITY_UNSPECIFIED;
         break;
-    case Password::DPM_PASSWORD_QUALITY_SOMETHING:
-        changed_quality = Password::DPM_PASSWORD_QUALITY_SOMETHING;
+    case PasswordPolicy::DPM_PASSWORD_QUALITY_SOMETHING:
+        changed_quality = PasswordPolicy::DPM_PASSWORD_QUALITY_SOMETHING;
         break;
-    case Password::DPM_PASSWORD_QUALITY_NUMERIC:
-        changed_quality = Password::DPM_PASSWORD_QUALITY_NUMERIC;
+    case PasswordPolicy::DPM_PASSWORD_QUALITY_NUMERIC:
+        changed_quality = PasswordPolicy::DPM_PASSWORD_QUALITY_NUMERIC;
         break;
-    case Password::DPM_PASSWORD_QUALITY_ALPHABETIC:
-        changed_quality = Password::DPM_PASSWORD_QUALITY_ALPHABETIC;
+    case PasswordPolicy::DPM_PASSWORD_QUALITY_ALPHABETIC:
+        changed_quality = PasswordPolicy::DPM_PASSWORD_QUALITY_ALPHABETIC;
         break;
-    case Password::DPM_PASSWORD_QUALITY_ALPHANUMERIC:
-        changed_quality = Password::DPM_PASSWORD_QUALITY_ALPHANUMERIC;
+    case PasswordPolicy::DPM_PASSWORD_QUALITY_ALPHANUMERIC:
+        changed_quality = PasswordPolicy::DPM_PASSWORD_QUALITY_ALPHANUMERIC;
         break;
     default:
         std::cerr << "unknown password quality" << std::endl;
@@ -70,19 +70,19 @@ int transformValueFromIntToQualityType(const int quality, Password::PasswordQual
 int transformQualityFromDPMToAuth(const int dpm_quality, password_quality_type &auth_quality)
 {
     switch (dpm_quality) {
-    case Password::DPM_PASSWORD_QUALITY_UNSPECIFIED:
+    case PasswordPolicy::DPM_PASSWORD_QUALITY_UNSPECIFIED:
         auth_quality = AUTH_PWD_QUALITY_UNSPECIFIED;
         break;
-    case Password::DPM_PASSWORD_QUALITY_SOMETHING:
+    case PasswordPolicy::DPM_PASSWORD_QUALITY_SOMETHING:
         auth_quality = AUTH_PWD_QUALITY_SOMETHING;
         break;
-    case Password::DPM_PASSWORD_QUALITY_NUMERIC:
+    case PasswordPolicy::DPM_PASSWORD_QUALITY_NUMERIC:
         auth_quality = AUTH_PWD_QUALITY_NUMERIC;
         break;
-    case Password::DPM_PASSWORD_QUALITY_ALPHABETIC:
+    case PasswordPolicy::DPM_PASSWORD_QUALITY_ALPHABETIC:
         auth_quality = AUTH_PWD_QUALITY_ALPHABETIC;
         break;
-    case Password::DPM_PASSWORD_QUALITY_ALPHANUMERIC:
+    case PasswordPolicy::DPM_PASSWORD_QUALITY_ALPHANUMERIC:
         auth_quality = AUTH_PWD_QUALITY_ALPHANUMERIC;
         break;
     default:
@@ -96,49 +96,46 @@ int transformQualityFromDPMToAuth(const int dpm_quality, password_quality_type &
 
 } // namespace
 
-Password::Password(PolicyControlContext &ctxt) :
+PasswordPolicy::PasswordPolicy(PolicyControlContext &ctxt) :
     __context(ctxt)
 {
-    ctxt.registerParametricMethod(this, (int)(Password::setPasswordQuality)(std::string, int));
-    ctxt.registerParametricMethod(this, (int)(Password::getPasswordQuality)(std::string));
-    ctxt.registerParametricMethod(this, (int)(Password::setPasswordMinimumLength)(std::string, int));
-    ctxt.registerParametricMethod(this, (int)(Password::getPasswordMinimumLength)(std::string));
-    ctxt.registerParametricMethod(this, (int)(Password::setMinPasswordComplexChars)(std::string, int));
-    ctxt.registerParametricMethod(this, (int)(Password::getMinPasswordComplexChars)(std::string));
-    ctxt.registerParametricMethod(this, (int)(Password::setMaximumFailedPasswordForWipe)(std::string, int));
-    ctxt.registerParametricMethod(this, (int)(Password::getMaximumFailedPasswordForWipe)(std::string));
-    ctxt.registerParametricMethod(this, (int)(Password::setPasswordExpires)(std::string, int));
-    ctxt.registerParametricMethod(this, (int)(Password::getPasswordExpires)(std::string));
-    ctxt.registerParametricMethod(this, (int)(Password::setPasswordHistory)(std::string, int));
-    ctxt.registerParametricMethod(this, (int)(Password::getPasswordHistory)(std::string));
-    ctxt.registerParametricMethod(this, (int)(Password::setPasswordPattern)(std::string, std::string));
-    ctxt.registerParametricMethod(this, (int)(Password::resetPassword)(std::string, std::string));
-    ctxt.registerParametricMethod(this, (int)(Password::enforcePasswordChange)(std::string));
-    ctxt.registerParametricMethod(this, (int)(Password::setMaxInactivityTimeDeviceLock)(std::string, int));
-    ctxt.registerParametricMethod(this, (int)(Password::getMaxInactivityTimeDeviceLock)(std::string));
-    ctxt.registerParametricMethod(this, (int)(Password::setPasswordStatus)(std::string, int));
-    ctxt.registerParametricMethod(this, (int)(Password::deletePasswordPattern)(std::string));
-    ctxt.registerParametricMethod(this, (std::string)(Password::getPasswordPattern)(std::string));
-    ctxt.registerParametricMethod(this, (int)(Password::setMaximumCharacterOccurrences)(std::string, int));
-    ctxt.registerParametricMethod(this, (int)(Password::getMaximumCharacterOccurrences)(std::string));
-    ctxt.registerParametricMethod(this, (int)(Password::setMaximumNumericSequenceLength)(std::string, int));
-    ctxt.registerParametricMethod(this, (int)(Password::getMaximumNumericSequenceLength)(std::string));
-    ctxt.registerParametricMethod(this, (int)(Password::setForbiddenStrings)(std::string, std::vector<std::string>));
-    ctxt.registerParametricMethod(this, (std::vector<std::string>)(Password::getForbiddenStrings)(std::string));
+    ctxt.registerParametricMethod(this, (int)(PasswordPolicy::setPasswordPolicyQuality)(int));
+    ctxt.registerNonparametricMethod(this, (int)(PasswordPolicy::getPasswordPolicyQuality));
+    ctxt.registerParametricMethod(this, (int)(PasswordPolicy::setPasswordPolicyMinimumLength)(int));
+    ctxt.registerNonparametricMethod(this, (int)(PasswordPolicy::getPasswordPolicyMinimumLength));
+    ctxt.registerParametricMethod(this, (int)(PasswordPolicy::setMinPasswordPolicyComplexChars)(int));
+    ctxt.registerNonparametricMethod(this, (int)(PasswordPolicy::getMinPasswordPolicyComplexChars));
+    ctxt.registerParametricMethod(this, (int)(PasswordPolicy::setMaximumFailedPasswordPolicyForWipe)(int));
+    ctxt.registerNonparametricMethod(this, (int)(PasswordPolicy::getMaximumFailedPasswordPolicyForWipe));
+    ctxt.registerParametricMethod(this, (int)(PasswordPolicy::setPasswordPolicyExpires)(int));
+    ctxt.registerNonparametricMethod(this, (int)(PasswordPolicy::getPasswordPolicyExpires)());
+    ctxt.registerParametricMethod(this, (int)(PasswordPolicy::setPasswordPolicyHistory)(int));
+    ctxt.registerNonparametricMethod(this, (int)(PasswordPolicy::getPasswordPolicyHistory)());
+    ctxt.registerParametricMethod(this, (int)(PasswordPolicy::setPasswordPolicyPattern)(std::string));
+    ctxt.registerParametricMethod(this, (int)(PasswordPolicy::resetPasswordPolicy)(std::string));
+    ctxt.registerNonparametricMethod(this, (int)(PasswordPolicy::enforcePasswordPolicyChange));
+    ctxt.registerParametricMethod(this, (int)(PasswordPolicy::setMaxInactivityTimeDeviceLock)(int));
+    ctxt.registerNonparametricMethod(this, (int)(PasswordPolicy::getMaxInactivityTimeDeviceLock));
+    ctxt.registerParametricMethod(this, (int)(PasswordPolicy::setPasswordPolicyStatus)(int));
+    ctxt.registerNonparametricMethod(this, (int)(PasswordPolicy::deletePasswordPolicyPattern));
+    ctxt.registerNonparametricMethod(this, (std::string)(PasswordPolicy::getPasswordPolicyPattern));
+    ctxt.registerParametricMethod(this, (int)(PasswordPolicy::setMaximumCharacterOccurrences)(int));
+    ctxt.registerNonparametricMethod(this, (int)(PasswordPolicy::getMaximumCharacterOccurrences));
+    ctxt.registerParametricMethod(this, (int)(PasswordPolicy::setMaximumNumericSequenceLength)(int));
+    ctxt.registerNonparametricMethod(this, (int)(PasswordPolicy::getMaximumNumericSequenceLength));
+    ctxt.registerParametricMethod(this, (int)(PasswordPolicy::setForbiddenStrings)(std::vector<std::string>));
+    ctxt.registerNonparametricMethod(this, (std::vector<std::string>)(PasswordPolicy::getForbiddenStrings));
 }
 
-Password::~Password()
+PasswordPolicy::~PasswordPolicy()
 {
 }
 
-int Password::setPasswordQuality(const std::string& username, const int quality)
+int PasswordPolicy::setPasswordPolicyQuality(const int quality)
 {
     int ret = 0;
-    runtime::User user(username);
-
-    password_quality_type auth_quality_type = AUTH_PWD_QUALITY_UNSPECIFIED;
-
     policy_h *p_policy;
+    password_quality_type auth_quality_type = AUTH_PWD_QUALITY_UNSPECIFIED;
 
     if (transformValueFromIntToQualityType(quality, qualityType) != 0) {
         return -1;
@@ -153,7 +150,7 @@ int Password::setPasswordQuality(const std::string& username, const int quality)
         return -1;
     }
 
-    if (auth_passwd_set_user(p_policy, user.getUid()) != AUTH_PASSWD_API_SUCCESS) {
+    if (auth_passwd_set_user(p_policy, __context.getPeerUid()) != AUTH_PASSWD_API_SUCCESS) {
         auth_passwd_free_policy(p_policy);
         return -1;
     }
@@ -173,23 +170,21 @@ int Password::setPasswordQuality(const std::string& username, const int quality)
     return ret;
 }
 
-int Password::getPasswordQuality(const std::string& username)
+int PasswordPolicy::getPasswordPolicyQuality()
 {
     return qualityType;
 }
 
-int Password::setPasswordMinimumLength(const std::string& username, const int value)
+int PasswordPolicy::setPasswordPolicyMinimumLength(const int value)
 {
     int ret = 0;
-    runtime::User user(username);
-
     policy_h *p_policy;
 
     if (auth_passwd_new_policy(&p_policy) != AUTH_PASSWD_API_SUCCESS) {
         return -1;
     }
 
-    if (auth_passwd_set_user(p_policy, user.getUid()) != AUTH_PASSWD_API_SUCCESS) {
+    if (auth_passwd_set_user(p_policy, __context.getPeerUid()) != AUTH_PASSWD_API_SUCCESS) {
         auth_passwd_free_policy(p_policy);
         return -1;
     }
@@ -211,23 +206,21 @@ int Password::setPasswordMinimumLength(const std::string& username, const int va
     return ret;
 }
 
-int Password::getPasswordMinimumLength(const std::string& username)
+int PasswordPolicy::getPasswordPolicyMinimumLength()
 {
     return minLength;
 }
 
-int Password::setMinPasswordComplexChars(const std::string& username, const int value)
+int PasswordPolicy::setMinPasswordPolicyComplexChars(const int value)
 {
     int ret = 0;
-    runtime::User user(username);
-
     policy_h *p_policy;
 
     if (auth_passwd_new_policy(&p_policy) != AUTH_PASSWD_API_SUCCESS) {
         return -1;
     }
 
-    if (auth_passwd_set_user(p_policy, user.getUid()) != AUTH_PASSWD_API_SUCCESS) {
+    if (auth_passwd_set_user(p_policy, __context.getPeerUid()) != AUTH_PASSWD_API_SUCCESS) {
         auth_passwd_free_policy(p_policy);
         return -1;
     }
@@ -249,23 +242,21 @@ int Password::setMinPasswordComplexChars(const std::string& username, const int 
     return ret;
 }
 
-int Password::getMinPasswordComplexChars(const std::string& username)
+int PasswordPolicy::getMinPasswordPolicyComplexChars()
 {
     return minComplexCharNumber;
 }
 
-int Password::setMaximumFailedPasswordForWipe(const std::string& username, const int value)
+int PasswordPolicy::setMaximumFailedPasswordPolicyForWipe(const int value)
 {
     int ret = 0;
-    runtime::User user(username);
-
     policy_h *p_policy;
 
     if (auth_passwd_new_policy(&p_policy) != AUTH_PASSWD_API_SUCCESS) {
         return -1;
     }
 
-    if (auth_passwd_set_user(p_policy, user.getUid()) != AUTH_PASSWD_API_SUCCESS) {
+    if (auth_passwd_set_user(p_policy, __context.getPeerUid()) != AUTH_PASSWD_API_SUCCESS) {
         auth_passwd_free_policy(p_policy);
         return -1;
     }
@@ -287,23 +278,21 @@ int Password::setMaximumFailedPasswordForWipe(const std::string& username, const
     return ret;
 }
 
-int Password::getMaximumFailedPasswordForWipe(const std::string& username)
+int PasswordPolicy::getMaximumFailedPasswordPolicyForWipe()
 {
     return maxAttempts;
 }
 
-int Password::setPasswordExpires(const std::string& username, const int value)
+int PasswordPolicy::setPasswordPolicyExpires(const int value)
 {
     int ret = 0;
-    runtime::User user(username);
-
     policy_h *p_policy;
 
     if (auth_passwd_new_policy(&p_policy) != AUTH_PASSWD_API_SUCCESS) {
         return -1;
     }
 
-    if (auth_passwd_set_user(p_policy, user.getUid()) != AUTH_PASSWD_API_SUCCESS) {
+    if (auth_passwd_set_user(p_policy, __context.getPeerUid()) != AUTH_PASSWD_API_SUCCESS) {
         auth_passwd_free_policy(p_policy);
         return -1;
     }
@@ -325,23 +314,21 @@ int Password::setPasswordExpires(const std::string& username, const int value)
     return ret;
 }
 
-int Password::getPasswordExpires(const std::string& username)
+int PasswordPolicy::getPasswordPolicyExpires()
 {
     return validPeriod;
 }
 
-int Password::setPasswordHistory(const std::string& username, const int value)
+int PasswordPolicy::setPasswordPolicyHistory(const int value)
 {
     int ret = 0;
-    runtime::User user(username);
-
     policy_h *p_policy;
 
     if (auth_passwd_new_policy(&p_policy) != AUTH_PASSWD_API_SUCCESS) {
         return -1;
     }
 
-    if (auth_passwd_set_user(p_policy, user.getUid()) != AUTH_PASSWD_API_SUCCESS) {
+    if (auth_passwd_set_user(p_policy, __context.getPeerUid()) != AUTH_PASSWD_API_SUCCESS) {
         auth_passwd_free_policy(p_policy);
         return -1;
     }
@@ -363,23 +350,21 @@ int Password::setPasswordHistory(const std::string& username, const int value)
     return ret;
 }
 
-int Password::getPasswordHistory(const std::string& username)
+int PasswordPolicy::getPasswordPolicyHistory()
 {
     return historySize;
 }
 
-int Password::setPasswordPattern(const std::string& username, const std::string& pattern)
+int PasswordPolicy::setPasswordPolicyPattern(const std::string& pattern)
 {
     int ret = 0;
-    runtime::User user(username);
-
     policy_h *p_policy;
 
     if (auth_passwd_new_policy(&p_policy) != AUTH_PASSWD_API_SUCCESS) {
         return -1;
     }
 
-    if (auth_passwd_set_user(p_policy, user.getUid()) != AUTH_PASSWD_API_SUCCESS) {
+    if (auth_passwd_set_user(p_policy, __context.getPeerUid()) != AUTH_PASSWD_API_SUCCESS) {
         auth_passwd_free_policy(p_policy);
         return -1;
     }
@@ -401,54 +386,51 @@ int Password::setPasswordPattern(const std::string& username, const std::string&
     return ret;
 }
 
-int Password::resetPassword(const std::string& username, const std::string& passwd)
+int PasswordPolicy::resetPasswordPolicy(const std::string& passwd)
 {
     int ret = 0;
-    runtime::User user(username);
 
-    if (auth_passwd_reset_passwd(AUTH_PWD_NORMAL, user.getUid(), passwd.c_str()) != AUTH_PASSWD_API_SUCCESS) {
+    if (auth_passwd_reset_passwd(AUTH_PWD_NORMAL, __context.getPeerUid(), passwd.c_str()) != AUTH_PASSWD_API_SUCCESS) {
         return -1;
     }
 
     return ret;
 }
 
-int Password::enforcePasswordChange(const std::string& username)
+int PasswordPolicy::enforcePasswordPolicyChange()
 {
     return 0;
 }
 
-int Password::setMaxInactivityTimeDeviceLock(const std::string& username, const int value)
+int PasswordPolicy::setMaxInactivityTimeDeviceLock(const int value)
 {
     maxInactivityTime = value;
 
     return 0;
 }
 
-int Password::getMaxInactivityTimeDeviceLock(const std::string& username)
+int PasswordPolicy::getMaxInactivityTimeDeviceLock()
 {
     return maxInactivityTime;
 }
 
-int Password::setPasswordStatus(const std::string& username, const int status)
+int PasswordPolicy::setPasswordPolicyStatus(const int status)
 {
     passwdStatus = status;
 
     return 0;
 }
 
-int Password::deletePasswordPattern(const std::string& username)
+int PasswordPolicy::deletePasswordPolicyPattern()
 {
     int ret = 0;
-    runtime::User user(username);
-
     policy_h *p_policy;
 
     if (auth_passwd_new_policy(&p_policy) != AUTH_PASSWD_API_SUCCESS) {
         return -1;
     }
 
-    if (auth_passwd_set_user(p_policy, user.getUid()) != AUTH_PASSWD_API_SUCCESS) {
+    if (auth_passwd_set_user(p_policy, __context.getPeerUid()) != AUTH_PASSWD_API_SUCCESS) {
         auth_passwd_free_policy(p_policy);
         return -1;
     }
@@ -470,23 +452,21 @@ int Password::deletePasswordPattern(const std::string& username)
     return ret;
 }
 
-std::string Password::getPasswordPattern(const std::string& username)
+std::string PasswordPolicy::getPasswordPolicyPattern()
 {
     return passwordPattern;
 }
 
-int Password::setMaximumCharacterOccurrences(const std::string& username, const int value)
+int PasswordPolicy::setMaximumCharacterOccurrences(const int value)
 {
     int ret = 0;
-    runtime::User user(username);
-
     policy_h *p_policy;
 
     if (auth_passwd_new_policy(&p_policy) != AUTH_PASSWD_API_SUCCESS) {
         return -1;
     }
 
-    if (auth_passwd_set_user(p_policy, user.getUid()) != AUTH_PASSWD_API_SUCCESS) {
+    if (auth_passwd_set_user(p_policy, __context.getPeerUid()) != AUTH_PASSWD_API_SUCCESS) {
         auth_passwd_free_policy(p_policy);
         return -1;
     }
@@ -508,23 +488,21 @@ int Password::setMaximumCharacterOccurrences(const std::string& username, const 
     return ret;
 }
 
-int Password::getMaximumCharacterOccurrences(const std::string& username)
+int PasswordPolicy::getMaximumCharacterOccurrences()
 {
     return maxCharOccurrences;
 }
 
-int Password::setMaximumNumericSequenceLength(const std::string& username, const int value)
+int PasswordPolicy::setMaximumNumericSequenceLength(const int value)
 {
     int ret = 0;
-    runtime::User user(username);
-
     policy_h *p_policy;
 
     if (auth_passwd_new_policy(&p_policy) != AUTH_PASSWD_API_SUCCESS) {
         return -1;
     }
 
-    if (auth_passwd_set_user(p_policy, user.getUid()) != AUTH_PASSWD_API_SUCCESS) {
+    if (auth_passwd_set_user(p_policy, __context.getPeerUid()) != AUTH_PASSWD_API_SUCCESS) {
         auth_passwd_free_policy(p_policy);
         return -1;
     }
@@ -546,23 +524,21 @@ int Password::setMaximumNumericSequenceLength(const std::string& username, const
     return ret;
 }
 
-int Password::getMaximumNumericSequenceLength(const std::string& username)
+int PasswordPolicy::getMaximumNumericSequenceLength()
 {
     return maxNumSeqLength;
 }
 
-int Password::setForbiddenStrings(const std::string& username, const std::vector<std::string>& forbiddenStrings)
+int PasswordPolicy::setForbiddenStrings(const std::vector<std::string>& forbiddenStrings)
 {
     int ret = 0;
-    runtime::User user(username);
-
     policy_h *p_policy;
 
     if (auth_passwd_new_policy(&p_policy) != AUTH_PASSWD_API_SUCCESS) {
         return -1;
     }
 
-    if (auth_passwd_set_user(p_policy, user.getUid()) != AUTH_PASSWD_API_SUCCESS) {
+    if (auth_passwd_set_user(p_policy, __context.getPeerUid()) != AUTH_PASSWD_API_SUCCESS) {
         auth_passwd_free_policy(p_policy);
         return -1;
     }
@@ -586,11 +562,11 @@ int Password::setForbiddenStrings(const std::string& username, const std::vector
     return ret;
 }
 
-std::vector<std::string> Password::getForbiddenStrings(const std::string& username)
+std::vector<std::string> PasswordPolicy::getForbiddenStrings()
 {
     return forbiddenPasswds;
 }
 
-Password passwordPolicy(Server::instance());
+PasswordPolicy passwordPolicy(Server::instance());
 
 } /* namespace DevicePolicyManager*/
