@@ -20,7 +20,7 @@
 
 #define TARGET_ZONE "ZoneName"
 #define PROVISION_DATA "/manifest.xml"
-#define PROVISION_COMPLETE "/.complete"
+#define PROVISION_COMPLETE "/.completed"
 
 static char *__get_zone_metadata(void)
 {
@@ -139,7 +139,7 @@ int _send_zone_provision_data(const char *zone_name, const char *target_path)
 	snprintf(data_path, strlen(target_path)+strlen(PROVISION_COMPLETE)+1, "%s%s", target_path, PROVISION_COMPLETE);
 	fp = fopen(data_path, "w");
 	if (fp == NULL) {
-		dlog_print(DLOG_ERROR, LOG_TAG, "failed to touch complete file");
+		dlog_print(DLOG_ERROR, LOG_TAG, "failed to touch completed file");
 		return -1;
 	}
 

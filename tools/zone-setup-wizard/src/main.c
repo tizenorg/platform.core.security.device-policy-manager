@@ -55,7 +55,7 @@ static void __app_control(app_control_h app_control, void *data)
 	appdata_s *ad = (appdata_s *) data;
 	int ret = 0;
 
-	ret = app_control_get_extra_data(app_control, "Zone", &ad->zone_name);
+	ret = app_control_get_extra_data(app_control, "Name", &ad->zone_name);
 	if (ret != APP_CONTROL_ERROR_NONE) {
 		dlog_print(DLOG_ERROR, LOG_TAG, "failed to get zone name");
 		ui_app_exit();
@@ -73,7 +73,7 @@ static void __app_control(app_control_h app_control, void *data)
 		ui_app_exit();
 	}
 
-        ad->dpm_zone_signal_cb_id = dpm_subscribe_zone_signal(ad->dpm_client, "create", __create_zone_done, ad);
+        ad->dpm_zone_signal_cb_id = dpm_subscribe_zone_signal(ad->dpm_client, "created", __create_zone_done, ad);
 
 	if (ad-> dpm_zone_signal_cb_id != 0) {
 		dlog_print(DLOG_ERROR, LOG_TAG, "failed to set signal callback");
