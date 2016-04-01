@@ -27,7 +27,7 @@
 
 extern char** environ;
 
-static inline void usage(const std::string name)
+static void usage(const std::string name)
 {
     std::cout << "Usage: " << name << " [OPTIONS]" << std::endl
               << "Manage the zones" << std::endl
@@ -67,9 +67,16 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
-    dpm_client_h handle = dpm_create_client();
-    if (handle == NULL) {
+    dpm_context_h context = dpm_context_create();
+    if (context == NULL) {
         std::cerr << "Failed to create client handle" << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    dpm_zone_policy_h policy = dpm_context_acquire_zone_policy(context);
+    if (policy == NULL) {
+        std::cerr << "Failed to create zone policy handle" << std::endl;
+        dpm_context_destroy(context);
         return EXIT_FAILURE;
     }
 
@@ -83,7 +90,7 @@ int main(int argc, char* argv[])
             wizard = optarg;
             break;
         case 'd':
-            ret = dpm_remove_zone(handle, optarg);
+            ret = dpm_zone_destroy(policy, optarg);
             if (ret != 0) {
                 std::cerr << optarg << " can't be destroyed." << std::endl;
             } else {
@@ -91,8 +98,9 @@ int main(int argc, char* argv[])
             }
             break;
         case 's':
-            ret = dpm_get_zone_state(handle, optarg);
-            std::cout << optarg << " state is " << ret << "." << std::endl;
+            dpm_zone_state_e state;
+            ret = dpm_zone_get_state(policy, optarg, &state);
+            std::cout << optarg << " state is " << state << "." << std::endl;
             break;
         case 'l':
             break;
@@ -103,7 +111,7 @@ int main(int argc, char* argv[])
     }
 
     if (create.size() > 0 && wizard.size() > 0) {
-        ret = dpm_create_zone(handle, create.c_str(), wizard.c_str());
+        ret = dpm_zone_create(policy, create.c_str(), wizard.c_str());
         if (ret != 0) {
             std::cerr << create << " can't be created."<< std::endl;
         } else {
@@ -116,7 +124,9 @@ int main(int argc, char* argv[])
                   << "  ex) --wizard org.tizen.zone-setup-wizard" << std::endl;
     }
 
-    dpm_destroy_client(handle);
+    dpm_context_release_zone_policy(policy);
+
+    dpm_context_destroy(context);
 
     return EXIT_SUCCESS;
 }
