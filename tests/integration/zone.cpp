@@ -23,11 +23,11 @@
 #include "testbench/testbench.h"
 
 const std::string testSetupWizardAppid = "org.tizen.zone-setup-wizard";
-const std::string testZoneName = "zone1";
+const std::string testZonePolicyName = "zone1";
 
-TESTCASE(ZoneCreateTest)
+TESTCASE(ZonePolicyCreateTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     if (getuid() == 0) {
         TEST_FAIL("this test should be done as non-root user");
@@ -35,24 +35,24 @@ TESTCASE(ZoneCreateTest)
 
     TEST_EXPECT(0, client.connect());
 
-    DevicePolicyManager::Zone zone = client.createPolicyInterface<DevicePolicyManager::Zone>();
+    DevicePolicyManager::ZonePolicy zone = client.createPolicyInterface<DevicePolicyManager::ZonePolicy>();
 
-    int error = zone.createZone(testZoneName, testSetupWizardAppid);
+    int error = zone.createZonePolicy(testZonePolicyName, testSetupWizardAppid);
     TEST_EXPECT(0, error);
 }
 
-TESTCASE(GetZoneListTest)
+TESTCASE(GetZonePolicyListTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     TEST_EXPECT(0, client.connect());
 
-    DevicePolicyManager::Zone zone = client.createPolicyInterface<DevicePolicyManager::Zone>();
+    DevicePolicyManager::ZonePolicy zone = client.createPolicyInterface<DevicePolicyManager::ZonePolicy>();
 
-    std::vector<std::string> list = zone.getZoneList();
+    std::vector<std::string> list = zone.getZonePolicyList();
 
     for (std::string &word : list) {
-        if (word == testZoneName) {
+        if (word == testZonePolicyName) {
             return;
         }
     }
@@ -60,27 +60,27 @@ TESTCASE(GetZoneListTest)
     TEST_FAIL("list doesn't contain the created zone name");
 }
 
-TESTCASE(GetZoneStateTest)
+TESTCASE(GetZonePolicyStateTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     TEST_EXPECT(0, client.connect());
 
-    DevicePolicyManager::Zone zone = client.createPolicyInterface<DevicePolicyManager::Zone>();
+    DevicePolicyManager::ZonePolicy zone = client.createPolicyInterface<DevicePolicyManager::ZonePolicy>();
 
-    zone.getZoneState(testZoneName);
+    zone.getZonePolicyState(testZonePolicyName);
 
     //TODO : should implement checking if the zone exists
 }
 
-TESTCASE(ZoneRemoveTest)
+TESTCASE(ZonePolicyRemoveTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     TEST_EXPECT(0, client.connect());
 
-    DevicePolicyManager::Zone zone = client.createPolicyInterface<DevicePolicyManager::Zone>();
+    DevicePolicyManager::ZonePolicy zone = client.createPolicyInterface<DevicePolicyManager::ZonePolicy>();
 
-    int error = zone.removeZone(testZoneName);
+    int error = zone.removeZonePolicy(testZonePolicyName);
     TEST_EXPECT(0, error);
 }

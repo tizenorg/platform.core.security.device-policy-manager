@@ -19,6 +19,6 @@
 
 #include "policy-client.h"
 
-using PolicyControlContext = ::DevicePolicyClient::PolicyControlContext;
+using PolicyControlContext = ::DevicePolicyContext::PolicyControlContext;
 
 #endif //!__DEVICE_POLICY_CONTEXT__
