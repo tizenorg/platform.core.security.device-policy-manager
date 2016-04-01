@@ -28,12 +28,12 @@ const char* pkgName = "dpm_test_admin_client";
 
 TESTCASE(AdministrationInterfaceTest)
 {
-    DevicePolicyClient client;
+    TEST_EXPECT(0, context.connect());
 
-    TEST_EXPECT(0, client.connect());
+    DevicePolicyManager::Administration* admin = context.createPolicyInterface<DevicePolicyManager::Administration>();
 
-    DevicePolicyManager::Administration admin = client.createPolicyInterface<DevicePolicyManager::Administration>();
+    admin->registerPolicyClient(pkgName));
+    admin->deregisterPolicyClient(pkgName));
 
-    TEST_EXPECT(0, admin.registerPolicyClient(pkgName));
-    TEST_EXPECT(0, admin.deregisterPolicyClient(pkgName));
+    delete admin;
 }

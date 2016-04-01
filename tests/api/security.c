@@ -22,9 +22,9 @@
 static int security_lock_screen(struct testcase* tc)
 {
     int ret;
-    dpm_client_h handle;
+    dpm_context_h handle;
 
-    handle = dpm_create_client();
+    handle = dpm_context_create();
     if (handle == NULL) {
         printf("Failed to create client handle\n");
         return TEST_FAILED;
@@ -41,9 +41,9 @@ static int security_lock_screen(struct testcase* tc)
 static int security_wipe_internal_memory(struct testcase* tc)
 {
     int ret;
-    dpm_client_h handle;
+    dpm_context_h handle;
 
-    handle = dpm_create_client();
+    handle = dpm_context_create();
     if (handle == NULL) {
         printf("Failed to create client handle\n");
         return TEST_FAILED;
@@ -54,16 +54,16 @@ static int security_wipe_internal_memory(struct testcase* tc)
         ret = TEST_FAILED;
     }
 
-    dpm_destroy_client(handle);
+    dpm_context_destroy(handle);
     return ret;
 }
 
 static int security_wipe_external_memory(struct testcase* tc)
 {
     int ret;
-    dpm_client_h handle;
+    dpm_context_h handle;
 
-    handle = dpm_create_client();
+    handle = dpm_context_create();
     if (handle == NULL) {
         printf("Failed to create client handle\n");
         return TEST_FAILED;
@@ -74,16 +74,16 @@ static int security_wipe_external_memory(struct testcase* tc)
         ret = TEST_FAILED;
     }
 
-    dpm_destroy_client(handle);
+    dpm_context_destroy(handle);
     return ret;
 }
 
 static int security_reboot(struct testcase* tc)
 {
     int ret;
-    dpm_client_h handle;
+    dpm_context_h handle;
 
-    handle = dpm_create_client();
+    handle = dpm_context_create();
     if (handle == NULL) {
         printf("Failed to create client handle\n");
         return TEST_FAILED;
@@ -94,16 +94,16 @@ static int security_reboot(struct testcase* tc)
         ret = TEST_FAILED;
     }
 
-    dpm_destroy_client(handle);
+    dpm_context_destroy(handle);
     return ret;
 }
 
 static int security_poweroff_device(struct testcase* tc)
 {
     int ret;
-    dpm_client_h handle;
+    dpm_context_h handle;
 
-    handle = dpm_create_client();
+    handle = dpm_context_create();
     if (handle == NULL) {
         printf("Failed to create client handle\n");
         return TEST_FAILED;
@@ -114,16 +114,16 @@ static int security_poweroff_device(struct testcase* tc)
         ret = TEST_FAILED;
     }
 
-    dpm_destroy_client(handle);
+    dpm_context_destroy(handle);
     return ret;
 }
 
 static int security_set_internal_storage_encryption(struct testcase* tc)
 {
     int ret;
-    dpm_client_h handle;
+    dpm_context_h handle;
 
-    handle = dpm_create_client();
+    handle = dpm_context_create();
     if (handle == NULL) {
         printf("Failed to create client handle\n");
         return TEST_FAILED;
@@ -134,16 +134,16 @@ static int security_set_internal_storage_encryption(struct testcase* tc)
         ret = TEST_FAILED;
     }
 
-    dpm_destroy_client(handle);
+    dpm_context_destroy(handle);
     return ret;
 }
 
 static int security_is_internal_storage_encrypted(struct testcase* tc)
 {
     int ret;
-    dpm_client_h handle;
+    dpm_context_h handle;
 
-    handle = dpm_create_client();
+    handle = dpm_context_create();
     if (handle == NULL) {
         printf("Failed to create client handle\n");
         return TEST_FAILED;
@@ -154,16 +154,16 @@ static int security_is_internal_storage_encrypted(struct testcase* tc)
         ret = TEST_FAILED;
     }
 
-    dpm_destroy_client(handle);
+    dpm_context_destroy(handle);
     return ret;
 }
 
 static int security_set_external_storage_encryption(struct testcase* tc)
 {
     int ret;
-    dpm_client_h handle;
+    dpm_context_h handle;
 
-    handle = dpm_create_client();
+    handle = dpm_context_create();
     if (handle == NULL) {
         printf("Failed to create client handle\n");
         return TEST_FAILED;
@@ -174,16 +174,16 @@ static int security_set_external_storage_encryption(struct testcase* tc)
         ret = TEST_FAILED;
     }
 
-    dpm_destroy_client(handle);
+    dpm_context_destroy(handle);
     return ret;
 }
 
 static int security_is_external_storage_encrypted(struct testcase* tc)
 {
     int ret;
-    dpm_client_h handle;
+    dpm_context_h handle;
 
-    handle = dpm_create_client();
+    handle = dpm_context_create();
     if (handle == NULL) {
         printf("Failed to create client handle\n");
         return TEST_FAILED;
@@ -194,7 +194,7 @@ static int security_is_external_storage_encrypted(struct testcase* tc)
         ret = TEST_FAILED;
     }
 
-    dpm_destroy_client(handle);
+    dpm_context_destroy(handle);
     return ret;
 }
 

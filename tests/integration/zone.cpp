@@ -27,7 +27,7 @@ const std::string testZoneName = "zone1";
 
 TESTCASE(ZoneCreateTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     if (getuid() == 0) {
         TEST_FAIL("this test should be done as non-root user");
@@ -43,7 +43,7 @@ TESTCASE(ZoneCreateTest)
 
 TESTCASE(GetZoneListTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     TEST_EXPECT(0, client.connect());
 
@@ -62,7 +62,7 @@ TESTCASE(GetZoneListTest)
 
 TESTCASE(GetZoneStateTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     TEST_EXPECT(0, client.connect());
 
@@ -75,7 +75,7 @@ TESTCASE(GetZoneStateTest)
 
 TESTCASE(ZoneRemoveTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     TEST_EXPECT(0, client.connect());
 

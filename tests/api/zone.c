@@ -25,67 +25,67 @@
 
 static int zone_create(struct testcase* tc)
 {
-    dpm_client_h handle;
+    dpm_context_h handle;
 
-    handle = dpm_create_client();
+    handle = dpm_context_create();
     if (handle == NULL) {
         printf("Failed to create client handle\n");
         return TEST_FAILED;
     }
 
     if (dpm_create_zone(handle, TEST_ZONE_ID, TEST_SETUP_WIZARD_PKG_ID) == 0) {
-        dpm_destroy_client(handle);
+        dpm_context_destroy(handle);
         return TEST_SUCCESSED;
     }
 
-    dpm_destroy_client(handle);
+    dpm_context_destroy(handle);
     return TEST_FAILED;
 }
 
 static int zone_remove(struct testcase* tc)
 {
-    dpm_client_h handle;
+    dpm_context_h handle;
 
-    handle = dpm_create_client();
+    handle = dpm_context_create();
     if (handle == NULL) {
         printf("Failed to create client handle\n");
         return TEST_FAILED;
     }
 
     if (dpm_remove_zone(handle, TEST_ZONE_ID) == 0) {
-        dpm_destroy_client(handle);
+        dpm_context_destroy(handle);
         return TEST_SUCCESSED;
     }
 
-    dpm_destroy_client(handle);
+    dpm_context_destroy(handle);
     return TEST_FAILED;
 }
 
 static int zone_get_state(struct testcase* tc)
 {
-    dpm_client_h handle;
+    dpm_context_h handle;
 
-    handle = dpm_create_client();
+    handle = dpm_context_create();
     if (handle == NULL) {
         printf("Failed to create client handle\n");
         return TEST_FAILED;
     }
 
     if (dpm_get_zone_state(handle, TEST_ZONE_ID) != DPM_ERROR_INVALID_PARAMETER) {
-        dpm_destroy_client(handle);
+        dpm_context_destroy(handle);
         return TEST_SUCCESSED;
     }
 
-    dpm_destroy_client(handle);
+    dpm_context_destroy(handle);
     return TEST_FAILED;
 }
 
 static int zone_get_list(struct testcase* tc)
 {
-    dpm_client_h handle;
+    dpm_context_h handle;
     dpm_zone_iterator_h it;
 
-    handle = dpm_create_client();
+    handle = dpm_context_create();
     if (handle == NULL) {
         printf("Failed to create client handle\n");
         return TEST_FAILED;
@@ -93,7 +93,7 @@ static int zone_get_list(struct testcase* tc)
 
     it = dpm_get_zone_iterator(handle);
 
-    dpm_destroy_client(handle);
+    dpm_context_destroy(handle);
 
     if (it != NULL) {
         dpm_free_zone_iterator(it);
@@ -105,11 +105,11 @@ static int zone_get_list(struct testcase* tc)
 
 static int zone_traverse_list(struct testcase* tc)
 {
-    dpm_client_h handle;
+    dpm_context_h handle;
     dpm_zone_iterator_h it;
     const char* zone;
 
-    handle = dpm_create_client();
+    handle = dpm_context_create();
     if (handle == NULL) {
         printf("Failed to create client handle\n");
         return TEST_FAILED;
@@ -117,7 +117,7 @@ static int zone_traverse_list(struct testcase* tc)
 
     it = dpm_get_zone_iterator(handle);
 
-    dpm_destroy_client(handle);
+    dpm_context_destroy(handle);
 
     if (it != NULL) {
         printf("Traversing zone list started\n");
@@ -144,15 +144,15 @@ static int zone_traverse_list(struct testcase* tc)
 
 static int zone_signal(struct testcase* tc)
 {
-    dpm_client_h handle;
+    dpm_context_h handle;
 
-    handle = dpm_create_client();
+    handle = dpm_context_create();
     if (handle == NULL) {
         printf("Failed to create client handle\n");
         return TEST_FAILED;
     }
 
-    dpm_destroy_client(handle);
+    dpm_context_destroy(handle);
 
     return TEST_FAILED;
 }
