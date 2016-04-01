@@ -19,230 +19,141 @@
 #include <dpm/restriction.h>
 #include "testbench.h"
 
-static int restriction_clipboard(struct testcase* tc)
+static int test_dpm_clipboard(struct testcase* tc)
 {
-	dpm_client_h handle;
+	int ret;
+	dpm_context_h context;
+    dpm_restriction_policy_h policy;
 	bool enable = false;
 
-	handle = dpm_create_client();
-	if (handle == NULL) {
-		printf("Failed to create client handle\n");
+	context = dpm_context_create();
+	if (context == NULL) {
+		printf("Failed to create client context\n");
 		return TEST_FAILED;
 	}
 
-	if (dpm_set_clipboard_restriction(handle, true) != 0) {
-		dpm_destroy_client(handle);
-		return TEST_FAILED;
+    policy = dpm_context_acquire_restriction_policy(context);
+    if (policy == NULL) {
+        printf("Failed to get datashare policy interface\n");
+        dpm_context_destroy(context);
+        return TEST_FAILED;
+    }
+
+	ret = TEST_SUCCESSED;
+	if (dpm_restriction_set_clipboard_state(policy, true) != 0) {
+		ret = TEST_FAILED;
+		goto out;
 	}
 
-	enable = dpm_is_clipboard_restricted(handle);
-	if (enable == true) {
-		dpm_destroy_client(handle);
-		return TEST_SUCCESSED;
+	enable = dpm_restriction_get_clipboard_state(policy);
+	if (enable != true) {
+		ret = TEST_FAILED;
+		goto out;
 	}
 
-	dpm_destroy_client(handle);
-	return TEST_FAILED;
+out:
+    dpm_context_release_restriction_policy(context, policy);
+	dpm_context_destroy(context);
+
+	return ret;
 }
 
-static int restriction_clipboard_share(struct testcase* tc)
+static int test_dpm_usb_debugging(struct testcase* tc)
 {
-	dpm_client_h handle;
+	int ret;
+	dpm_context_h context;
+    dpm_restriction_policy_h policy;
 	bool enable = false;
 
-	handle = dpm_create_client();
-	if (handle == NULL) {
-		printf("Failed to create client handle\n");
+	context = dpm_context_create();
+	if (context == NULL) {
+		printf("Failed to create client context\n");
 		return TEST_FAILED;
 	}
 
-	if (dpm_set_clipboard_share_restriction(handle, true) != 0) {
-		dpm_destroy_client(handle);
-		return TEST_FAILED;
+    policy = dpm_context_acquire_restriction_policy(context);
+    if (policy == NULL) {
+        printf("Failed to get developer policy interface\n");
+        dpm_context_destroy(context);
+        return TEST_FAILED;
+    }
+
+	ret = TEST_SUCCESSED;
+	if (dpm_restriction_set_usb_debugging_state(policy, true) != 0) {
+		ret = TEST_FAILED;
+		goto out;
 	}
 
-	enable = dpm_is_clipboard_share_restricted(handle);
-	if (enable == true) {
-		dpm_destroy_client(handle);
-		return TEST_SUCCESSED;
+	enable = dpm_restriction_get_usb_debugging_state(policy);
+	if (enable != true) {
+		ret = TEST_FAILED;
+		goto out;
 	}
 
-	dpm_destroy_client(handle);
-	return TEST_FAILED;
+out:
+	dpm_context_release_restriction_policy(context, policy);
+	dpm_context_destroy(context);
+
+	return ret;
 }
 
-static int restriction_settings_changes(struct testcase* tc)
+static int test_dpm_settings_changes(struct testcase* tc)
 {
-	dpm_client_h handle;
+	int ret;
+	dpm_context_h context;
+    dpm_restriction_policy_h policy;
 	bool enable = false;
 
-	handle = dpm_create_client();
-	if (handle == NULL) {
-		printf("Failed to create client handle\n");
+	context = dpm_context_create();
+	if (context == NULL) {
+		printf("Failed to create client context\n");
 		return TEST_FAILED;
 	}
 
-	if (dpm_set_settings_changes_restriction(handle, true) != 0) {
-		dpm_destroy_client(handle);
-		return TEST_FAILED;
+    policy = dpm_context_acquire_restriction_policy(context);
+    if (policy == NULL) {
+        printf("Failed to get settings policy interface\n");
+        dpm_context_destroy(context);
+        return TEST_FAILED;
+    }
+
+	ret = TEST_SUCCESSED;
+	if (dpm_restriction_set_settings_changes_state(policy, true) != 0) {
+		ret = TEST_FAILED;
+		goto out;
 	}
 
-	enable = dpm_is_settings_changes_restricted(handle);
-	if (enable == true) {
-		dpm_destroy_client(handle);
-		return TEST_SUCCESSED;
+	enable = dpm_restriction_get_settings_changes_state(policy);
+	if (enable != true) {
+		ret = TEST_SUCCESSED;
+		goto out;
 	}
 
-	dpm_destroy_client(handle);
-	return TEST_FAILED;
+out:
+	dpm_context_release_restriction_policy(context, policy);
+	dpm_context_destroy(context);
+
+	return ret;
 }
 
-static int restriction_background_data(struct testcase* tc)
-{
-	dpm_client_h handle;
-	bool enable = false;
-
-	handle = dpm_create_client();
-	if (handle == NULL) {
-		printf("Failed to create client handle\n");
-		return TEST_FAILED;
-	}
-
-	if (dpm_set_background_data_restriction(handle, true) != 0) {
-		dpm_destroy_client(handle);
-		return TEST_FAILED;
-	}
-
-	enable = dpm_is_background_data_restricted(handle);
-	if (enable == true) {
-		dpm_destroy_client(handle);
-		return TEST_SUCCESSED;
-	}
-
-	dpm_destroy_client(handle);
-	return TEST_FAILED;
-}
-
-static int restriction_usb_debugging(struct testcase* tc)
-{
-	dpm_client_h handle;
-	bool enable = false;
-
-	handle = dpm_create_client();
-	if (handle == NULL) {
-		printf("Failed to create client handle\n");
-		return TEST_FAILED;
-	}
-
-	if (dpm_set_usb_debugging_restriction(handle, true) != 0) {
-		dpm_destroy_client(handle);
-		return TEST_FAILED;
-	}
-
-	enable = dpm_is_usb_debugging_restricted(handle);
-	if (enable == true) {
-		dpm_destroy_client(handle);
-		return TEST_SUCCESSED;
-	}
-
-	dpm_destroy_client(handle);
-	return TEST_FAILED;
-}
-
-static int restriction_usb_mass_storage(struct testcase* tc)
-{
-	dpm_client_h handle;
-	bool enable = false;
-
-	handle = dpm_create_client();
-	if (handle == NULL) {
-		printf("Failed to create client handle\n");
-		return TEST_FAILED;
-	}
-
-	if (dpm_set_usb_mass_storage_restriction(handle, true) != 0) {
-		dpm_destroy_client(handle);
-		return TEST_FAILED;
-	}
-
-	enable = dpm_is_usb_mass_storage_restricted(handle);
-	if (enable == true) {
-		dpm_destroy_client(handle);
-		return TEST_SUCCESSED;
-	}
-
-	dpm_destroy_client(handle);
-	return TEST_FAILED;
-}
-
-static int restriction_factory_reset(struct testcase* tc)
-{
-	dpm_client_h handle;
-	bool enable = false;
-
-	handle = dpm_create_client();
-	if (handle == NULL) {
-		printf("Failed to create client handle\n");
-		return TEST_FAILED;
-	}
-
-	if (dpm_set_factory_reset_restriction(handle, true) != 0) {
-		dpm_destroy_client(handle);
-		return TEST_FAILED;
-	}
-
-	enable = dpm_is_factory_reset_restricted(handle);
-	if (enable == true) {
-		dpm_destroy_client(handle);
-		return TEST_SUCCESSED;
-	}
-
-	dpm_destroy_client(handle);
-	return TEST_FAILED;
-}
-
-struct testcase restriction_testcase_clipboard = {
-	.description = "dpm_clipboard",
-	.handler = restriction_clipboard
-};
-
-struct testcase restriction_testcase_clipboard_share = {
-	.description = "dpm_clipboard_share",
-	.handler = restriction_clipboard_share
-};
-
-struct testcase restriction_testcase_settings_changes = {
+struct testcase settings_testcase_settings_changes = {
 	.description = "dpm_settings_changes",
-	.handler = restriction_settings_changes
+	.handler = test_dpm_settings_changes
 };
 
-struct testcase restriction_testcase_background_data = {
-	.description = "dpm_background_data",
-	.handler = restriction_background_data
-};
-
-struct testcase restriction_testcase_usb_debugging = {
+struct testcase developer_testcase_usb_debugging = {
 	.description = "dpm_usb_debugging",
-	.handler = restriction_usb_debugging
+	.handler = test_dpm_usb_debugging
 };
 
-struct testcase restriction_testcase_usb_mass_storage = {
-	.description = "dpm_usb_mass_storage",
-	.handler = restriction_usb_mass_storage
+struct testcase datashare_testcase_clipboard = {
+	.description = "dpm_clipboard",
+	.handler = test_dpm_clipboard
 };
 
-struct testcase restriction_testcase_factory_reset = {
-	.description = "dpm_factory_reset",
-	.handler = restriction_factory_reset
-};
-
-void TESTCASE_CONSTRUCTOR restriction_policy_build_testcase(void)
+void TESTCASE_CONSTRUCTOR datashare_policy_build_testcase(void)
 {
-	testbench_populate_testcase(&restriction_testcase_clipboard);
-	testbench_populate_testcase(&restriction_testcase_clipboard_share);
-	testbench_populate_testcase(&restriction_testcase_settings_changes);
-	testbench_populate_testcase(&restriction_testcase_background_data);
-	testbench_populate_testcase(&restriction_testcase_usb_debugging);
-	testbench_populate_testcase(&restriction_testcase_usb_mass_storage);
-	testbench_populate_testcase(&restriction_testcase_factory_reset);
+	testbench_populate_testcase(&datashare_testcase_clipboard);
+	testbench_populate_testcase(&developer_testcase_usb_debugging);
+	testbench_populate_testcase(&settings_testcase_settings_changes);
 }
