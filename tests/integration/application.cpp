@@ -27,7 +27,7 @@ const std::string TestAppId = "org.tizen.music-player";
 
 TESTCASE(AppInfoTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
     std::cout << "Begin connection" << std::endl;
     TEST_EXPECT(0, client.connect());
 
@@ -43,7 +43,7 @@ TESTCASE(AppInfoTest)
 
 TESTCASE(PkgInfoTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     TEST_EXPECT(0, client.connect());
 
@@ -64,7 +64,7 @@ TESTCASE(PkgInfoTest)
 
 TESTCASE(AppRunStateTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     TEST_EXPECT(0, client.connect());
 
@@ -82,7 +82,7 @@ TESTCASE(AppRunStateTest)
 
 TESTCASE(AppActivationTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     TEST_EXPECT(0, client.connect());
 
@@ -94,7 +94,7 @@ TESTCASE(AppActivationTest)
 
 TESTCASE(AppStartTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     TEST_EXPECT(0, client.connect());
 
@@ -109,7 +109,7 @@ TESTCASE(AppStartTest)
 
 TESTCASE(BlacklistTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     TEST_EXPECT(0, client.connect());
 

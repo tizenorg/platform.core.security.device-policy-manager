@@ -28,7 +28,7 @@ const char* pkgName = "dpm_test_admin_client";
 
 TESTCASE(AdministrationInterfaceTest)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
 
     TEST_EXPECT(0, client.connect());
 

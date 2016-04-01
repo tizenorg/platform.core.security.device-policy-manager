@@ -21,105 +21,105 @@
 
 static int misc_camera(struct testcase *tc)
 {
-	dpm_client_h handle;
+	dpm_context_h handle;
 	bool enable = false;
 
-	handle = dpm_create_client();
+	handle = dpm_create_context();
 	if (handle == NULL) {
 		printf("Failed to create client handle\n");
 		return TEST_FAILED;
 	}
 
 	if (dpm_set_camera_restriction(handle, true) != 0) {
-		dpm_destroy_client(handle);
+		dpm_destroy_context(handle);
 		return TEST_FAILED;
 	}
 
 	enable = dpm_is_camera_restricted(handle);
 	if (enable == true) {
-		dpm_destroy_client(handle);
+		dpm_destroy_context(handle);
 		return TEST_SUCCESSED;
 	}
 
-	dpm_destroy_client(handle);
+	dpm_destroy_context(handle);
 	return TEST_FAILED;
 }
 
 static int misc_microphone(struct testcase *tc)
 {
-	dpm_client_h handle;
+	dpm_context_h handle;
 	bool enable = false;
 
-	handle = dpm_create_client();
+	handle = dpm_create_context();
 	if (handle == NULL) {
 		printf("Failed to create client handle\n");
 		return TEST_FAILED;
 	}
 
 	if (dpm_set_microphone_restriction(handle, true) != 0) {
-		dpm_destroy_client(handle);
+		dpm_destroy_context(handle);
 		return TEST_FAILED;
 	}
 
 	enable = dpm_is_microphone_restricted(handle);
 	if (enable == true) {
-		dpm_destroy_client(handle);
+		dpm_destroy_context(handle);
 		return TEST_SUCCESSED;
 	}
 
-	dpm_destroy_client(handle);
+	dpm_destroy_context(handle);
 	return TEST_FAILED;
 }
 
 static int misc_location(struct testcase *tc)
 {
-	dpm_client_h handle;
+	dpm_context_h handle;
 	bool enable = false;
 
-	handle = dpm_create_client();
+	handle = dpm_create_context();
 	if (handle == NULL) {
 		printf("Failed to create client handle\n");
 		return TEST_FAILED;
 	}
 
 	if (dpm_set_location_restriction(handle, true) != 0) {
-		dpm_destroy_client(handle);
+		dpm_destroy_context(handle);
 		return TEST_FAILED;
 	}
 
 	enable = dpm_is_location_restricted(handle);
 	if (enable == true) {
-		dpm_destroy_client(handle);
+		dpm_destroy_context(handle);
 		return TEST_SUCCESSED;
 	}
 
-	dpm_destroy_client(handle);
+	dpm_destroy_context(handle);
 	return TEST_FAILED;
 }
 
 static int misc_sd_card(struct testcase *tc)
 {
-	dpm_client_h handle;
+	dpm_context_h handle;
 	bool enable = false;
 
-	handle = dpm_create_client();
+	handle = dpm_create_context();
 	if (handle == NULL) {
 		printf("Failed to create client handle\n");
 		return TEST_FAILED;
 	}
 
 	if (dpm_set_sd_card_restriction(handle, true) != 0) {
-		dpm_destroy_client(handle);
+		dpm_destroy_context(handle);
 		return TEST_FAILED;
 	}
 
 	enable = dpm_is_sd_card_restricted(handle);
 	if (enable == true) {
-		dpm_destroy_client(handle);
+		dpm_destroy_context(handle);
 		return TEST_SUCCESSED;
 	}
 
-	dpm_destroy_client(handle);
+	dpm_destroy_context(handle);
 	return TEST_FAILED;
 }
 

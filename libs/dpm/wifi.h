@@ -33,6 +33,50 @@ extern "C" {
  * @{
  */
 
+ /**
+  * @brief       The Camera Policy handle
+  * @since_tizen 3.0
+  * @see         dpm_context_acquire_camera_policy()
+  * @see         dpm_context_release_camera_policy()
+  */
+ typedef void* dpm_wifi_policy_h;
+
+ /**
+  * @brief       Acquires the Camera Policy handle.
+  * @details     This API acquires camera policy handle required to call
+  *              the device policy camera APIs.
+  * @since_tizen 3.0
+  * @param[in]   handle Device Policy Context Handle
+  * @param[in]   zone Target container name.
+  * @return      Camera Policy handle on success, otherwise NULL
+  * @remark      The specific error code can be obtained by using the
+  *              get_last_result() method. Error codes are described in
+  *              exception section.
+  * @exception   #DPM_ERROR_NONE No error
+  * @exception   #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+  * @exception   #DPM_ERROR_TIMED_OUT Time out
+  * @exception   #DPM_ERROR_PERMISSION_DENIED The application does not have
+  *              the privilege to access the target container.
+  * @see         dpm_context_release_camera_policy()
+  * @see         get_last_result()
+  */
+ DPM_API dpm_wifi_policy_h dpm_context_acquire_wifi_policy(dpm_context_h handle, const char* zone);
+
+ /**
+  * @brief       Releases the Camera Policy Handle.
+  * @details     This API must be called if interaction with the Device
+  *              Policy Manager is no longer required.
+  * @since_tizen 3.0
+  * @param[in]   handle Camera Policy Handle
+  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+  * @retval      #DPM_ERROR_NONE Successful
+  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+  * @retval      #DPM_ERROR_TIMED_OUT Time out
+  * @pre         The handle must be created by dpm_context_acquire_camera_policy().
+  * @see         dpm_context_acquire_camera_policy()
+  */
+ DPM_API int dpm_context_release_wifi_policy(dpm_wifi_policy_h handle);
+
 /**
  * @brief       Allows or disallows the user to change the Wi-Fi state.
  * @details     An administrator can use this API to allow or disallow the user to
@@ -52,14 +96,14 @@ extern "C" {
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
- * @pre         handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dom_is_wifi_state_change_restricted()
+ * @pre         handle must be created by dpm_create_context()
+ * @see         dpm_create_context()
+ * @see         dpm_destroy_context()
+ * @see         dpm_wifi_is_state_change_allowed()
  * @see         wifi_activate()
  * @see         wifi_deactivate()
  */
-DPM_API int dpm_set_wifi_state_change_restriction(dpm_client_h handle, int enable);
+DPM_API int dpm_wifi_allow_state_change(dpm_wifi_policy_h handle, int enable);
 
 /**
  * @brief       Checks whether the user is restricted to change the Wi-Fi state.
@@ -75,12 +119,12 @@ DPM_API int dpm_set_wifi_state_change_restriction(dpm_client_h handle, int enabl
  * @retval      #DPM_ERROR_TIMEOUT Timeout
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
- * @pre         handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_set_wifi_state_change_restriction()
+ * @pre         handle must be created by dpm_create_context()
+ * @see         dpm_create_context()
+ * @see         dpm_destroy_context()
+ * @see         dpm_wifi_allow_state_change()
  */
-DPM_API int dpm_is_wifi_state_change_restricted(dpm_client_h handle, int *enable);
+DPM_API int dpm_wifi_is_state_change_allowed(dpm_wifi_policy_h handle, int *enable);
 
 /**
  * @brief       Allows or disallows user to modify some Wi-Fi settings of network settings.
@@ -103,10 +147,10 @@ DPM_API int dpm_is_wifi_state_change_restricted(dpm_client_h handle, int *enable
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
- * @pre         handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dom_is_wifi_setting_changes_restricted()
+ * @pre         handle must be created by dpm_create_context()
+ * @see         dpm_create_context()
+ * @see         dpm_destroy_context()
+ * @see         dpm_wifi_is_settings_change_allowed
  * @see         wifi_ap_set_ip_config_type()
  * @see         wifi_ap_set_ip_address()
  * @see         wifi_ap_set_subnet_mask()
@@ -118,7 +162,7 @@ DPM_API int dpm_is_wifi_state_change_restricted(dpm_client_h handle, int *enable
  * @see         wifi_ap_set_encryption_type()
  * @see         wifi_ap_set_passphrase()
  */
-DPM_API int dpm_set_wifi_setting_changes_restriction(dpm_client_h handle, int enable);
+DPM_API int dpm_wifi_allow_settings_change(dpm_wifi_policy_h handle, int enable);
 
 /**
  * @brief       Checks if the user is allowed to modify certain Wi-Fi network settings.
@@ -134,12 +178,12 @@ DPM_API int dpm_set_wifi_setting_changes_restriction(dpm_client_h handle, int en
  * @retval      #DPM_ERROR_TIMEOUT Timeout
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
- * @pre         handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_set_wifi_setting_changes_restriction()
+ * @pre         handle must be created by dpm_create_context()
+ * @see         dpm_create_context()
+ * @see         dpm_destroy_context()
+ * @see         dpm_wifi_allow_settings_change()
  */
-DPM_API int dpm_is_wifi_setting_changes_restricted(dpm_client_h handle, int *enable);
+DPM_API int dpm_wifi_is_settings_change_allowed(dpm_wifi_policy_h handle, int *enable);
 
 /**
  * @brief       Allows or disallows the user to change Wi-Fi hotspot settings
@@ -148,7 +192,7 @@ DPM_API int dpm_is_wifi_setting_changes_restricted(dpm_client_h handle, int *ena
  *              modify the settings.
  * @since_tizen 3.0
  * @privlevel   public
- * @privilege   %http://tizen.org/privilege/dpm.security
+ * @privilege   %http://tizen.org/privilege/dpm.wifi
  * @param[in]   handle Device Policy Client handle
  * @param[in]   enable TRUE to restrict wifi hostspot setting, else FALSE
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
@@ -158,12 +202,12 @@ DPM_API int dpm_is_wifi_setting_changes_restricted(dpm_client_h handle, int *ena
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
- * @pre         handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_is_wifi_hostspot_restricted()
+ * @pre         handle must be created by dpm_create_context()
+ * @see         dpm_create_context()
+ * @see         dpm_destroy_context()
+ * @see         dpm_wifi_is_hotspot_state_change_allowed()
  */
-DPM_API int dpm_set_wifi_hotspot_restriction(dpm_client_h handle, int enable);
+DPM_API int dpm_wifi_allow_hotspot_state_change(dpm_wifi_policy_h handle, int enable);
 
 /**
  * @brief       Checks whether the the Wi-Fi hotspot is restricted.
@@ -172,7 +216,6 @@ DPM_API int dpm_set_wifi_hotspot_restriction(dpm_client_h handle, int enable);
  *              If the Wi-Fi hotspot is restricted, the UI is grayed out so user can not
  *              change its state.
  * @since_tizen 3.0
- * @privlevel   public
  * @param[in]   handle Device Policy Client handle
  * @param[out]  enable TRUE if modification is allowed,
  *              FALSE if modification is denied
@@ -181,12 +224,12 @@ DPM_API int dpm_set_wifi_hotspot_restriction(dpm_client_h handle, int enable);
  * @retval      #DPM_ERROR_TIMEOUT Timeout
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
- * @pre         handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_set_wifi_hotspot_restriction()
+ * @pre         handle must be created by dpm_create_context()
+ * @see         dpm_create_context()
+ * @see         dpm_destroy_context()
+ * @see         dpm_wifi_allow_hotspot_state_change()
  */
-DPM_API int dpm_is_wifi_hotspot_restricted(dpm_client_h handle, int *enable);
+DPM_API int dpm_wifi_is_hotspot_state_change_allowed(dpm_wifi_policy_h handle, int *enable);
 
 /**
  * @brief       Restricts network accessed based on the Wi-Fi network service set
@@ -202,19 +245,20 @@ DPM_API int dpm_is_wifi_hotspot_restricted(dpm_client_h handle, int *enable);
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_TIMEOUT Timeout
- * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
+ * @retval      #DPM_ERROR_NOT_SUPPORTED Not supporte
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
- * @pre         handle must be created by dpm_create_client()
+ * @pre         handle must be created by dpm_create_context()
  * @pre         Blocked network list must be added by dpm_add_wifi_ssid_to_blocklist()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
+ * @see         dpm_create_context()
+ * @see         dpm_destroy_context()
  * @see         dpm_is_wifi_network_access_restricted()
- * @see         dpm_add_wifi_ssid_to_blocklist()
- * @see         dpm_remove_wifi_ssid_from_blocklist()
+ * @see         dpm_wifi_add_ssid_to_blocklist()
+ * @see         dpm_wifi_remove_ssid_from_blocklist()
+ * @see         dpm_wifi_clear_ssids_in_blocklist()
  */
-DPM_API int dpm_set_wifi_network_access_restriction(dpm_client_h handle, int enable);
+DPM_API int dpm_wifi_set_network_access_restriction(dpm_wifi_policy_h handle, int enable);
 
 /**
  * @brief       Checks whether the SSID-based Wi-Fi network access restriction is
@@ -230,12 +274,12 @@ DPM_API int dpm_set_wifi_network_access_restriction(dpm_client_h handle, int ena
  * @retval      #DPM_ERROR_TIMEOUT Timeout
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
- * @pre         handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
+ * @pre         handle must be created by dpm_create_context()
+ * @see         dpm_create_context()
+ * @see         dpm_destroy_context()
  * @see         dpm_set_wifi_network_access_restriction()
  */
-DPM_API int dpm_is_wifi_network_access_restricted(dpm_client_h handle, int *enable);
+DPM_API int dpm_wifi_is_network_access_restricted(dpm_wifi_policy_h handle, int *enable);
 
 /**
  * @brief       Adds a service set identifier(SSID) to the list of blocked network.
@@ -251,19 +295,21 @@ DPM_API int dpm_is_wifi_network_access_restricted(dpm_client_h handle, int *enab
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_TIMEOUT Timeout
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
+ * @retval      #DPM_ERROR_OUT_OF_MEMORY Out of memory
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @retval      #DPM_ERROR_OUT_OF_MEMORY Too many SSIDs in blocked network list
- * @pre         handle must be created by dpm_create_client()
+ * @pre         handle must be created by dpm_create_context()
 i* @post        dpm_set_wifi_network_access_restriction() must be called
  *              when SSIDs in the blacklist are needed to get restricted
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_remove_wifi_ssid_to_blocklist()
+ * @see         dpm_create_context()
+ * @see         dpm_destroy_context()
+ * @see         dpm_wifi_remove_ssid_from_blocklist()
+ * @see         dpm_wifi_clear_ssids_in_blocklist()
  * @see         dpm_set_wifi_network_access_restriction()
  */
-DPM_API int dpm_add_wifi_ssid_to_blocklist(dpm_client_h handle, const char* ssid);
+DPM_API int dpm_wifi_add_ssid_to_blocklist(dpm_wifi_policy_h handle, const char* ssid);
 
 /**
  * @brief       Removes a service set identifier(SSID) from the list of blocked
@@ -282,13 +328,39 @@ DPM_API int dpm_add_wifi_ssid_to_blocklist(dpm_client_h handle, const char* ssid
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
- * @pre         handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_add_wifi_ssid_to_blocklist()
+ * @pre         handle must be created by dpm_create_context()
+ * @see         dpm_create_context()
+ * @see         dpm_destroy_context()
+ * @see         dpm_wifi_add_ssid_to_blocklist()
+ * @see         dpm_wifi_clear_ssids_in_blocklist()
  * @see         dpm_set_wifi_network_access_restriction()
  */
-DPM_API int dpm_remove_wifi_ssid_from_blocklist(dpm_client_h handle, const char* ssid);
+DPM_API int dpm_wifi_remove_ssid_from_blocklist(dpm_wifi_policy_h handle, const char* ssid);
+
+/**
+ * @brief       Removes all service set identifier(SSID)s in the list of
+ *              blocked networks.
+ * @details     An administrator can use this API to clear the list of blocked
+ *              networks, which allows the users to connect to all networks.
+ * @since_tizen 3.0
+ * @privlevel   public
+ * @privilege   %http://tizen.org/privilege/dpm.wifi
+ * @param[in]   handle Device Policy Client handle
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_TIMEOUT Timeout
+ * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
+ *              the privilege to call this API
+ * @pre         handle must be created by dpm_create_context()
+ * @see         dpm_create_context()
+ * @see         dpm_destroy_context()
+ * @see         dpm_wifi_add_ssid_to_blocklist()
+ * @see         dpm_wifi_remove_ssid_from_blocklist()
+ * @see         dpm_set_wifi_network_access_restriction()
+ */
+DPM_API int dpm_wifi_clear_ssids_in_blocklist(dpm_wifi_policy_h handle);
 
 /**
  * @}
@@ -298,4 +370,4 @@ DPM_API int dpm_remove_wifi_ssid_from_blocklist(dpm_client_h handle, const char*
 }
 #endif
 
-#endif //! __CAPI_SECURITY_POLICY_H__
+#endif //! __CAPI_WIFI_POLICY_H__

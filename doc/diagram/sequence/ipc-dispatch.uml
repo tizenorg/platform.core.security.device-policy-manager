@@ -1,8 +1,8 @@
 @startuml
 hide footbox
 
-actor DevicePolicyClient
-DevicePolicyClient --> Mainloop : Request remote method call
+actor DevicePolicyContext
+DevicePolicyContext --> Mainloop : Request remote method call
 activate Mainloop
 
 Mainloop -> Service : Event source callback
