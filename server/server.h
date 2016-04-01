@@ -22,6 +22,7 @@
 
 #include "client-manager.h"
 
+#include "file-descriptor.h"
 #include "rmi/service.h"
 
 class Server {
@@ -36,6 +37,8 @@ public:
     rmi::Service& getServiceManager() {
         return *service;
     }
+
+    FileDescriptor subscribeNotification(const std::string& name);
 
     static Server& instance();
 

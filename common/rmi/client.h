@@ -41,11 +41,11 @@ public:
     void connect();
     void disconnect();
 
-    int subscribe(const std::string& name);
+    int subscribe(const std::string& provider, const std::string& name);
 
     template<typename... Args>
-    void subscribe(const std::string& name,
-                   const typename MethodHandler<void, Args...>::type& handler);
+    int subscribe(const std::string& provider, const std::string& name,
+                  const typename MethodHandler<void, Args...>::type& handler);
 
     template<typename Type, typename... Args>
     Type methodCall(const std::string& method, Args&&... args);
@@ -58,7 +58,7 @@ private:
 };
 
 template<typename... Args>
-void Client::subscribe(const std::string& name,
+int Client::subscribe(const std::string& provider, const std::string& name,
                        const typename MethodHandler<void, Args...>::type& handler)
 {
     auto callback = [handler, this](int fd, runtime::Mainloop::Event event) {
@@ -79,10 +79,13 @@ void Client::subscribe(const std::string& name,
         }
     };
 
-    int fd = subscribe(name);
+    int fd = subscribe(provider, name);
     if (fd > 0) {
         mainloop.addEventSource(fd, EPOLLIN | EPOLLHUP | EPOLLRDHUP, callback);
+        return 0;
     }
+
+    return -1;
 }
 
 template<typename Type, typename... Args>

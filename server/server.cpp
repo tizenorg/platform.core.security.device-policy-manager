@@ -25,6 +25,8 @@ const std::string POLICY_MANAGER_ADDRESS = "/tmp/.device-policy-manager";
 Server::Server()
 {
     service.reset(new rmi::Service(POLICY_MANAGER_ADDRESS));
+
+    service->registerParametricMethod(this, (FileDescriptor)(Server::subscribeNotification)(std::string));
 }
 
 Server::~Server()
@@ -40,6 +42,11 @@ void Server::run()
 void Server::terminate()
 {
     service->stop();
+}
+
+FileDescriptor Server::subscribeNotification(const std::string& name)
+{
+    return FileDescriptor(service->subscribeNotification(name), true);
 }
 
 Server& Server::instance()
