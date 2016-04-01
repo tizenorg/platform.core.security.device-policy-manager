@@ -61,7 +61,7 @@ typedef enum {
  * @see         dpm_create_client()
  * @see         dpm_destroy_client()
  */
-DPM_API int dpm_lockout_screen(dpm_client_h handle);
+DPM_API int dpm_security_lockout_screen(dpm_client_h handle);
 
 /**
  * @brief       API to selectively wipe external memory, internal memory,
@@ -84,45 +84,7 @@ DPM_API int dpm_lockout_screen(dpm_client_h handle);
  * @see         dpm_create_client()
  * @see         dpm_destroy_client()
  */
-DPM_API int dpm_wipe_data(dpm_client_h handle, const dpm_wipe_type_e type);
-
-/**
- * @brief       API to reboot the device
- * @details     An administrator can use this API to reboot the device
- *              wthout user interaction
- * @since_tizen 3.0
- * @privlevel   public
- * @privilege   %http://tizen.org/privilege/dpm.security
- * @param[in]   handle Device Policy Client handle
- * @return      #DPM_ERROR_NONE on success, otherwise a negative value
- * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
- *              the privilege to call this API
- * @pre         handle must be created by dpm_create_client()
- * @post
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- */
-DPM_API int dpm_reboot(dpm_client_h handle);
-
-/**
- * @brief       API to poweroff the device
- * @details     An administrator can use this API to turn off the device
- *              without user interaction
- * @since_tizen 3.0
- * @privlevel   public
- * @privilege   %http://tizen.org/privilege/dpm.security
- * @param[in]   handle Device Policy Client handle
- * @return      #DPM_ERROR_NONE on success, otherwise a negative value
- * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
- *              the privilege to call this API
- * @pre         handle must be created by dpm_create_client()
- * @post
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- */
-DPM_API int dpm_poweroff_device(dpm_client_h handle);
+DPM_API int dpm_storage_wipe_data(dpm_client_h handle, const dpm_wipe_type_e type);
 
 /**
  * @brief       API to encrypt internal storage
@@ -148,7 +110,7 @@ DPM_API int dpm_poweroff_device(dpm_client_h handle);
  * @see         dpm_create_client()
  * @see         dpm_destroy_client()
  */
-DPM_API int dpm_set_internal_storage_encryption(dpm_client_h handle, const int encrypt);
+DPM_API int dpm_storage_set_encryption(dpm_client_h handle, const int encrypt);
 
 /**
  * @brief       API to check the state of internal storage encryption
@@ -164,7 +126,7 @@ DPM_API int dpm_set_internal_storage_encryption(dpm_client_h handle, const int e
  * @see         dpm_destroy_client()
  * @see         dpm_set_password_quality()
  */
-DPM_API int dpm_is_internal_storage_encrypted(dpm_client_h handle);
+DPM_API int dpm_storage_is_encrypted(dpm_client_h handle);
 
 /**
  * @brief       API to encrypt external storage
@@ -190,7 +152,7 @@ DPM_API int dpm_is_internal_storage_encrypted(dpm_client_h handle);
  * @see         dpm_destroy_client()
  * @see         dpm_set_password_quality()
  */
-DPM_API int dpm_set_external_storage_encryption(dpm_client_h handle, const int encrypt);
+DPM_API int dpm_storage_set_external_storage_encryption(dpm_client_h handle, const int encrypt);
 
 /**
  * @brief       API to check the state of external storage encryption
@@ -205,7 +167,7 @@ DPM_API int dpm_set_external_storage_encryption(dpm_client_h handle, const int e
  * @see         dpm_create_client()
  * @see         dpm_destroy_client()
  */
-DPM_API int dpm_is_external_storage_encrypted(dpm_client_h handle);
+DPM_API int dpm_storage_is_external_storage_encrypted(dpm_client_h handle);
 
 /**
  * @}
