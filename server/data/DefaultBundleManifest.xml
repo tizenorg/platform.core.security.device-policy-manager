@@ -8,10 +8,10 @@
 
     <namspace>
         <dropped-capability>CAP_SYS_ADMIN</dropped-capability>
-        <hostname>ZoneName</hostname>
+        <hostname>ZonePolicyName</hostname>
         <!--<init>/sbin/init</init>-->
         <filesystem root="/">
-            <!--<entry source="/home/ZoneName" target="/home/.zone/ZoneName" type="bind" option="rw" />-->
+            <!--<entry source="/home/ZonePolicyName" target="/home/.zone/ZonePolicyName" type="bind" option="rw" />-->
         </filesystem>
         <network>
             <!--<interface name="eth0" address="10.254.34.232" netmask="" gateway="" />-->

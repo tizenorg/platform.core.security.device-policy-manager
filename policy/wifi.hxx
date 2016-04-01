@@ -26,25 +26,25 @@ namespace DevicePolicyManager {
  * This class provides APIs to configure Wi-Fi related settings and manage Wi-Fi profiles.
  */
 
-class Wifi {
+class WifiPolicy {
 public:
-    Wifi(PolicyControlContext& ctxt);
-    ~Wifi();
+    WifiPolicy(PolicyControlContext& ctxt);
+    ~WifiPolicy(void);
 
-    int setStateChangeRestriction(bool restrict);
-    bool isStateChangeRestricted();
+    int allowStateChange(bool restrict);
+    bool isStateChangeAllowed(void);
 
-    int setSettingChangesRestriction(bool restrict);
-    bool isSettingChangesRestricted();
+    int allowSettingsChange(bool restrict);
+    bool isSettingsChangeAllowed(void);
 
-    int setHotspotRestriction(bool restrict);
-    bool isHotspotRestricted();
+    int allowHotspotStateChange(bool restrict);
+    bool isHotspotStateChangeAllowed(void);
 
     int setNetworkAccessRestriction(bool restrict);
-    bool isNetworkAccessRestricted();
+    bool isNetworkAccessRestricted(void);
 
-    int addSsidFromBlacklist(const std::string& ssid);
-    int removeSsidFromBlacklist(const std::string& ssid);
+    int addSsidToBlocklist(const std::string& ssid);
+    int removeSsidFromBlocklist(const std::string& ssid);
 
 private:
     PolicyControlContext& context;
