@@ -125,7 +125,7 @@ DPM_API int dpm_is_clipboard_share_restricted(dpm_client_h handle);
  * @see         dpm_destroy_client()
  * @see         dpm_is_settings_changes_restricted()
  */
-DPM_API int dpm_set_settings_changes_restriction(dpm_client_h handle, int enable);
+DPM_API int dpm_settings_set_changes_restriction(dpm_client_h handle, int enable);
 
 /**
  * @brief       Checks whether the settings changes restriction is enable or not.
@@ -140,44 +140,7 @@ DPM_API int dpm_set_settings_changes_restriction(dpm_client_h handle, int enable
  * @see         dpm_destroy_client()
  * @see         dpm_set_settings_changes_restriction()
  */
-DPM_API int dpm_is_settings_changes_restricted(dpm_client_h handle);
-
-/**
- * @brief       Allows or disallows the user to use the background data.
- * @details     An administrator can use this API to set whether the background
- *              data is allowed or not.
- * @since_tizen 3.0
- * @privlevel   public
- * @privilege   %http://tizen.org/privilege/dpm.restriction
- * @param[in]   handle Device Policy Client handle
- * @param[in]   enable If true, disallow the background data, if false, allow
- *              the background data
- * @return      #DPM_ERROR_NONE on success, otherwise a negative value
- * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
- * @retval      #DPM_ERROR_ACCESS_DENIED The application does not have
- *              the privilege to call this API
- * @pre         handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_is_background_data_restricted()
- */
-DPM_API int dpm_set_background_data_restriction(dpm_client_h handle, int enable);
-
-/**
- * @brief       Checks whether the background data restriction is enable or not.
- * @details     An administrator can use this API to check the restriction status of
- *              the background data.
- * @since_tizen 3.0
- * @privlevel   public
- * @param[in]   handle Device Policy Client handle
- * @return      true if the background data is disallowed, else false
- * @pre         handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_set_background_data_restriction()
- */
-DPM_API int dpm_is_background_data_restricted(dpm_client_h handle);
+DPM_API int dpm_settings_is_changes_restricted(dpm_client_h handle);
 
 /**
  * @brief       Allows or disallows the user to use the usb debugging
@@ -199,7 +162,7 @@ DPM_API int dpm_is_background_data_restricted(dpm_client_h handle);
  * @see         dpm_destroy_client()
  * @see         dpm_is_usb_debugging_restricted()
  */
-DPM_API int dpm_set_usb_debugging_restriction(dpm_client_h handle, int enable);
+DPM_API int dpm_usb_set_debugging_restriction(dpm_client_h handle, int enable);
 
 /**
  * @brief       Checks whether the usb debugging restriction is enable or not.
@@ -214,7 +177,7 @@ DPM_API int dpm_set_usb_debugging_restriction(dpm_client_h handle, int enable);
  * @see         dpm_destroy_client()
  * @see         dpm_set_usb_debugging_restriction()
  */
-DPM_API int dpm_is_usb_debugging_restricted(dpm_client_h handle);
+DPM_API int dpm_usb_is_debugging_restricted(dpm_client_h handle);
 
 /**
  * @brief       Allows or disallows the user to use the usb mass storage
@@ -236,7 +199,7 @@ DPM_API int dpm_is_usb_debugging_restricted(dpm_client_h handle);
  * @see         dpm_destroy_client()
  * @see         dpm_is_usb_mass_storage_restricted()
  */
-DPM_API int dpm_set_usb_mass_storage_restriction(dpm_client_h handle, int enable);
+DPM_API int dpm_storage_set_usb_mass_storage_restriction(dpm_client_h handle, int enable);
 
 /**
  * @brief       Checks whether the usb mass storage restriction is enable or not.
@@ -251,7 +214,7 @@ DPM_API int dpm_set_usb_mass_storage_restriction(dpm_client_h handle, int enable
  * @see         dpm_destroy_client()
  * @see         dpm_set_usb_mass_storage_restriction()
  */
-DPM_API int dpm_is_usb_mass_storage_restricted(dpm_client_h handle);
+DPM_API int dpm_storage_is_usb_mass_storage_restricted(dpm_client_h handle);
 
 /**
  * @brief       Allows or disallows the user to use the factory reset
