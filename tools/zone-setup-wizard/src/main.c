@@ -19,10 +19,10 @@
 #include "zone-setup.h"
 #include "widget.h"
 
-static void __create_zone_done(zone_state_e event, const char *name, void *info, void *user_data)
+static void __create_zone_done(const char *name, dpm_zone_signal_e event, void *user_data)
 {
 	appdata_s *ad = (appdata_s *) user_data;
-	if (event == DPM_ZONE_DEFINED)
+	if (event == DPM_ZONE_SIGNAL_SETUP_SUCCESS)
 		ad->create_done = true;
 	return ;
 }
@@ -46,7 +46,7 @@ static void __app_terminate(void *data)
 {
 	appdata_s *ad = (appdata_s *) data;
 
-	dpm_unsubscribe_zone_signal(ad->dpm_client, __create_zone_done);
+//	dpm_remove_zone_signal_handler(ad->dpm_client, __create_zone_done);
 	dpm_destroy_client(ad->dpm_client);
 	ad->dpm_client = NULL;
 	return ;
@@ -75,7 +75,7 @@ static void __app_control(app_control_h app_control, void *data)
 		ui_app_exit();
 	}
 
-	if (dpm_subscribe_zone_signal(ad->dpm_client, __create_zone_done, ad) != 0) {
+	if (dpm_add_zone_signal_handler(ad->dpm_client, DPM_ZONE_SIGNAL_SETUP_SUCCESS, __create_zone_done, ad) != 0) {
 		dlog_print(DLOG_ERROR, LOG_TAG, "failed to set signal callback");
 		ui_app_exit();
 	}
