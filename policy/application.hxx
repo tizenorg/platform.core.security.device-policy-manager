@@ -22,36 +22,36 @@
 
 namespace DevicePolicyManager {
 
-class Application {
+class ApplicationPolicy {
 public:
-    Application(PolicyControlContext& ctxt);
-    ~Application();
+    ApplicationPolicy(PolicyControlContext& ctxt);
+    ~ApplicationPolicy();
 
-    int setApplicationInstallationMode(const bool mode);
-    bool getApplicationInstallationMode();
+    int setApplicationPolicyInstallationMode(const bool mode);
+    bool getApplicationPolicyInstallationMode();
 
-    int setApplicationUninstallationMode(const bool mode);
-    bool getApplicationUninstallationMode();
+    int setApplicationPolicyUninstallationMode(const bool mode);
+    bool getApplicationPolicyUninstallationMode();
 
-    int setApplicationState(const std::string& appid, const int state);
-    int getApplicationState(const std::string& appid);
+    int setApplicationPolicyState(const std::string& appid, const int state);
+    int getApplicationPolicyState(const std::string& appid);
 
-    int disableApplication(const std::string& appid);
-    int enableApplication(const std::string& appid);
+    int disableApplicationPolicy(const std::string& appid);
+    int enableApplicationPolicy(const std::string& appid);
 
     std::vector<std::string> getInstalledPackageList();
 
     int installPackage(const std::string& pkgpath);
     int uninstallPackage(const std::string& pkgid);
 
-    bool isApplicationInstalled(const std::string& appid);
-    bool isApplicationRunning(const std::string& appid);
+    bool isApplicationPolicyInstalled(const std::string& appid);
+    bool isApplicationPolicyRunning(const std::string& appid);
     bool isPackageInstalled(const std::string& pkgid);
 
-    int startApplication(const std::string& appid);
-    int stopApplication(const std::string& appid);
+    int startApplicationPolicy(const std::string& appid);
+    int stopApplicationPolicy(const std::string& appid);
 
-    int wipeApplicationData(const std::string& appid);
+    int wipeApplicationPolicyData(const std::string& appid);
 
     int addPackageToBlacklist(const std::string& pkgid);
     int removePackageFromBlacklist(const std::string& pkgid);
