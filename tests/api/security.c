@@ -22,179 +22,149 @@
 static int security_lock_screen(struct testcase* tc)
 {
     int ret;
-    dpm_client_h handle;
+    dpm_context_h context;
+    dpm_security_policy_h policy;
 
-    handle = dpm_create_client();
-    if (handle == NULL) {
-        printf("Failed to create client handle\n");
+    context = dpm_context_create();
+    if (context == NULL) {
+        printf("Failed to create client context\n");
+        return TEST_FAILED;
+    }
+
+    policy = dpm_context_acquire_security_policy(context);
+    if (policy == NULL) {
+        printf("Failed to acquire security policy handle\n");
+        dpm_context_destroy(context);
         return TEST_FAILED;
     }
 
     ret = TEST_SUCCESSED;
-    if (dpm_lockout_screen(handle) != 0) {
+    if (dpm_security_lockout_screen(policy) != 0) {
+        printf("Failed to lockout screen\n");
         ret = TEST_FAILED;
     }
+
+    dpm_context_release_security_policy(policy);
+    dpm_context_destroy(context);
 
     return ret;
 }
 
-static int security_wipe_internal_memory(struct testcase* tc)
+int security_set_internal_storage_encryption(struct testcase* tc)
 {
     int ret;
-    dpm_client_h handle;
+    dpm_context_h context;
+    dpm_security_policy_h policy;
 
-    handle = dpm_create_client();
-    if (handle == NULL) {
-        printf("Failed to create client handle\n");
+    context = dpm_context_create();
+    if (context == NULL) {
+        printf("Failed to create client context\n");
+        return TEST_FAILED;
+    }
+
+    policy = dpm_context_acquire_security_policy(context);
+    if (policy == NULL) {
+        printf("Failed to acquire security policy handle\n");
+        dpm_context_destroy(context);
         return TEST_FAILED;
     }
 
     ret = TEST_SUCCESSED;
-    if (dpm_wipe_data(handle, WIPE_INTERNAL_MEMORY) != 0) {
+    if (dpm_security_set_internal_storage_encryption(policy, 1) != 0) {
         ret = TEST_FAILED;
     }
 
-    dpm_destroy_client(handle);
+    dpm_context_release_security_policy(policy);
+    dpm_context_destroy(context);
+
     return ret;
 }
 
-static int security_wipe_external_memory(struct testcase* tc)
+int security_is_internal_storage_encrypted(struct testcase* tc)
 {
     int ret;
-    dpm_client_h handle;
+    dpm_context_h context;
+    dpm_security_policy_h policy;
 
-    handle = dpm_create_client();
-    if (handle == NULL) {
-        printf("Failed to create client handle\n");
+    context = dpm_context_create();
+    if (context == NULL) {
+        printf("Failed to create client context\n");
+        return TEST_FAILED;
+    }
+
+    policy = dpm_context_acquire_security_policy(context);
+    if (policy == NULL) {
+        printf("Failed to acquire security policy handle\n");
+        dpm_context_destroy(context);
         return TEST_FAILED;
     }
 
     ret = TEST_SUCCESSED;
-    if (dpm_wipe_data(handle, WIPE_EXTERNAL_MEMORY) != 0) {
+    if (dpm_security_is_internal_storage_encrypted(policy) != TRUE) {
         ret = TEST_FAILED;
     }
 
-    dpm_destroy_client(handle);
+    dpm_context_release_security_policy(policy);
+    dpm_context_destroy(context);
+
     return ret;
 }
 
-static int security_reboot(struct testcase* tc)
+int security_set_external_storage_encryption(struct testcase* tc)
 {
     int ret;
-    dpm_client_h handle;
+    dpm_context_h context;
+    dpm_security_policy_h policy;
 
-    handle = dpm_create_client();
-    if (handle == NULL) {
-        printf("Failed to create client handle\n");
+    context = dpm_context_create();
+    if (context == NULL) {
+        printf("Failed to create client context\n");
+        return TEST_FAILED;
+    }
+
+    policy = dpm_context_acquire_security_policy(context);
+    if (policy == NULL) {
+        printf("Failed to acquire security policy handle\n");
+        dpm_context_destroy(context);
         return TEST_FAILED;
     }
 
     ret = TEST_SUCCESSED;
-    if (dpm_reboot(handle) != 0) {
+    if (dpm_security_set_external_storage_encryption(policy, 1) != 0) {
         ret = TEST_FAILED;
     }
 
-    dpm_destroy_client(handle);
+    dpm_context_release_security_policy(policy);
+    dpm_context_destroy(context);
+
     return ret;
 }
 
-static int security_poweroff_device(struct testcase* tc)
+int security_is_external_storage_encrypted(struct testcase* tc)
 {
     int ret;
-    dpm_client_h handle;
+    dpm_context_h context;
+    dpm_security_policy_h policy;
 
-    handle = dpm_create_client();
-    if (handle == NULL) {
-        printf("Failed to create client handle\n");
+    context = dpm_context_create();
+    if (context == NULL) {
+        printf("Failed to create client context\n");
+        return TEST_FAILED;
+    }
+
+    policy = dpm_context_acquire_security_policy(context);
+    if (policy == NULL) {
+        printf("Failed to acquire security policy handle\n");
+        dpm_context_destroy(context);
         return TEST_FAILED;
     }
 
     ret = TEST_SUCCESSED;
-    if (dpm_poweroff_device(handle) != 0) {
+    if (dpm_security_is_external_storage_encrypted(policy) != TRUE) {
         ret = TEST_FAILED;
     }
 
-    dpm_destroy_client(handle);
-    return ret;
-}
-
-static int security_set_internal_storage_encryption(struct testcase* tc)
-{
-    int ret;
-    dpm_client_h handle;
-
-    handle = dpm_create_client();
-    if (handle == NULL) {
-        printf("Failed to create client handle\n");
-        return TEST_FAILED;
-    }
-
-    ret = TEST_SUCCESSED;
-    if (dpm_set_internal_storage_encryption(handle, 1) != 0) {
-        ret = TEST_FAILED;
-    }
-
-    dpm_destroy_client(handle);
-    return ret;
-}
-
-static int security_is_internal_storage_encrypted(struct testcase* tc)
-{
-    int ret;
-    dpm_client_h handle;
-
-    handle = dpm_create_client();
-    if (handle == NULL) {
-        printf("Failed to create client handle\n");
-        return TEST_FAILED;
-    }
-
-    ret = TEST_SUCCESSED;
-    if (dpm_is_internal_storage_encrypted(handle) != TRUE) {
-        ret = TEST_FAILED;
-    }
-
-    dpm_destroy_client(handle);
-    return ret;
-}
-
-static int security_set_external_storage_encryption(struct testcase* tc)
-{
-    int ret;
-    dpm_client_h handle;
-
-    handle = dpm_create_client();
-    if (handle == NULL) {
-        printf("Failed to create client handle\n");
-        return TEST_FAILED;
-    }
-
-    ret = TEST_SUCCESSED;
-    if (dpm_set_external_storage_encryption(handle, 1) != 0) {
-        ret = TEST_FAILED;
-    }
-
-    dpm_destroy_client(handle);
-    return ret;
-}
-
-static int security_is_external_storage_encrypted(struct testcase* tc)
-{
-    int ret;
-    dpm_client_h handle;
-
-    handle = dpm_create_client();
-    if (handle == NULL) {
-        printf("Failed to create client handle\n");
-        return TEST_FAILED;
-    }
-
-    ret = TEST_SUCCESSED;
-    if (dpm_is_external_storage_encrypted(handle) != TRUE) {
-        ret = TEST_FAILED;
-    }
-
-    dpm_destroy_client(handle);
+    dpm_context_destroy(context);
     return ret;
 }
 
@@ -203,6 +173,7 @@ struct testcase security_testcase_lock_screen = {
     .handler = security_lock_screen
 };
 
+/*
 struct testcase security_testcase_wipe_internal_memory = {
     .description = "dpm_wipe_data(internal memory)",
     .handler = security_wipe_internal_memory
@@ -242,17 +213,8 @@ struct testcase security_testcase_is_external_storage_encrypted = {
     .description = "dpm_is_external_storage_encrypted",
     .handler = security_is_external_storage_encrypted
 };
-
+*/
 void TESTCASE_CONSTRUCTOR security_policy_build_testcase(void)
 {
     testbench_populate_testcase(&security_testcase_lock_screen);
-    testbench_populate_testcase(&security_testcase_wipe_internal_memory);
-    testbench_populate_testcase(&security_testcase_wipe_external_memory);
-    //testbench_populate_testcase(&security_testcase_reboot);
-    //testbench_populate_testcase(&security_testcase_poweroff);
-    testbench_populate_testcase(&security_testcase_set_internal_storage_encryption);
-    testbench_populate_testcase(&security_testcase_is_internal_storage_encrypted);
-    testbench_populate_testcase(&security_testcase_set_external_storage_encryption);
-    testbench_populate_testcase(&security_testcase_is_external_storage_encrypted);
 }
-

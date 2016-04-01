@@ -17,7 +17,7 @@
 #ifndef __CAPI_APPLICATION_POLICY_H__
 #define __CAPI_APPLICATION_POLICY_H__
 
-#include <dpm/device-policy-client.h>
+#include <dpm/context.h>
 
 /**
  * @file application.h
@@ -33,114 +33,152 @@ extern "C" {
  * @{
  */
 
- /**
-  * @brief       Enumeration for application state
-  * @since_tizen 3.0
-  */
- typedef enum {
-     APPLICATION_STATE_DISABLE = 0, /**< Application disable */
-     APPLICATION_STATE_ENABLE  = 1  /**< Application enable */
- } dpm_application_state_e;
+/**
+ * @brief       The application policy handle
+ * @since_tizen 3.0
+ * @see         dpm_context_acquire_application_policy()
+ * @see         dpm_context_release_application_policy()
+ */
+typedef void* dpm_application_policy_h;
 
- /**
-  * @brief       Enumeration for installation mode
-  * @since_tizen 3.0
-  */
- typedef enum {
-     PACKAGE_INSTALLATION_MODE_DISALLOW = 0, /**< Package installation disable */
-     PACKAGE_INSTALLATION_MODE_ALLOW  = 1    /**< Pasckage installation enable */
- } dpm_application_installation_mode_e;
+/**
+ * @brief       Acquires the application policy handle.
+ * @details     This API acquires application policy handle required to enforce
+ *              the application policies.
+ * @since_tizen 3.0
+ * @param[in]   handle The device policy context handle
+ * @param[in]   zone The container name
+ * @return      Application policy handle on success, otherwise NULL
+ * @remark      The specific error code can be obtained by using the
+ *              get_last_result() method. Error codes are described in
+ *              exception section.
+ * @exception   #DPM_ERROR_NONE Successful
+ * @exception   #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @exception   #DPM_ERROR_TIMED_OUT Time out
+ * @see         dpm_context_release_application_policy()
+ * @see         get_last_result()
+ */
+DPM_API dpm_application_policy_h dpm_context_acquire_application_policy(dpm_context_h handle, const char* zone);
 
- /**
-  * @brief       Enumeration for uninstallation mode
-  * @since_tizen 3.0
-  */
- typedef enum {
-     PACKAGE_UNINSTALLATION_MODE_DISALLOW = 0, /**< Package uninstallation disable */
-     package_UNINSTALLATION_MODE_ALLOW  = 1    /**< Package uninstallation enable */
- } dpm_application_uninstallation_mode_e;
+/**
+ * @brief       Releases the application policy handle.
+ * @details     This API must be called if interaction with the Device
+ *              Policy Manager is no longer required.
+ * @since_tizen 3.0
+ * @param[in]   handle The application policy handle
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @pre         The handle must be created by dpm_context_acquire_application_policy().
+ * @see         dpm_context_acquire_application_policy()
+ */
+DPM_API int dpm_context_release_application_policy(dpm_application_policy_h handle);
 
- /**
-  * @brief       Sets the default mode for application installation.
-  * @details     If the mode is set to APPLICATION_INSTALLATION_MODE_DISALLOW,
-  *              no application can be installed on the device.
-  * @since_tizen 3.0
-  * @privlevel   public
-  * @privilege   %http://tizen.org/privilege/dpm.application
-  * @param[in]   handle Device Policy Client handle
-  * @param[in]   mode Installation mode to be set, one of APPLICATION_INSTALLATION_MODE_ALLOW or
-                 APPLICATION_INSTALLATION_MODE_DISALLOW
-  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
-  * @retval      #DPM_ERROR_NONE Successful
-  * @retval      #DPM_ERROR_TIMEOUT Timeout
-  * @retval      #DPM_ERROR_ACCESS_DENIED The application does not have
-  *              the privilege to call this API
-  * @pre         handle must be created by dpm_create_client()
-  * @post
-  * @see         dpm_create_client()
-  * @see         dpm_destroy_client()
-  * @see         dpm_get_package_installation_mode()
-  */
- DPM_API int dpm_set_package_installation_mode(dpm_client_h handle, int mode);
+/**
+ * @brief       Enumeration for application state
+ * @since_tizen 3.0
+ */
+typedef enum {
+    PACKAGE_STATE_DISABLE = 0, /**< Package disable */
+    PACKAGE_STATE_ENABLE  = 1  /**< Package enable */
+} dpm_package_state_e;
 
- /**
-  * @brief       Sets the default mode for application uninstallation.
-  * @details     If the mode is set to APPLICATION_UNINSTALLATION_MODE_DISALLOW,
-  *              no application can be uninstalled from the device.
-  * @since_tizen 3.0
-  * @privlevel   public
-  * @privilege   %http://tizen.org/privilege/dpm.application
-  * @param[in]   handle Device Policy Client handle
-  * @param[in]   mode Unstallation mode to be set, one of APPLICATION_UNINSTALLATION_MODE_ALLOW of
-                 APPLICATION_UNINSTALLATION_MODE_DISALLOW
-  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
-  * @retval      #DPM_ERROR_NONE Successful
-  * @retval      #DPM_ERROR_TIMEOUT TImeout
-  * @retval      #DPM_ERROR_ACCESS_DENIED The application does not have
-  *              the privilege to call this API
-  * @pre         handle must be created by dpm_create_client()
-  * @post
-  * @see         dpm_create_client()
-  * @see         dpm_destroy_client()
-  * @see         dpm_get_package_uninstallation_mode()
-  */
- DPM_API int dpm_set_package_uninstallation_mode(dpm_client_h handle, int mode);
+/**
+ * @brief       Enumeration for installation mode
+ * @since_tizen 3.0
+ */
+typedef enum {
+    PACKAGE_INSTALLATION_MODE_DISALLOW = 0, /**< Package installation disable */
+    PACKAGE_INSTALLATION_MODE_ALLOW  = 1    /**< Pasckage installation enable */
+} dpm_package_installation_mode_e;
 
- /**
-  * @brief       Gets the current installation mode for all packages.
-  * @details     The default mode is to allow any package to be installed.
-  * @since_tizen 3.0
-  * @param[in]   handle Device Policy Client handle
-  * @return      Current mode of operation, which is one of the following:
-  *              DPM_APPLICATION_INSTALLATION_MODE_ALLOWED or
-  *              DPM_APPLICATION_INSTALLATION_MODE_DISALLOWED
-  * @retval      #DPM_APPLICATION_INSTALLATION_MODE_ALLOWED Application installation is allowed
-  * @retval      #DPM_APPLICATION_INSTALLATION_MODE_DISALLOWED Application installation is not allowed
-  * @pre         handle must be created by dpm_create_client()
-  * @post
-  * @see         dpm_create_client()
-  * @see         dpm_destroy_client()
-  * @see         dpm_set_package_installation_mode()
-  */
- DPM_API int dpm_get_package_installation_mode(dpm_client_h handle);
+/**
+ * @brief       Enumeration for uninstallation mode
+ * @since_tizen 3.0
+ */
+typedef enum {
+    PACKAGE_UNINSTALLATION_MODE_DISALLOW = 0, /**< Package uninstallation disable */
+    package_UNINSTALLATION_MODE_ALLOW  = 1    /**< Package uninstallation enable */
+} dpm_package_uninstallation_mode_e;
 
- /**
-  * @brief       Gets the current uninstallation mode for all packages.
-  * @details     The default mode is to allow any package to be uninstalled.
-  * @since_tizen 3.0
-  * @param[in]   handle Device Policy Client handle
-  * @return      Current mode of operation, which is one of the following:
-  *              DPM_APPLICATION_UNINSTALLATION_MODE_ALLOWED or
-  *              DPM_APPLICATION_UNINSTALLATION_MODE_DISALLOWED
-  * @retval      #DPM_APPLICATION_UNINSTALLATION_MODE_ALLOWED Application uninstallation is allowed
-  * @retval      #DPM_APPLICATION_UNINSTALLATION_MODE_DISALLOWED Application uninstallation is not allowed
-  * @pre         handle must be created by dpm_create_client()
-  * @post
-  * @see         dpm_create_client()
-  * @see         dpm_destroy_client()
-  * @see          dpm_get_package_uninstallation_mode()
-  */
- DPM_API int dpm_get_package_uninstallation_mode(dpm_client_h handle);
+/**
+ * @brief       Sets the default mode for application installation.
+ * @details     If the mode is set to APPLICATION_INSTALLATION_MODE_DISALLOW,
+ *              no application can be installed on the device.
+ * @since_tizen 3.0
+ * @privlevel   public
+ * @privilege   %http://tizen.org/privilege/dpm.application
+ * @param[in]   handle The application policy handle
+ * @param[in]   mode The installation mode to be set, one of APPLICATION_INSTALLATION_MODE_ALLOW or
+ *              APPLICATION_INSTALLATION_MODE_DISALLOW
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE No error
+ * @retval      #DPM_ERROR_TIMEOUT Timeout
+ * @retval      #DPM_ERROR_ACCESS_DENIED The application does not have
+ *              the privilege to call this API
+ * @pre         handle must be created by dpm_context_acquire_application_policy()
+ * @see         dpm_context_acquire_application_policy()
+ * @see         dpm_context_release_application_policy()
+ * @see         dpm_application_get_installation_mode()
+ */
+DPM_API int dpm_application_set_installation_mode(dpm_application_policy_h handle, int mode);
+
+/**
+ * @brief       Sets the default mode for application uninstallation.
+ * @details     If the mode is set to APPLICATION_UNINSTALLATION_MODE_DISALLOW,
+ *              no application can be uninstalled from the device.
+ * @since_tizen 3.0
+ * @privlevel   public
+ * @privilege   %http://tizen.org/privilege/dpm.application
+ * @param[in]   handle The application policy handle
+ * @param[in]   mode The unstallation mode to be set, one of APPLICATION_UNINSTALLATION_MODE_ALLOW of
+ *              APPLICATION_UNINSTALLATION_MODE_DISALLOW
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_TIMEOUT TImeout
+ * @retval      #DPM_ERROR_ACCESS_DENIED The application does not have
+ *              the privilege to call this API
+ * @pre         handle must be created by dpm_context_acquire_application_policy()
+ * @see         dpm_context_acquire_application_policy()
+ * @see         dpm_context_release_application_policy()
+ * @see         dpm_application_get_uninstallation_mode()
+ */
+DPM_API int dpm_application_set_uninstallation_mode(dpm_application_policy_h handle, int mode);
+
+/**
+ * @brief       Gets the current installation mode for all packages.
+ * @details     The default mode is to allow any package to be installed.
+ * @since_tizen 3.0
+ * @param[in]   handle The application policy handle
+ * @return      Current mode of operation, which is one of the following:
+ *              DPM_APPLICATION_INSTALLATION_MODE_ALLOWED or
+ *              DPM_APPLICATION_INSTALLATION_MODE_DISALLOWED
+ * @retval      #DPM_APPLICATION_INSTALLATION_MODE_ALLOWED ApplicationPolicy installation is allowed
+ * @retval      #DPM_APPLICATION_INSTALLATION_MODE_DISALLOWED ApplicationPolicy installation is not allowed
+ * @pre         handle must be created by dpm_context_acquire_application_policy()
+ * @see         dpm_context_acquire_application_policy()
+ * @see         dpm_context_release_application_policy()
+ * @see         dpm_application_set_installation_mode()
+ */
+DPM_API int dpm_application_get_installation_mode(dpm_application_policy_h handle);
+
+/**
+ * @brief       Gets the current uninstallation mode for all packages.
+ * @details     The default mode is to allow any package to be uninstalled.
+ * @since_tizen 3.0
+ * @param[in]   handle The application policy handle
+ * @return      Current mode of operation, which is one of the following:
+ *              DPM_APPLICATION_UNINSTALLATION_MODE_ALLOWED or
+ *              DPM_APPLICATION_UNINSTALLATION_MODE_DISALLOWED
+ * @retval      #DPM_APPLICATION_UNINSTALLATION_MODE_ALLOWED ApplicationPolicy uninstallation is allowed
+ * @retval      #DPM_APPLICATION_UNINSTALLATION_MODE_DISALLOWED ApplicationPolicy uninstallation is not allowed
+ * @pre         handle must be created by dpm_context_acquire_application_policy()
+ * @see         dpm_context_acquire_application_policy()
+ * @see         dpm_context_release_application_policy()
+ * @see         dpm_application_get_uninstallation_mode()
+ */
+DPM_API int dpm_application_get_uninstallation_mode(dpm_application_policy_h handle);
 
 /**
  * @brief       Enables/disables an package without installation/uninstallation.
@@ -149,20 +187,19 @@ extern "C" {
  * @since_tizen 3.0
  * @privlevel   public
  * @privilege   %http://tizen.org/privilege/dpm.application
- * @param[in]   handle Device Policy Client handle
+ * @param[in]   handle The application policy handle
  * @param[in]   pkgid The package name
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_TIMEOUT Timeout
  * @retval      #DPM_ERROR_ACCESS_DENIED The application does not have
  *              the privilege to call this API
- * @pre         handle must be created by dpm_create_client()
- * @post
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_get_application_state()
+ * @pre         handle must be created by dpm_context_acquire_application_policy()
+ * @see         dpm_context_acquire_application_policy()
+ * @see         dpm_context_release_application_policy()
+ * @see         dpm_application_get_package_state()
  */
-DPM_API int dpm_set_application_state(dpm_client_h handle, const char* pkgid, dpm_application_state_e state);
+DPM_API int dpm_application_set_package_state(dpm_application_policy_h handle, const char* pkgid, dpm_package_state_e state);
 
 /**
  * @brief       Checks whether a geiven application package is enabled or disabled
@@ -170,68 +207,66 @@ DPM_API int dpm_set_application_state(dpm_client_h handle, const char* pkgid, dp
  *              without user interaction. The user can not install applications for which
  *              the administrator has disabled installation.
  * @since_tizen 3.0
- * @param[in]   handle Device Policy Client handle
+ * @param[in]   handle The application policy handle
  * @param[in]   pkgid The package name of the application whose installation is to be disabled
  * @return      Current state of the application package
- * @pre         handle must be created by dpm_create_client()
- * @post
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_set_application_state()
+ * @pre         handle must be created by dpm_context_acquire_application_policy()
+ * @see         dpm_context_acquire_application_policy()
+ * @see         dpm_context_release_application_policy()
+ * @see         dpm_application_set_package_state()
  */
-DPM_API int dpm_get_application_state(dpm_client_h handle, const char* pkgid);
+DPM_API int dpm_application_get_package_state(dpm_application_policy_h handle, const char* pkgid);
 
 /**
  * @brief       Adds package to blacklist
  * @details     Administrator can use this API to disallow package installation
  *              corresponding to the given pkgid.
  * @since_tizen 3.0
- * @param[in]   handle Device Policy Client handle
+ * @param[in]   handle The application policy handle
  * @param[in]   pkgid The package name to be blacklisted
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_TIMEOUT Timeout
  * @retval      #DPM_ERROR_ACCESS_DENIED The application does not have
  *              the privilege to call this API
- * @pre         handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_remove_package_from_blacklist()
- * @see         dpm_check_package_is_blacklisted()
+ * @pre         handle must be created by dpm_context_acquire_application_policy()
+ * @see         dpm_context_acquire_application_policy()
+ * @see         dpm_context_release_application_policy()
+ * @see         dpm_application_remove_package_from_blacklist()
+ * @see         dpm_application_check_package_is_blacklisted()
  */
-DPM_API int dpm_add_package_to_blacklist(dpm_client_h handle, const char* pkgid);
+DPM_API int dpm_application_add_package_to_blacklist(dpm_application_policy_h handle, const char* pkgid);
 
 /**
  * @brief       Removes package from blacklist
  * @details     Administrator can use this API to remove package from blacklist.
  * @since_tizen 3.0
- * @param[in]   handle Device Policy Client handle
+ * @param[in]   handle The application policy handle
  * @param[in]   pkgid The package name of the application whose installation is to be disabled
  * @return      Current state of the application package
- * @pre         handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_add_package_to_blacklist()
- * @see         dpm_check_package_is_blacklisted()
+ * @pre         handle must be created by dpm_context_acquire_application_policy()
+ * @see         dpm_context_acquire_application_policy()
+ * @see         dpm_context_release_application_policy()
+ * @see         dpm_application_add_package_to_blacklist()
+ * @see         dpm_application_check_package_is_blacklisted()
  */
-DPM_API int dpm_remove_package_from_blacklist(dpm_client_h handle, const char* pkgid);
+DPM_API int dpm_application_remove_package_from_blacklist(dpm_application_policy_h handle, const char* pkgid);
 
 /**
  * @brief       Checks whether a package is added to blacklist
  * @details     Administrator can use this API to check whether the package is blacklisted.
  *              Once package is added to blacklist, it is prhibited to install on the device.
  * @since_tizen 3.0
- * @param[in]   handle Device Policy Client handle
+ * @param[in]   handle The application policy handle
  * @param[in]   pkgid The package name of the application whose installation is to be disabled
  * @return      Current state of the application package
- * @pre         handle must be created by dpm_create_client()
- * @post
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_add_package_to_blacklist()
- * @see         dpm_remove_package_from_blacklist()
+ * @pre         handle must be created by dpm_context_acquire_application_policy()
+ * @see         dpm_context_acquire_application_policy()
+ * @see         dpm_context_release_application_policy()
+ * @see         dpm_application_add_package_to_blacklist()
+ * @see         dpm_application_remove_package_from_blacklist()
  */
-DPM_API int dpm_check_package_is_blacklisted(dpm_client_h handle, const char* pkgid);
+DPM_API int dpm_application_check_package_is_blacklisted(dpm_application_policy_h handle, const char* pkgid);
 /**
  * @}
  */

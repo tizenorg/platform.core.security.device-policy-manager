@@ -17,7 +17,7 @@
 #ifndef __CAPI_BLUETOOTH_POLICY_H__
 #define __CAPI_BLUETOOTH_POLICY_H__
 
-#include <dpm/device-policy-client.h>
+#include <dpm/context.h>
 
 /**
  * @file bluetooth.h
@@ -35,25 +35,66 @@ extern "C" {
  */
 
 /**
+ * @brief       The bluetooth policy handle
+ * @since_tizen 3.0
+ * @see         dpm_context_acquire_bluetooth_policy()
+ * @see         dpm_context_release_bluetooth_policy()
+ */
+typedef void* dpm_bluetooth_policy_h;
+
+/**
+ * @brief       Acquires the bluetooth policy handle.
+ * @details     This API acquires bluetooth policy handle required to call
+ *              the bluetooth policy APIs.
+ * @since_tizen 3.0
+ * @param[in]   handle The device policy context handle
+ * @return      Bluetooth policy handle on success, otherwise NULL
+ * @remark      The specific error code can be obtained by using the
+ *              get_last_result() method. Error codes are described in
+ *              exception section.
+ * @exception   #DPM_ERROR_NONE No error
+ * @exception   #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @exception   #DPM_ERROR_TIMED_OUT Time out
+ * @see         dpm_context_release_bluetooth_policy()
+ * @see         get_last_result()
+ */
+DPM_API dpm_bluetooth_policy_h dpm_context_acquire_bluetooth_policy(dpm_context_h handle);
+
+/**
+ * @brief       Releases the bluetooth policy handle.
+ * @details     This API must be called if interaction with the Device
+ *              Policy Manager is no longer required.
+ * @since_tizen 3.0
+ * @param[in]   handle The bluetooth policy handle
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @pre         The handle must be created by dpm_context_acquire_bluetooth_policy().
+ * @see         dpm_context_acquire_bluetooth_policy()
+ */
+DPM_API int dpm_context_release_bluetooth_policy(dpm_bluetooth_policy_h handle);
+
+/**
  * @brief       Adds MAC address to blacklist
  * @details     An administrator can use this API to add new MAC address to
  *              blacklist
  * @since_tizen 3.0
  * @privlevel   public
  * @privilege   %http://tizen.org/privilege/dpm.bluetooth
- * @param[in]   handle Device Policy Client handle
- * @param[in]   mac_address MAC Address that should be added
+ * @param[in]   handle The bluetooth policy handle
+ * @param[in]   address The MAC address that should be added
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_TIMEOUT Timeout
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
- * @pre         handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_remove_bluetooth_device_from_blacklist()
+ * @pre         handle must be created by dpm_context_acquire_bluetooth_policy()
+ * @see         dpm_context_acquire_bluetooth_policy()
+ * @see         dpm_context_release_bluetooth_policy()
+ * @see         dpm_bluetooth_remove_device_from_blacklist()
  */
-DPM_API int dpm_add_bluetooth_device_to_blacklist(dpm_client_h handle, const char* mac_address);
+DPM_API int dpm_bluetooth_add_device_to_blacklist(dpm_bluetooth_policy_h handle, const char* address);
 
 /**
  * @brief       Removes MAC address from blacklist
@@ -62,19 +103,19 @@ DPM_API int dpm_add_bluetooth_device_to_blacklist(dpm_client_h handle, const cha
  * @since_tizen 3.0
  * @privlevel   public
  * @privilege   %http://tizen.org/privilege/dpm.bluetooth
- * @param[in]   handle Device Policy Client handle
- * @param[in]   mac_address MAC Address that should be removed
+ * @param[in]   handle The bluetooth policy handle
+ * @param[in]   address The MAC address that should be removed
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_TIMEOUT Timeout
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
- * @pre         handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_add_bluetooth_device_to_blacklist()
+ * @pre         handle must be created by dpm_context_acquire_bluetooth_policy()
+ * @see         dpm_context_acquire_bluetooth_policy()
+ * @see         dpm_context_release_bluetooth_policy()
+ * @see         dpm_bluetooth_add_device_to_blacklist()
  */
-DPM_API int dpm_remove_bluetooth_device_from_blacklist(dpm_client_h handle, const char* mac_address);
+DPM_API int dpm_bluetooth_remove_device_from_blacklist(dpm_bluetooth_policy_h handle, const char* address);
 
 /**
  * @brief       Enables or disables device restriction of bluetooth
@@ -83,19 +124,19 @@ DPM_API int dpm_remove_bluetooth_device_from_blacklist(dpm_client_h handle, cons
  * @since_tizen 3.0
  * @privlevel   public
  * @privilege   %http://tizen.org/privilege/dpm.bluetooth
- * @param[in]   handle Device Policy Client handle
+ * @param[in]   handle The bluetooth policy handle
  * @param[in]   enable If true, restrict the bluetooth pairing, if false, allow the bluetooth pairing
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_TIMEOUT Timeout
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
- * @pre         handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_is_bluetooth_device_restricted()
+ * @pre         handle must be created by dpm_context_acquire_bluetooth_policy()
+ * @see         dpm_context_acquire_bluetooth_policy()
+ * @see         dpm_context_release_bluetooth_policy()
+ * @see         dpm_bluetooth_is_device_restricted()
  */
-DPM_API int dpm_set_bluetooth_device_restriction(dpm_client_h handle, const int enable);
+DPM_API int dpm_bluetooth_set_device_restriction(dpm_bluetooth_policy_h handle, const int enable);
 
 /**
  * @brief       Gets the allow status of the bluetooth's device restriction
@@ -105,14 +146,14 @@ DPM_API int dpm_set_bluetooth_device_restriction(dpm_client_h handle, const int 
  * @since_tizen 3.0
  * @privlevel   public
  * @privilege   %http://tizen.org/privilege/dpm.bluetooth
- * @param[in]   handle Device Policy Client handle
+ * @param[in]   handle The bluetooth policy handle
  * @return      true if the bluetooth pairing has been restricted, else false
- * @pre         handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_set_bluetooth_device_restriction()
+ * @pre         handle must be created by dpm_context_acquire_bluetooth_policy()
+ * @see         dpm_context_acquire_bluetooth_policy()
+ * @see         dpm_context_release_bluetooth_policy()
+ * @see         dpm_bluetooth_set_device_restriction()
  */
-DPM_API int dpm_is_bluetooth_device_restricted(dpm_client_h handle);
+DPM_API int dpm_bluetooth_is_device_restricted(dpm_bluetooth_policy_h handle);
 
 /**
  * @brief       Adds UUID to blacklist
@@ -120,19 +161,19 @@ DPM_API int dpm_is_bluetooth_device_restricted(dpm_client_h handle);
  * @since_tizen 3.0
  * @privlevel   public
  * @privilege   %http://tizen.org/privilege/dpm.bluetooth
- * @param[in]   handle Device Policy Client handle
- * @param[in]   uuid UUID that should be added
+ * @param[in]   handle The bluetooth policy handle
+ * @param[in]   uuid The UUID that should be added
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_TIMEOUT Timeout
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
- * @pre         handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_remove_bluetooth_uuid_from_blacklist()
+ * @pre         handle must be created by dpm_context_acquire_bluetooth_policy()
+ * @see         dpm_context_acquire_bluetooth_policy()
+ * @see         dpm_context_release_bluetooth_policy()
+ * @see         dpm_bluetooth_remove_uuid_from_blacklist()
  */
-DPM_API int dpm_add_bluetooth_uuid_to_blacklist(dpm_client_h handle, const char* uuid);
+DPM_API int dpm_bluetooth_add_uuid_to_blacklist(dpm_bluetooth_policy_h handle, const char* uuid);
 
 /**
  * @brief       Removes UUID from blacklist
@@ -140,19 +181,19 @@ DPM_API int dpm_add_bluetooth_uuid_to_blacklist(dpm_client_h handle, const char*
  * @since_tizen 3.0
  * @privlevel   public
  * @privilege   %http://tizen.org/privilege/dpm.bluetooth
- * @param[in]   handle Device Policy Client handle
- * @param[in]   uuid UUID that should be removed
+ * @param[in]   handle The bluetooth policy handle
+ * @param[in]   uuid The UUID that should be removed
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_TIMEOUT Timeout
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
- * @pre         handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_add_bluetooth_uuid_to_blacklist()
+ * @pre         handle must be created by dpm_context_acquire_bluetooth_policy()
+ * @see         dpm_context_acquire_bluetooth_policy()
+ * @see         dpm_context_release_bluetooth_policy()
+ * @see         dpm_bluetooth_add_uuid_to_blacklist()
  */
-DPM_API int dpm_remove_bluetooth_uuid_from_blacklist(dpm_client_h handle, const char* uuid);
+DPM_API int dpm_bluetooth_remove_uuid_from_blacklist(dpm_bluetooth_policy_h handle, const char* uuid);
 
 /**
  * @brief       Enables or disables UUID restriction of bluetooth
@@ -161,19 +202,19 @@ DPM_API int dpm_remove_bluetooth_uuid_from_blacklist(dpm_client_h handle, const 
  * @since_tizen 3.0
  * @privlevel   public
  * @privilege   %http://tizen.org/privilege/dpm.bluetooth
- * @param[in]   handle Device Policy Client handle
+ * @param[in]   handle The bluetooth policy handle
  * @param[in]   enable If true, restrict the bluetooth pairing, if false, allow the bluetooth pairing
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_TIMEOUT Timeout
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
- * @pre         handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_is_bluetooth_uuid_restricted()
+ * @pre         handle must be created by dpm_context_acquire_bluetooth_policy()
+ * @see         dpm_context_acquire_bluetooth_policy()
+ * @see         dpm_context_release_bluetooth_policy()
+ * @see         dpm_bluetooth_is_uuid_restricted()
  */
-DPM_API int dpm_set_bluetooth_uuid_restriction(dpm_client_h handle, const int enable);
+DPM_API int dpm_bluetooth_set_uuid_restriction(dpm_bluetooth_policy_h handle, const int enable);
 
 /**
  * @brief       Gets the allow status of the bluetooth's UUID restriction
@@ -183,14 +224,14 @@ DPM_API int dpm_set_bluetooth_uuid_restriction(dpm_client_h handle, const int en
  * @since_tizen 3.0
  * @privlevel   public
  * @privilege   %http://tizen.org/privilege/dpm.bluetooth
- * @param[in]   handle Device Policy Client handle
+ * @param[in]   handle The bluetooth policy handle
  * @return      true if the bluetooth pairing has been restricted, else false
- * @pre         handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_set_bluetooth_uuid_restriction()
+ * @pre         handle must be created by dpm_context_acquire_bluetooth_policy()
+ * @see         dpm_context_acquire_bluetooth_policy()
+ * @see         dpm_context_release_bluetooth_policy()
+ * @see         dpm_bluetooth_set_uuid_restriction()
  */
-DPM_API int dpm_is_bluetooth_uuid_restricted(dpm_client_h handle);
+DPM_API int dpm_bluetooth_is_uuid_restricted(dpm_bluetooth_policy_h handle);
 
 /**
  * @}
