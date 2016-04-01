@@ -17,104 +17,133 @@
 #include "restriction.hxx"
 #include "audit/logger.h"
 
+#include <vconf.h>
+
 namespace DevicePolicyManager
 {
 
-Restriction::Restriction(PolicyControlContext& ctxt)
+RestrictionPolicy::RestrictionPolicy(PolicyControlContext& ctxt)
 	: context(ctxt)
 {
-	context.registerParametricMethod(this, (int)(Restriction::setClipboardRestriction)(bool));
-	context.registerNonparametricMethod(this, (bool)(Restriction::isClipboardRestricted));
-	context.registerParametricMethod(this, (int)(Restriction::setClipboardShareRestriction)(bool));
-	context.registerNonparametricMethod(this, (bool)(Restriction::isClipboardShareRestricted));
-	context.registerParametricMethod(this, (int)(Restriction::setSettingsChangesRestriction)(bool));
-	context.registerNonparametricMethod(this, (bool)(Restriction::isSettingsChangesRestricted));
-	context.registerParametricMethod(this, (int)(Restriction::setBackgroundDataRestriction)(bool));
-	context.registerNonparametricMethod(this, (bool)(Restriction::isBackgroundDataRestricted));
-	context.registerParametricMethod(this, (int)(Restriction::setUsbDebuggingRestriction)(bool));
-	context.registerNonparametricMethod(this, (bool)(Restriction::isUsbDebuggingRestricted));
-	context.registerParametricMethod(this, (int)(Restriction::setUsbMassStorageRestriction)(bool));
-	context.registerNonparametricMethod(this, (bool)(Restriction::isUsbMassStorageRestricted));
-	context.registerParametricMethod(this, (int)(Restriction::setFactoryResetRestriction)(bool));
-	context.registerNonparametricMethod(this, (bool)(Restriction::isFactoryResetRestricted));
+	context.registerParametricMethod(this, (int)(RestrictionPolicy::setCameraState)(int));
+	context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getCameraState));
+	context.registerParametricMethod(this, (int)(RestrictionPolicy::setMicrophoneState)(int));
+	context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getMicrophoneState));
+	context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getClipboardState));
+	context.registerParametricMethod(this, (int)(RestrictionPolicy::setClipboardState)(int));
+	context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getClipboardState));
+	context.registerParametricMethod(this, (int)(RestrictionPolicy::setSettingsChangesState)(int));
+	context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getSettingsChangesState));
+	context.registerParametricMethod(this, (int)(RestrictionPolicy::setUsbDebuggingState)(int));
+	context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getUsbDebuggingState));
+	context.registerParametricMethod(this, (int)(RestrictionPolicy::setExternalStorageState)(int));
+	context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getExternalStorageState));
+	context.registerParametricMethod(this, (int)(RestrictionPolicy::setLocationState)(int));
+	context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getLocationState));
 }
 
-Restriction::~Restriction()
+RestrictionPolicy::~RestrictionPolicy()
 {
 }
 
-int Restriction::setClipboardRestriction(bool enable)
-{
-	return 0;
-}
-
-bool Restriction::isClipboardRestricted()
-{
-	return true;
-}
-
-int Restriction::setClipboardShareRestriction(bool enable)
+int RestrictionPolicy::setCameraState(int state)
 {
 	return 0;
 }
 
-bool Restriction::isClipboardShareRestricted()
-{
-	return true;
-}
-
-
-int Restriction::setSettingsChangesRestriction(bool enable)
+int RestrictionPolicy::getCameraState()
 {
 	return 0;
 }
 
-bool Restriction::isSettingsChangesRestricted()
-{
-	return true;
-}
-
-int Restriction::setBackgroundDataRestriction(bool enable)
+int RestrictionPolicy::setMicrophoneState(int state)
 {
 	return 0;
 }
 
-bool Restriction::isBackgroundDataRestricted()
-{
-	return true;
-}
-
-int Restriction::setUsbDebuggingRestriction(bool enable)
+int RestrictionPolicy::getMicrophoneState()
 {
 	return 0;
 }
 
-bool Restriction::isUsbDebuggingRestricted()
-{
-	return true;
-}
-
-int Restriction::setUsbMassStorageRestriction(bool enable)
+int RestrictionPolicy::setClipboardState(int enable)
 {
 	return 0;
 }
 
-bool Restriction::isUsbMassStorageRestricted()
+int RestrictionPolicy::getClipboardState()
 {
 	return true;
 }
 
-int Restriction::setFactoryResetRestriction(bool enable)
+int RestrictionPolicy::setSettingsChangesState(int enable)
 {
 	return 0;
 }
 
-bool Restriction::isFactoryResetRestricted()
+int RestrictionPolicy::getSettingsChangesState()
 {
 	return true;
 }
 
-Restriction restrictionPolicy(Server::instance());
+int RestrictionPolicy::setUsbDebuggingState(int enable)
+{
+    INFO("Start Restriction::setUsbDebuggingRestriction");
+
+    // if enable is true, restrication will be working (0).
+    if (enable == true) {
+        if (::vconf_set_int(VCONFKEY_SETAPPL_USB_DEBUG_MODE_BOOL, 0) != 0) {
+            ERROR("Failed to set usb debugging mode status");
+            return -1;
+        }
+    } else {
+        if (::vconf_set_int(VCONFKEY_SETAPPL_USB_DEBUG_MODE_BOOL, 1) != 0) {
+            ERROR("Failed to set usb debugging mode status");
+            return -1;
+        }
+    }
+
+	return 0;
+}
+
+int RestrictionPolicy::getUsbDebuggingState()
+{
+	int status;
+	INFO("Start Restriction::isUsbDebuggingRestricted");
+
+	// 0 is restrication true, 1 is restrication false
+    if (::vconf_get_int(VCONFKEY_SETAPPL_USB_DEBUG_MODE_BOOL, &status) != 0) {
+        ERROR("Failed to get usb debugging mode status");
+        return -1;
+    }
+
+    // How to return for error??
+    if (status == 1) {
+    	return false;
+    }
+    return true;
+}
+
+int RestrictionPolicy::setExternalStorageState(int enable)
+{
+	return 0;
+}
+
+int RestrictionPolicy::getExternalStorageState()
+{
+	return 0;
+}
+
+int RestrictionPolicy::setLocationState(int enable)
+{
+	return 0;
+}
+
+int RestrictionPolicy::getLocationState()
+{
+	return 0;
+}
+
+RestrictionPolicy restrictionPolicy(Server::instance());
 
 } // namespace DevicePolicyManager
-

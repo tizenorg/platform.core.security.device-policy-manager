@@ -21,48 +21,48 @@
 
 TESTCASE(DeviceRestriction)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
     int error = -1;
     bool status = false;
 
     TEST_EXPECT(0, client.connect());
 
-    DevicePolicyManager::Bluetooth bluetooth = client.createPolicyInterface<DevicePolicyManager::Bluetooth>();
+    DevicePolicyManager::BluetoothPolicy *bluetooth = client.createPolicyInterface<DevicePolicyManager::BluetoothPolicy>();
 
-    error = bluetooth.setDeviceRestriction(true);
+    error = bluetooth->setDeviceRestriction(true);
     TEST_EXPECT(0, error);
 
-    status = bluetooth.isDeviceRestricted();
+    status = bluetooth->isDeviceRestricted();
+    // the 'status' will be always 'false' before server/bluetooth.cpp has been implemented.
     TEST_EXPECT(true, status);
 
-    error = bluetooth.setDeviceRestriction(false);
+    error = bluetooth->setDeviceRestriction(false);
     TEST_EXPECT(0, error);
 
-    // the 'status' will be always 'true' before server/bluetooth.cpp has been implemented.
-    status = bluetooth.isDeviceRestricted();
+    status = bluetooth->isDeviceRestricted();
     TEST_EXPECT(false, status);
 }
 
 TESTCASE(UuidRestriction)
 {
-    DevicePolicyClient client;
+    DevicePolicyContext client;
     int error = -1;
     bool status = false;
 
     TEST_EXPECT(0, client.connect());
 
-    DevicePolicyManager::Bluetooth bluetooth = client.createPolicyInterface<DevicePolicyManager::Bluetooth>();
+    DevicePolicyManager::BluetoothPolicy *bluetooth = client.createPolicyInterface<DevicePolicyManager::BluetoothPolicy>();
 
-    error = bluetooth.setUuidRestriction(true);
+    error = bluetooth->setUuidRestriction(true);
     TEST_EXPECT(0, error);
 
-    status = bluetooth.isUuidRestricted();
+    status = bluetooth->isUuidRestricted();
+    // the 'status' will be always 'false' before server/bluetooth.cpp has been implemented.
     TEST_EXPECT(true, status);
 
-    error = bluetooth.setUuidRestriction(false);
+    error = bluetooth->setUuidRestriction(false);
     TEST_EXPECT(0, error);
 
-    // the 'status' will be always 'true' before server/bluetooth.cpp has been implemented.
-    status = bluetooth.isUuidRestricted();
+    status = bluetooth->isUuidRestricted();
     TEST_EXPECT(false, status);
 }

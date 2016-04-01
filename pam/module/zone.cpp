@@ -101,14 +101,14 @@ pam_sm_open_session(pam_handle_t* pamh, int flags,
     unshare_flags = CLONE_NEWNS | CLONE_NEWNET | CLONE_NEWUTS | CLONE_NEWIPC;
 
     std::unique_ptr<sem_t, void(*)(sem_t*)> sem(
-        ::sem_open("PAMZone", O_CREAT, 0700, 1),
+        ::sem_open("PAMZonePolicy", O_CREAT, 0700, 1),
     [](sem_t * sem) {
         if (sem == NULL) {
             return;
         }
         ::sem_post(sem);
         ::sem_close(sem);
-        ::sem_unlink("PAMZone");
+        ::sem_unlink("PAMZonePolicy");
     });
 
     if (sem == NULL) {
@@ -173,14 +173,14 @@ pam_sm_close_session(pam_handle_t* pamh, int flags,
     ::umask(077);
 
     std::unique_ptr<sem_t, void(*)(sem_t*)> sem(
-        ::sem_open("PAMZone", O_CREAT, 0700, 1),
+        ::sem_open("PAMZonePolicy", O_CREAT, 0700, 1),
     [](sem_t * sem) {
         if (sem == NULL) {
             return;
         }
         ::sem_post(sem);
         ::sem_close(sem);
-        ::sem_unlink("PAMZone");
+        ::sem_unlink("PAMZonePolicy");
     });
 
     if (sem == NULL) {

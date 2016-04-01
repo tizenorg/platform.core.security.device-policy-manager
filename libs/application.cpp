@@ -20,173 +20,173 @@
 
 namespace DevicePolicyManager {
 
-Application::Application(PolicyControlContext& ctxt) :
+ApplicationPolicy::ApplicationPolicy(PolicyControlContext& ctxt) :
     context(ctxt)
 {
 }
 
-Application::~Application()
+ApplicationPolicy::~ApplicationPolicy()
 {
 }
 
 
-int Application::setApplicationInstallationMode(const bool mode)
+int ApplicationPolicy::setApplicationPolicyInstallationMode(const bool mode)
 {
     try {
-        return context->methodCall<int>("Application::setApplicationInstallatioMode", mode);
+        return context->methodCall<int>("ApplicationPolicy::setApplicationPolicyInstallatioMode", mode);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-bool Application::getApplicationInstallationMode()
+bool ApplicationPolicy::getApplicationPolicyInstallationMode()
 {
     try {
-        return context->methodCall<int>("Application::getApplicationInstallationMode");
+        return context->methodCall<int>("ApplicationPolicy::getApplicationPolicyInstallationMode");
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Application::setApplicationUninstallationMode(const bool mode)
+int ApplicationPolicy::setApplicationPolicyUninstallationMode(const bool mode)
 {
     try {
-        return context->methodCall<int>("Application::setApplicationUninstallationMode", mode);
+        return context->methodCall<int>("ApplicationPolicy::setApplicationPolicyUninstallationMode", mode);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-bool Application::getApplicationUninstallationMode()
+bool ApplicationPolicy::getApplicationPolicyUninstallationMode()
 {
     try {
-        return context->methodCall<int>("Application::getApplicationUninstallationMode");
+        return context->methodCall<int>("ApplicationPolicy::getApplicationPolicyUninstallationMode");
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Application::setApplicationState(const std::string& appid, const int state)
+int ApplicationPolicy::setApplicationPolicyState(const std::string& appid, const int state)
 {
     try {
-        return context->methodCall<int>("Application::setApplicationState", appid, state);
+        return context->methodCall<int>("ApplicationPolicy::setApplicationPolicyState", appid, state);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Application::getApplicationState(const std::string& appid)
+int ApplicationPolicy::getApplicationPolicyState(const std::string& appid)
 {
     try {
-        return context->methodCall<int>("Application::getApplicationState", appid);
+        return context->methodCall<int>("ApplicationPolicy::getApplicationPolicyState", appid);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-std::vector<std::string> Application::getInstalledPackageList()
+std::vector<std::string> ApplicationPolicy::getInstalledPackageList()
 {
     try {
-        return context->methodCall<std::vector<std::string>>("Application::getInstalledPackageList");
+        return context->methodCall<std::vector<std::string>>("ApplicationPolicy::getInstalledPackageList");
     } catch (runtime::Exception& e) {
         return std::vector<std::string>();
     }
 }
 
-bool Application::isApplicationRunning(const std::string& appid)
+bool ApplicationPolicy::isApplicationPolicyRunning(const std::string& appid)
 {
     try {
-        return context->methodCall<bool>("Application::isApplicationRunning", appid);
+        return context->methodCall<bool>("ApplicationPolicy::isApplicationPolicyRunning", appid);
     } catch (runtime::Exception& e) {
         return false;
     }
 }
 
-bool Application::isApplicationInstalled(const std::string& appid)
+bool ApplicationPolicy::isApplicationPolicyInstalled(const std::string& appid)
 {
     try {
-        return context->methodCall<bool>("Application::isApplicationInstalled", appid);
+        return context->methodCall<bool>("ApplicationPolicy::isApplicationPolicyInstalled", appid);
     } catch (runtime::Exception& e) {
         return false;
     }
 }
 
-bool Application::isPackageInstalled(const std::string& pkgid)
+bool ApplicationPolicy::isPackageInstalled(const std::string& pkgid)
 {
     try {
-        return context->methodCall<bool>("Application::isPackageInstalled", pkgid);
+        return context->methodCall<bool>("ApplicationPolicy::isPackageInstalled", pkgid);
     } catch (runtime::Exception& e) {
         return false;
     }
 }
 
-int Application::installPackage(const std::string& pkgpath)
+int ApplicationPolicy::installPackage(const std::string& pkgpath)
 {
     try {
-        return context->methodCall<int>("Application::installPackage", pkgpath);
+        return context->methodCall<int>("ApplicationPolicy::installPackage", pkgpath);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Application::uninstallPackage(const std::string& pkgid)
+int ApplicationPolicy::uninstallPackage(const std::string& pkgid)
 {
     try {
-        return context->methodCall<int>("Application::uninstallPackage", pkgid);
+        return context->methodCall<int>("ApplicationPolicy::uninstallPackage", pkgid);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Application::disableApplication(const std::string& appid)
+int ApplicationPolicy::disableApplicationPolicy(const std::string& appid)
 {
     try {
-        return context->methodCall<int>("Application::disableApplication", appid);
+        return context->methodCall<int>("ApplicationPolicy::disableApplicationPolicy", appid);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Application::enableApplication(const std::string& appid)
+int ApplicationPolicy::enableApplicationPolicy(const std::string& appid)
 {
     try {
-        return context->methodCall<int>("Application::enableApplication", appid);
+        return context->methodCall<int>("ApplicationPolicy::enableApplicationPolicy", appid);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Application::startApplication(const std::string& appid)
+int ApplicationPolicy::startApplicationPolicy(const std::string& appid)
 {
     try {
-        return context->methodCall<int>("Application::startApplication", appid);
+        return context->methodCall<int>("ApplicationPolicy::startApplicationPolicy", appid);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Application::stopApplication(const std::string& appid)
+int ApplicationPolicy::stopApplicationPolicy(const std::string& appid)
 {
     try {
-        return context->methodCall<int>("Application::stopApplication", appid);
+        return context->methodCall<int>("ApplicationPolicy::stopApplicationPolicy", appid);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Application::wipeApplicationData(const std::string& appid)
+int ApplicationPolicy::wipeApplicationPolicyData(const std::string& appid)
 {
     try {
-        return context->methodCall<int>("Application::wipeApplicationData", appid);
+        return context->methodCall<int>("ApplicationPolicy::wipeApplicationPolicyData", appid);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Application::addPackageToBlacklist(const std::string& pkgid)
+int ApplicationPolicy::addPackageToBlacklist(const std::string& pkgid)
 {
     try {
-        return context->methodCall<int>("Application::addPackageToBlacklist", pkgid);
+        return context->methodCall<int>("ApplicationPolicy::addPackageToBlacklist", pkgid);
     } catch (runtime::Exception& e) {
         return -1;
     }
@@ -194,10 +194,10 @@ int Application::addPackageToBlacklist(const std::string& pkgid)
     return 0;
 }
 
-int Application::removePackageFromBlacklist(const std::string& pkgid)
+int ApplicationPolicy::removePackageFromBlacklist(const std::string& pkgid)
 {
     try {
-        return context->methodCall<int>("Application::removePackageFromBlacklist", pkgid);
+        return context->methodCall<int>("ApplicationPolicy::removePackageFromBlacklist", pkgid);
     } catch (runtime::Exception& e) {
         return -1;
     }
@@ -205,10 +205,10 @@ int Application::removePackageFromBlacklist(const std::string& pkgid)
     return 0;
 }
 
-int Application::checkPackageIsBlacklisted(const std::string& pkgid)
+int ApplicationPolicy::checkPackageIsBlacklisted(const std::string& pkgid)
 {
     try {
-        return context->methodCall<int>("Application::checkPackageIsBlacklisted", pkgid);
+        return context->methodCall<int>("ApplicationPolicy::checkPackageIsBlacklisted", pkgid);
     } catch (runtime::Exception& e) {
         return -1;
     }

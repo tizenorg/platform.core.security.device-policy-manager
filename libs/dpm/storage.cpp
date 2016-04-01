@@ -13,41 +13,35 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License
  */
-
-#include <cstring>
 #include <cassert>
 
-#include "administration.h"
-#include "administration.hxx"
+#include "storage.h"
+#include "storage.hxx"
 
 #include "debug.h"
 #include "policy-client.h"
 
 using namespace DevicePolicyManager;
 
-dpm_admin_policy_h dpm_context_acquire_admin_policy(dpm_context_h handle)
+dpm_storage_policy_h dpm_context_acquire_storage_policy(dpm_context_h handle)
 {
-    assert(handle);
+	assert(handle);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
-    return client.createPolicyInterface<AdministrationPolicy>();
+    return client.createPolicyInterface<StoragePolicy>();
 }
 
-int dpm_context_release_admin_policy(dpm_admin_policy_h handle)
+int dpm_context_release_storage_policy(dpm_storage_policy_h handle)
 {
-    assert(handle);
-    delete &GetPolicyInterface<AdministrationPolicy>(handle);
+	assert(handle);
+    delete &GetPolicyInterface<StoragePolicy>(handle);
     return 0;
 }
 
-int dpm_admin_register_client(dpm_admin_policy_h handle, const char* name)
+int dpm_storage_wipe_data(dpm_storage_policy_h handle, const dpm_wipe_type_e type)
 {
-    AdministrationPolicy& admin = GetPolicyInterface<AdministrationPolicy>(handle);
-    return admin.registerPolicyClient(name);
-}
+	assert(handle);
 
-int dpm_admin_deregister_client(dpm_admin_policy_h handle, const char* name)
-{
-    AdministrationPolicy& admin = GetPolicyInterface<AdministrationPolicy>(handle);
-    return admin.deregisterPolicyClient(name);
+	StoragePolicy& storagePolicy = GetPolicyInterface<StoragePolicy>(handle);
+	return storagePolicy.wipeData(type);
 }

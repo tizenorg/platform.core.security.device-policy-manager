@@ -18,26 +18,49 @@ SET(TARGET ${PROJECT_NAME})
 
 SET(SOURCES	main.cpp
 			server.cpp
-			policy.cpp
-			policy-storage.cpp
-			client-manager.cpp
-			administration.cpp
-			application.cpp
-			security.cpp
-			password.cpp
-			zone.cpp
 			app-bundle.cpp
 			syspopup.cpp
 			launchpad.cpp
 			packman.cpp
-			misc.cpp
-			restriction.cpp
-			bluetooth.cpp
+			policy.cpp
+			policy-storage.cpp
+			client-manager.cpp
 )
 
-ADD_EXECUTABLE(${TARGET} ${SOURCES} ${INCLUDE_SRCS})
+SET(POLICIES administration.cpp
+			 application.cpp
+			 bluetooth.cpp
+			 password.cpp
+			 restriction.cpp
+			 security.cpp
+			 storage.cpp
+			 wifi.cpp
+			 zone.cpp
+)
 
-PKG_CHECK_MODULES(SERVER_DEPS REQUIRED glib-2.0 gio-2.0 bundle aul appsvc pkgmgr pkgmgr-info vconf syspopup-caller deviced libtzplatform-config auth-fw-admin)
+ADD_EXECUTABLE(${TARGET} ${SOURCES} ${POLICIES} ${INCLUDE_SRCS})
+
+PKG_CHECK_MODULES(SERVER_DEPS
+				  REQUIRED
+				  glib-2.0
+				  gio-2.0
+				  bundle
+				  aul
+				  appsvc
+				  pkgmgr
+				  pkgmgr-info
+				  vconf
+				  syspopup-caller
+				  deviced
+				  libtzplatform-config
+				  bluetooth-api
+				  auth-fw-admin
+				  capi-network-wifi
+				  capi-system-info
+				  capi-location-manager
+				  capi-system-system-settings
+				  capi-network-connection
+)
 
 INCLUDE_DIRECTORIES(SYSTEM ${SERVER_DEPS_INCLUDE_DIRS} ${DPM_COMMON} ${DPM_POLICY} ${DPM_SERVER})
 

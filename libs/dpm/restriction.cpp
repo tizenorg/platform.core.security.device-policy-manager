@@ -22,129 +22,130 @@
 
 using namespace DevicePolicyManager;
 
-int dpm_set_clipboard_restriction(dpm_client_h handle, int enable)
+dpm_restriction_policy_h dpm_context_acquire_restriction_policy(dpm_context_h handle)
 {
-	assert(handle);
+    assert(handle);
 
-	DevicePolicyClient& client = GetDevicePolicyClient(handle);
-	Restriction restriction = client.createPolicyInterface<Restriction>();
-	return restriction.setClipboardRestriction(enable);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    return client.createPolicyInterface<RestrictionPolicy>();
 }
 
-int dpm_is_clipboard_restricted(dpm_client_h handle)
+int dpm_context_release_restriction_policy(dpm_context_h context, dpm_restriction_policy_h handle)
 {
-	assert(handle);
+    assert(handle);
 
-	DevicePolicyClient& client = GetDevicePolicyClient(handle);
-	Restriction restriction = client.createPolicyInterface<Restriction>();
-	return restriction.isClipboardRestricted();
+    delete &GetPolicyInterface<RestrictionPolicy>(handle);
+    return 0;
 }
 
-int dpm_set_clipboard_share_restriction(dpm_client_h handle, int enable)
+int dpm_restriction_set_camera_state(dpm_restriction_policy_h handle, int enable)
 {
 	assert(handle);
 
-	DevicePolicyClient& client = GetDevicePolicyClient(handle);
-	Restriction restriction = client.createPolicyInterface<Restriction>();
-	return restriction.setClipboardShareRestriction(enable);
+	RestrictionPolicy& restrict = GetPolicyInterface<RestrictionPolicy>(handle);
+	return restrict.setCameraState(enable);
 }
 
-int dpm_is_clipboard_share_restricted(dpm_client_h handle)
+int dpm_restriction_get_camera_state(dpm_restriction_policy_h handle)
 {
 	assert(handle);
 
-	DevicePolicyClient& client = GetDevicePolicyClient(handle);
-	Restriction restriction = client.createPolicyInterface<Restriction>();
-	return restriction.isClipboardShareRestricted();
+	RestrictionPolicy& restriction = GetPolicyInterface<RestrictionPolicy>(handle);
+	return restriction.getCameraState();
 }
 
-
-int dpm_set_settings_changes_restriction(dpm_client_h handle, int enable)
+int dpm_restriction_set_microphone_state(dpm_restriction_policy_h handle, int enable)
 {
 	assert(handle);
 
-	DevicePolicyClient& client = GetDevicePolicyClient(handle);
-	Restriction restriction = client.createPolicyInterface<Restriction>();
-	return restriction.setSettingsChangesRestriction(enable);
+	RestrictionPolicy& restriction = GetPolicyInterface<RestrictionPolicy>(handle);
+	return restriction.setMicrophoneState(enable);
 }
 
-int dpm_is_settings_changes_restricted(dpm_client_h handle)
+int dpm_restriction_get_microphone_state(dpm_restriction_policy_h handle)
 {
 	assert(handle);
 
-	DevicePolicyClient& client = GetDevicePolicyClient(handle);
-	Restriction restriction = client.createPolicyInterface<Restriction>();
-	return restriction.isSettingsChangesRestricted();
+	RestrictionPolicy& restriction = GetPolicyInterface<RestrictionPolicy>(handle);
+	return restriction.getMicrophoneState();
 }
 
-int dpm_set_background_data_restriction(dpm_client_h handle, int enable)
+int dpm_restriction_set_location_state(dpm_restriction_policy_h handle, int enable)
 {
-	assert(handle);
+    assert(handle);
 
-	DevicePolicyClient& client = GetDevicePolicyClient(handle);
-	Restriction restriction = client.createPolicyInterface<Restriction>();
-	return restriction.setBackgroundDataRestriction(enable);
+    RestrictionPolicy& restriction = GetPolicyInterface<RestrictionPolicy>(handle);
+    return restriction.setLocationState(enable);
 }
 
-int dpm_is_background_data_restricted(dpm_client_h handle)
+int dpm_restriction_get_location_state(dpm_restriction_policy_h handle)
 {
-	assert(handle);
+    assert(handle);
 
-	DevicePolicyClient& client = GetDevicePolicyClient(handle);
-	Restriction restriction = client.createPolicyInterface<Restriction>();
-	return restriction.isBackgroundDataRestricted();
+    RestrictionPolicy& restriction = GetPolicyInterface<RestrictionPolicy>(handle);
+    return restriction.getLocationState();
 }
 
-int dpm_set_usb_debugging_restriction(dpm_client_h handle, int enable)
+int dpm_restriction_set_usb_debugging_state(dpm_restriction_policy_h handle, int enable)
 {
 	assert(handle);
 
-	DevicePolicyClient& client = GetDevicePolicyClient(handle);
-	Restriction restriction = client.createPolicyInterface<Restriction>();
-	return restriction.setUsbDebuggingRestriction(enable);
+	RestrictionPolicy& restriction = GetPolicyInterface<RestrictionPolicy>(handle);
+	return restriction.setUsbDebuggingState(enable);
 }
 
-int dpm_is_usb_debugging_restricted(dpm_client_h handle)
+int dpm_restriction_get_usb_debugging_state(dpm_restriction_policy_h handle)
 {
 	assert(handle);
 
-	DevicePolicyClient& client = GetDevicePolicyClient(handle);
-	Restriction restriction = client.createPolicyInterface<Restriction>();
-	return restriction.isUsbDebuggingRestricted();
+	RestrictionPolicy& restriction = GetPolicyInterface<RestrictionPolicy>(handle);
+	return restriction.getUsbDebuggingState();
 }
 
-int dpm_set_usb_mass_storage_restriction(dpm_client_h handle, int enable)
+int dpm_restriction_set_settings_changes_state(dpm_restriction_policy_h handle, int enable)
 {
 	assert(handle);
 
-	DevicePolicyClient& client = GetDevicePolicyClient(handle);
-	Restriction restriction = client.createPolicyInterface<Restriction>();
-	return restriction.setUsbMassStorageRestriction(enable);
+	RestrictionPolicy& restriction = GetPolicyInterface<RestrictionPolicy>(handle);
+	return restriction.setSettingsChangesState(enable);
 }
 
-int dpm_is_usb_mass_storage_restricted(dpm_client_h handle)
+int dpm_restriction_get_settings_changes_state(dpm_restriction_policy_h handle)
 {
 	assert(handle);
 
-	DevicePolicyClient& client = GetDevicePolicyClient(handle);
-	Restriction restriction = client.createPolicyInterface<Restriction>();
-	return restriction.isUsbMassStorageRestricted();
+	RestrictionPolicy& restriction = GetPolicyInterface<RestrictionPolicy>(handle);
+	return restriction.getSettingsChangesState();
 }
 
-int dpm_set_factory_reset_restriction(dpm_client_h handle, int enable)
+int dpm_restriction_set_external_storage_state(dpm_restriction_policy_h handle, int enable)
 {
 	assert(handle);
 
-	DevicePolicyClient& client = GetDevicePolicyClient(handle);
-	Restriction restriction = client.createPolicyInterface<Restriction>();
-	return restriction.setFactoryResetRestriction(enable);
+	RestrictionPolicy& restriction = GetPolicyInterface<RestrictionPolicy>(handle);
+	return restriction.setExternalStorageState(enable);
 }
 
-int dpm_is_factory_reset_restricted(dpm_client_h handle)
+int dpm_restriction_get_external_storage_state(dpm_restriction_policy_h handle)
 {
 	assert(handle);
 
-	DevicePolicyClient& client = GetDevicePolicyClient(handle);
-	Restriction restriction = client.createPolicyInterface<Restriction>();
-	return restriction.isFactoryResetRestricted();
+	RestrictionPolicy& restriction = GetPolicyInterface<RestrictionPolicy>(handle);
+	return restriction.getExternalStorageState();
+}
+
+int dpm_restriction_set_clipboard_state(dpm_restriction_policy_h handle, int enable)
+{
+	assert(handle);
+
+	RestrictionPolicy& restriction = GetPolicyInterface<RestrictionPolicy>(handle);
+	return restriction.setClipboardState(enable);
+}
+
+int dpm_restriction_get_clipboard_state(dpm_restriction_policy_h handle)
+{
+	assert(handle);
+
+	RestrictionPolicy& restriction = GetPolicyInterface<RestrictionPolicy>(handle);
+	return restriction.getClipboardState();
 }
