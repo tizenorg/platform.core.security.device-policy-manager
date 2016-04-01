@@ -14,92 +14,83 @@
  *  limitations under the License
  */
 
+#include <cassert>
+
 #include "security.h"
 #include "security.hxx"
 
-#include "capi-assert.h"
+#include "debug.h"
 #include "policy-client.h"
 
 using namespace DevicePolicyManager;
 
-int dpm_lockout_device(dpm_client_h handle)
+dpm_security_policy_h dpm_context_acquire_security_policy(dpm_context_h handle)
+{
+    assert(handle);
+
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    return client.createPolicyInterface<SecurityPolicy>();
+}
+
+int dpm_context_release_security_policy(dpm_security_policy_h handle)
+{
+    assert(handle);
+    delete &GetPolicyInterface<SecurityPolicy>(handle);
+    return 0;
+}
+
+int dpm_security_lockout_device(dpm_security_policy_h handle)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Security security = client.createPolicyInterface<Security>();
+    SecurityPolicy& security = GetPolicyInterface<SecurityPolicy>(handle);
     return security.lockoutDevice();
 }
 
-int dpm_lockout_screen(dpm_client_h handle)
+int dpm_security_lockout_screen(dpm_security_policy_h handle)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Security security = client.createPolicyInterface<Security>();
+    SecurityPolicy& security = GetPolicyInterface<SecurityPolicy>(handle);
     return security.lockoutScreen();
 }
 
-int dpm_wipe_data(dpm_client_h handle, const dpm_wipe_type_e type)
+int dpm_security_wipe_data(dpm_security_policy_h handle, const dpm_wipe_type_e type)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Security security = client.createPolicyInterface<Security>();
+    SecurityPolicy& security = GetPolicyInterface<SecurityPolicy>(handle);
     return security.wipeData(type);
 }
 
-int dpm_reboot(dpm_client_h handle)
+int dpm_security_set_internal_storage_encryption(dpm_security_policy_h handle, const int encrypt)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Security security = client.createPolicyInterface<Security>();
-    return security.reboot();
-}
-
-int dpm_poweroff_device(dpm_client_h handle)
-{
-    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Security security = client.createPolicyInterface<Security>();
-    return security.powerOffDevice();
-}
-
-int dpm_set_internal_storage_encryption(dpm_client_h handle, const int encrypt)
-{
-    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Security security = client.createPolicyInterface<Security>();
+    SecurityPolicy& security = GetPolicyInterface<SecurityPolicy>(handle);
     return security.setInternalStorageEncryption(encrypt);
 }
 
-int dpm_is_internal_storage_encrypted(dpm_client_h handle)
+int dpm_security_is_internal_storage_encrypted(dpm_security_policy_h handle)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Security security = client.createPolicyInterface<Security>();
+    SecurityPolicy& security = GetPolicyInterface<SecurityPolicy>(handle);
     return security.isInternalStorageEncrypted();
 }
 
-int dpm_set_external_storage_encryption(dpm_client_h handle, const int encrypt)
+int dpm_security_set_external_storage_encryption(dpm_security_policy_h handle, const int encrypt)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Security security = client.createPolicyInterface<Security>();
+    SecurityPolicy& security = GetPolicyInterface<SecurityPolicy>(handle);
     return security.setExternalStorageEncryption(encrypt);
 }
 
-int dpm_is_external_storage_encrypted(dpm_client_h handle)
+int dpm_security_is_external_storage_encrypted(dpm_security_policy_h handle)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    Security security = client.createPolicyInterface<Security>();
+    SecurityPolicy& security = GetPolicyInterface<SecurityPolicy>(handle);
     return security.isExternalStorageEncrypted();
 }
-

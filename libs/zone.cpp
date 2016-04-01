@@ -18,65 +18,65 @@
 
 namespace DevicePolicyManager {
 
-Zone::Zone(PolicyControlContext& ctx)
+ZonePolicy::ZonePolicy(PolicyControlContext& ctx)
     : context(ctx)
 {
 }
 
-Zone::~Zone()
+ZonePolicy::~ZonePolicy()
 {
 }
 
-int Zone::createZone(const std::string& name, const std::string& setupWizAppid)
+int ZonePolicy::createZonePolicy(const std::string& name, const std::string& setupWizAppid)
 {
     try {
-        return context->methodCall<int>("Zone::createZone", name, setupWizAppid);
+        return context->methodCall<int>("ZonePolicy::createZonePolicy", name, setupWizAppid);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Zone::removeZone(const std::string& name)
+int ZonePolicy::removeZonePolicy(const std::string& name)
 {
     try {
-        return context->methodCall<int>("Zone::removeZone", name);
+        return context->methodCall<int>("ZonePolicy::removeZonePolicy", name);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Zone::lockZone(const std::string& name)
+int ZonePolicy::lockZonePolicy(const std::string& name)
 {
     try {
-        return context->methodCall<int>("Zone::lockZone", name);
+        return context->methodCall<int>("ZonePolicy::lockZonePolicy", name);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int Zone::unlockZone(const std::string& name)
+int ZonePolicy::unlockZonePolicy(const std::string& name)
 {
     try {
-        return context->methodCall<int>("Zone::unlockZone", name);
+        return context->methodCall<int>("ZonePolicy::unlockZonePolicy", name);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-std::vector<std::string> Zone::getZoneList()
+std::vector<std::string> ZonePolicy::getZonePolicyList()
 {
     std::vector<std::string> empty;
     try {
-        return  context->methodCall<std::vector<std::string>>("Zone::getZoneList");
+        return  context->methodCall<std::vector<std::string>>("ZonePolicy::getZonePolicyList");
     } catch (runtime::Exception& e) {
         return empty;
     }
 }
 
-int Zone::getZoneState(const std::string& name)
+int ZonePolicy::getZonePolicyState(const std::string& name)
 {
     try {
-        return context->methodCall<int>("Zone::getZoneState", name);
+        return context->methodCall<int>("ZonePolicy::getZonePolicyState", name);
     } catch (runtime::Exception& e) {
         return -1;
     }

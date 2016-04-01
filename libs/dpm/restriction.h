@@ -33,6 +33,74 @@ extern "C" {
  * @{
  */
 
+ /**
+  * @brief       The BluetoothPolicy Policy handle
+  * @since_tizen 3.0
+  * @see         dpm_context_acquire_bluetooth_policy()
+  * @see         dpm_context_release_bluetooth_policy()
+  */
+ typedef void* dpm_datashare_policy_h;
+
+ /**
+  * @brief       The BluetoothPolicy Policy handle
+  * @since_tizen 3.0
+  * @see         dpm_context_acquire_bluetooth_policy()
+  * @see         dpm_context_release_bluetooth_policy()
+  */
+ typedef void* dpm_developer_policy_h;
+
+ /**
+  * @brief       The BluetoothPolicy Policy handle
+  * @since_tizen 3.0
+  * @see         dpm_context_acquire_bluetooth_policy()
+  * @see         dpm_context_release_bluetooth_policy()
+  */
+ typedef void* dpm_storage_policy_h;
+
+ /**
+  * @brief       The BluetoothPolicy Policy handle
+  * @since_tizen 3.0
+  * @see         dpm_context_acquire_bluetooth_policy()
+  * @see         dpm_context_release_bluetooth_policy()
+  */
+ typedef void* dpm_settings_policy_h;
+
+ /**
+  * @brief       Acquires the BluetoothPolicy Policy handle.
+  * @details     This API acquires device bluetooth policy handle required to call
+  *              the bluetooth policy APIs.
+  * @since_tizen 3.0
+  * @param[in]   handle Device Policy Context Handle
+  * @param[in]   zone Target container name.
+  * @return      PasswordPolicy Policy handle on success, otherwise NULL
+  * @remark      The specific error code can be obtained by using the
+  *              get_last_result() method. Error codes are described in
+  *              exception section.
+  * @exception   #DPM_ERROR_NONE No error
+  * @exception   #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+  * @exception   #DPM_ERROR_TIMED_OUT Time out
+  * @exception   #DPM_ERROR_PERMISSION_DENIED The application does not have
+  *              the privilege to access the target container.
+  * @see         dpm_context_release_password_policy()
+  * @see         get_last_result()
+  */
+ DPM_API dpm_datashare_policy_h dpm_context_acquire_datashare_policy(dpm_context_h handle);
+
+ /**
+  * @brief       Releases the Device AdministrationPolicy Policy Handle.
+  * @details     This API must be called if interaction with the Device
+  *              Policy Manager is no longer required.
+  * @since_tizen 3.0
+  * @param[in]   handle PasswordPolicy Policy Handle
+  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+  * @retval      #DPM_ERROR_NONE Successful
+  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+  * @retval      #DPM_ERROR_TIMED_OUT Time out
+  * @pre         The handle must be created by dpm_context_acquire_password_policy().
+  * @see         dpm_context_acquire_password_policy()
+  */
+ DPM_API int dpm_context_release_datashare_policy(dpm_datashare_policy_h handle);
+
 /**
  * @brief       Allows or disallows the user to use the clipboard.
  * @details     An administrator can use this API to set whether the clipboard.
@@ -47,12 +115,12 @@ extern "C" {
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
  * @retval      #DPM_ERROR_ACCESS_DENIED The application does not have
  *              the privilege to call this API
- * @pre         handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_is_clipboard_restricted()
+ * @pre         handle must be created by dpm_context_create()
+ * @see         dpm_context_create()
+ * @see         dpm_context_destroy()
+ * @see         dpm_clipboard_get_state()
  */
-DPM_API int dpm_set_clipboard_restriction(dpm_client_h handle, int enable);
+DPM_API int dpm_datashare_set_clipboard_state(dpm_datashare_policy_h handle, int enable);
 
 /**
  * @brief       Checks whether the clipboard restriction is enable or not.
@@ -62,48 +130,12 @@ DPM_API int dpm_set_clipboard_restriction(dpm_client_h handle, int enable);
  * @privlevel   public
  * @param[in]   handle Device Policy Client handle
  * @return      true if the clipboard is disallowed, else false
- * @pre         handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_set_clipboard_restriction()
+ * @pre         handle must be created by dpm_context_create()
+ * @see         dpm_context_create()
+ * @see         dpm_context_destroy()
+ * @see         dpm_clipboard_set_state()
  */
-DPM_API int dpm_is_clipboard_restricted(dpm_client_h handle);
-
-/**
- * @brief       Allows or disallows the user to share the clipboard data between applications.
- * @details     An administrator can use this API to set whether the clipboard
- *              is allowed or not for sharing between applications.
- * @since_tizen 3.0
- * @privlevel   public
- * @privilege   %http://tizen.org/privilege/dpm.restriction
- * @param[in]   handle Device Policy Client handle
- * @param[in]   enable If true, disallow to share the clipboard, if false, allow to share the clipboard
- * @return      #DPM_ERROR_NONE on success, otherwise a negative value
- * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
- * @retval      #DPM_ERROR_ACCESS_DENIED The application does not have
- *              the privilege to call this API
- * @pre         handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_is_clipboard_share_restriction()
- */
-DPM_API int dpm_set_clipboard_share_restriction(dpm_client_h handle, int enable);
-
-/**
- * @brief       Checks whether the clipboard share restriction is enable or not.
- * @details     An administrator can use this API to check the restriction status of
- *              sharing clipboard between applications.
- * @since_tizen 3.0
- * @privlevel   public
- * @param[in]   handle Device Policy Client handle
- * @return      true if the clipboard cannot shared data, else false
- * @pre         handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_set_clipboard_share_restriction()
- */
-DPM_API int dpm_is_clipboard_share_restricted(dpm_client_h handle);
+DPM_API int dpm_datashare_get_clipboard_state(dpm_datashare_policy_h handle);
 
 /**
  * @brief       Allows or disallows the user to use the settings changes.
@@ -120,12 +152,12 @@ DPM_API int dpm_is_clipboard_share_restricted(dpm_client_h handle);
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
  * @retval      #DPM_ERROR_ACCESS_DENIED The application does not have
  *              the privilege to call this API
- * @pre         handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_is_settings_changes_restricted()
+ * @pre         handle must be created by dpm_context_create()
+ * @see         dpm_context_create()
+ * @see         dpm_context_destroy()
+ * @see         dpm_set_settings_changes_restriction()
  */
-DPM_API int dpm_set_settings_changes_restriction(dpm_client_h handle, int enable);
+DPM_API int dpm_settings_set_changes_restriction(dpm_settings_policy_h handle, int enable);
 
 /**
  * @brief       Checks whether the settings changes restriction is enable or not.
@@ -135,49 +167,12 @@ DPM_API int dpm_set_settings_changes_restriction(dpm_client_h handle, int enable
  * @privlevel   public
  * @param[in]   handle Device Policy Client handle
  * @return      true if the settings changes is disallowed, else false
- * @pre         handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_set_settings_changes_restriction()
+ * @pre         handle must be created by dpm_context_create()
+ * @see         dpm_context_create()
+ * @see         dpm_context_destroy()
+ * @see         dpm_settings_set_restriction()
  */
-DPM_API int dpm_is_settings_changes_restricted(dpm_client_h handle);
-
-/**
- * @brief       Allows or disallows the user to use the background data.
- * @details     An administrator can use this API to set whether the background
- *              data is allowed or not.
- * @since_tizen 3.0
- * @privlevel   public
- * @privilege   %http://tizen.org/privilege/dpm.restriction
- * @param[in]   handle Device Policy Client handle
- * @param[in]   enable If true, disallow the background data, if false, allow
- *              the background data
- * @return      #DPM_ERROR_NONE on success, otherwise a negative value
- * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
- * @retval      #DPM_ERROR_ACCESS_DENIED The application does not have
- *              the privilege to call this API
- * @pre         handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_is_background_data_restricted()
- */
-DPM_API int dpm_set_background_data_restriction(dpm_client_h handle, int enable);
-
-/**
- * @brief       Checks whether the background data restriction is enable or not.
- * @details     An administrator can use this API to check the restriction status of
- *              the background data.
- * @since_tizen 3.0
- * @privlevel   public
- * @param[in]   handle Device Policy Client handle
- * @return      true if the background data is disallowed, else false
- * @pre         handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_set_background_data_restriction()
- */
-DPM_API int dpm_is_background_data_restricted(dpm_client_h handle);
+DPM_API int dpm_settings_is_changes_restricted(dpm_settings_policy_h handle);
 
 /**
  * @brief       Allows or disallows the user to use the usb debugging
@@ -194,12 +189,12 @@ DPM_API int dpm_is_background_data_restricted(dpm_client_h handle);
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
  * @retval      #DPM_ERROR_ACCESS_DENIED The application does not have
  *              the privilege to call this API
- * @pre         handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_is_usb_debugging_restricted()
+ * @pre         handle must be created by dpm_context_create()
+ * @see         dpm_context_create()
+ * @see         dpm_context_destroy()
+ * @see         dpm_developer_get_usb_debugging_state()
  */
-DPM_API int dpm_set_usb_debugging_restriction(dpm_client_h handle, int enable);
+DPM_API int dpm_developer_set_usb_debugging_state(dpm_developer_policy_h handle, int enable);
 
 /**
  * @brief       Checks whether the usb debugging restriction is enable or not.
@@ -209,12 +204,12 @@ DPM_API int dpm_set_usb_debugging_restriction(dpm_client_h handle, int enable);
  * @privlevel   public
  * @param[in]   handle Device Policy Client handle
  * @return      true if the usb debugging is disallowed, else false
- * @pre         handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_set_usb_debugging_restriction()
+ * @pre         handle must be created by dpm_context_create()
+ * @see         dpm_context_create()
+ * @see         dpm_context_destroy()
+ * @see         dpm_developer_set_usb_debugging_state()
  */
-DPM_API int dpm_is_usb_debugging_restricted(dpm_client_h handle);
+DPM_API int dpm_developer_get_usb_debugging_state(dpm_developer_policy_h handle);
 
 /**
  * @brief       Allows or disallows the user to use the usb mass storage
@@ -231,12 +226,12 @@ DPM_API int dpm_is_usb_debugging_restricted(dpm_client_h handle);
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
  * @retval      #DPM_ERROR_ACCESS_DENIED The application does not have
  *              the privilege to call this API
- * @pre         handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_is_usb_mass_storage_restricted()
+ * @pre         handle must be created by dpm_context_create()
+ * @see         dpm_context_create()
+ * @see         dpm_context_destroy()
+ * @see         dpm_storage_get_usb_mass_storage_state()
  */
-DPM_API int dpm_set_usb_mass_storage_restriction(dpm_client_h handle, int enable);
+DPM_API int dpm_storage_set_usb_mass_storage_state(dpm_storage_policy_h handle, int enable);
 
 /**
  * @brief       Checks whether the usb mass storage restriction is enable or not.
@@ -246,49 +241,30 @@ DPM_API int dpm_set_usb_mass_storage_restriction(dpm_client_h handle, int enable
  * @privlevel   public
  * @param[in]   handle Device Policy Client handle
  * @return      true if the usb mass storage is disallowed, else false
- * @pre         handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_set_usb_mass_storage_restriction()
+ * @pre         handle must be created by dpm_context_create()
+ * @see         dpm_context_create()
+ * @see         dpm_context_destroy()
+ * @see         dpm_storage_set_usb_mass_storage_state()
  */
-DPM_API int dpm_is_usb_mass_storage_restricted(dpm_client_h handle);
+DPM_API int dpm_storage_get_usb_mass_storage_state(dpm_storage_policy_h handle);
 
 /**
- * @brief       Allows or disallows the user to use the factory reset
- * @details     An administrator can use this API to set whether the factory
- *              reset is allowed or not.
+ * @brief       Wipe all container data.
+ * @details     An administrator can wipe data in container for solving security issues.
  * @since_tizen 3.0
  * @privlevel   public
  * @privilege   %http://tizen.org/privilege/dpm.restriction
  * @param[in]   handle Device Policy Client handle
- * @param[in]   enable If true, disallow the factory reset, if false, allow
- *              the factory reset
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
  * @retval      #DPM_ERROR_ACCESS_DENIED The application does not have
  *              the privilege to call this API
- * @pre         handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_is_factory_reset_restricted()
+ * @pre         handle must be created by dpm_context_create()
+ * @see         dpm_context_create()
+ * @see         dpm_context_destroy()
  */
-DPM_API int dpm_set_factory_reset_restriction(dpm_client_h handle, int enable);
-
-/**
- * @brief       Checks whether the factory reset restriction is enable or not.
- * @details     An administrator can use this API to check the restriction status of
- *              factory reset.
- * @since_tizen 3.0
- * @privlevel   public
- * @param[in]   handle Device Policy Client handle
- * @return      true if the factory reset is disallowed, else false
- * @pre         handle must be created by dpm_create_client()
- * @see         dpm_create_client()
- * @see         dpm_destroy_client()
- * @see         dpm_set_factory_reset_restriction()
- */
-DPM_API int dpm_is_factory_reset_restricted(dpm_client_h handle);
+DPM_API int dpm_device_wipe_data(dpm_storage_policy_h handle);
 
 /**
  * @} // end of DPM_RESTRICTION_POLICY
