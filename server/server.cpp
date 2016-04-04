@@ -26,7 +26,8 @@ Server::Server()
 {
     service.reset(new rmi::Service(POLICY_MANAGER_ADDRESS));
 
-    service->registerParametricMethod(this, (FileDescriptor)(Server::subscribeNotification)(std::string));
+    service->registerParametricMethod(this, (FileDescriptor)(Server::registerNotificationSubscriber)(std::string));
+    service->registerParametricMethod(this, (int)(Server::unregisterNotificationSubscriber)(std::string, int));
 }
 
 Server::~Server()
@@ -44,9 +45,14 @@ void Server::terminate()
     service->stop();
 }
 
-FileDescriptor Server::subscribeNotification(const std::string& name)
+FileDescriptor Server::registerNotificationSubscriber(const std::string& name)
 {
     return FileDescriptor(service->subscribeNotification(name), true);
+}
+
+int Server::unregisterNotificationSubscriber(const std::string& name, int id)
+{
+    return 0;
 }
 
 Server& Server::instance()

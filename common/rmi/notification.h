@@ -54,9 +54,13 @@ void Notification::notify(Args&&... args)
 
     std::lock_guard<std::mutex> lock(subscriberLock);
 
-	for (Socket& subscriber : subscribers) {
-        msg.encode(subscriber);
-	}
+    for (Socket& subscriber : subscribers) {
+        try {
+            msg.encode(subscriber);
+        } catch (runtime::Exception& e) {
+            std::cout << "Exception sending notification: " << e.what() << std::endl;
+        }
+    }
 }
 
 } // namespae rmi

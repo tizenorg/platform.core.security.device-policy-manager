@@ -35,6 +35,11 @@ void Client::connect()
     dispatcher = std::thread([this] { mainloop.run(); });
 }
 
+void Client::unsubscribe(const std::string& provider, const std::string& name, int id)
+{
+    ::close(id);
+}
+
 int Client::subscribe(const std::string& provider, const std::string& name)
 {
     Message request = connection->createMessage(Message::MethodCall, provider);

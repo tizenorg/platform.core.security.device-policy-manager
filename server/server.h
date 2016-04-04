@@ -38,7 +38,8 @@ public:
         return *service;
     }
 
-    FileDescriptor subscribeNotification(const std::string& name);
+    FileDescriptor registerNotificationSubscriber(const std::string& name);
+    int unregisterNotificationSubscriber(const std::string& name, int id);
 
     static Server& instance();
 

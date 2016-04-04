@@ -23,8 +23,7 @@
 
 #include "rmi/client.h"
 
-typedef std::function<void(const char*, int, void*)> PolicyChangeListener;
-typedef std::function<void(const char*, void*)> PolicySignalHandler;
+typedef std::function<void(const char*, const char*, void*)> PolicyChangeListener;
 
 class DevicePolicyClient {
 public:
@@ -39,9 +38,6 @@ public:
 
     int subscribePolicyChange(const std::string& name, const PolicyChangeListener& listener, void* data);
     void unsubscribePolicyChange(const std::string& name, int subscriberId);
-
-    int connectSignal(const std::string& name, const PolicySignalHandler& handler, void* data);
-    void disconnectSignal(const std::string& name, int signalId);
 
     template<typename Policy, typename... Args>
     Policy createPolicyInterface(Args&&... args) noexcept

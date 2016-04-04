@@ -47,6 +47,8 @@ public:
     int subscribe(const std::string& provider, const std::string& name,
                   const typename MethodHandler<void, Args...>::type& handler);
 
+    void unsubscribe(const std::string& provider, const std::string& name, int handle);
+
     template<typename Type, typename... Args>
     Type methodCall(const std::string& method, Args&&... args);
 

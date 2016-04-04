@@ -122,13 +122,26 @@ void Service::createNotification(const std::string& name)
 
 int Service::subscribeNotification(const std::string& name)
 {
+    auto closeHandler = [&](int fd, runtime::Mainloop::Event event) {
+        if ((event & EPOLLHUP) || (event & EPOLLRDHUP)) {
+            std::cout << "Peer has been closed" << std::endl;
+            unsubscribeNotification(name, fd);
+            return;
+        }
+    };
+
     if (!notificationRegistry.count(name)) {
         return -1;
     }
 
     Notification& notification = notificationRegistry[name];
+    int channel = notification.createSubscriber();
+    if (channel > 0) {
+        mainloop.addEventSource(channel, EPOLLHUP | EPOLLRDHUP, closeHandler);
+        return channel;
+    }
 
-    return notification.createSubscriber();
+    return -1;
 }
 
 int Service::unsubscribeNotification(const std::string& name, const int id)
@@ -136,6 +149,8 @@ int Service::unsubscribeNotification(const std::string& name, const int id)
     if (notificationRegistry.count(name)) {
         Notification& notification = notificationRegistry[name];
         notification.removeSubscriber(id);
+
+        mainloop.removeEventSource(id);
     }
 
     return 0;

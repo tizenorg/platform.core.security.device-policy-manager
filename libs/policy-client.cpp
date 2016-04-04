@@ -18,7 +18,9 @@
 
 namespace {
 
-const std::string POLICY_NOTIFICATION_PROVIDER = "Server::subscribeNotification";
+const std::string POLICY_SUBSCRIBER_REGISTER = "Server::registerNotificationSubscriber";
+const std::string POLICY_SUBSCRIBER_UNREGISTER = "Server::unregisterNotificationSubscriber";
+
 const std::string POLICY_MANAGER_ADDRESS = "/tmp/.device-policy-manager";
 
 } // namespace
@@ -58,28 +60,15 @@ int DevicePolicyClient::subscribePolicyChange(const std::string& name,
                                               const PolicyChangeListener& listener,
                                               void* data)
 {
-    auto listenerDispatcher = [listener, data](const std::string& policy, int value) {
-        listener(policy.c_str(), value, data);
+    auto listenerDispatcher = [listener, data](const std::string& policy, std::string state) {
+        listener(policy.c_str(), state.c_str(), data);
     };
 
-    return client->subscribe<std::string, int>(POLICY_NOTIFICATION_PROVIDER,
-                                               name, listenerDispatcher);
+    return client->subscribe<std::string, std::string>(POLICY_SUBSCRIBER_REGISTER,
+                                                       name, listenerDispatcher);
 }
 
 void DevicePolicyClient::unsubscribePolicyChange(const std::string& name, int subscriberId)
 {
-}
-
-int DevicePolicyClient::connectSignal(const std::string& name,
-                                      const PolicySignalHandler& handler, void* data)
-{
-    auto signalDispatcher = [handler, data](const std::string& signal) {
-        handler(signal.c_str(), data);
-    };
-
-    return client->subscribe<std::string>(POLICY_NOTIFICATION_PROVIDER, name, signalDispatcher);
-}
-
-void DevicePolicyClient::disconnectSignal(const std::string& name, int signalId)
-{
+    client->unsubscribe(POLICY_SUBSCRIBER_UNREGISTER, name, subscriberId);
 }
