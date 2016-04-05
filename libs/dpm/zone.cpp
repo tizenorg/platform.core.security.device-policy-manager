@@ -92,17 +92,17 @@ int dpm_subscribe_zone_signal(dpm_client_h handle, dpm_zone_signal_cb callback, 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(callback, DPM_ERROR_INVALID_PARAMETER);
 
-    /* TODO : should implement */
-
-    return DPM_ERROR_NOT_SUPPORTED;
+    DevicePolicyClient &client = GetDevicePolicyClient(handle);
+    return client.subscribeSignal("Zone::signal", callback, user_data);
 }
 
-int dpm_unsubscribe_zone_signal(dpm_client_h handle, dpm_zone_signal_cb callback)
+int dpm_unsubscribe_zone_signal(dpm_client_h handle, int callback_id)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(callback, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(callback_id, DPM_ERROR_INVALID_PARAMETER);
 
-    /* TODO : should implement */
+    DevicePolicyClient &client = GetDevicePolicyClient(handle);
+    client.unsubscribeSignal("Zone::signal", callback_id);
 
-    return DPM_ERROR_NOT_SUPPORTED;
+    return DPM_ERROR_NONE;
 }
