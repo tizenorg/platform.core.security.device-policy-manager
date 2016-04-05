@@ -194,4 +194,13 @@ void Service::onMessageProcess(const std::shared_ptr<Connection>& connection)
     }
 }
 
+void Service::addAsyncWork(std::function<void()>&& task)
+{
+    try {
+        workqueue.submit(std::move(task));
+    } catch (runtime::Exception& e) {
+        std::cerr << e.what() << std::endl;
+    }
+}
+
 } // namespace rmi

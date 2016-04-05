@@ -83,6 +83,8 @@ public:
     void setMethodHandler(const std::string& method,
                           const typename MethodHandler<Type, Args...>::type& handler);
 
+    void addAsyncWork(std::function<void()>&& task);
+
     void createNotification(const std::string& name);
     int subscribeNotification(const std::string& name);
     int unsubscribeNotification(const std::string& name, const int id);
