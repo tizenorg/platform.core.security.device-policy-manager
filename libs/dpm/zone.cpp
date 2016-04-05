@@ -87,22 +87,23 @@ int dpm_get_zone_state(dpm_client_h handle, const char* name)
     return DPM_ERROR_INVALID_PARAMETER;
 }
 
-int dpm_subscribe_zone_signal(dpm_client_h handle, dpm_zone_signal_cb callback, void* user_data)
+int dpm_subscribe_zone_signal(dpm_client_h handle, const char* signal, dpm_zone_signal_cb callback, void* user_data)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(callback, DPM_ERROR_INVALID_PARAMETER);
 
-    /* TODO : should implement */
+    std::string sigName = "Zone::";
+    sigName += signal;
 
-    return DPM_ERROR_NOT_SUPPORTED;
+    DevicePolicyClient &client = GetDevicePolicyClient(handle);
+    return client.subscribeSignal(sigName, callback, user_data);
 }
 
-int dpm_unsubscribe_zone_signal(dpm_client_h handle, dpm_zone_signal_cb callback)
+int dpm_unsubscribe_zone_signal(dpm_client_h handle, int callback_id)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(callback, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(callback_id, DPM_ERROR_INVALID_PARAMETER);
 
-    /* TODO : should implement */
-
-    return DPM_ERROR_NOT_SUPPORTED;
+    DevicePolicyClient &client = GetDevicePolicyClient(handle);
+    return client.unsubscribeSignal(callback_id);
 }
