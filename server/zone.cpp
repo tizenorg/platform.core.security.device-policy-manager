@@ -104,6 +104,8 @@ Zone::Zone(PolicyControlContext& ctx)
     manager.registerNonparametricMethod(this, (std::vector<std::string>)(Zone::getZoneList)());
 
     manager.registerParametricMethod(this, (int)(Zone::getZoneState)(std::string));
+
+    manager.createNotification("Zone::signal");
 }
 
 Zone::~Zone()
