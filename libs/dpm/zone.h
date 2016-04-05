@@ -175,20 +175,19 @@ DPM_API int dpm_get_zone_state(dpm_client_h handle, const char *name);
 /**
  * @brief       Called when a zone signal occurs
  */
-typedef void(*dpm_zone_signal_cb)(zone_state_e event, const char* name, void *info, void *user_data);
+typedef void(*dpm_zone_signal_cb)(const char* name, const char* object, void *user_data);
 
 /**
  * @brief       API to attach a listener to get zone signal.
  * @details     Each zone signals are sent when zone state is changed.
  *              To catch the events, listener should be added in advance.
  * @since_tizen 3.0
- * @param[in]   handle the device policy client handle
+ * @param[in]   handle the device policy client handlei
+ * @param[in]   signal The signal of the container to be monitored
  * @param[in]   callback The listener function to be called
  * @param[in]   user_data The user data passed to the listener function
- * @return      #DPM_ERROR_NONE on success, otherwise a negative value
- * @retval      #DPM_ERROR_NONE Successful
+ * @return      Listener identifier on success, otherwise negative value
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
- * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
  * @post
@@ -196,7 +195,7 @@ typedef void(*dpm_zone_signal_cb)(zone_state_e event, const char* name, void *in
  * @see         dpm_destroy_client()
  * @see         dpm_subscribe_zone_signal()
  */
-DPM_API int dpm_subscribe_zone_signal(dpm_client_h handle, dpm_zone_signal_cb callback, void* user_data);
+DPM_API int dpm_subscribe_zone_signal(dpm_client_h handle, const char* signal, dpm_zone_signal_cb callback, void* user_data);
 
 /**
  * @brief       API to detach the listener from zone signal.
@@ -204,11 +203,10 @@ DPM_API int dpm_subscribe_zone_signal(dpm_client_h handle, dpm_zone_signal_cb ca
  *              though zone state is changed.
  * @since_tizen 3.0
  * @param[in]   handle the device policy client handle
- * @param[in]   callback The listener function to be removed
+ * @param[in]   callback_id The listener identifier to be removed
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
- * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_create_client()
  * @post
@@ -216,7 +214,7 @@ DPM_API int dpm_subscribe_zone_signal(dpm_client_h handle, dpm_zone_signal_cb ca
  * @see         dpm_destroy_client()
  * @see         dpm_unsubscribe_zone_signal()
  */
-DPM_API int dpm_unsubscribe_zone_signal(dpm_client_h handle, dpm_zone_signal_cb callback);
+DPM_API int dpm_unsubscribe_zone_signal(dpm_client_h handle, int callback_id);
 
 /**
  * @}

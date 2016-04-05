@@ -18,8 +18,8 @@
 
 namespace {
 
-const std::string POLICY_SUBSCRIBER_REGISTER = "Server::registerNotificationSubscriber";
-const std::string POLICY_SUBSCRIBER_UNREGISTER = "Server::unregisterNotificationSubscriber";
+const std::string SUBSCRIBER_REGISTER = "Server::registerNotificationSubscriber";
+const std::string SUBSCRIBER_UNREGISTER = "Server::unregisterNotificationSubscriber";
 
 const std::string POLICY_MANAGER_ADDRESS = "/tmp/.device-policy-manager";
 
@@ -60,15 +60,32 @@ int DevicePolicyClient::subscribePolicyChange(const std::string& name,
                                               const PolicyChangeListener& listener,
                                               void* data)
 {
-    auto listenerDispatcher = [listener, data](const std::string& policy, std::string state) {
+    auto listenerDispatcher = [listener, data](const std::string& policy, std::string &state) {
         listener(policy.c_str(), state.c_str(), data);
     };
 
-    return client->subscribe<std::string, std::string>(POLICY_SUBSCRIBER_REGISTER,
+    return client->subscribe<std::string, std::string>(SUBSCRIBER_REGISTER,
                                                        name, listenerDispatcher);
 }
 
 void DevicePolicyClient::unsubscribePolicyChange(const std::string& name, int subscriberId)
 {
-    client->unsubscribe(POLICY_SUBSCRIBER_UNREGISTER, name, subscriberId);
+    client->unsubscribe(SUBSCRIBER_UNREGISTER, name, subscriberId);
+}
+
+int DevicePolicyClient::subscribeSignal(const std::string& name,
+                                        const SignalListener& listener,
+                                        void* data)
+{
+    auto listenerDispatcher = [listener, data](std::string &name, std::string &from, std::string &object) {
+        listener(from.c_str(), object.c_str(), data);
+    };
+
+    return client->subscribe<std::string, std::string, std::string>
+                            (SUBSCRIBER_REGISTER, name, listenerDispatcher);
+}
+
+void DevicePolicyClient::unsubscribeSignal(const std::string& name, int subscriberId)
+{
+    client->unsubscribe(SUBSCRIBER_UNREGISTER, name, subscriberId);
 }
