@@ -113,6 +113,8 @@ void Service::setCloseConnectionCallback(const ConnectionCallback& closeCallback
 
 void Service::createNotification(const std::string& name)
 {
+    std::lock_guard<std::mutex> lock(notificationLock);
+
     if (notificationRegistry.count(name)) {
         throw runtime::Exception("Notification already registered");
     }
@@ -122,23 +124,28 @@ void Service::createNotification(const std::string& name)
 
 int Service::subscribeNotification(const std::string& name)
 {
-    auto closeHandler = [&](int fd, runtime::Mainloop::Event event) {
+    auto closeHandler = [&, name](int fd, runtime::Mainloop::Event event) {
         if ((event & EPOLLHUP) || (event & EPOLLRDHUP)) {
-            std::cout << "Peer has been closed" << std::endl;
             unsubscribeNotification(name, fd);
             return;
         }
     };
 
+    notificationLock.lock();
     if (!notificationRegistry.count(name)) {
+        notificationLock.unlock();
         return -1;
     }
 
     Notification& notification = notificationRegistry[name];
-    int channel = notification.createSubscriber();
-    if (channel > 0) {
-        mainloop.addEventSource(channel, EPOLLHUP | EPOLLRDHUP, closeHandler);
-        return channel;
+    notificationLock.unlock();
+
+    try {
+        SubscriptionId slot = notification.createSubscriber();
+        mainloop.addEventSource(slot.first, EPOLLHUP | EPOLLRDHUP, closeHandler);
+        return slot.second;
+    } catch (runtime::Exception& e) {
+        return -1;
     }
 
     return -1;
@@ -146,12 +153,19 @@ int Service::subscribeNotification(const std::string& name)
 
 int Service::unsubscribeNotification(const std::string& name, const int id)
 {
-    if (notificationRegistry.count(name)) {
-        Notification& notification = notificationRegistry[name];
-        notification.removeSubscriber(id);
+    notificationLock.lock();
 
-        mainloop.removeEventSource(id);
+    if (!notificationRegistry.count(name)) {
+        notificationLock.unlock();
+        return -1;
     }
+
+    Notification& notification = notificationRegistry[name];
+    notificationLock.unlock();
+
+    notification.removeSubscriber(id);
+
+    mainloop.removeEventSource(id);
 
     return 0;
 }

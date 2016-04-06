@@ -52,7 +52,7 @@ FileDescriptor Server::registerNotificationSubscriber(const std::string& name)
 
 int Server::unregisterNotificationSubscriber(const std::string& name, int id)
 {
-    return 0;
+    return service->unsubscribeNotification(name, id);
 }
 
 Server& Server::instance()

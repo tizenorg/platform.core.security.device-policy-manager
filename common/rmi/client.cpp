@@ -35,9 +35,10 @@ void Client::connect()
     dispatcher = std::thread([this] { mainloop.run(); });
 }
 
-void Client::unsubscribe(const std::string& provider, const std::string& name, int id)
+int Client::unsubscribe(const std::string& provider, const std::string& name, int id)
 {
-    ::close(id);
+    mainloop.removeEventSource(id);
+    return 0;
 }
 
 int Client::subscribe(const std::string& provider, const std::string& name)

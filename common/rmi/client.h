@@ -22,7 +22,6 @@
 #include <memory>
 
 #include "error.h"
-#include "object-latch.h"
 #include "message.h"
 #include "connection.h"
 #include "mainloop.h"
@@ -47,7 +46,7 @@ public:
     int subscribe(const std::string& provider, const std::string& name,
                   const typename MethodHandler<void, Args...>::type& handler);
 
-    void unsubscribe(const std::string& provider, const std::string& name, int handle);
+    int unsubscribe(const std::string& provider, const std::string& name, int handle);
 
     template<typename Type, typename... Args>
     Type methodCall(const std::string& method, Args&&... args);
@@ -61,9 +60,16 @@ private:
 
 template<typename... Args>
 int Client::subscribe(const std::string& provider, const std::string& name,
-                       const typename MethodHandler<void, Args...>::type& handler)
+                      const typename MethodHandler<void, Args...>::type& handler)
 {
-    auto callback = [handler, this](int fd, runtime::Mainloop::Event event) {
+    int id = subscribe(provider, name);
+    if (id < 0) {
+        return -1;
+    }
+
+    std::shared_ptr<Socket> transport = std::make_shared<Socket>(id);
+
+    auto callback = [handler, transport, this](int fd, runtime::Mainloop::Event event) {
         if ((event & EPOLLHUP) || (event & EPOLLRDHUP)) {
             mainloop.removeEventSource(fd);
             return;
@@ -71,8 +77,7 @@ int Client::subscribe(const std::string& provider, const std::string& name,
 
         try {
             Message msg;
-            Socket transport(fd, false);
-            msg.decode(transport);
+            msg.decode(*transport);
 
             CallbackHolder<void, Args...> callback(handler);
             callback.dispatch(msg);
@@ -81,13 +86,9 @@ int Client::subscribe(const std::string& provider, const std::string& name,
         }
     };
 
-    int fd = subscribe(provider, name);
-    if (fd > 0) {
-        mainloop.addEventSource(fd, EPOLLIN | EPOLLHUP | EPOLLRDHUP, callback);
-        return 0;
-    }
+    mainloop.addEventSource(id, EPOLLIN | EPOLLHUP | EPOLLRDHUP, callback);
 
-    return -1;
+    return id;
 }
 
 template<typename Type, typename... Args>
