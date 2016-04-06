@@ -16,6 +16,8 @@
 
 #include <sys/types.h>
 #include <unistd.h>
+#include <signal.h>
+
 #include <aul.h>
 
 #include "launchpad.h"
@@ -32,6 +34,11 @@ Launchpad::Launchpad(const uid_t uid) :
     }
 }
 
+bool Launchpad::instantiated(const std::string& appid)
+{
+    return ::aul_app_is_running_for_uid(appid.c_str(), user);
+}
+
 int Launchpad::launch(const std::string& appid)
 {
     return launch(appid, Bundle());
@@ -44,4 +51,15 @@ int Launchpad::launch(const std::string& appid, const Bundle& bundle)
     }
 
     return 0;
+}
+
+void Launchpad::terminate(const std::string& appid)
+{
+    int pid = ::aul_app_get_pid_for_uid(appid.c_str(), user);
+    if (pid > 0) {
+        if (::aul_terminate_pid_for_uid(pid, user) < 0) {
+            WARN("Failed to terminate app PID=" + std::to_string(pid));
+            ::kill(pid, SIGKILL);
+        }
+    }
 }
