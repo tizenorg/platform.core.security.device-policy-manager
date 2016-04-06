@@ -21,11 +21,16 @@
 #include <vector>
 #include <mutex>
 #include <unordered_map>
+#include <utility>
+#include <memory>
 
 #include "socket.h"
 #include "message.h"
+#include "audit/logger.h"
 
 namespace rmi {
+
+typedef std::pair<int, int> SubscriptionId;
 
 class Notification {
 public:
@@ -34,15 +39,15 @@ public:
     Notification(const Notification&) = default;
     Notification(Notification&&);
 
-	int createSubscriber();
-    void removeSubscriber(const int id);
+    SubscriptionId createSubscriber();
+    int removeSubscriber(const int id);
 
 	template<typename... Args>
 	void notify(Args&&... args);
 
 private:
 	std::string signalName;
-	std::vector<Socket> subscribers;
+	std::vector<std::shared_ptr<Socket>> subscribers;
     std::mutex subscriberLock;
 };
 
@@ -54,11 +59,11 @@ void Notification::notify(Args&&... args)
 
     std::lock_guard<std::mutex> lock(subscriberLock);
 
-    for (Socket& subscriber : subscribers) {
+    for (std::shared_ptr<Socket>& subscriber : subscribers) {
         try {
-            msg.encode(subscriber);
+            msg.encode(*subscriber);
         } catch (runtime::Exception& e) {
-            std::cout << "Exception sending notification: " << e.what() << std::endl;
+            ERROR(e.what());
         }
     }
 }

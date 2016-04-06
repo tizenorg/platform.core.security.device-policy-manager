@@ -39,21 +39,33 @@ Notification::Notification(Notification&& rhs) :
 {
 }
 
-int Notification::createSubscriber()
+SubscriptionId Notification::createSubscriber()
 {
     int fds[2] = {-1, -1};
     if (::socketpair(AF_UNIX, SOCK_STREAM, 0, fds) == -1) {
-        return -1;
+        throw runtime::Exception("Failed to create socket pair");
     }
 
     std::lock_guard<std::mutex> lock(subscriberLock);
-	subscribers.push_back(Socket(fds[0]));
+	subscribers.emplace_back(std::make_shared<Socket>(fds[0]));
 
-    return fds[1];
+    return SubscriptionId(fds[0], fds[1]);
 }
 
-void Notification::removeSubscriber(const int id)
+int Notification::removeSubscriber(const int id)
 {
+    std::lock_guard<std::mutex> lock(subscriberLock);
+
+    std::vector<std::shared_ptr<Socket>>::iterator it = subscribers.begin();
+
+    while (it != subscribers.end()) {
+       if ((*it)->getFd() == id) {
+            subscribers.erase(it);
+            return 0;
+       }
+    }
+
+    return -1;
 }
 
 } // namespace rmi
