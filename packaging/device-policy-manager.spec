@@ -8,6 +8,7 @@ Group:   Security/Other
 BuildRequires: gcc
 BuildRequires: cmake
 BuildRequires: pam-devel
+BuildRequires: gettext-tools
 BuildRequires: pkgconfig(glib-2.0)
 BuildRequires: pkgconfig(libxml-2.0)
 BuildRequires: pkgconfig(sqlite3)
@@ -185,6 +186,30 @@ mkdir -p %{setup_home}/data
 %{setup_home}/res/data/.sample-BundleManifest.xml
 %{setup_home}/data
 %{TZ_SYS_RO_PACKAGES}/org.tizen.zone-setup-wizard.xml
+
+## DPM Syspopup Package #####################################################
+%package -n org.tizen.dpm-syspopup
+Summary: Tizen DPM system popup Interface
+Group: Security/Other
+BuildRequires: pkgconfig(efl-extension)
+BuildRequires: pkgconfig(elementary)
+BuildRequires: pkgconfig(capi-appfw-application)
+BuildRequires: pkgconfig(capi-system-system-settings)
+
+%description -n org.tizen.dpm-syspopup
+Tizen DPM system popup interface package
+
+%post -n org.tizen.dpm-syspopup
+%{_sbindir}/ldconfig
+
+%postun -n org.tizen.dpm-syspopup
+%{_sbindir}/ldconfig
+
+%files -n org.tizen.dpm-syspopup
+%defattr(-,root,root,-)
+%{TZ_SYS_RO_APP}/org.tizen.dpm-syspopup/bin/*
+%{TZ_SYS_RO_APP}/org.tizen.dpm-syspopup/res/locale/*
+%{TZ_SYS_RO_PACKAGES}/org.tizen.dpm-syspopup.xml
 
 ## PAM Plugin Package #######################################################
 %package -n dpm-pam-zone
