@@ -55,12 +55,13 @@ DPM_API int dpm_add_policy_change_listener(dpm_client_h handle, const char* name
     assert(handle);
 
     DevicePolicyClient &client = GetDevicePolicyClient(handle);
-    client.subscribePolicyChange(name, handler, user_data);
-
-    return 0;
+    return client.subscribePolicyChange(name, handler, user_data);
 }
 
-DPM_API void dpm_remove_policy_change_listener(dpm_client_h handle, const char* name, int id)
+DPM_API void dpm_remove_policy_change_listener(dpm_client_h handle, int id)
 {
     assert(handle);
+
+    DevicePolicyClient &client = GetDevicePolicyClient(handle);
+    client.unsubscribePolicyChange(id);
 }

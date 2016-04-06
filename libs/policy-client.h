@@ -37,7 +37,7 @@ public:
     void disconnect() noexcept;
 
     int subscribePolicyChange(const std::string& name, const PolicyChangeListener& listener, void* data);
-    void unsubscribePolicyChange(const std::string& name, int subscriberId);
+    int unsubscribePolicyChange(int subscriberId);
 
     template<typename Policy, typename... Args>
     Policy createPolicyInterface(Args&&... args) noexcept

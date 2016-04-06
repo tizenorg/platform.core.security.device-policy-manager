@@ -149,14 +149,13 @@ DPM_API int dpm_add_policy_change_listener(dpm_client_h handle,
  *              required.
  * @since_tizen 3.0
  * @param[in]   handle Device Policy Client Handle
- * @param[in]   name Policy policy name to unsubscribe
  * @param[in]   id Policy change listener identifier
  * @return      None
  * @pre         The handle must be created by dpm_create_client()
  * @see         dpm_create_client()
  * @see         dpm_add_policy_change_listener()
  */
-DPM_API void dpm_remove_policy_change_listener(dpm_client_h handle, const char* name, int id);
+DPM_API void dpm_remove_policy_change_listener(dpm_client_h handle, int id);
 /**
  * @}
  */

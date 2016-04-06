@@ -68,7 +68,7 @@ int DevicePolicyClient::subscribePolicyChange(const std::string& name,
                                                        name, listenerDispatcher);
 }
 
-void DevicePolicyClient::unsubscribePolicyChange(const std::string& name, int subscriberId)
+int DevicePolicyClient::unsubscribePolicyChange(int subscriberId)
 {
-    client->unsubscribe(POLICY_SUBSCRIBER_UNREGISTER, name, subscriberId);
+    return client->unsubscribe(POLICY_SUBSCRIBER_UNREGISTER, subscriberId);
 }
