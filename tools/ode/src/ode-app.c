@@ -21,18 +21,17 @@
 
 #include "ode-app.h"
 
-static void win_delete_request_cb(void* data, Evas_Object* obj, void* event_info)
+static void __win_delete_request_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	ui_app_exit();
 }
 
-static void ug_layout_cb(ui_gadget_h ug, enum ug_mode mode, void* priv)
+static void __ug_layout_cb(ui_gadget_h ug, enum ug_mode mode, void *priv)
 {
-	Evas_Object* ug_layout;
-	ug_layout = (Evas_Object*) ug_get_layout(ug);
-	if (ug_layout == NULL) {
-		return ;
-	}
+	Evas_Object *ug_layout;
+	ug_layout = (Evas_Object *) ug_get_layout(ug);
+	if (ug_layout == NULL)
+		return;
 
 	switch (mode) {
 	case UG_MODE_FULLVIEW:
@@ -43,20 +42,21 @@ static void ug_layout_cb(ui_gadget_h ug, enum ug_mode mode, void* priv)
 		break;
 	}
 
+	return;
 }
 
-static void ug_destroy_cb(ui_gadget_h ug, void* priv)
+static void __ug_destroy_cb(ui_gadget_h ug, void *priv)
 {
 	ug_destroy(ug);
 	ui_app_exit();
 }
 
-static int create_ug(const char* ug_name)
+static int __create_ug(const char *ug_name)
 {
 	struct ug_cbs cbs;
 
-	cbs.layout_cb = ug_layout_cb;
-	cbs.destroy_cb = ug_destroy_cb;
+	cbs.layout_cb = __ug_layout_cb;
+	cbs.destroy_cb = __ug_destroy_cb;
 	cbs.priv = NULL;
 
 	if (ug_name == NULL) {
@@ -72,9 +72,9 @@ static int create_ug(const char* ug_name)
 	return 0;
 }
 
-static void create_ui_layout(void)
+static void __create_ui_layout(void)
 {
-	Evas_Object* win, * conform, * layout;
+	Evas_Object *win, *conform, *layout;
 
 	win = elm_win_add(NULL, "ode-app", ELM_WIN_BASIC);
 	elm_win_conformant_set(win, EINA_TRUE);
@@ -82,10 +82,10 @@ static void create_ui_layout(void)
 
 	if (elm_win_wm_rotation_supported_get(win)) {
 		int rots[4] = { 0, 90, 180, 270 };
-		elm_win_wm_rotation_available_rotations_set(win, (const int*)(&rots), 4);
+		elm_win_wm_rotation_available_rotations_set(win, (const int *)(&rots), 4);
 	}
 
-	evas_object_smart_callback_add(win, "delete, request", win_delete_request_cb, NULL);
+	evas_object_smart_callback_add(win, "delete, request", __win_delete_request_cb, NULL);
 
 	elm_win_indicator_mode_set(win, ELM_WIN_INDICATOR_SHOW);
 	elm_win_indicator_opacity_set(win, ELM_WIN_INDICATOR_OPAQUE);
@@ -105,75 +105,69 @@ static void create_ui_layout(void)
 
 	UG_INIT_EFL(win, UG_OPT_INDICATOR_ENABLE);
 
-	return ;
+	return;
 }
 
-static bool app_create(void* data)
+static bool __app_create(void *data)
 {
 	return true;
 }
 
-static void
-app_control(app_control_h app_control, void* data)
+static void __app_control(app_control_h app_control, void *data)
 {
-	char* ug_type = (char*) data;
+	char *ug_type = (char *) data;
 	int ret = 0;
 
 	ret = app_control_get_extra_data(app_control, "viewtype", &ug_type);
-	if (ret != APP_CONTROL_ERROR_NONE) {
+	if (ret != APP_CONTROL_ERROR_NONE)
 		dlog_print(DLOG_ERROR, LOG_TAG, "failed to get bundle data. error:%d", ret);
-	}
 
 	elm_app_base_scale_set(1.8);
 
-	create_ui_layout();
+	__create_ui_layout();
 
-	if (!strcmp(ug_type, "encryption")) {
-		ret = create_ug("lockscreen-options");
-	} else if (!strcmp(ug_type, "decryption")) {
-		ret = create_ug("setting-privacy-efl");
-	}
+	if (!strcmp(ug_type, "encryption"))
+		ret = __create_ug(ENCRYPTION_UG);
+	else if (!strcmp(ug_type, "decryption"))
+		ret = __create_ug(DECRYPTION_UG);
 
-	if (ret != 0) {
+	if (ret != 0)
 		ui_app_exit();
-	}
 
-	return ;
+	return;
 }
 
-static void
-app_pause(void* data)
+static void __app_pause(void *data)
 {
-	/* Take necessary actions when application becomes invisible. */
+	return;
 }
 
-static void
-app_resume(void* data)
+static void __app_resume(void *data)
 {
-	/* Take necessary actions when application becomes visible. */
+	return;
 }
 
-static void app_terminate(void* data)
+static void __app_terminate(void *data)
 {
+	return;
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
 	char ug_name[1024] = "\0";
 	int ret = 0;
 
-	ui_app_lifecycle_callback_s event_callback = {0, };
+	ui_app_lifecycle_callback_s event_callback = { 0, };
 
-	event_callback.create = app_create;
-	event_callback.terminate = app_terminate;
-	event_callback.pause = app_pause;
-	event_callback.resume = app_resume;
-	event_callback.app_control = app_control;
+	event_callback.create = __app_create;
+	event_callback.terminate = __app_terminate;
+	event_callback.pause = __app_pause;
+	event_callback.resume = __app_resume;
+	event_callback.app_control = __app_control;
 
 	ret = ui_app_main(argc, argv, &event_callback, ug_name);
-	if (ret != APP_ERROR_NONE) {
+	if (ret != APP_ERROR_NONE)
 		dlog_print(DLOG_ERROR, LOG_TAG, "ui_app_main() is failed. err = %d", ret);
-	}
 
 	return 0;
 }
