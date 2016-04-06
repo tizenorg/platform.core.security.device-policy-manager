@@ -139,6 +139,7 @@ private:
 
     runtime::ThreadPool workqueue;
     std::mutex stateLock;
+    std::mutex notificationLock;
 
     static thread_local ProcessingContext processingContext;
 };
