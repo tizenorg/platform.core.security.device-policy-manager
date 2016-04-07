@@ -199,4 +199,5 @@ PAM Plugin for zone policy in device policy manager and CLI tool
 %defattr(600,root,root,700)
 %attr(700,root,root) %{_libdir}/security/pam_*.so
 %attr(700,root,root) %{_sbindir}/nsattach
+%attr(700,root,root) %{_sbindir}/activate-zone
 %config /etc/pam.d/*
