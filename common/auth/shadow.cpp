@@ -28,9 +28,10 @@
 #include "audit/logger.h"
 
 #define TEMPORARY_UMASK(mode)   \
-        std::unique_ptr<mode_t, void(*)(mode_t *)> umask_##mode(new mode_t, \
-        [](mode_t *prev) {umask(*prev);}); \
-        *umask_##mode = mode;
+        std::unique_ptr<mode_t, void(*)(mode_t *)> umask_##mode( \
+        (mode_t*)malloc(sizeof(mode_t)), \
+        [](mode_t *prev) {umask(*prev); free(prev);}); \
+        *umask_##mode = umask(mode);
 
 namespace runtime {
 
