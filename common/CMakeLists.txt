@@ -26,6 +26,7 @@ SET (COMMON_SOURCES     ${DPM_COMMON}/error.cpp
                         ${DPM_COMMON}/rmi/socket.cpp
                         ${DPM_COMMON}/rmi/client.cpp
                         ${DPM_COMMON}/rmi/message.cpp
+                        ${DPM_COMMON}/rmi/message-composer.cpp
                         ${DPM_COMMON}/rmi/service.cpp
                         ${DPM_COMMON}/rmi/connection.cpp
                         ${DPM_COMMON}/rmi/notification.cpp
