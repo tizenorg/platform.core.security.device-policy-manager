@@ -235,7 +235,7 @@ int Zone::createZone(const std::string& name, const std::string& setupWizAppid)
 
             //create systemd user unit directory
             runtime::File systemdUserUnit(homeDir + "/.config/systemd/user");
-            dir.makeDirectory();
+            systemdUserUnit.makeDirectory(true);
 
             //initialize package db
             execute("/usr/bin/pkg_initdb",
