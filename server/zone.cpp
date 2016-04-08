@@ -238,6 +238,11 @@ int Zone::createZone(const std::string& name, const std::string& setupWizAppid)
             runtime::File systemdUserUnit(homeDir + "/.config/systemd/user");
             systemdUserUnit.makeDirectory(true);
 
+            //mask systemd user unit
+            ret = symlink("/dev/null",
+                      (systemdUserUnit.getPath() + "/starter.service").c_str());            if (ret != 0)
+               throw runtime::Exception("Failed to mask starter.service");
+
             //initialize package db
             execute("/usr/bin/pkg_initdb",
                     "pkg_initdb", std::to_string(user.getUid()));
