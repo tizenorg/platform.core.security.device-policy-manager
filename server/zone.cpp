@@ -51,11 +51,6 @@
 #define SHARED_SMACKLABEL   "User::App::Shared"
 #define APP_SMACKLABEL   "User::Pkg::"
 
-#define TEMPORARY_UMASK(mode)   \
-        std::unique_ptr<mode_t, void(*)(mode_t *)> umask_##mode(new mode_t, \
-        [](mode_t *prev) {umask(*prev);}); \
-        *umask_##mode = mode;
-
 namespace DevicePolicyManager {
 
 static int setZoneState(uid_t id, int state)
@@ -138,7 +133,6 @@ int Zone::createZone(const std::string& name, const std::string& setupWizAppid)
 
     try {
         //create a directory for zone setup
-        TEMPORARY_UMASK(0000);
         provisionDir.makeDirectory(true);
         runtime::Smack::setAccess(provisionDir, APP_SMACKLABEL + setupWizAppid);
 
@@ -158,8 +152,10 @@ int Zone::createZone(const std::string& name, const std::string& setupWizAppid)
     auto create = [&manager, name, setupWizAppid, provisionDirPath] {
         std::unique_ptr<xml::Document> bundleXml;
         xml::Node::NodeList nodes;
+        mode_t old_mask;
         int ret;
 
+        old_mask = ::umask(0);
         try {
             //attach a directory for inotify
             int fd = inotify_init();
@@ -218,7 +214,7 @@ int Zone::createZone(const std::string& name, const std::string& setupWizAppid)
                 {TZ_SYS_HOME, NULL},
             };
 
-            TEMPORARY_UMASK(0022);
+            old_mask = ::umask(0022);
 
             ::tzplatform_set_user(user.getUid());
             for (int i = 0; dirs[i].dir != TZ_SYS_HOME; i++) {
@@ -269,15 +265,17 @@ int Zone::createZone(const std::string& name, const std::string& setupWizAppid)
             //TODO: write container owner info
 
             //write manifest file
+            old_mask = ::umask(0077);
             bundleXml->write(ZONE_MANIFEST_DIR + name + ".xml", "UTF-8", true);
 
             //unlock the user
             setZoneState(user.getUid(), 1);
+
+            manager.notify("Zone::created", name, std::string());
         } catch (runtime::Exception& e) {
             ERROR(e.what());
         }
-
-        manager.notify("Zone::created", name, std::string());
+        ::umask(old_mask);
     };
 
     std::thread asyncWork(create);
@@ -335,11 +333,12 @@ int Zone::removeZone(const std::string& name)
             user.remove();
 
             bundle.remove();
+
+            manager.notify("Zone::removed", name, std::string());
         } catch (runtime::Exception& e) {
             ERROR(e.what());
             return;
         }
-        manager.notify("Zone::removed", name, std::string());
     };
 
     std::thread asyncWork(remove);

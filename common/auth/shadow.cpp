@@ -27,11 +27,6 @@
 #include "filesystem.h"
 #include "audit/logger.h"
 
-#define TEMPORARY_UMASK(mode)   \
-        std::unique_ptr<mode_t, void(*)(mode_t *)> umask_##mode(new mode_t, \
-        [](mode_t *prev) {umask(*prev);}); \
-        *umask_##mode = mode;
-
 namespace runtime {
 
 //PwdFileLock
@@ -99,9 +94,10 @@ void Shadow::remove(const std::string& filename, const element& value,
 {
     std::string tmpfilename = filename + ".tmp";
     pwdStruct* ppwd;
+    mode_t old_mask;
     struct stat st;
 
-    TEMPORARY_UMASK(0777);
+    old_mask = ::umask(0777);
 
     std::unique_ptr<FILE, void(*)(FILE*)> fp_tmp_pwd(
         ::fopen(tmpfilename.c_str(), "w"),
@@ -111,6 +107,8 @@ void Shadow::remove(const std::string& filename, const element& value,
         }
         ::fclose(fp);
     });
+
+    ::umask(old_mask);
 
     if (fp_tmp_pwd.get() == NULL) {
         throw runtime::Exception("Tmp file for shadow create error");
@@ -122,8 +120,14 @@ void Shadow::remove(const std::string& filename, const element& value,
 
     PwdFileLock pwdLock;
 
-    std::unique_ptr<FILE, decltype(&::fclose)> fp_pwd
-    (::fopen(filename.c_str(), "r"), &::fclose);
+    std::unique_ptr<FILE, void(*)(FILE*)> fp_pwd(
+        ::fopen(filename.c_str(), "r"),
+    [](FILE * fp) {
+        if (fp == NULL) {
+            return;
+        }
+        ::fclose(fp);
+    });
 
     if (fp_pwd.get() == NULL) {
         throw runtime::Exception("shadow file open error");
