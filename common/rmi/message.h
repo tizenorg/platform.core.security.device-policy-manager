@@ -24,154 +24,13 @@
 #include <atomic>
 #include <deque>
 
+#include "message-composer.h"
+
 #include "reflection.h"
 #include "serialize.h"
 #include "file-descriptor.h"
 
 namespace rmi {
-
-class MemoryBlock {
-public:
-    MemoryBlock(size_t caps = 1024) :
-        capacity(caps),
-        produce(0),
-        consume(0),
-        buffer(new char[caps])
-    {
-    }
-
-    MemoryBlock(const MemoryBlock& rhs) :
-        capacity(rhs.capacity),
-        produce(rhs.produce),
-        consume(rhs.consume),
-        buffer(new char[rhs.capacity])
-    {
-        std::copy(rhs.buffer + consume, rhs.buffer + produce, buffer + consume);
-    }
-
-    MemoryBlock(MemoryBlock&& rhs)
-        : capacity(0),
-          produce(0),
-          consume(0),
-          buffer(nullptr)
-    {
-        buffer = rhs.buffer;
-        capacity = rhs.capacity;
-        produce = rhs.produce;
-        consume = rhs.consume;
-
-        // Release buffer pointer from the source object so that
-        // the destructor does not free the memory multiple times.
-
-        rhs.buffer = nullptr;
-        rhs.produce = 0;
-        rhs.consume = 0;
-    }
-
-    ~MemoryBlock()
-    {
-        if (buffer != nullptr) {
-            delete[] buffer;
-        }
-    }
-
-    MemoryBlock& operator=(const MemoryBlock& rhs)
-    {
-        if (this != &rhs) {
-            delete[] buffer;
-
-            capacity = rhs.capacity;
-            produce = rhs.produce;
-            consume = rhs.consume;
-            buffer = new char[capacity];
-            std::copy(rhs.buffer + consume, rhs.buffer + produce, buffer + consume);
-        }
-
-        return *this;
-    }
-
-    MemoryBlock& operator=(MemoryBlock&& rhs)
-    {
-        if (this != &rhs) {
-            // Free existing buffer
-            delete[] buffer;
-
-            // Copy the buffer pointer and its attributes from the
-            // source object.
-            buffer = rhs.buffer;
-            produce = rhs.produce;
-            consume = rhs.consume;
-            capacity = rhs.capacity;
-
-            // Release buffer pointer from the source object so that
-            // the destructor does not free the memory multiple times.
-            rhs.buffer = nullptr;
-            rhs.produce = 0;
-            rhs.consume = 0;
-            rhs.capacity = 0;
-        }
-
-        return *this;
-    }
-
-    void write(const void* ptr, const size_t sz)
-    {
-        size_t bytes = sz;
-        if ((produce + bytes) > capacity) {
-            bytes = capacity - produce;
-        }
-
-        ::memcpy(reinterpret_cast<char *>(buffer + produce), ptr, bytes);
-        produce += bytes;
-    }
-
-    void read(void* ptr, const size_t sz)
-    {
-        size_t bytes = sz;
-        if ((consume + bytes) > produce) {
-            bytes = produce - consume;
-        }
-
-        ::memcpy(ptr, reinterpret_cast<char *>(buffer) + consume, bytes);
-        consume += bytes;
-
-        // Reset cursors if there is no data
-        if (consume == produce) {
-            consume = produce = 0;
-        }
-    }
-
-    void reserve(size_t size)
-    {
-        produce = size;
-    }
-
-    void reset()
-    {
-        produce = consume = 0;
-    }
-
-    char* begin() const
-    {
-        return buffer + consume;
-    }
-
-    char* end() const
-    {
-        return buffer + produce;
-    }
-
-    size_t size() const
-    {
-        return (end() - begin());
-    }
-
-private:
-    size_t capacity;
-    size_t produce;
-    size_t consume;
-    char *buffer;
-};
 
 class Message {
 public:
@@ -291,7 +150,7 @@ private:
     };
 
     MessageSignature signature;
-    MemoryBlock buffer;
+    MessageComposer buffer;
     std::deque<FileDescriptor> fileDescriptors;
 
     static std::atomic<unsigned int> sequence;
@@ -326,7 +185,7 @@ void Message::unpackParameters(F& first, R&... rest)
 template<typename DataType>
 void Message::enclose(DataType&& data)
 {
-    runtime::Serializer<MemoryBlock> serializer(buffer);
+    runtime::Serializer<MessageComposer> serializer(buffer);
     runtime::SerializableArgument<DataType> arg(std::forward<DataType>(data));
     arg.accept(serializer);
 }
@@ -334,7 +193,7 @@ void Message::enclose(DataType&& data)
 template<typename DataType>
 void Message::disclose(DataType& data)
 {
-    runtime::Deserializer<MemoryBlock> deserializer(buffer);
+    runtime::Deserializer<MessageComposer> deserializer(buffer);
     runtime::DeserializableArgument<DataType> arg(data);
     arg.accept(deserializer);
 }
