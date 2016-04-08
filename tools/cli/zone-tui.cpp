@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
     }
 
     if (getuid() == 0) {
-        std::cerr << "this test should be done as non-root user" << std::endl;
+        std::cerr << "this tool should be done as non-root user" << std::endl;
         return EXIT_FAILURE;
     }
 
