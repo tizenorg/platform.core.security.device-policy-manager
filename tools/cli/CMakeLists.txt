@@ -15,3 +15,9 @@
 #
 
 INSTALL(FILES factory-reset DESTINATION bin)
+
+ADD_EXECUTABLE(zone-tui zone-tui.cpp)
+INCLUDE_DIRECTORIES(SYSTEM ${DPM_LIBS})
+TARGET_LINK_LIBRARIES(zone-tui dpm)
+
+INSTALL(FILES zone-tui DESTINATION bin)
