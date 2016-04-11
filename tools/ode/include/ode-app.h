@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __ODE_APP_H__
-#define __ODE_APP_H__
+#ifndef __ODE_H__
+#define __ODE_H__
 
 #include <stdio.h>
 
@@ -40,5 +40,7 @@
 #define PACKAGE "org.tizen.ode"
 #endif
 
+#define ENCRYPTION_UG "lockscreen-options"
+#define DECRYPTION_UG "setting-privacy-efl"
 
-#endif /* __ODE_APP_H__ */
+#endif /* __ODE_H__ */
