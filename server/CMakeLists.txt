@@ -25,6 +25,7 @@ SET(SOURCES	main.cpp
 			security.cpp
 			password.cpp
 			zone.cpp
+			wifi.cpp
 			app-bundle.cpp
 			syspopup.cpp
 			launchpad.cpp

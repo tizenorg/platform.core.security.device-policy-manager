@@ -25,6 +25,7 @@ SET(SOURCES policy-client.cpp
 			security.cpp
 			password.cpp
 			zone.cpp
+			wifi.cpp
 			dpm/client-handle.cpp
             dpm/security.cpp
 			dpm/password.cpp
