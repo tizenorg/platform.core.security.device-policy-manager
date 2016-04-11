@@ -103,17 +103,15 @@ void execute(const std::string& path, Args&&... args)
 Zone::Zone(PolicyControlContext& ctx)
     : context(ctx)
 {
-    rmi::Service& manager = context.getServiceManager();
+    context.registerParametricMethod(this, (int)(Zone::createZone)(std::string, std::string));
+    context.registerParametricMethod(this, (int)(Zone::removeZone)(std::string));
+    context.registerParametricMethod(this, (int)(Zone::lockZone)(std::string));
+    context.registerParametricMethod(this, (int)(Zone::unlockZone)(std::string));
+    context.registerNonparametricMethod(this, (std::vector<std::string>)(Zone::getZoneList)());
+    context.registerParametricMethod(this, (int)(Zone::getZoneState)(std::string));
 
-    manager.registerParametricMethod(this, (int)(Zone::createZone)(std::string, std::string));
-    manager.registerParametricMethod(this, (int)(Zone::removeZone)(std::string));
-    manager.registerParametricMethod(this, (int)(Zone::lockZone)(std::string));
-    manager.registerParametricMethod(this, (int)(Zone::unlockZone)(std::string));
-    manager.registerNonparametricMethod(this, (std::vector<std::string>)(Zone::getZoneList)());
-    manager.registerParametricMethod(this, (int)(Zone::getZoneState)(std::string));
-
-    manager.createNotification("Zone::created");
-    manager.createNotification("Zone::removed");
+    context.createNotification("Zone::created");
+    context.createNotification("Zone::removed");
 }
 
 Zone::~Zone()
@@ -123,7 +121,6 @@ Zone::~Zone()
 int Zone::createZone(const std::string& name, const std::string& setupWizAppid)
 {
     std::string provisionDirPath(ZONE_PROVISION_DIR + name);
-    rmi::Service& manager = context.getServiceManager();
     runtime::File provisionDir(provisionDirPath);
     int ret;
 
@@ -141,7 +138,7 @@ int Zone::createZone(const std::string& name, const std::string& setupWizAppid)
         ::bundle_add_str(b, "Name", name.c_str());
         ::bundle_add_str(b, "ProvisionDir", provisionDirPath.c_str());
 
-        ret = ::aul_launch_app_for_uid(setupWizAppid.c_str(), b, manager.getPeerUid());
+        ret = ::aul_launch_app_for_uid(setupWizAppid.c_str(), b, context.getPeerUid());
         ::bundle_free(b);
 
         if (ret < 0) {
@@ -149,7 +146,7 @@ int Zone::createZone(const std::string& name, const std::string& setupWizAppid)
         }
     } catch (runtime::Exception& e) {}
 
-    auto create = [&manager, name, setupWizAppid, provisionDirPath] {
+    auto create = [name, setupWizAppid, provisionDirPath, this] {
         std::unique_ptr<xml::Document> bundleXml;
         xml::Node::NodeList nodes;
         mode_t old_mask;
@@ -278,7 +275,7 @@ int Zone::createZone(const std::string& name, const std::string& setupWizAppid)
             //unlock the user
             setZoneState(user.getUid(), 1);
 
-            manager.notify("Zone::created", name, std::string());
+            context.notify("Zone::created", name, std::string());
         } catch (runtime::Exception& e) {
             ERROR(e.what());
         }
@@ -293,7 +290,6 @@ int Zone::createZone(const std::string& name, const std::string& setupWizAppid)
 
 int Zone::removeZone(const std::string& name)
 {
-    rmi::Service& manager = context.getServiceManager();
     int ret;
 
     //lock the user
@@ -302,7 +298,7 @@ int Zone::removeZone(const std::string& name)
         return -1;
     }
 
-    auto remove = [&manager, name] {
+    auto remove = [name, this] {
         runtime::File bundle(ZONE_MANIFEST_DIR + name + ".xml");
         std::unique_ptr<xml::Document> bundleXml;
         xml::Node::NodeList nodes;
@@ -341,7 +337,7 @@ int Zone::removeZone(const std::string& name)
 
             bundle.remove();
 
-            manager.notify("Zone::removed", name, std::string());
+            context.notify("Zone::removed", name, std::string());
         } catch (runtime::Exception& e) {
             ERROR(e.what());
             return;

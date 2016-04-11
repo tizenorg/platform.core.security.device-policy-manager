@@ -55,19 +55,17 @@ void WipeExternalMemoryCallback(int ret, void *user_data)
 Security::Security(PolicyControlContext& ctxt) :
     context(ctxt)
 {
-    rmi::Service& manager = context.getServiceManager();
-
-    manager.registerNonparametricMethod(this, (int)(Security::lockoutDevice));
-    manager.registerNonparametricMethod(this, (int)(Security::lockoutScreen));
-    manager.registerNonparametricMethod(this, (int)(Security::reboot));
-    manager.registerNonparametricMethod(this, (int)(Security::powerOffDevice));
-    manager.registerNonparametricMethod(this, (bool)(Security::isInternalStorageEncrypted));
-    manager.registerNonparametricMethod(this, (bool)(Security::isExternalStorageEncrypted));
-    manager.registerParametricMethod(this, (int)(Security::wipeData)(int));
-    manager.registerParametricMethod(this, (int)(Security::setInternalStorageEncryption)(bool));
-    manager.registerParametricMethod(this, (int)(Security::setExternalStorageEncryption)(bool));
-    manager.registerParametricMethod(this, (std::vector<std::string>)(Security::getFileNamesOnDevice)(std::string));
-    manager.registerParametricMethod(this, (std::vector<std::string>)(Security::getFileNamesWithAttributes)(std::string));
+    ctxt.registerNonparametricMethod(this, (int)(Security::lockoutDevice));
+    ctxt.registerNonparametricMethod(this, (int)(Security::lockoutScreen));
+    ctxt.registerNonparametricMethod(this, (int)(Security::reboot));
+    ctxt.registerNonparametricMethod(this, (int)(Security::powerOffDevice));
+    ctxt.registerNonparametricMethod(this, (bool)(Security::isInternalStorageEncrypted));
+    ctxt.registerNonparametricMethod(this, (bool)(Security::isExternalStorageEncrypted));
+    ctxt.registerParametricMethod(this, (int)(Security::wipeData)(int));
+    ctxt.registerParametricMethod(this, (int)(Security::setInternalStorageEncryption)(bool));
+    ctxt.registerParametricMethod(this, (int)(Security::setExternalStorageEncryption)(bool));
+    ctxt.registerParametricMethod(this, (std::vector<std::string>)(Security::getFileNamesOnDevice)(std::string));
+    ctxt.registerParametricMethod(this, (std::vector<std::string>)(Security::getFileNamesWithAttributes)(std::string));
 }
 
 Security::~Security()
@@ -81,7 +79,7 @@ int Security::lockoutDevice()
 
 int Security::lockoutScreen()
 {
-    Launchpad launchpad(context.getServiceManager().getPeerUid());
+    Launchpad launchpad(context.getPeerUid());
 
     if (launchpad.launch(APPID_LOCKSCREEN) < 0) {
         ERROR("Failed to launch lockscreen: " + APPID_LOCKSCREEN);
@@ -166,7 +164,7 @@ int Security::setInternalStorageEncryption(const bool encrypt)
         Bundle bundle;
         bundle.add("viewtype", encrypt ? "encryption" : "decryption");
 
-        Launchpad launchpad(context.getServiceManager().getPeerUid());
+        Launchpad launchpad(context.getPeerUid());
         if (launchpad.launch(APPID_DEVICE_ENCRYPTION, bundle) < 0) {
             ERROR("Failed to start device encryption");
             return -1;

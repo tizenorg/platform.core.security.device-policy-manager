@@ -99,34 +99,32 @@ int transformQualityFromDPMToAuth(const int dpm_quality, password_quality_type &
 Password::Password(PolicyControlContext &ctxt) :
     __context(ctxt)
 {
-    rmi::Service &manager = __context.getServiceManager();
-
-    manager.registerParametricMethod(this, (int)(Password::setPasswordQuality)(std::string, int));
-    manager.registerParametricMethod(this, (int)(Password::getPasswordQuality)(std::string));
-    manager.registerParametricMethod(this, (int)(Password::setPasswordMinimumLength)(std::string, int));
-    manager.registerParametricMethod(this, (int)(Password::getPasswordMinimumLength)(std::string));
-    manager.registerParametricMethod(this, (int)(Password::setMinPasswordComplexChars)(std::string, int));
-    manager.registerParametricMethod(this, (int)(Password::getMinPasswordComplexChars)(std::string));
-    manager.registerParametricMethod(this, (int)(Password::setMaximumFailedPasswordForWipe)(std::string, int));
-    manager.registerParametricMethod(this, (int)(Password::getMaximumFailedPasswordForWipe)(std::string));
-    manager.registerParametricMethod(this, (int)(Password::setPasswordExpires)(std::string, int));
-    manager.registerParametricMethod(this, (int)(Password::getPasswordExpires)(std::string));
-    manager.registerParametricMethod(this, (int)(Password::setPasswordHistory)(std::string, int));
-    manager.registerParametricMethod(this, (int)(Password::getPasswordHistory)(std::string));
-    manager.registerParametricMethod(this, (int)(Password::setPasswordPattern)(std::string, std::string));
-    manager.registerParametricMethod(this, (int)(Password::resetPassword)(std::string, std::string));
-    manager.registerParametricMethod(this, (int)(Password::enforcePasswordChange)(std::string));
-    manager.registerParametricMethod(this, (int)(Password::setMaxInactivityTimeDeviceLock)(std::string, int));
-    manager.registerParametricMethod(this, (int)(Password::getMaxInactivityTimeDeviceLock)(std::string));
-    manager.registerParametricMethod(this, (int)(Password::setPasswordStatus)(std::string, int));
-    manager.registerParametricMethod(this, (int)(Password::deletePasswordPattern)(std::string));
-    manager.registerParametricMethod(this, (std::string)(Password::getPasswordPattern)(std::string));
-    manager.registerParametricMethod(this, (int)(Password::setMaximumCharacterOccurrences)(std::string, int));
-    manager.registerParametricMethod(this, (int)(Password::getMaximumCharacterOccurrences)(std::string));
-    manager.registerParametricMethod(this, (int)(Password::setMaximumNumericSequenceLength)(std::string, int));
-    manager.registerParametricMethod(this, (int)(Password::getMaximumNumericSequenceLength)(std::string));
-    manager.registerParametricMethod(this, (int)(Password::setForbiddenStrings)(std::string, std::vector<std::string>));
-    manager.registerParametricMethod(this, (std::vector<std::string>)(Password::getForbiddenStrings)(std::string));
+    ctxt.registerParametricMethod(this, (int)(Password::setPasswordQuality)(std::string, int));
+    ctxt.registerParametricMethod(this, (int)(Password::getPasswordQuality)(std::string));
+    ctxt.registerParametricMethod(this, (int)(Password::setPasswordMinimumLength)(std::string, int));
+    ctxt.registerParametricMethod(this, (int)(Password::getPasswordMinimumLength)(std::string));
+    ctxt.registerParametricMethod(this, (int)(Password::setMinPasswordComplexChars)(std::string, int));
+    ctxt.registerParametricMethod(this, (int)(Password::getMinPasswordComplexChars)(std::string));
+    ctxt.registerParametricMethod(this, (int)(Password::setMaximumFailedPasswordForWipe)(std::string, int));
+    ctxt.registerParametricMethod(this, (int)(Password::getMaximumFailedPasswordForWipe)(std::string));
+    ctxt.registerParametricMethod(this, (int)(Password::setPasswordExpires)(std::string, int));
+    ctxt.registerParametricMethod(this, (int)(Password::getPasswordExpires)(std::string));
+    ctxt.registerParametricMethod(this, (int)(Password::setPasswordHistory)(std::string, int));
+    ctxt.registerParametricMethod(this, (int)(Password::getPasswordHistory)(std::string));
+    ctxt.registerParametricMethod(this, (int)(Password::setPasswordPattern)(std::string, std::string));
+    ctxt.registerParametricMethod(this, (int)(Password::resetPassword)(std::string, std::string));
+    ctxt.registerParametricMethod(this, (int)(Password::enforcePasswordChange)(std::string));
+    ctxt.registerParametricMethod(this, (int)(Password::setMaxInactivityTimeDeviceLock)(std::string, int));
+    ctxt.registerParametricMethod(this, (int)(Password::getMaxInactivityTimeDeviceLock)(std::string));
+    ctxt.registerParametricMethod(this, (int)(Password::setPasswordStatus)(std::string, int));
+    ctxt.registerParametricMethod(this, (int)(Password::deletePasswordPattern)(std::string));
+    ctxt.registerParametricMethod(this, (std::string)(Password::getPasswordPattern)(std::string));
+    ctxt.registerParametricMethod(this, (int)(Password::setMaximumCharacterOccurrences)(std::string, int));
+    ctxt.registerParametricMethod(this, (int)(Password::getMaximumCharacterOccurrences)(std::string));
+    ctxt.registerParametricMethod(this, (int)(Password::setMaximumNumericSequenceLength)(std::string, int));
+    ctxt.registerParametricMethod(this, (int)(Password::getMaximumNumericSequenceLength)(std::string));
+    ctxt.registerParametricMethod(this, (int)(Password::setForbiddenStrings)(std::string, std::vector<std::string>));
+    ctxt.registerParametricMethod(this, (std::vector<std::string>)(Password::getForbiddenStrings)(std::string));
 }
 
 Password::~Password()

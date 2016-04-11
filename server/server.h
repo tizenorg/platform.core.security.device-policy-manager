@@ -30,12 +30,42 @@ public:
     void run();
     void terminate();
 
-    ClientManager& getClientManager() {
+    ClientManager& getClientManager()
+    {
         return clientManager;
     }
 
-    rmi::Service& getServiceManager() {
-        return *service;
+    template<typename Type, typename... Args>
+    void setMethodHandler(const std::string& method,
+                         const typename rmi::MethodHandler<Type, Args...>::type& handler)
+    {
+        service->setMethodHandler<Type, Args...>(method, handler);
+    }
+
+    template <typename... Args>
+	void notify(const std::string& name, Args&&... args)
+    {
+        service->notify<Args...>(name, std::forward<Args>(args)...);
+    }
+
+    uid_t getPeerUid() const
+    {
+        return service->getPeerUid();
+    }
+
+    gid_t getPeerGid() const
+    {
+        return service->getPeerGid();
+    }
+
+    pid_t getPeerPid() const
+    {
+        return service->getPeerPid();
+    }
+
+    void createNotification(const std::string& name)
+    {
+        service->createNotification(name);
     }
 
     FileDescriptor registerNotificationSubscriber(const std::string& name);

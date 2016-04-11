@@ -22,10 +22,8 @@ namespace DevicePolicyManager {
 Administration::Administration(PolicyControlContext& ctx) :
     context(ctx)
 {
-    rmi::Service& manager = context.getServiceManager();
-
-    manager.registerParametricMethod(this, (int)(Administration::registerPolicyClient)(std::string));
-    manager.registerParametricMethod(this, (int)(Administration::deregisterPolicyClient)(std::string));
+    context.registerParametricMethod(this, (int)(Administration::registerPolicyClient)(std::string));
+    context.registerParametricMethod(this, (int)(Administration::deregisterPolicyClient)(std::string));
 }
 
 Administration::~Administration()
