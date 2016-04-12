@@ -24,10 +24,12 @@ SET(SOURCES policy-client.cpp
 			administration.cpp
 			security.cpp
 			password.cpp
+			wifi.cpp
 			zone.cpp
 			dpm/client-handle.cpp
             dpm/security.cpp
 			dpm/password.cpp
+			dpm/wifi.cpp
 			dpm/zone.cpp
 )
 
@@ -35,6 +37,7 @@ SET(CAPI_INCLUDE_FILES  dpm/dpm.h
 						dpm/device-policy-client.h
 						dpm/security.h
 						dpm/password.h
+						dpm/wifi.h
 						dpm/zone.h
 )
 
