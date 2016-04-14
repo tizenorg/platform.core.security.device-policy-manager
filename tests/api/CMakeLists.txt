@@ -20,6 +20,7 @@ SET(API_TEST_SOURCES main.c
                      security.c
                      password.c
                      testbench.c
+                     bluetooth.c
 )
 
 ADD_EXECUTABLE(${API_TEST_TARGET} ${API_TEST_SOURCES})
