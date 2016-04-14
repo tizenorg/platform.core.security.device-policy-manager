@@ -32,6 +32,7 @@ SET(SOURCES	main.cpp
 			packman.cpp
 			misc.cpp
 			restriction.cpp
+			bluetooth.cpp
 )
 
 ADD_EXECUTABLE(${TARGET} ${SOURCES} ${INCLUDE_SRCS})

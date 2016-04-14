@@ -29,6 +29,7 @@ SET(SOURCES policy-client.cpp
 			zone.cpp
 			misc.cpp
 			restriction.cpp
+			bluetooth.cpp
 			dpm/client-handle.cpp
             dpm/security.cpp
 			dpm/password.cpp
@@ -37,6 +38,7 @@ SET(SOURCES policy-client.cpp
 			dpm/application.cpp
 			dpm/misc.cpp
 			dpm/restriction.cpp
+			dpm/bluetooth.cpp
 )
 
 SET(CAPI_INCLUDE_FILES  dpm/dpm.h

@@ -22,6 +22,7 @@ SET(INTEGRATION_TEST_SOURCES main.cpp
 							 zone.cpp
 							 misc.cpp
 							 restriction.cpp
+							 bluetooth.cpp
 							 ${DPM_LIBS}/policy-client.cpp
 							 ${DPM_LIBS}/application.cpp
 							 ${DPM_LIBS}/administration.cpp
@@ -29,6 +30,7 @@ SET(INTEGRATION_TEST_SOURCES main.cpp
 							 ${DPM_LIBS}/zone.cpp
 							 ${DPM_LIBS}/misc.cpp
 							 ${DPM_LIBS}/restriction.cpp
+							 ${DPM_LIBS}/bluetooth.cpp
 							 ${DPM_TESTBENCH}/testbench.cpp
 )
 
