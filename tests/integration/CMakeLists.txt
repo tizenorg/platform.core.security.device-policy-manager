@@ -19,10 +19,12 @@ SET(INTEGRATION_TEST_SOURCES main.cpp
 							 administration.cpp
 							 security.cpp
 							 zone.cpp
+							 bluetooth.cpp
 							 ${DPM_LIBS}/policy-client.cpp
 							 ${DPM_LIBS}/administration.cpp
 							 ${DPM_LIBS}/security.cpp
 							 ${DPM_LIBS}/zone.cpp
+							 ${DPM_LIBS}/bluetooth.cpp
 							 ${DPM_TESTBENCH}/testbench.cpp
 )
 

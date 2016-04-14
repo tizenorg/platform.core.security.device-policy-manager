@@ -25,10 +25,12 @@ SET(SOURCES policy-client.cpp
 			security.cpp
 			password.cpp
 			zone.cpp
+			bluetooth.cpp
 			dpm/client-handle.cpp
             dpm/security.cpp
 			dpm/password.cpp
 			dpm/zone.cpp
+			dpm/bluetooth.cpp
 )
 
 SET(CAPI_INCLUDE_FILES  dpm/dpm.h
