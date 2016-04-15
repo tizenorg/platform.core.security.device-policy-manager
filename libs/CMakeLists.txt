@@ -43,6 +43,7 @@ SET(SOURCES policy-client.cpp
 
 SET(CAPI_INCLUDE_FILES  dpm/dpm.h
 						dpm/device-policy-client.h
+						dpm/administration.h
 						dpm/application.h
 						dpm/security.h
 						dpm/password.h
