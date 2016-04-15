@@ -47,6 +47,9 @@ public:
     static Group create(const std::string& name, const gid_t min = 100, const gid_t max = 65000);
     void remove();
 
+    void addMember(const std::string& name);
+    void removeMember(const std::string& name);
+
 private:
     std::string name;
     gid_t gid;

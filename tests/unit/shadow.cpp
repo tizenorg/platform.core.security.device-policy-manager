@@ -91,6 +91,27 @@ TESTCASE(CreateUserTest)
     }
 }
 
+TESTCASE(AddMemberGroupTest)
+{
+    try {
+        runtime::Group group("users");
+        group.addMember("test");
+        group.addMember("testuser");
+    } catch (runtime::Exception& e) {
+        TEST_FAIL(e.what());
+    }
+}
+TESTCASE(RemoveMemberGroupTest)
+{
+    try {
+        runtime::Group group("users");
+        group.removeMember("test");
+        group.removeMember("noexist");
+    } catch (runtime::Exception& e) {
+        TEST_FAIL(e.what());
+    }
+}
+
 TESTCASE(RemoveUserTest)
 {
     try {
