@@ -30,6 +30,7 @@
 #include "process.h"
 #include "filesystem.h"
 #include "auth/user.h"
+#include "auth/group.h"
 #include "xml/parser.h"
 #include "xml/document.h"
 #include "audit/logger.h"
@@ -52,6 +53,8 @@
 #define APP_SMACKLABEL   "User::Pkg::"
 
 namespace DevicePolicyManager {
+
+static const char *defaultGroups[] = {"audio", "video", "display", "log", NULL};
 
 static int setZoneState(uid_t id, int state)
 {
@@ -234,8 +237,13 @@ int Zone::createZone(const std::string& name, const std::string& setupWizAppid)
             ret = ::symlink("/dev/null",
                       (systemdUserUnit.getPath() + "/starter.service").c_str());
 
-           if (ret != 0)
-               throw runtime::Exception("Failed to mask starter.service");
+            if (ret != 0)
+                throw runtime::Exception("Failed to mask starter.service");
+
+            for (int i = 0; defaultGroups[i]; i++) {
+                runtime::Group grp(defaultGroups[i]);
+                grp.addMember(name);
+            }
 
             //initialize package db
             execute("/usr/bin/pkg_initdb",
