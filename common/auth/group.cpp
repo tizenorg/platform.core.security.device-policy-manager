@@ -165,4 +165,71 @@ void Group::remove()
     gid = INVALID_GID;
 }
 
+void Group::addMember(const std::string& name)
+{
+    char ** members = NULL;
+    std::unique_ptr<char, decltype(&::free)>
+        member(::strdup(name.c_str()), ::free);
+
+    Shadow::foreachGroup(GROUP_DIR_PATH GROUP_FILE_NAME,
+    [&member, &members, this](struct group & grp) -> bool {
+        if (grp.gr_gid == gid) {
+            int len = 0;
+
+            if (grp.gr_mem)
+                for (len = 0; grp.gr_mem[len]; len++);
+
+            if (members)
+                delete [] members;
+
+            members = new char * [len + 22];
+
+            for (int i = 0; i < len; i++)
+                members[i] = grp.gr_mem[i];
+            members[len] = member.get();
+            members[len + 1] = NULL;
+
+            grp.gr_mem = members;
+        }
+        return true;
+    });
+
+    if (members)
+        delete [] members;
+}
+
+void Group::removeMember(const std::string& name)
+{
+    char ** members = NULL;
+
+    Shadow::foreachGroup(GROUP_DIR_PATH GROUP_FILE_NAME,
+    [&name, &members, this](struct group & grp) -> bool {
+        if (grp.gr_gid == gid) {
+            int len = 0;
+
+            if (grp.gr_mem)
+                for (; grp.gr_mem[len]; len++);
+
+            if (members)
+                delete [] members;
+
+            members = new char * [len + 1];
+
+            for (int i = 0; i <= len; i++)
+                members[i] = NULL;
+
+            for (int i = 0, j = 0; i < len; i++) {
+                if (grp.gr_mem[i] != name)
+                    members[j++] = grp.gr_mem[i];
+            }
+
+            grp.gr_mem = members;
+        }
+        return true;
+    });
+
+    if (members)
+        delete [] members;
+}
+
 } // namespace Shadow
