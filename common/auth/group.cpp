@@ -152,8 +152,14 @@ void Group::remove()
         throw runtime::Exception("Group is already removed");
     }
 
-    Shadow::removeGroup(GROUP_DIR_PATH GROUP_FILE_NAME, gid);
-    Shadow::removeGshadow(GROUP_DIR_PATH GSHADOW_FILE_NAME, name);
+    Shadow::foreachGroup(GROUP_DIR_PATH GROUP_FILE_NAME,
+    [this](const struct group & grp) -> bool {
+        return grp.gr_gid != gid;
+    });
+    Shadow::foreachGshadow(GROUP_DIR_PATH GSHADOW_FILE_NAME,
+    [this](const struct sgrp & sgrp) -> bool {
+        return sgrp.sg_namp != name;
+    });
 
     name = "";
     gid = INVALID_GID;

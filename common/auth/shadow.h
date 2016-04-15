@@ -44,21 +44,21 @@ public:
     static void putGroup(const std::string& filename, const struct group& ent);
     static void putGshadow(const std::string& filename, const struct sgrp& ent);
 
-    static void removePasswd(const std::string& filename, const uid_t uid);
-    static void removeShadow(const std::string& filename, const std::string& user);
-    static void removeGroup(const std::string& filename, const gid_t gid);
-    static void removeGshadow(const std::string& filename, const std::string& group);
+    static void foreachPasswd(const std::string& filename, std::function<bool(passwd&)> check);
+    static void foreachShadow(const std::string& filename, std::function<bool(spwd&)> check);
+    static void foreachGroup(const std::string& filename, std::function<bool(group&)> check);
+    static void foreachGshadow(const std::string& filename, std::function<bool(sgrp&)> check);
 
 private:
     template<typename pwdStruct>
     static void put(const std::string& filename, const pwdStruct& pwd,
                     std::function<int(const pwdStruct*, FILE*)> put);
 
-    template<typename pwdStruct, typename element>
-    static void remove(const std::string& filename, const element& value,
-                       std::function<int(const pwdStruct*, FILE*)> put,
-                       std::function<pwdStruct *(FILE*)> get,
-                       std::function<bool(const pwdStruct&, const element&)> compare);
+    template<typename pwdStruct>
+    static void foreach(const std::string& filename,
+                        std::function<int(const pwdStruct*, FILE*)> put,
+                        std::function<pwdStruct *(FILE*)> get,
+                        std::function<bool(pwdStruct&)> check);
 };
 
 } // namespace runtime

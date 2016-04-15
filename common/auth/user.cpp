@@ -179,8 +179,14 @@ void User::remove()
         throw runtime::Exception("User is already removed");
     }
 
-    Shadow::removePasswd(PASSWD_DIR_PATH PASSWD_FILE_NAME, uid);
-    Shadow::removeShadow(PASSWD_DIR_PATH SHADOW_FILE_NAME, name);
+    Shadow::foreachPasswd(PASSWD_DIR_PATH PASSWD_FILE_NAME,
+    [this](const struct passwd & pwd) -> bool {
+        return pwd.pw_uid != uid;
+    });
+    Shadow::foreachShadow(PASSWD_DIR_PATH SHADOW_FILE_NAME,
+    [this](const struct spwd & spwd) -> bool {
+        return spwd.sp_namp != name;
+    });
 
     try {
         home.remove(true);

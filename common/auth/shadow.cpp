@@ -86,11 +86,11 @@ void Shadow::put(const std::string& filename, const pwdStruct& pwd,
     fp_pwd.reset();
 }
 
-template<typename pwdStruct, typename element>
-void Shadow::remove(const std::string& filename, const element& value,
+template<typename pwdStruct>
+void Shadow::foreach(const std::string& filename,
                     std::function<int(const pwdStruct*, FILE*)> put,
                     std::function<pwdStruct *(FILE*)> get,
-                    std::function<bool(const pwdStruct&, const element&)> compare)
+                    std::function<bool(pwdStruct&)> check)
 {
     std::string tmpfilename = filename + ".tmp";
     pwdStruct* ppwd;
@@ -134,7 +134,7 @@ void Shadow::remove(const std::string& filename, const element& value,
     }
 
     for (ppwd = get(fp_pwd.get()); ppwd != NULL; ppwd = get(fp_pwd.get()))
-        if (!compare(*ppwd, value))
+        if (check(*ppwd))
             if (put(ppwd, fp_tmp_pwd.get()) != 0) {
                 throw runtime::Exception("Tmp file for shadow write error");
             }
@@ -155,6 +155,7 @@ void Shadow::remove(const std::string& filename, const element& value,
         throw runtime::Exception("shadow file update error");
     }
 }
+
 
 void Shadow::putPasswd(const std::string& filename, const struct passwd& ent)
 {
@@ -177,36 +178,24 @@ void Shadow::putGshadow(const std::string& filename, const struct sgrp& ent)
 }
 
 
-void Shadow::removePasswd(const std::string& filename, const uid_t uid)
+void Shadow::foreachPasswd(const std::string& filename, std::function<bool(passwd&)> check)
 {
-    remove<struct passwd, uid_t>(filename, uid, putpwent, fgetpwent,
-    [](const struct passwd & pwd, const uid_t & uid) -> bool {
-        return pwd.pw_uid == uid;
-    });
+    foreach<struct passwd>(filename, putpwent, fgetpwent, check);
 }
 
-void Shadow::removeShadow(const std::string& filename, const std::string& user)
+void Shadow::foreachShadow(const std::string& filename, std::function<bool(spwd&)> check)
 {
-    remove<struct spwd, std::string>(filename, user, putspent, fgetspent,
-    [](const struct spwd & spwd, const std::string & user) -> bool {
-        return spwd.sp_namp == user;
-    });
+    foreach<struct spwd>(filename, putspent, fgetspent, check);
 }
 
-void Shadow::removeGroup(const std::string& filename, const gid_t gid)
+void Shadow::foreachGroup(const std::string& filename, std::function<bool(group&)> check)
 {
-    remove<struct group, gid_t>(filename, gid, putgrent, fgetgrent,
-    [](const struct group & grp, const gid_t & gid) -> bool {
-        return grp.gr_gid == gid;
-    });
+    foreach<struct group>(filename, putgrent, fgetgrent, check);
 }
 
-void Shadow::removeGshadow(const std::string& filename, const std::string& group)
+void Shadow::foreachGshadow(const std::string& filename, std::function<bool(sgrp&)> check)
 {
-    remove<struct sgrp, std::string>(filename, group, putsgent, fgetsgent,
-    [](const struct sgrp & sgrp, const std::string & group) -> bool {
-        return sgrp.sg_namp == group;
-    });
+    foreach<struct sgrp>(filename, putsgent, fgetsgent, check);
 }
 
 } // namespace runtime
