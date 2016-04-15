@@ -47,6 +47,7 @@ SET(CAPI_INCLUDE_FILES  dpm/dpm.h
 						dpm/application.h
 						dpm/security.h
 						dpm/password.h
+						dpm/restriction.h
 						dpm/wifi.h
 						dpm/zone.h
 						dpm/misc.h
