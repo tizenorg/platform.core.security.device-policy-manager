@@ -37,7 +37,7 @@ SET(SOURCES	main.cpp
 
 ADD_EXECUTABLE(${TARGET} ${SOURCES} ${INCLUDE_SRCS})
 
-PKG_CHECK_MODULES(SERVER_DEPS REQUIRED glib-2.0 gio-2.0 bundle aul appsvc pkgmgr pkgmgr-info vconf syspopup-caller deviced libtzplatform-config auth-fw-admin)
+PKG_CHECK_MODULES(SERVER_DEPS REQUIRED glib-2.0 gio-2.0 bundle aul appsvc pkgmgr pkgmgr-info vconf syspopup-caller deviced libtzplatform-config auth-fw-admin notification)
 
 INCLUDE_DIRECTORIES(SYSTEM ${SERVER_DEPS_INCLUDE_DIRS} ${DPM_COMMON} ${DPM_POLICY} ${DPM_SERVER})
 
@@ -49,9 +49,11 @@ SET_TARGET_PROPERTIES(${TARGET} PROPERTIES LINK_FLAGS "-pie")
 TARGET_COMPILE_DEFINITIONS(${TARGET} PRIVATE
     CONF_PATH="${CONF_INSTALL_DIR}"
     DATA_PATH="${DATA_INSTALL_DIR}"
+    SHARE_PATH="${SHARE_INSTALL_DIR}"
     DB_PATH="${DB_INSTALL_DIR}"
 )
 
 INSTALL(TARGETS ${TARGET} DESTINATION bin)
 INSTALL(FILES data/PolicyManifest.xml DESTINATION ${CONF_INSTALL_DIR}/policy)
 INSTALL(FILES data/DefaultBundleManifest.xml DESTINATION ${CONF_INSTALL_DIR}/zone RENAME owner.xml)
+INSTALL(FILES data/icon_is_in_zone.png DESTINATION ${SHARE_INSTALL_DIR})
