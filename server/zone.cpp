@@ -13,10 +13,9 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License
  */
-#include <iostream>
-
 #include <aul.h>
 #include <bundle.h>
+#include <notification.h>
 #include <tzplatform_config.h>
 
 #include <gio/gio.h>
@@ -51,6 +50,8 @@
 #define HOME_SMACKLABEL     "User::Home"
 #define SHARED_SMACKLABEL   "User::App::Shared"
 #define APP_SMACKLABEL   "User::Pkg::"
+
+#define ZONE_ICON_PATH      SHARE_PATH "/icon_is_in_zone.png"
 
 namespace DevicePolicyManager {
 
@@ -94,13 +95,42 @@ static int setZoneState(uid_t id, int state)
 }
 
 template <typename... Args>
-void execute(const std::string& path, Args&&... args)
+static void execute(const std::string& path, Args&&... args)
 {
     std::vector<std::string> argsVector = { args... };
     runtime::Process proc(path, argsVector);
     proc.execute();
 }
 
+static void showNotification(GDBusConnection *connection,
+                const gchar *sender, const gchar *objectPath,
+                const gchar *interface, const gchar *signalName,
+                GVariant *params, gpointer userData) {
+    gint32 status = 0, pid;
+    notification_h noti = reinterpret_cast<notification_h>(userData);
+    struct stat st;
+
+    g_variant_get (params, "(ii)", &status, &pid);
+
+    if (status == 5) {
+        notification_delete(noti);
+        if (stat(("/proc/"+std::to_string(pid)).c_str(), &st) == 0) {
+            if (st.st_uid >= ZONE_UID_MIN && st.st_uid < ZONE_UID_MAX) {
+                runtime::User user(st.st_uid);
+
+                notification_set_text(noti, NOTIFICATION_TEXT_TYPE_CONTENT,
+                    ("Zone '" + user.getName() + "' is running").c_str(), NULL,
+                    NOTIFICATION_VARIABLE_TYPE_NONE);
+
+                int ret = notification_post(noti);
+                if (ret != NOTIFICATION_ERROR_NONE) {
+                    ERROR("Failed to notification posting");
+                    return;
+                }
+            }
+        }
+    }
+}
 
 
 Zone::Zone(PolicyControlContext& ctx)
@@ -115,6 +145,50 @@ Zone::Zone(PolicyControlContext& ctx)
 
     context.createNotification("Zone::created");
     context.createNotification("Zone::removed");
+
+    auto notification = [] {
+        GDBusConnection* conn;
+        GMainLoop* loop = NULL;
+        GError* error = NULL;
+
+        conn = g_bus_get_sync(G_BUS_TYPE_SYSTEM, NULL, &error);
+        if (conn == NULL) {
+            ERROR(std::string("Failed to get system DBUS : ") +  error->message);
+            g_error_free(error);
+            return;
+        }
+
+        notification_h noti = notification_create(NOTIFICATION_TYPE_ONGOING);
+        if (noti == NULL) {
+            ERROR("Failed to notification creation");
+            return;
+        }
+
+        notification_set_image(noti, NOTIFICATION_IMAGE_TYPE_ICON_FOR_INDICATOR, ZONE_ICON_PATH);
+        notification_set_text(noti, NOTIFICATION_TEXT_TYPE_TITLE,
+            "Zone", NULL, NOTIFICATION_VARIABLE_TYPE_NONE);
+                notification_set_display_applist(noti, NOTIFICATION_DISPLAY_APP_INDICATOR | NOTIFICATION_DISPLAY_APP_NOTIFICATION_TRAY);
+                notification_set_layout(noti, NOTIFICATION_LY_ONGOING_EVENT);
+
+        g_dbus_connection_signal_subscribe (conn,
+                                            NULL,
+                                            "org.tizen.resourced.process",
+                                            "ProcStatus",
+                                            "/Org/Tizen/ResourceD/Process",
+                                            NULL,//"5", //activated
+                                            G_DBUS_SIGNAL_FLAGS_NONE,
+                                            showNotification,
+                                            reinterpret_cast<gpointer>(noti),
+                                            NULL);
+
+        loop = g_main_loop_new (NULL, FALSE);
+        g_main_loop_run (loop);
+        g_main_loop_unref (loop);
+        g_object_unref (conn);
+    };
+
+    std::thread asyncWork(notification);
+    asyncWork.detach();
 }
 
 Zone::~Zone()
