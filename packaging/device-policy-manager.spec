@@ -25,6 +25,7 @@ BuildRequires: pkgconfig(capi-base-common)
 BuildRequires: pkgconfig(libsmack)
 BuildRequires: pkgconfig(libtzplatform-config)
 BuildRequires: pkgconfig(auth-fw-admin)
+BuildRequires: pkgconfig(notification)
 
 %description
 The device-policy-manager package provides a daemon which is responsible for
@@ -41,6 +42,7 @@ managing device policies.
 %config %{TZ_SYS_ETC}/dpm/policy/PolicyManifest.xml
 %attr(700,root,root) %dir %{TZ_SYS_ETC}/dpm/zone
 %attr(600,root,root) %config %{TZ_SYS_ETC}/dpm/zone/owner.xml
+%attr(755,root,root) %{TZ_SYS_RO_SHARE}/dpm/icon_is_in_zone.png
 
 %prep
 %setup -q
@@ -58,6 +60,7 @@ managing device policies.
          -DSCRIPT_INSTALL_DIR=%{_scriptdir} \
          -DSYSTEMD_UNIT_INSTALL_DIR=%{_unitdir} \
          -DDATA_INSTALL_DIR=%{TZ_SYS_DATA}/dpm \
+         -DSHARE_INTALL_DIR=%{TZ_SYS_RO_SHARE}/dpm \
          -DCONF_INSTALL_DIR=%{TZ_SYS_ETC}/dpm \
          -DDB_INSTALL_DIR=%{TZ_SYS_DB} \
          -DRUN_INSTALL_DIR=%{TZ_SYS_RUN} \
