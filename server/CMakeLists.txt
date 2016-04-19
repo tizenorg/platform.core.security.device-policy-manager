@@ -33,11 +33,12 @@ SET(SOURCES	main.cpp
 			misc.cpp
 			restriction.cpp
 			bluetooth.cpp
+			wifi.cpp
 )
 
 ADD_EXECUTABLE(${TARGET} ${SOURCES} ${INCLUDE_SRCS})
 
-PKG_CHECK_MODULES(SERVER_DEPS REQUIRED glib-2.0 gio-2.0 bundle aul appsvc pkgmgr pkgmgr-info vconf syspopup-caller deviced libtzplatform-config auth-fw-admin)
+PKG_CHECK_MODULES(SERVER_DEPS REQUIRED glib-2.0 gio-2.0 bundle aul appsvc pkgmgr pkgmgr-info vconf syspopup-caller deviced libtzplatform-config auth-fw-admin capi-network-wifi)
 
 INCLUDE_DIRECTORIES(SYSTEM ${SERVER_DEPS_INCLUDE_DIRS} ${DPM_COMMON} ${DPM_POLICY} ${DPM_SERVER})
 
