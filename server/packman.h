@@ -47,8 +47,6 @@
      std::string getPackageName() const;
      std::string getPackageType() const;
      std::string getVersion() const;
-     long long getCodeSize() const;
-     long long getDataSize() const;
 
  private:
      uid_t user;
@@ -58,12 +56,22 @@
 
  class PackageManager {
  public:
-     static PackageInfo getPackageInfo(const std::string& pkgid, const uid_t user);
-     static void activatePackage(const std::string& pkgid, const uid_t user);
-     static void deactivatePackage(const std::string& pkgid, const uid_t user);
-     static void installPackage(const std::string& pkgpath, const uid_t user);
-     static void uninstallPackage(const std::string& pkgid, const uid_t user);
-     static void wipePackageData(const std::string& pkgid, const uid_t user);
-     static std::vector<std::string> getInstalledPackageList(const uid_t user);
+     PackageInfo getPackageInfo(const std::string& pkgid, const uid_t user);
+     void activatePackage(const std::string& pkgid, const uid_t user);
+     void deactivatePackage(const std::string& pkgid, const uid_t user);
+     void installPackage(const std::string& pkgpath, const uid_t user);
+     void uninstallPackage(const std::string& pkgid, const uid_t user);
+     void wipePackageData(const std::string& pkgid, const uid_t user);
+
+     std::vector<std::string> getInstalledPackageList(const uid_t user);
+
+    static PackageManager& instance();
+
+private:
+    PackageManager();
+    ~PackageManager();
+
+private:
+    pkgmgr_client *nativeHandle;
  };
  #endif // __DPM_PACKMAN_H__

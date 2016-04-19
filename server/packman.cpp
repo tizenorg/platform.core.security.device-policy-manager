@@ -56,13 +56,6 @@ int PackageEventCallback(uid_t uid, int id, const char* type, const char* name,
      return 0;
  }
 
- void PackageSizeCollector(pkgmgr_client* pc, const char *pkgid, const pkg_size_info_t *info, void *data)
- {
-     pkg_size_info_t *i = static_cast<pkg_size_info_t*>(data);
-
-     *i = *info;
- }
-
  } // namespace
 
 PackageInfo::PackageInfo(const std::string& pkgid, uid_t uid) :
@@ -149,44 +142,24 @@ std::string AppInfo::getPackageName() const
     return name;
 }
 
-long long AppInfo::getCodeSize() const
+PackageManager::PackageManager() :
+    nativeHandle(nullptr)
 {
-    pkgmgr_client *pc = ::pkgmgr_client_new(PC_REQUEST);
-    if (pc == nullptr) {
-        ERROR("Error in pkgmgr_client_new");
-        throw runtime::Exception("Unexpected operation");
+    nativeHandle = ::pkgmgr_client_new(PC_REQUEST);
+    if (nativeHandle == nullptr) {
+        throw runtime::Exception("No package manager instance");
     }
-
-    pkg_size_info_t size;
-    int ret = ::pkgmgr_client_usr_get_package_size_info(pc, appid.c_str(), PackageSizeCollector, &size, user);
-    if (ret != PKGMGR_R_OK) {
-        ::pkgmgr_client_free(pc);
-        ERROR("Error in pkgmgr_client_get_package_size_info");
-        throw runtime::Exception("Unexpected operation");
-    }
-
-    ::pkgmgr_client_free(pc);
-    return size.app_size;
 }
 
-long long AppInfo::getDataSize() const
+PackageManager::~PackageManager()
 {
-    pkgmgr_client *pc = ::pkgmgr_client_new(PC_REQUEST);
-    if (pc == nullptr) {
-        ERROR("Error in pkgmgr_client_new");
-        return -1;
-    }
+    ::pkgmgr_client_free(nativeHandle);
+}
 
-    pkg_size_info_t size;
-    int ret = ::pkgmgr_client_usr_get_package_size_info(pc, appid.c_str(), PackageSizeCollector, &size, user);
-    if (ret != PKGMGR_R_OK) {
-        ::pkgmgr_client_free(pc);
-        ERROR("Error in pkgmgr_client_get_package_size_info");
-        return -1;
-    }
-
-    ::pkgmgr_client_free(pc);
-    return size.data_size;
+PackageManager& PackageManager::instance()
+{
+    static PackageManager __instance__;
+    return __instance__;
 }
 
 PackageInfo PackageManager::getPackageInfo(const std::string& pkgid, const uid_t user)
@@ -198,56 +171,30 @@ void PackageManager::activatePackage(const std::string& pkgid, const uid_t user)
 {
     PackageInfo package(pkgid, user);
 
-    pkgmgr_client *pc = ::pkgmgr_client_new(PC_REQUEST);
-    if (pc == nullptr) {
-        throw runtime::Exception("Package Manager Error");
-    }
-
-    if (::pkgmgr_client_usr_activate(pc, package.getType().c_str(), pkgid.c_str(), user) != PKGMGR_R_OK) {
-        ::pkgmgr_client_free(pc);
-
+    if (::pkgmgr_client_usr_activate(nativeHandle, package.getType().c_str(), pkgid.c_str(), user) != PKGMGR_R_OK) {
+        ERROR("Failed to activate package: " + pkgid);
         throw runtime::Exception("Operation failed");
     }
-
-    ::pkgmgr_client_free(pc);
 }
 
 void PackageManager::deactivatePackage(const std::string& pkgid, const uid_t user)
 {
     PackageInfo package(pkgid, user);
 
-    pkgmgr_client *pc = ::pkgmgr_client_new(PC_REQUEST);
-    if (pc == nullptr) {
-        throw runtime::Exception("Package Manager Error");
-    }
-
-    std::cout << "Package Type: " << package.getType() << std::endl;
-    int ret = pkgmgr_client_usr_deactivate(pc, package.getType().c_str(), pkgid.c_str(), user);
+    int ret = pkgmgr_client_usr_deactivate(nativeHandle, package.getType().c_str(), pkgid.c_str(), user);
     if (ret != PKGMGR_R_OK) {
-        ::pkgmgr_client_free(pc);
         ERROR("Failed to deactivate package: " + std::to_string(ret));
         throw runtime::Exception("Operation failed");
     }
-
-    ::pkgmgr_client_free(pc);
 }
 
 void PackageManager::installPackage(const std::string& pkgpath, const uid_t user)
 {
-    pkgmgr_client *pc = ::pkgmgr_client_new(PC_REQUEST);
-    if (pc == nullptr) {
-        ERROR("Error in pkgmgr_client_new");
-        throw runtime::Exception("Package manager exception");
-    }
-
-    int ret = ::pkgmgr_client_usr_install(pc, NULL, NULL, pkgpath.c_str(), NULL, PM_QUIET, PackageEventCallback, nullptr, user);
+    int ret = ::pkgmgr_client_usr_install(nativeHandle, NULL, NULL, pkgpath.c_str(), NULL, PM_QUIET, PackageEventCallback, nullptr, user);
     if (ret != PKGMGR_R_OK) {
-        ::pkgmgr_client_free(pc);
         ERROR("Error in pkgmgr_client_install");
         throw runtime::Exception("Package installation failed");
     }
-
-    // pkgmgr_client handle will be destroyed in the callback when package installation is completed
 }
 
 void PackageManager::uninstallPackage(const std::string& pkgid, const uid_t user)
@@ -257,38 +204,22 @@ void PackageManager::uninstallPackage(const std::string& pkgid, const uid_t user
     PackageInfo pkgInfo(pkgid);
     pkgtype = pkgInfo.getType();
 
-    pkgmgr_client *pc = ::pkgmgr_client_new(PC_REQUEST);
-    if (pc == nullptr) {
-        throw runtime::Exception("Package manager exception");
-        ERROR("Error in pkgmgr_client_new");
-    }
-
-    int ret = ::pkgmgr_client_usr_uninstall(pc, pkgtype.c_str(), pkgid.c_str(), PM_QUIET, PackageEventCallback, nullptr, user);
+    int ret = ::pkgmgr_client_usr_uninstall(nativeHandle, pkgtype.c_str(), pkgid.c_str(), PM_QUIET, PackageEventCallback, nullptr, user);
     if (ret < PKGMGR_R_OK) {
-        ::pkgmgr_client_free(pc);
         ERROR("Error in pkgmgr_client_uninstall");
         throw runtime::Exception("Package manager exception");
     }
-
-    // pkgmgr_client handle will be destroyed in the callback when package installation is completed
 }
 
 void PackageManager::wipePackageData(const std::string& pkgid, const uid_t user)
 {
     PackageInfo package(pkgid);
 
-    pkgmgr_client *pc = ::pkgmgr_client_new(PC_REQUEST);
-    if (pc == nullptr) {
-        throw runtime::Exception("Invalid package manager");
-    }
-
-    int ret = ::pkgmgr_client_usr_clear_user_data(pc, package.getType().c_str(), pkgid.c_str(), PM_QUIET, user);
+    int ret = ::pkgmgr_client_usr_clear_user_data(nativeHandle, package.getType().c_str(), pkgid.c_str(), PM_QUIET, user);
     if (ret != PKGMGR_R_OK) {
-        ::pkgmgr_client_free(pc);
+        ERROR("Error in pkgmgr_clear_user_data");
         throw runtime::Exception("Operation failed");
     }
-
-    ::pkgmgr_client_free(pc);
 }
 
 std::vector<std::string> PackageManager::getInstalledPackageList(const uid_t user)
