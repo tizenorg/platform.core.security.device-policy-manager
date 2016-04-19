@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <bundle-manifest>
-<version>0.1.0</version>
     <version>0.1.0</version>
     <require>
         <os>tizen3.0</os>
     </require>
 
-    <namspace>
+    <namespace>
         <dropped-capability>CAP_SYS_ADMIN</dropped-capability>
         <hostname>ZoneName</hostname>
         <!--<init>/sbin/init</init>-->
-        <filesystem root="/">
-            <!--<entry source="/home/ZoneName" target="/home/.zone/ZoneName" type="bind" option="rw" />-->
+        <filesystem>
+            <entry source="/home/owner" target="/home/owner/.zone/owner" type="none" option="rw,bind"  if-no-exists="create-directory" />
+            <entry source="/home/owner/.zone" target="/home" type="none" option="rw,rbind" />
         </filesystem>
         <network>
             <!--<interface name="eth0" address="10.254.34.232" netmask="" gateway="" />-->
-       </network>
+        </network>
         <ipc />
-    </namspace>
+    </namespace>
 </bundle-manifest>
