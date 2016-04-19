@@ -179,12 +179,29 @@ void User::remove()
         throw runtime::Exception("User is already removed");
     }
 
-    Shadow::removePasswd(PASSWD_DIR_PATH PASSWD_FILE_NAME, uid);
-    Shadow::removeShadow(PASSWD_DIR_PATH SHADOW_FILE_NAME, name);
+    Shadow::foreachPasswd(PASSWD_DIR_PATH PASSWD_FILE_NAME,
+    [this](const struct passwd & pwd) -> bool {
+        return pwd.pw_uid != uid;
+    });
+    Shadow::foreachShadow(PASSWD_DIR_PATH SHADOW_FILE_NAME,
+    [this](const struct spwd & spwd) -> bool {
+        return spwd.sp_namp != name;
+    });
 
     try {
         home.remove(true);
     } catch (runtime::Exception& e) {}
+
+    int ngroups = 0;
+    getgrouplist(name.c_str(), gid, NULL, &ngroups);
+
+    std::unique_ptr<gid_t> groups(new gid_t[ngroups]);
+    getgrouplist(name.c_str(), gid, groups.get(), &ngroups);
+
+    for (int i = 0; i < ngroups; i++) {
+        Group grp(groups.get()[i]);
+        grp.removeMember(name);
+    }
 
     name = "";
     uid = INVALID_UID;
