@@ -48,6 +48,9 @@ Application::Application(PolicyControlContext& ctxt) :
     context.registerParametricMethod(this, (int)(Application::startApplication)(std::string));
     context.registerParametricMethod(this, (int)(Application::stopApplication)(std::string));
     context.registerParametricMethod(this, (int)(Application::wipeApplicationData)(std::string));
+    context.registerParametricMethod(this, (int)(Application::addPackageToBlacklist)(std::string));
+    context.registerParametricMethod(this, (int)(Application::removePackageFromBlacklist)(std::string));
+    context.registerParametricMethod(this, (int)(Application::checkPackageIsBlacklisted)(std::string));
 }
 
 Application::~Application()
@@ -211,6 +214,44 @@ int Application::wipeApplicationData(const std::string& appid)
     }
 
     return 0;
+}
+
+
+int Application::addPackageToBlacklist(const std::string& pkgid)
+{
+    try {
+        PackageManager& packman = PackageManager::instance();
+        packman.addPackageToBlacklist(pkgid, context.getPeerUid());
+    } catch (runtime::Exception& e) {
+        ERROR("Exception on adding package to blacklist: " + pkgid);
+        return -1;
+    }
+
+    return 0;
+}
+
+int Application::removePackageFromBlacklist(const std::string& pkgid)
+{
+    try {
+        PackageManager& packman = PackageManager::instance();
+        packman.removePackageFromBlacklist(pkgid, context.getPeerUid());
+    } catch (runtime::Exception& e) {
+        ERROR("Exception on removing package to blacklist: " + pkgid);
+        return -1;
+    }
+
+    return 0;
+}
+
+int Application::checkPackageIsBlacklisted(const std::string& pkgid)
+{
+    try {
+        PackageManager& packman = PackageManager::instance();
+        return packman.checkPackageIsBlacklisted(pkgid, context.getPeerUid());
+    } catch (runtime::Exception& e) {
+        ERROR("Exception on checking package package blacklist: " + pkgid);
+        return -1;
+    }
 }
 
 Application applicationPolicy(Server::instance());

@@ -106,3 +106,21 @@ TESTCASE(AppStartTest)
     ret = app.stopApplication(TestAppId);
     TEST_EXPECT(0, ret);
 }
+
+TESTCASE(BlacklistTest)
+{
+    DevicePolicyClient client;
+
+    TEST_EXPECT(0, client.connect());
+
+    DevicePolicyManager::Application app = client.createPolicyInterface<DevicePolicyManager::Application>();
+
+    int ret = app.addPackageToBlacklist("org.tizen.ode");
+    std::cout << "Add org.tizen.ode to blacklist: " << ret << std::endl;
+
+    ret = app.checkPackageIsBlacklisted("org.tizen.ode");
+    std::cout << "Blacklist status for org.tizen.ode: " << ret << std::endl;
+
+    ret = app.removePackageFromBlacklist("org.tizen.ode");
+    std::cout << "Remove org.tizen.ode from blacklist " << ret << std::endl;
+}

@@ -53,6 +53,10 @@ public:
 
     int wipeApplicationData(const std::string& appid);
 
+    int addPackageToBlacklist(const std::string& pkgid);
+    int removePackageFromBlacklist(const std::string& pkgid);
+    int checkPackageIsBlacklisted(const std::string& pkgid);
+
 private:
     PolicyControlContext& context;
 };
