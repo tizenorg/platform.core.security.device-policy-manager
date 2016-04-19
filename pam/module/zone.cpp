@@ -73,7 +73,7 @@ pam_sm_open_session(pam_handle_t* pamh, int flags,
     std::unique_ptr<xml::Document> bundle;
     xml::Node::NodeList nodes;
     int unshare_flags = 0;
-    std::string dest, src, type, opts, create;
+    std::string dest, src, type, opts, noexists, optional;
     std::string user;
     pid_t pid;
 
@@ -97,8 +97,6 @@ pam_sm_open_session(pam_handle_t* pamh, int flags,
     ::umask(077);
 
     ::mkdir(PID_FILE_PATH, 0700);
-
-    unshare_flags = CLONE_NEWNS | CLONE_NEWNET | CLONE_NEWUTS | CLONE_NEWIPC;
 
     std::unique_ptr<sem_t, void(*)(sem_t*)> sem(
         ::sem_open("PAMZone", O_CREAT, 0700, 1),
@@ -124,20 +122,89 @@ pam_sm_open_session(pam_handle_t* pamh, int flags,
         return PAM_SESSION_ERR;
     }
 
+    try {
+        bundle = std::unique_ptr<xml::Document>(
+                     xml::Parser::parseFile(ZONE_MANIFEST_DIR + user + ".xml"));
+    } catch (runtime::Exception& e) {
+        ::pam_syslog(pamh, LOG_ERR, "failed to read manifest XML");
+        return PAM_SESSION_ERR;
+    }
+
+    nodes = bundle->evaluate("//bundle-manifest/namespace");
+    for (xml::Node::NodeList::iterator it = nodes.begin();
+            it != nodes.end(); it++) {
+        xml::Node::NodeList children = it->getChildren();
+        for (xml::Node::NodeList::iterator it = children.begin();
+                it != children.end(); it++) {
+            if (it->getName() == "hostname") {
+                unshare_flags |= CLONE_NEWUTS;
+            } else if (it->getName() == "filesystem") {
+                unshare_flags |= CLONE_NEWNS;
+            } else if (it->getName() == "network") {
+                unshare_flags |= CLONE_NEWNET;
+            } else if (it->getName() == "ipc") {
+                unshare_flags |= CLONE_NEWIPC;
+            }
+        }
+    }
+
+    ::umask(0022);
+
     if (!(pidfile >> pid).good()) {
         if (::unshare(unshare_flags) != 0) {
             ::pam_syslog(pamh, LOG_ERR, "failed to unshare namespace");
             return PAM_SESSION_ERR;
         }
 
+        if (unshare_flags & CLONE_NEWUTS) {
+            nodes = bundle->evaluate("//bundle-manifest/namespace/hostname");
+            std::string hostname = nodes.begin()->getChildren().begin()->getContent();
+            int ret = ::sethostname(hostname.c_str(), hostname.size());
+            if (ret != 0) {
+                ::pam_syslog(pamh, LOG_ERR, "failed to set hostname");
+                return PAM_SESSION_ERR;
+            }
+        }
         if (unshare_flags & CLONE_NEWNS) {
             if (::mount(NULL, "/", NULL, MS_SLAVE | MS_REC, NULL) < 0) {
                 ::pam_syslog(pamh, LOG_ERR, "failed to remount /");
                 return PAM_SESSION_ERR;
             }
 
-            ::umask(022);
+
+            nodes = bundle->evaluate("//bundle-manifest/namespace/filesystem/entry");
+            for (xml::Node::NodeList::iterator it = nodes.begin();
+                    it != nodes.end(); it++) {
+                src = it->getProp("source");
+                dest = it->getProp("target");
+                opts = it->getProp("option");
+                type = it->getProp("type");
+                noexists = it->getProp("if-no-exists");
+                optional = it->getProp("optional");
+                if (noexists == "create-file") {
+                    runtime::File destdir(dest.substr(0, dest.rfind('/')));
+                    destdir.makeDirectory(true);
+                    std::ofstream file(dest);
+                    file.close();
+                } else if (noexists == "create-directory") {
+                    runtime::File destdir(dest);
+                    destdir.makeDirectory(true);
+                }
+                try {
+                    runtime::Mount::mountEntry(src, dest, type, opts);
+               } catch (runtime::Exception& e) {
+                   if (optional != "true") {
+                       ::pam_syslog(pamh, LOG_ERR, "%s", e.what());
+                       return PAM_SESSION_ERR;
+                   }
+               }
+            }
         }
+        if (unshare_flags & CLONE_NEWNET) {
+        }
+        if (unshare_flags & CLONE_NEWIPC) {
+        }
+
         pidfile.clear();
     } else {
         attachNamespace(pid, unshare_flags);
