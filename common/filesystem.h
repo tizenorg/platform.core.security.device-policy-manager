@@ -196,6 +196,14 @@ private:
     std::string basename;
 };
 
+class Mount final {
+public:
+    Mount() = delete;
+
+    static void mountEntry(const std::string& src, const std::string& dest,
+                           const std::string& type, const std::string& opts);
+};
+
 int Open(const std::string& path, int flags, mode_t mode);
 void Close(int fd);
 
