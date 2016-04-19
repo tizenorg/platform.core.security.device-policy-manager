@@ -15,6 +15,7 @@
  */
 
 #include <sys/types.h>
+#include <sys/mount.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -22,6 +23,7 @@
 #include <string.h>
 
 #include <string>
+#include <sstream>
 
 #include "filesystem.h"
 #include "error.h"
@@ -393,6 +395,98 @@ DirectoryIterator& DirectoryIterator::operator++()
 {
     next();
     return *this;
+}
+
+static const struct mountOption {
+    const char* name;
+    int clear;
+    int flag;
+} mountOptions[] = {
+    { "defaults",      0, 0                },
+    { "ro",            0, MS_RDONLY        },
+    { "rw",            1, MS_RDONLY        },
+    { "suid",          1, MS_NOSUID        },
+    { "nosuid",        0, MS_NOSUID        },
+    { "dev",           1, MS_NODEV         },
+    { "nodev",         0, MS_NODEV         },
+    { "exec",          1, MS_NOEXEC        },
+    { "noexec",        0, MS_NOEXEC        },
+    { "sync",          0, MS_SYNCHRONOUS   },
+    { "async",         1, MS_SYNCHRONOUS   },
+    { "dirsync",       0, MS_DIRSYNC       },
+    { "remount",       0, MS_REMOUNT       },
+    { "mand",          0, MS_MANDLOCK      },
+    { "nomand",        1, MS_MANDLOCK      },
+    { "atime",         1, MS_NOATIME       },
+    { "noatime",       0, MS_NOATIME       },
+    { "diratime",      1, MS_NODIRATIME    },
+    { "nodiratime",    0, MS_NODIRATIME    },
+    { "bind",          0, MS_BIND          },
+    { "rbind",         0, MS_BIND | MS_REC },
+    { "relatime",      0, MS_RELATIME      },
+    { "norelatime",    1, MS_RELATIME      },
+    { "strictatime",   0, MS_STRICTATIME   },
+    { "nostrictatime", 1, MS_STRICTATIME   },
+    { NULL,            0, 0                },
+};
+
+static unsigned long parseMountOptions(const std::string& opts, std::string& mntdata)
+{
+    std::stringstream optsSstream(opts);
+    const struct mountOption* mo;
+    unsigned long mntflags = 0L;
+    std::string opt;
+
+    while (std::getline(optsSstream, opt, ',')) {
+        for (mo = mountOptions; mo->name != NULL; mo++) {
+            if (opt == mo->name) {
+                if (mo->clear) {
+                    mntflags &= ~mo->flag;
+                } else {
+                    mntflags |= mo->flag;
+                }
+                break;
+            }
+            if (mo->name != NULL) {
+                continue;
+            }
+            if (!mntdata.empty()) {
+                mntdata += ",";
+            }
+            mntdata += opt;
+        }
+    }
+
+    return mntflags;
+}
+
+void Mount::mountEntry(const std::string& src, const std::string& dest, const std::string& type, const std::string& opts)
+{
+    int ret;
+    unsigned long mntflags;
+    std::string mntdata;
+
+    mntflags = parseMountOptions(opts, mntdata);
+
+    ret = ::mount(src.c_str(),
+                  dest.c_str(),
+                  type.c_str(),
+                  mntflags & ~MS_REMOUNT,
+                  mntdata.c_str());
+
+    if (ret) {
+        if ((mntflags & MS_REMOUNT) || (mntflags & MS_BIND)) {
+            ret = ::mount(src.c_str(),
+                          dest.c_str(),
+                          type.c_str(),
+                          mntflags | MS_REMOUNT,
+                          mntdata.c_str());
+        }
+
+        if (ret) {
+            throw runtime::Exception("failed to mount " + src + " on " + dest);
+        }
+    }
 }
 
 } // namespace runtime
