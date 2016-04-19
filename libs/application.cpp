@@ -93,24 +93,6 @@ std::vector<std::string> Application::getInstalledPackageList()
     }
 }
 
-bool Application::isApplicationInstallationEnabled(const std::string& appid)
-{
-    try {
-        return context->methodCall<bool>("Application::isApplicationInstallationEnabled", appid);
-    } catch (runtime::Exception& e) {
-        return false;
-    }
-}
-
-bool Application::isApplicationUninstallationEnabled(const std::string& appid)
-{
-    try {
-        return context->methodCall<bool>("Application::isApplicationInstallationEnabled", appid);
-    } catch (runtime::Exception& e) {
-        return false;
-    }
-}
-
 bool Application::isApplicationRunning(const std::string& appid)
 {
     try {
@@ -200,4 +182,5 @@ int Application::wipeApplicationData(const std::string& appid)
         return -1;
     }
 }
+
 } // namespace DevicePolicyManager

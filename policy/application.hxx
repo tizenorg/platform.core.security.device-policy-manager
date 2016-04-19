@@ -44,9 +44,6 @@ public:
     int installPackage(const std::string& pkgpath);
     int uninstallPackage(const std::string& pkgid);
 
-    bool isApplicationInstallationEnabled(const std::string& appid);
-    bool isApplicationUninstallationEnabled(const std::string& appid);
-
     bool isApplicationInstalled(const std::string& appid);
     bool isApplicationRunning(const std::string& appid);
     bool isPackageInstalled(const std::string& pkgid);

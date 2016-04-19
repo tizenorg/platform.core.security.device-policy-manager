@@ -45,8 +45,6 @@ Application::Application(PolicyControlContext& ctxt) :
     context.registerParametricMethod(this, (int)(Application::enableApplication)(std::string));
     context.registerParametricMethod(this, (int)(Application::getApplicationState)(std::string));
     context.registerParametricMethod(this, (int)(Application::setApplicationState)(std::string, int));
-    context.registerParametricMethod(this, (bool)(Application::isApplicationInstallationEnabled)(std::string));
-    context.registerParametricMethod(this, (bool)(Application::isApplicationUninstallationEnabled)(std::string));
     context.registerParametricMethod(this, (int)(Application::startApplication)(std::string));
     context.registerParametricMethod(this, (int)(Application::stopApplication)(std::string));
     context.registerParametricMethod(this, (int)(Application::wipeApplicationData)(std::string));
@@ -79,21 +77,12 @@ bool Application::getApplicationUninstallationMode()
 std::vector<std::string> Application::getInstalledPackageList()
 {
     try {
-        return PackageManager::getInstalledPackageList(context.getPeerUid());
+        PackageManager& packman = PackageManager::instance();
+        return packman.getInstalledPackageList(context.getPeerUid());
     } catch (runtime::Exception& e) {
         ERROR("Failed to retrieve package info installed in the devioce");
         return std::vector<std::string>();
     }
-}
-
-bool Application::isApplicationInstallationEnabled(const std::string& appid)
-{
-        return true;
-}
-
-bool Application::isApplicationUninstallationEnabled(const std::string& appid)
-{
-    return true;
 }
 
 bool Application::isApplicationInstalled(const std::string& appid)
@@ -128,7 +117,8 @@ bool Application::isPackageInstalled(const std::string& pkgid)
 int Application::installPackage(const std::string& pkgpath)
 {
     try {
-        PackageManager::installPackage(pkgpath, context.getPeerUid());
+        PackageManager& packman = PackageManager::instance();
+        packman.installPackage(pkgpath, context.getPeerUid());
     } catch (runtime::Exception& e) {
         ERROR("Exception in Package Id");
         return -1;
@@ -140,7 +130,8 @@ int Application::installPackage(const std::string& pkgpath)
 int Application::uninstallPackage(const std::string& pkgid)
 {
     try {
-        PackageManager::uninstallPackage(pkgid, context.getPeerUid());
+        PackageManager& packman = PackageManager::instance();
+        packman.uninstallPackage(pkgid, context.getPeerUid());
     } catch (runtime::Exception& e) {
         ERROR("Exception in Package Id");
         return -1;
@@ -157,8 +148,8 @@ int Application::disableApplication(const std::string& appid)
             launchpad.terminate(appid);
             // Notify user that the app hass terminated due to the policy
         }
-
-        PackageManager::deactivatePackage(appid, context.getPeerUid());
+        PackageManager& packman = PackageManager::instance();
+        packman.deactivatePackage(appid, context.getPeerUid());
     } catch (runtime::Exception& e) {
         return -1;
     }
@@ -169,7 +160,8 @@ int Application::disableApplication(const std::string& appid)
 int Application::enableApplication(const std::string& appid)
 {
     try {
-        PackageManager::activatePackage(appid, context.getPeerUid());
+        PackageManager& packman = PackageManager::instance();
+        packman.activatePackage(appid, context.getPeerUid());
     } catch (runtime::Exception& e) {
         return -1;
     }
@@ -211,9 +203,10 @@ int Application::stopApplication(const std::string& appid)
 int Application::wipeApplicationData(const std::string& appid)
 {
     try {
-        PackageManager::wipePackageData(appid, context.getPeerUid());
+        PackageManager& packman = PackageManager::instance();
+        packman.wipePackageData(appid, context.getPeerUid());
     } catch (runtime::Exception& e) {
-        ERROR("Exception in Package Id");
+        ERROR("Exception on wiping package data");
         return -1;
     }
 
