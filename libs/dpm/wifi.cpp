@@ -109,7 +109,7 @@ int dpm_add_wifi_ssid_to_blocklist(dpm_client_h handle, const char* ssid)
 
     DevicePolicyClient &client = GetDevicePolicyClient(handle);
     Wifi wifi = client.createPolicyInterface<Wifi>();
-    return wifi.addSsidFromBlacklist(ssid);
+    return wifi.addSsidFromBlocklist(ssid);
 }
 
 int dpm_remove_wifi_ssid_from_blocklist(dpm_client_h handle, const char* ssid)
@@ -119,5 +119,5 @@ int dpm_remove_wifi_ssid_from_blocklist(dpm_client_h handle, const char* ssid)
 
     DevicePolicyClient &client = GetDevicePolicyClient(handle);
     Wifi wifi = client.createPolicyInterface<Wifi>();
-    return wifi.removeSsidFromBlacklist(ssid);
+    return wifi.removeSsidFromBlocklist(ssid);
 }

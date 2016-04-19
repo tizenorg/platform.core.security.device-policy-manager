@@ -43,8 +43,8 @@ public:
     int setNetworkAccessRestriction(bool restrict);
     bool isNetworkAccessRestricted();
 
-    int addSsidFromBlacklist(const std::string& ssid);
-    int removeSsidFromBlacklist(const std::string& ssid);
+    int addSsidFromBlocklist(const std::string& ssid);
+    int removeSsidFromBlocklist(const std::string& ssid);
 
 private:
     PolicyControlContext& context;

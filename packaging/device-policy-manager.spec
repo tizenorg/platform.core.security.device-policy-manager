@@ -25,6 +25,7 @@ BuildRequires: pkgconfig(capi-base-common)
 BuildRequires: pkgconfig(libsmack)
 BuildRequires: pkgconfig(libtzplatform-config)
 BuildRequires: pkgconfig(auth-fw-admin)
+BuildRequires: pkgconfig(capi-network-wifi)
 
 %description
 The device-policy-manager package provides a daemon which is responsible for
