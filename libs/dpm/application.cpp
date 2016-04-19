@@ -76,3 +76,30 @@ int dpm_get_application_state(dpm_client_h handle, const char* pkgid)
     Application application = client.createPolicyInterface<Application>();
     return application.getApplicationState(pkgid);
 }
+
+int dpm_add_package_to_blacklist(dpm_client_h handle, const char* pkgid)
+{
+    assert(handle);
+
+    DevicePolicyClient &client = GetDevicePolicyClient(handle);
+    Application application = client.createPolicyInterface<Application>();
+    return application.addPackageToBlacklist(pkgid);
+}
+
+int dpm_remove_package_from_blacklist(dpm_client_h handle, const char* pkgid)
+{
+    assert(handle);
+
+    DevicePolicyClient &client = GetDevicePolicyClient(handle);
+    Application application = client.createPolicyInterface<Application>();
+    return application.removePackageFromBlacklist(pkgid);
+}
+
+int dpm_check_package_is_blacklisted(dpm_client_h handle, const char* pkgid)
+{
+    assert(handle);
+
+    DevicePolicyClient &client = GetDevicePolicyClient(handle);
+    Application application = client.createPolicyInterface<Application>();
+    return application.checkPackageIsBlacklisted(pkgid);
+}

@@ -233,3 +233,30 @@ std::vector<std::string> PackageManager::getInstalledPackageList(const uid_t use
 
     return packageList;
 }
+
+void PackageManager::addPackageToBlacklist(const std::string& pkgid, const uid_t user)
+{
+    if (::pkgmgr_client_usr_add_blacklist(nativeHandle, pkgid.c_str(), user) < 0) {
+        ERROR("Error in pkgmgr_client_add_blacklist");
+        throw runtime::Exception("Operation failed");
+    }
+}
+
+void PackageManager::removePackageFromBlacklist(const std::string& pkgid, const uid_t user)
+{
+    if (::pkgmgr_client_usr_remove_blacklist(nativeHandle, pkgid.c_str(), user) < 0) {
+        ERROR("Error in pkgmgr_client_remove_blacklist");
+        throw runtime::Exception("Operation failed");
+    }
+}
+
+bool PackageManager::checkPackageIsBlacklisted(const std::string& pkgid, const uid_t user)
+{
+    bool ret;
+    if (::pkgmgr_client_usr_check_blacklist(nativeHandle, pkgid.c_str(), &ret, user) < 0) {
+        ERROR("Error in pkgmgr_client_check_blacklist");
+        throw runtime::Exception("Operation failed");
+    }
+
+    return ret;
+}

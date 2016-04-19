@@ -65,6 +65,10 @@
 
      std::vector<std::string> getInstalledPackageList(const uid_t user);
 
+     void addPackageToBlacklist(const std::string& pkgid, const uid_t user);
+     void removePackageFromBlacklist(const std::string& pkgid, const uid_t user);
+     bool checkPackageIsBlacklisted(const std::string& pkgid, const uid_t user);
+
     static PackageManager& instance();
 
 private:

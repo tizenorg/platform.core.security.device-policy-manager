@@ -182,6 +182,57 @@ DPM_API int dpm_set_application_state(dpm_client_h handle, const char* pkgid, dp
 DPM_API int dpm_get_application_state(dpm_client_h handle, const char* pkgid);
 
 /**
+ * @brief       Adds package to blacklist
+ * @details     Administrator can use this API to disallow package installation
+ *              corresponding to the given pkgid.
+ * @since_tizen 3.0
+ * @param[in]   handle Device Policy Client handle
+ * @param[in]   pkgid The package name to be blacklisted
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_TIMEOUT Timeout
+ * @retval      #DPM_ERROR_ACCESS_DENIED The application does not have
+ *              the privilege to call this API
+ * @pre         handle must be created by dpm_create_client()
+ * @see         dpm_create_client()
+ * @see         dpm_destroy_client()
+ * @see         dpm_remove_package_from_blacklist()
+ * @see         dpm_check_package_is_blacklisted()
+ */
+DPM_API int dpm_add_package_to_blacklist(dpm_client_h handle, const char* pkgid);
+
+/**
+ * @brief       Removes package from blacklist
+ * @details     Administrator can use this API to remove package from blacklist.
+ * @since_tizen 3.0
+ * @param[in]   handle Device Policy Client handle
+ * @param[in]   pkgid The package name of the application whose installation is to be disabled
+ * @return      Current state of the application package
+ * @pre         handle must be created by dpm_create_client()
+ * @see         dpm_create_client()
+ * @see         dpm_destroy_client()
+ * @see         dpm_add_package_to_blacklist()
+ * @see         dpm_check_package_is_blacklisted()
+ */
+DPM_API int dpm_remove_package_from_blacklist(dpm_client_h handle, const char* pkgid);
+
+/**
+ * @brief       Checks whether a package is added to blacklist
+ * @details     Administrator can use this API to check whether the package is blacklisted.
+ *              Once package is added to blacklist, it is prhibited to install on the device.
+ * @since_tizen 3.0
+ * @param[in]   handle Device Policy Client handle
+ * @param[in]   pkgid The package name of the application whose installation is to be disabled
+ * @return      Current state of the application package
+ * @pre         handle must be created by dpm_create_client()
+ * @post
+ * @see         dpm_create_client()
+ * @see         dpm_destroy_client()
+ * @see         dpm_add_package_to_blacklist()
+ * @see         dpm_remove_package_from_blacklist()
+ */
+DPM_API int dpm_check_package_is_blacklisted(dpm_client_h handle, const char* pkgid);
+/**
  * @}
  */
 

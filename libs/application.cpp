@@ -183,4 +183,37 @@ int Application::wipeApplicationData(const std::string& appid)
     }
 }
 
+int Application::addPackageToBlacklist(const std::string& pkgid)
+{
+    try {
+        return context->methodCall<int>("Application::addPackageToBlacklist", pkgid);
+    } catch (runtime::Exception& e) {
+        return -1;
+    }
+
+    return 0;
+}
+
+int Application::removePackageFromBlacklist(const std::string& pkgid)
+{
+    try {
+        return context->methodCall<int>("Application::removePackageFromBlacklist", pkgid);
+    } catch (runtime::Exception& e) {
+        return -1;
+    }
+
+    return 0;
+}
+
+int Application::checkPackageIsBlacklisted(const std::string& pkgid)
+{
+    try {
+        return context->methodCall<int>("Application::checkPackageIsBlacklisted", pkgid);
+    } catch (runtime::Exception& e) {
+        return -1;
+    }
+
+    return 0;
+}
+
 } // namespace DevicePolicyManager
