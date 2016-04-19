@@ -15,18 +15,12 @@
  */
 #include <arpa/inet.h>
 
-#include <vconf.h>
-#include <vconf-keys.h>
 #include <wifi.h>
-#include <syspopup_caller.h>
-#include <network-pm-config.h>
-#include <network-pm-intf.h>
-#include <network-pm-wlan.h>
-#include <network-cm-intf.h>
 
 #include <cstdlib>
 #include <iostream>
 #include <functional>
+#include <unordered_set>
 
 #include "wifi.hxx"
 #include "app-bundle.h"
@@ -34,182 +28,144 @@
 
 namespace DevicePolicyManager {
 
-typedef wifi_ap_h AccessPointHandle;
-
 namespace {
-
-struct AccessPoint {
-    AccessPoint(AccessPointHandle h, const std::string& name) :
-        handle(h), ssid(name)
-    {
-    }
-
-    AccessPointHandle handle;
-    std::string ssid;
+    bool settingChangesRestriction;
+    bool stateChangeRestriction;
+    bool hotspotRestriction;
+    bool networkAccessRestriction;
+    std::unordered_set<std::string> blockSsidList;
 };
 
-const std::string WIFI_PKG = "wifi-qs";
-
-AccessPointHandle FindAccessPoint(const std::string& ssid)
+static void connectionStateChanged(wifi_connection_state_e state,
+                                   wifi_ap_h ap, void *user_data)
 {
-    auto AccessPointFoundCallback = [](wifi_ap_h handle, void* user_data) {
-        char *name;
-        int ret = ::wifi_ap_get_essid(handle, &name);
-        if (ret == WIFI_ERROR_NONE) {
-            AccessPoint *ap = static_cast<AccessPoint*>(user_data);
-            if (ap->ssid == name) {
-                ap->handle = handle;
-                ::free(name);
-                // should return false to break iteration
-                return true;
-            }
-            ::free(name);
-        }
-        // should return true to continue iteration
-        return true;
-    };
+    char *ssid;
 
-    AccessPoint ap(nullptr, ssid);
-    int ret = ::wifi_foreach_found_aps(AccessPointFoundCallback, &ap);
-    if (ret != WIFI_ERROR_NONE) {
-        ERROR("Error in wifi_foreach_found_aps");
-        return nullptr;
+    if (state == WIFI_CONNECTION_STATE_FAILURE ||
+        state == WIFI_CONNECTION_STATE_DISCONNECTED) {
+        return;
     }
 
-    return ap.handle;
-}
-
-std::string WifiErrorMessage(const int error)
-{
-    switch (error) {
-    case WIFI_ERROR_INVALID_PARAMETER:
-        return "WIFI_ERROR_INVALID_PARAMETER";
-    case WIFI_ERROR_OUT_OF_MEMORY:
-        return "WIFI_ERROR_OUT_OF_MEMORY";
-    case WIFI_ERROR_INVALID_OPERATION:
-        return "WIFI_ERROR_INVALID_OPERATION";
-    case WIFI_ERROR_ADDRESS_FAMILY_NOT_SUPPORTED:
-        return "WIFI_ERROR_ADDRESS_FAMILY_NOT_SUPPORTED";
-    case WIFI_ERROR_OPERATION_FAILED:
-        return "WIFI_ERROR_OPERATION_FAILED";
-    case WIFI_ERROR_NO_CONNECTION:
-        return "WIFI_ERROR_NO_CONNECTION";
-    case WIFI_ERROR_NOW_IN_PROGRESS:
-        return "WIFI_ERROR_NOW_IN_PROGRESS";
-    case WIFI_ERROR_ALREADY_EXISTS:
-        return "WIFI_ERROR_ALREADY_EXISTS";
-    case WIFI_ERROR_OPERATION_ABORTED:
-        return "WIFI_ERROR_OPERATION_ABORTED";
-    case WIFI_ERROR_DHCP_FAILED:
-        return "WIFI_ERROR_DHCP_FAILED";
-    case WIFI_ERROR_INVALID_KEY:
-        return "WIFI_ERROR_INVALID_KEY";
-    case WIFI_ERROR_NO_REPLY:
-        return "WIFI_ERROR_NO_REPLY";
-    case WIFI_ERROR_SECURITY_RESTRICTED:
-        return "WIFI_ERROR_SECURITY_RESTRICTED";
-    default:
-        break;
+    ::wifi_ap_get_essid(ap, &ssid);
+    if (blockSsidList.find(ssid) != blockSsidList.end()) {
+        ::wifi_forget_ap(ap);
     }
-
-    return "Unknown WIFI Error";
+    ::free(ssid);
 }
-
-} //namespace
 
 Wifi::Wifi(PolicyControlContext& ctx) :
     context(ctx)
 {
-    rmi::Service& manager = context.getServiceManager();
+    context.registerParametricMethod(this, (int)(Wifi::setStateChangeRestriction)(bool));
+    context.registerNonparametricMethod(this, (bool)(Wifi::isStateChangeRestricted));
 
-    manager.registerParametricMethod(this, (int)(Wifi::setsetStateChangeRestriction)(bool));
-    manager.registerParametricMethod(this, (int)(Wifi::setSettingChangesRestriction)(bool));
-    manager.registerParametricMethod(this, (int)(Wifi::setApSettingModificationRestriction)(bool));
-    manager.registerParametricMethod(this, (int)(Wifi::activateWifiSsidRestriction)(bool));
-    manager.registerParametricMethod(this, (int)(Wifi::addSsidFromBlacklist)(std::string));
-    manager.registerParametricMethod(this, (int)(Wifi::removeSsidFromBlacklist)(std::string));
+    context.registerParametricMethod(this, (int)(Wifi::setSettingChangesRestriction)(bool));
+    context.registerNonparametricMethod(this, (bool)(Wifi::isSettingChangesRestricted));
 
-    manager.registerNonparametricMethod(this, (bool)(Wifi::isWifiStateChanageAllowed)());
-    manager.registerNonparametricMethod(this, (bool)(Wifi::isSettingChangesRestricted)());
-    manager.registerNonparametricMethod(this, (bool)(Wifi::isApSettingModificationRestricted)());
-    manager.registerNonparametricMethod(this, (bool)(Wifi::isNetworkAccessRestricted)());
+    context.registerParametricMethod(this, (int)(Wifi::setHotspotRestriction)(bool));
+    context.registerNonparametricMethod(this, (bool)(Wifi::isHotspotRestricted));
+
+    context.registerParametricMethod(this, (int)(Wifi::setNetworkAccessRestriction)(bool));
+    context.registerNonparametricMethod(this, (bool)(Wifi::isNetworkAccessRestricted));
+
+    context.registerParametricMethod(this, (int)(Wifi::addSsidFromBlocklist)(std::string));
+    context.registerParametricMethod(this, (int)(Wifi::removeSsidFromBlocklist)(std::string));
+
+    context.createNotification("Wifi::stateChange");
+    context.createNotification("Wifi::settingChange");
+    context.createNotification("Wifi::hotspot");
+    context.createNotification("Wifi::networkAccess");
 }
 
 Wifi::~Wifi()
 {
 }
 
-int Wifi::setStateChangeRestriction(bool allow)
+int Wifi::setStateChangeRestriction(bool restrict)
 {
-    int status;
+    if (restrict == stateChangeRestriction)
+        return 0;
 
-    if (::vconf_get_int(VCONFKEY_NETWORK_WIFI_STATE, &status) != 0) {
-        ERROR("Failed to read VCONFKEY_NETWORK_WIFI_STATE");
-        return -1;
-    }
+    stateChangeRestriction = restrict;
 
-    if (status != VCONFKEY_NETWORK_WIFI_OFF) {
-        try {
-            Bundle bundle;
-            bundle.add("-t", "off");
-
-            Syspopup syspopup(WIFI_PKG);
-            if (syspopup.launch(bundle) < 0) {
-                ERROR("Failed to lunch wifi syspopup");
-                return -1;
-            }
-        } catch (runtime::Exception& e) {
-            ERROR("Failed to lunch wifi syspopup");
-            return -1;
-        }
-    }
-
+    context.notify("Wifi::stateChange", (restrict)? "Restriced":"Allowed");
     return 0;
 }
 
-bool Wifi::isWifiStateChanegAllowed()
+bool Wifi::isStateChangeRestricted()
 {
-    return false;
+    return stateChangeRestriction;
 }
 
 int Wifi::setSettingChangesRestriction(bool restrict)
 {
-        return -1;
+    if (restrict == settingChangesRestriction)
+        return 0;
+
+    settingChangesRestriction = restrict;
+
+    context.notify("Wifi::settingChange", (restrict)? "Restriced":"Allowed");
+    return 0;
 }
 
 bool Wifi::isSettingChangesRestricted()
 {
-    return false;
+    return settingChangesRestriction;
 }
 
-int Wifi::setApSettingModificationRestriction(bool restrict)
+int Wifi::setHotspotRestriction(bool restrict)
 {
-    return -1;
+    if (restrict == hotspotRestriction)
+        return 0;
+
+    hotspotRestriction = restrict;
+
+    context.notify("Wifi::hotspot", (restrict)? "Restriced":"Allowed");
+    return 0;
 }
 
-bool Wifi::isApSettingModificationRestricted()
+bool Wifi::isHotspotRestricted()
 {
-    return false;
+    return hotspotRestriction;
 }
 
 int Wifi::setNetworkAccessRestriction(bool restrict)
 {
-    return -1;
+    if (restrict == networkAccessRestriction)
+        return 0;
+
+    if (restrict) {
+        ::wifi_set_connection_state_changed_cb(connectionStateChanged, NULL);
+    } else {
+        ::wifi_unset_connection_state_changed_cb();
+    }
+
+    networkAccessRestriction = restrict;
+
+    context.notify("Wifi::networkAccess", (restrict)? "Restriced":"Allowed");
+    return 0;
 }
 
 bool Wifi::isNetworkAccessRestricted()
 {
-    return false;
+    return networkAccessRestriction;
 }
 
-int Wifi::addSsidFromBlacklist(const std::string& ssid)
+int Wifi::addSsidFromBlocklist(const std::string& ssid)
 {
-    return -1;
+    try {
+        blockSsidList.insert(ssid);
+    } catch (runtime::Exception& e) {
+        ERROR("Failed to allocate memory for wifi blocklist");
+        return -1;
+    }
+    return 0;
 }
 
-int Wifi::removeSsidFromBlacklist(const std::string& ssid)
+int Wifi::removeSsidFromBlocklist(const std::string& ssid)
 {
-    return -1;
+    blockSsidList.clear();
+    return 0;
 }
 
 Wifi wifiPolicy(Server::instance());

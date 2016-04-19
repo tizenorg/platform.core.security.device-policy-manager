@@ -100,7 +100,7 @@ bool Wifi::isNetworkAccessRestricted()
     }
 }
 
-int Wifi::addSsidFromBlacklist(const std::string& ssid)
+int Wifi::addSsidFromBlocklist(const std::string& ssid)
 {
     try {
         return context->methodCall<int>("Wifi::addSsidFromBlacklist", ssid);
@@ -109,7 +109,7 @@ int Wifi::addSsidFromBlacklist(const std::string& ssid)
     }
 }
 
-int Wifi::removeSsidFromBlacklist(const std::string& ssid)
+int Wifi::removeSsidFromBlocklist(const std::string& ssid)
 {
     try {
         return context->methodCall<int>("Wifi::removeSsidFromBlacklist", ssid);
