@@ -60,6 +60,10 @@ ClientManager::ClientManager()
     loadClients();
 }
 
+ClientManager::~ClientManager()
+{ 
+}
+
 void ClientManager::activateClient(const std::string& name)
 {
     std::lock_guard<Mutex> lock(mutex);
@@ -201,4 +205,10 @@ void ClientManager::prepareRepository()
                         "VALID INTEGER)";
 
     clientRepository->exec(query);
+}
+
+ClientManager& ClientManager::instance()
+{
+    static ClientManager __instance__;
+    return __instance__;
 }

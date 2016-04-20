@@ -20,8 +20,6 @@
 #include <string>
 #include <memory>
 
-#include "client-manager.h"
-
 #include "file-descriptor.h"
 #include "rmi/service.h"
 
@@ -29,11 +27,6 @@ class Server {
 public:
     void run();
     void terminate();
-
-    ClientManager& getClientManager()
-    {
-        return clientManager;
-    }
 
     template<typename Type, typename... Args>
     void setMethodHandler(const std::string& method,
@@ -78,8 +71,6 @@ private:
     ~Server();
 
     std::unique_ptr<rmi::Service> service;
-
-    ClientManager clientManager;
 };
 
 #endif //__DPM_SERVER_H__
