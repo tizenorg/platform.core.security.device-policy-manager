@@ -43,7 +43,9 @@ SET (COMMON_SOURCES     ${DPM_COMMON}/error.cpp
                         ${DPM_COMMON}/auth/user.cpp
                         ${DPM_COMMON}/auth/group.cpp
                         ${DPM_COMMON}/auth/shadow.cpp
-
+                        ${DPM_COMMON}/dbus/error.cpp
+                        ${DPM_COMMON}/dbus/variant.cpp
+                        ${DPM_COMMON}/dbus/connection.cpp
 )
 
 SET (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,noexecstack")
