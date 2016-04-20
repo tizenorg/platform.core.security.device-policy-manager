@@ -19,7 +19,7 @@
 #include <dpm/restriction.h>
 #include "testbench.h"
 
-static int restriction_clipboard(struct testcase* tc)
+static int test_dpm_clipboard(struct testcase* tc)
 {
 	dpm_client_h handle;
 	bool enable = false;
@@ -30,12 +30,12 @@ static int restriction_clipboard(struct testcase* tc)
 		return TEST_FAILED;
 	}
 
-	if (dpm_set_clipboard_restriction(handle, true) != 0) {
+	if (dpm_clipboard_set_state(handle, true) != 0) {
 		dpm_destroy_client(handle);
 		return TEST_FAILED;
 	}
 
-	enable = dpm_is_clipboard_restricted(handle);
+	enable = dpm_clipboard_get_state(handle);
 	if (enable == true) {
 		dpm_destroy_client(handle);
 		return TEST_SUCCESSED;
@@ -45,6 +45,7 @@ static int restriction_clipboard(struct testcase* tc)
 	return TEST_FAILED;
 }
 
+/*
 static int restriction_clipboard_share(struct testcase* tc)
 {
 	dpm_client_h handle;
@@ -70,8 +71,9 @@ static int restriction_clipboard_share(struct testcase* tc)
 	dpm_destroy_client(handle);
 	return TEST_FAILED;
 }
+*/
 
-static int restriction_settings_changes(struct testcase* tc)
+static int test_dpm_settings_changes(struct testcase* tc)
 {
 	dpm_client_h handle;
 	bool enable = false;
@@ -82,12 +84,12 @@ static int restriction_settings_changes(struct testcase* tc)
 		return TEST_FAILED;
 	}
 
-	if (dpm_set_settings_changes_restriction(handle, true) != 0) {
+	if (dpm_settings_set_restriction(handle, true) != 0) {
 		dpm_destroy_client(handle);
 		return TEST_FAILED;
 	}
 
-	enable = dpm_is_settings_changes_restricted(handle);
+	enable = dpm_settings_is_restricted(handle);
 	if (enable == true) {
 		dpm_destroy_client(handle);
 		return TEST_SUCCESSED;
@@ -97,6 +99,7 @@ static int restriction_settings_changes(struct testcase* tc)
 	return TEST_FAILED;
 }
 
+/*
 static int restriction_background_data(struct testcase* tc)
 {
 	dpm_client_h handle;
@@ -122,8 +125,9 @@ static int restriction_background_data(struct testcase* tc)
 	dpm_destroy_client(handle);
 	return TEST_FAILED;
 }
+*/
 
-static int restriction_usb_debugging(struct testcase* tc)
+static int test_dpm_usb_debugging(struct testcase* tc)
 {
 	dpm_client_h handle;
 	bool enable = false;
@@ -134,12 +138,12 @@ static int restriction_usb_debugging(struct testcase* tc)
 		return TEST_FAILED;
 	}
 
-	if (dpm_set_usb_debugging_restriction(handle, true) != 0) {
+	if (dpm_developer_set_usb_debugging_state(handle, true) != 0) {
 		dpm_destroy_client(handle);
 		return TEST_FAILED;
 	}
 
-	enable = dpm_is_usb_debugging_restricted(handle);
+	enable = dpm_developer_get_usb_debugging_state(handle);
 	if (enable == true) {
 		dpm_destroy_client(handle);
 		return TEST_SUCCESSED;
@@ -149,7 +153,7 @@ static int restriction_usb_debugging(struct testcase* tc)
 	return TEST_FAILED;
 }
 
-static int restriction_usb_mass_storage(struct testcase* tc)
+static int test_dpm_usb_mass_storage(struct testcase* tc)
 {
 	dpm_client_h handle;
 	bool enable = false;
@@ -160,12 +164,12 @@ static int restriction_usb_mass_storage(struct testcase* tc)
 		return TEST_FAILED;
 	}
 
-	if (dpm_set_usb_mass_storage_restriction(handle, true) != 0) {
+	if (dpm_storage_set_usb_mass_storage_state(handle, true) != 0) {
 		dpm_destroy_client(handle);
 		return TEST_FAILED;
 	}
 
-	enable = dpm_is_usb_mass_storage_restricted(handle);
+	enable = dpm_storage_get_usb_mass_storage_state(handle);
 	if (enable == true) {
 		dpm_destroy_client(handle);
 		return TEST_SUCCESSED;
@@ -175,10 +179,9 @@ static int restriction_usb_mass_storage(struct testcase* tc)
 	return TEST_FAILED;
 }
 
-static int restriction_factory_reset(struct testcase* tc)
+static int test_dpm_wipe(struct testcase* tc)
 {
 	dpm_client_h handle;
-	bool enable = false;
 
 	handle = dpm_create_client();
 	if (handle == NULL) {
@@ -186,15 +189,9 @@ static int restriction_factory_reset(struct testcase* tc)
 		return TEST_FAILED;
 	}
 
-	if (dpm_set_factory_reset_restriction(handle, true) != 0) {
+	if (dpm_device_wipe_data(handle, true) != 0) {
 		dpm_destroy_client(handle);
 		return TEST_FAILED;
-	}
-
-	enable = dpm_is_factory_reset_restricted(handle);
-	if (enable == true) {
-		dpm_destroy_client(handle);
-		return TEST_SUCCESSED;
 	}
 
 	dpm_destroy_client(handle);
@@ -203,46 +200,34 @@ static int restriction_factory_reset(struct testcase* tc)
 
 struct testcase restriction_testcase_clipboard = {
 	.description = "dpm_clipboard",
-	.handler = restriction_clipboard
-};
-
-struct testcase restriction_testcase_clipboard_share = {
-	.description = "dpm_clipboard_share",
-	.handler = restriction_clipboard_share
+	.handler = test_dpm_clipboard
 };
 
 struct testcase restriction_testcase_settings_changes = {
 	.description = "dpm_settings_changes",
-	.handler = restriction_settings_changes
-};
-
-struct testcase restriction_testcase_background_data = {
-	.description = "dpm_background_data",
-	.handler = restriction_background_data
+	.handler = test_dpm_settings_changes
 };
 
 struct testcase restriction_testcase_usb_debugging = {
 	.description = "dpm_usb_debugging",
-	.handler = restriction_usb_debugging
+	.handler = test_dpm_usb_debugging
 };
 
 struct testcase restriction_testcase_usb_mass_storage = {
 	.description = "dpm_usb_mass_storage",
-	.handler = restriction_usb_mass_storage
+	.handler = test_dpm_usb_mass_storage
 };
 
-struct testcase restriction_testcase_factory_reset = {
-	.description = "dpm_factory_reset",
-	.handler = restriction_factory_reset
+struct testcase restriction_testcase_wipe = {
+	.description = "dpm_wipe",
+	.handler = test_dpm_wipe
 };
 
 void TESTCASE_CONSTRUCTOR restriction_policy_build_testcase(void)
 {
 	testbench_populate_testcase(&restriction_testcase_clipboard);
-	testbench_populate_testcase(&restriction_testcase_clipboard_share);
 	testbench_populate_testcase(&restriction_testcase_settings_changes);
-	testbench_populate_testcase(&restriction_testcase_background_data);
 	testbench_populate_testcase(&restriction_testcase_usb_debugging);
 	testbench_populate_testcase(&restriction_testcase_usb_mass_storage);
-	testbench_populate_testcase(&restriction_testcase_factory_reset);
+	testbench_populate_testcase(&restriction_testcase_wipe);
 }

@@ -41,18 +41,6 @@ TESTCASE(ClipboardTest)
 
 	status = restriction.isClipboardRestricted();
 	TEST_EXPECT(false, status);
-
-	error = restriction.setClipboardShareRestriction(true);
-	TEST_EXPECT(0, error);
-
-	status = restriction.isClipboardShareRestricted();
-	TEST_EXPECT(true, status);
-
-	error = restriction.setClipboardShareRestriction(false);
-	TEST_EXPECT(0, error);
-
-	status = restriction.isClipboardShareRestricted();
-	TEST_EXPECT(false, status);
 }
 
 TESTCASE(SettingsChangesTest)
@@ -75,29 +63,6 @@ TESTCASE(SettingsChangesTest)
 	TEST_EXPECT(0, error);
 
 	status = restriction.isSettingsChangesRestricted();
-	TEST_EXPECT(false, status);
-}
-
-TESTCASE(SettingsBackgroundData)
-{
-	DevicePolicyClient client;
-	int error = -1;
-	bool status = false;
-
-	TEST_EXPECT(0, client.connect());
-
-	DevicePolicyManager::Restriction restriction = client.createPolicyInterface<DevicePolicyManager::Restriction>();
-
-	error = restriction.setBackgroundDataRestriction(true);
-	TEST_EXPECT(0, error);
-
-	status = restriction.isBackgroundDataRestricted();
-	TEST_EXPECT(true, status);
-
-	error = restriction.setBackgroundDataRestriction(false);
-	TEST_EXPECT(0, error);
-
-	status = restriction.isBackgroundDataRestricted();
 	TEST_EXPECT(false, status);
 }
 
@@ -124,25 +89,15 @@ TESTCASE(UsbDebuggingTest)
 	TEST_EXPECT(false, status);
 }
 
-TESTCASE(FactoryResetTest)
+TESTCASE(WipeData)
 {
 	DevicePolicyClient client;
 	int error = -1;
-	bool status = false;
 
 	TEST_EXPECT(0, client.connect());
 
 	DevicePolicyManager::Restriction restriction = client.createPolicyInterface<DevicePolicyManager::Restriction>();
 
-	error = restriction.setFactoryResetRestriction(true);
+	error = restriction.wipeData(true);
 	TEST_EXPECT(0, error);
-
-	status = restriction.isFactoryResetRestricted();
-	TEST_EXPECT(true, status);
-
-	error = restriction.setFactoryResetRestriction(false);
-	TEST_EXPECT(0, error);
-
-	status = restriction.isFactoryResetRestricted();
-	TEST_EXPECT(false, status);
 }

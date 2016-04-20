@@ -17,6 +17,8 @@
 #include "restriction.hxx"
 #include "audit/logger.h"
 
+#include <vconf.h>
+
 namespace DevicePolicyManager
 {
 
@@ -25,18 +27,13 @@ Restriction::Restriction(PolicyControlContext& ctxt)
 {
 	context.registerParametricMethod(this, (int)(Restriction::setClipboardRestriction)(bool));
 	context.registerNonparametricMethod(this, (bool)(Restriction::isClipboardRestricted));
-	context.registerParametricMethod(this, (int)(Restriction::setClipboardShareRestriction)(bool));
-	context.registerNonparametricMethod(this, (bool)(Restriction::isClipboardShareRestricted));
 	context.registerParametricMethod(this, (int)(Restriction::setSettingsChangesRestriction)(bool));
 	context.registerNonparametricMethod(this, (bool)(Restriction::isSettingsChangesRestricted));
-	context.registerParametricMethod(this, (int)(Restriction::setBackgroundDataRestriction)(bool));
-	context.registerNonparametricMethod(this, (bool)(Restriction::isBackgroundDataRestricted));
 	context.registerParametricMethod(this, (int)(Restriction::setUsbDebuggingRestriction)(bool));
 	context.registerNonparametricMethod(this, (bool)(Restriction::isUsbDebuggingRestricted));
 	context.registerParametricMethod(this, (int)(Restriction::setUsbMassStorageRestriction)(bool));
 	context.registerNonparametricMethod(this, (bool)(Restriction::isUsbMassStorageRestricted));
-	context.registerParametricMethod(this, (int)(Restriction::setFactoryResetRestriction)(bool));
-	context.registerNonparametricMethod(this, (bool)(Restriction::isFactoryResetRestricted));
+	context.registerParametricMethod(this, (int)(Restriction::wipeData)(bool));
 }
 
 Restriction::~Restriction()
@@ -53,17 +50,6 @@ bool Restriction::isClipboardRestricted()
 	return true;
 }
 
-int Restriction::setClipboardShareRestriction(bool enable)
-{
-	return 0;
-}
-
-bool Restriction::isClipboardShareRestricted()
-{
-	return true;
-}
-
-
 int Restriction::setSettingsChangesRestriction(bool enable)
 {
 	return 0;
@@ -74,24 +60,42 @@ bool Restriction::isSettingsChangesRestricted()
 	return true;
 }
 
-int Restriction::setBackgroundDataRestriction(bool enable)
-{
-	return 0;
-}
-
-bool Restriction::isBackgroundDataRestricted()
-{
-	return true;
-}
-
 int Restriction::setUsbDebuggingRestriction(bool enable)
 {
+    INFO("Start Restriction::setUsbDebuggingRestriction");
+
+    // if enable is true, restrication will be working (0).
+    if(enable == true) {
+        if (::vconf_set_int(VCONFKEY_SETAPPL_USB_DEBUG_MODE_BOOL, 0) != 0) {
+            ERROR("Failed to set usb debugging mode status");
+            return -1;
+        }
+    } else {
+        if (::vconf_set_int(VCONFKEY_SETAPPL_USB_DEBUG_MODE_BOOL, 1) != 0) {
+            ERROR("Failed to set usb debugging mode status");
+            return -1;
+        }
+    }
+
 	return 0;
 }
 
 bool Restriction::isUsbDebuggingRestricted()
 {
-	return true;
+	int status;
+	INFO("Start Restriction::isUsbDebuggingRestricted");
+
+	// 0 is restrication true, 1 is restrication false
+    if (::vconf_get_int(VCONFKEY_SETAPPL_USB_DEBUG_MODE_BOOL, &status) != 0) {
+        ERROR("Failed to get usb debugging mode status");
+        return -1;
+    }
+
+    // How to return for error??
+    if(status == 1) {
+    	return false;
+    }
+    return true;
 }
 
 int Restriction::setUsbMassStorageRestriction(bool enable)
@@ -104,14 +108,9 @@ bool Restriction::isUsbMassStorageRestricted()
 	return true;
 }
 
-int Restriction::setFactoryResetRestriction(bool enable)
+int Restriction::wipeData(bool enable)
 {
 	return 0;
-}
-
-bool Restriction::isFactoryResetRestricted()
-{
-	return true;
 }
 
 Restriction restrictionPolicy(Server::instance());

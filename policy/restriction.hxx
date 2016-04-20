@@ -31,14 +31,9 @@ public:
 
 	int setClipboardRestriction(bool enable);
 	bool isClipboardRestricted();
-	int setClipboardShareRestriction(bool enable);
-	bool isClipboardShareRestricted();
 
 	int setSettingsChangesRestriction(bool enable);
 	bool isSettingsChangesRestricted();
-
-	int setBackgroundDataRestriction(bool enable);
-	bool isBackgroundDataRestricted();
 
 	int setUsbDebuggingRestriction(bool enable);
 	bool isUsbDebuggingRestricted();
@@ -46,8 +41,7 @@ public:
 	int setUsbMassStorageRestriction(bool enable);
 	bool isUsbMassStorageRestricted();
 
-	int setFactoryResetRestriction(bool enable);
-	bool isFactoryResetRestricted();
+	int wipeData(bool enable);
 
 private:
 	PolicyControlContext& context;
