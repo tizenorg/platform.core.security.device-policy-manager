@@ -17,7 +17,6 @@
 #include <bundle.h>
 #include <tzplatform_config.h>
 
-#include <gio/gio.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/inotify.h>
@@ -33,6 +32,7 @@
 #include "xml/parser.h"
 #include "xml/document.h"
 #include "audit/logger.h"
+#include "dbus/connection.h"
 
 #define ZONE_UID_MIN       60001
 #define ZONE_UID_MAX       65000
@@ -56,41 +56,11 @@ namespace DevicePolicyManager {
 static const char *defaultGroups[] = {"audio", "video", "display", "log", NULL};
 static const char *defaultAppDir[] = {"cache", "data", "shared", NULL};
 
-static int setZoneState(uid_t id, int state)
+static void setZoneState(uid_t id, int state)
 {
-    GDBusConnection* connection;
-    GError* error = NULL;
-    GVariant* param = g_variant_new("(ubb)", id, state, 1);
-
-    connection = g_bus_get_sync(G_BUS_TYPE_SYSTEM, NULL, &error);
-    if (connection == NULL) {
-        ERROR(std::string("Failed to get system DBUS : ") +  error->message);
-        g_error_free(error);
-        return -1;
-    }
-
-    GVariant* var;
-    var = g_dbus_connection_call_sync(connection, FREEDESKTOP_LOGIN_INTERFACE,
-                                      "SetUserLinger", param,
-                                      NULL, G_DBUS_CALL_FLAGS_NONE, -1, NULL,
-                                      &error);
-    if (var == NULL) {
-        ERROR(std::string("Failed to call Setlinger: ") + error->message);
-        g_error_free(error);
-        return -1;
-    } else {
-        g_variant_unref(var);
-    }
-
-    /*
-        ret = g_dbus_connection_close_sync(connection, NULL, &error);
-        if (ret == FALSE) {
-            g_printerr("Failed to close system DBUS : %s\n", error->message);
-            g_error_free(error);
-            return -1;
-        }
-    */
-    return 0;
+    dbus::Connection& systemDBus = dbus::Connection::getSystem();
+    systemDBus.methodcall(FREEDESKTOP_LOGIN_INTERFACE, "SetUserLinger",
+                          -1, "", "(ubb)", id, state, 1);
 }
 
 template <typename... Args>
@@ -380,15 +350,9 @@ int ZonePolicy::removeZone(const std::string& name)
 
 int ZonePolicy::lockZone(const std::string& name)
 {
-    int result;
-
     try {
         runtime::User user(name);
-
-        result = setZoneState(user.getUid(), 0);
-        if (result != 0) {
-            return -1;
-        }
+        setZoneState(user.getUid(), 0);
     } catch (runtime::Exception& e) {
         ERROR(e.what());
         return -1;
@@ -399,15 +363,9 @@ int ZonePolicy::lockZone(const std::string& name)
 
 int ZonePolicy::unlockZone(const std::string& name)
 {
-    int result;
-
     try {
         runtime::User user(name);
-
-        result = setZoneState(user.getUid(), 1);
-        if (result != 0) {
-            return -1;
-        }
+        setZoneState(user.getUid(), 1);
     } catch (runtime::Exception& e) {
         ERROR(e.what());
         return -1;
