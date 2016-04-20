@@ -59,8 +59,6 @@ private:
 
 class ClientManager {
 public:
-    ClientManager();
-
     ClientManager(const ClientManager&) = delete;
     ClientManager& operator=(const ClientManager&) = delete;
 
@@ -74,11 +72,17 @@ public:
     void dumpRegisteredClients();
     void dumpActivatedClients();
 
+    static ClientManager& instance();
+
 private:
+    ClientManager();
+    ~ClientManager();
+
     void loadClients();
     void prepareRepository();
     std::string getPackageName(int pid);
 
+private:
     typedef std::vector<Client> ClientList;
     ClientList activatedClients;
     ClientList registeredClients;
