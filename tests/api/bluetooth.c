@@ -30,7 +30,7 @@ static int bluetooth_add_device_to_blacklist(struct testcase* tc)
     }
 
     const char* dummy_mac_address = "e8:11:32:30:78:9c";
-    if (dpm_add_bluetooth_device_to_blacklist(handle, dummy_mac_address) != 0) {
+    if (dpm_bluetooth_add_device_to_blacklist(handle, dummy_mac_address) != 0) {
         dpm_destroy_client(handle);
         return TEST_FAILED;
     }
@@ -50,7 +50,7 @@ static int bluetooth_remove_device_from_blacklist(struct testcase* tc)
     }
 
     const char* dummy_mac_address = "e8:11:32:30:78:9c";
-    if (dpm_remove_bluetooth_device_from_blacklist(handle, dummy_mac_address) != 0) {
+    if (dpm_bluetooth_remove_device_from_blacklist(handle, dummy_mac_address) != 0) {
         dpm_destroy_client(handle);
         return TEST_FAILED;
     }
@@ -70,12 +70,12 @@ static int bluetooth_device_restriction(struct testcase* tc)
         return TEST_FAILED;
     }
 
-    if (dpm_set_bluetooth_device_restriction(handle, true) != 0) {
+    if (dpm_bluetooth_set_device_restriction(handle, true) != 0) {
         return TEST_FAILED;
     }
 
     // the 'allow' will be always 'true' before server/bluetooth.cpp has been implemented.
-    allow = dpm_is_bluetooth_device_restricted(handle);
+    allow = dpm_bluetooth_is_device_restricted(handle);
     if (allow == true) {
         dpm_destroy_client(handle);
         return TEST_SUCCESSED;
@@ -96,7 +96,7 @@ static int bluetooth_add_uuid_to_blacklist(struct testcase* tc)
     }
 
     const char* dummy_uuid = "ff8ca1f3-0221-40c9-91fd-25ebbbfa68c3";
-    if (dpm_add_bluetooth_uuid_to_blacklist(handle, dummy_uuid) != 0) {
+    if (dpm_bluetooth_add_uuid_to_blacklist(handle, dummy_uuid) != 0) {
         dpm_destroy_client(handle);
         return TEST_FAILED;
     }
@@ -116,7 +116,7 @@ static int bluetooth_remove_uuid_from_blacklist(struct testcase* tc)
     }
 
     const char* dummy_uuid = "ff8ca1f3-0221-40c9-91fd-25ebbbfa68c3";
-    if (dpm_remove_bluetooth_uuid_from_blacklist(handle, dummy_uuid) != 0) {
+    if (dpm_bluetooth_remove_uuid_from_blacklist(handle, dummy_uuid) != 0) {
         dpm_destroy_client(handle);
         return TEST_FAILED;
     }
@@ -136,12 +136,12 @@ static int bluetooth_uuid_restriction(struct testcase* tc)
         return TEST_FAILED;
     }
 
-    if (dpm_set_bluetooth_uuid_restriction(handle, true) != 0) {
+    if (dpm_bluetooth_set_uuid_restriction(handle, true) != 0) {
         return TEST_FAILED;
     }
 
     // the 'allow' will be always 'true' before server/bluetooth.cpp has been implemented.
-    allow = dpm_is_bluetooth_uuid_restricted(handle);
+    allow = dpm_bluetooth_is_uuid_restricted(handle);
     if (allow == true) {
         dpm_destroy_client(handle);
         return TEST_SUCCESSED;

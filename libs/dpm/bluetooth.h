@@ -53,7 +53,7 @@ extern "C" {
  * @see         dpm_destroy_client()
  * @see         dpm_remove_bluetooth_device_from_blacklist()
  */
-DPM_API int dpm_add_bluetooth_device_to_blacklist(dpm_client_h handle, const char* mac_address);
+DPM_API int dpm_bluetooth_add_device_to_blacklist(dpm_client_h handle, const char* mac_address);
 
 /**
  * @brief       Removes MAC address from blacklist
@@ -74,7 +74,7 @@ DPM_API int dpm_add_bluetooth_device_to_blacklist(dpm_client_h handle, const cha
  * @see         dpm_destroy_client()
  * @see         dpm_add_bluetooth_device_to_blacklist()
  */
-DPM_API int dpm_remove_bluetooth_device_from_blacklist(dpm_client_h handle, const char* mac_address);
+DPM_API int dpm_bluetooth_remove_device_from_blacklist(dpm_client_h handle, const char* mac_address);
 
 /**
  * @brief       Enables or disables device restriction of bluetooth
@@ -95,7 +95,7 @@ DPM_API int dpm_remove_bluetooth_device_from_blacklist(dpm_client_h handle, cons
  * @see         dpm_destroy_client()
  * @see         dpm_is_bluetooth_device_restricted()
  */
-DPM_API int dpm_set_bluetooth_device_restriction(dpm_client_h handle, const int enable);
+DPM_API int dpm_bluetooth_set_device_restriction(dpm_client_h handle, const int enable);
 
 /**
  * @brief       Gets the allow status of the bluetooth's device restriction
@@ -112,7 +112,7 @@ DPM_API int dpm_set_bluetooth_device_restriction(dpm_client_h handle, const int 
  * @see         dpm_destroy_client()
  * @see         dpm_set_bluetooth_device_restriction()
  */
-DPM_API int dpm_is_bluetooth_device_restricted(dpm_client_h handle);
+DPM_API int dpm_bluetooth_is_device_restricted(dpm_client_h handle);
 
 /**
  * @brief       Adds UUID to blacklist
@@ -132,7 +132,7 @@ DPM_API int dpm_is_bluetooth_device_restricted(dpm_client_h handle);
  * @see         dpm_destroy_client()
  * @see         dpm_remove_bluetooth_uuid_from_blacklist()
  */
-DPM_API int dpm_add_bluetooth_uuid_to_blacklist(dpm_client_h handle, const char* uuid);
+DPM_API int dpm_bluetooth_add_uuid_to_blacklist(dpm_client_h handle, const char* uuid);
 
 /**
  * @brief       Removes UUID from blacklist
@@ -152,7 +152,7 @@ DPM_API int dpm_add_bluetooth_uuid_to_blacklist(dpm_client_h handle, const char*
  * @see         dpm_destroy_client()
  * @see         dpm_add_bluetooth_uuid_to_blacklist()
  */
-DPM_API int dpm_remove_bluetooth_uuid_from_blacklist(dpm_client_h handle, const char* uuid);
+DPM_API int dpm_bluetooth_remove_uuid_from_blacklist(dpm_client_h handle, const char* uuid);
 
 /**
  * @brief       Enables or disables UUID restriction of bluetooth
@@ -173,7 +173,7 @@ DPM_API int dpm_remove_bluetooth_uuid_from_blacklist(dpm_client_h handle, const 
  * @see         dpm_destroy_client()
  * @see         dpm_is_bluetooth_uuid_restricted()
  */
-DPM_API int dpm_set_bluetooth_uuid_restriction(dpm_client_h handle, const int enable);
+DPM_API int dpm_bluetooth_set_uuid_restriction(dpm_client_h handle, const int enable);
 
 /**
  * @brief       Gets the allow status of the bluetooth's UUID restriction
@@ -190,7 +190,7 @@ DPM_API int dpm_set_bluetooth_uuid_restriction(dpm_client_h handle, const int en
  * @see         dpm_destroy_client()
  * @see         dpm_set_bluetooth_uuid_restriction()
  */
-DPM_API int dpm_is_bluetooth_uuid_restricted(dpm_client_h handle);
+DPM_API int dpm_bluetooth_is_uuid_restricted(dpm_client_h handle);
 
 /**
  * @}
