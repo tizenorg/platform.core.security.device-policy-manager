@@ -15,6 +15,8 @@
  */
 
 #include "administration.hxx"
+
+#include "client-manager.h"
 #include "audit/logger.h"
 
 namespace DevicePolicyManager {
@@ -32,7 +34,7 @@ Administration::~Administration()
 
 int Administration::registerPolicyClient(const std::string& name)
 {
-    ClientManager &manager = context.getClientManager();
+    ClientManager& manager = ClientManager::instance();
 
     try {
         manager.registerClient(name);
@@ -46,7 +48,7 @@ int Administration::registerPolicyClient(const std::string& name)
 
 int Administration::deregisterPolicyClient(const std::string& name)
 {
-    ClientManager& manager = context.getClientManager();
+    ClientManager& manager = ClientManager::instance();
 
     try {
         manager.deregisterClient(name);
