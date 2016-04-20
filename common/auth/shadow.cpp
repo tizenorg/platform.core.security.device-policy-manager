@@ -22,6 +22,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#include "smack.h"
 #include "shadow.h"
 #include "exception.h"
 #include "filesystem.h"
@@ -150,6 +151,9 @@ void Shadow::foreach(const std::string& filename,
     if (::chmod(tmpfilename.c_str(), st.st_mode) != 0) {
         throw runtime::Exception("Shadow file chmod error");
     }
+
+    runtime::File tmpfile(tmpfilename);
+    runtime::Smack::setAccess(tmpfile, "_");
 
     if (::rename(tmpfilename.c_str(), filename.c_str()) != 0) {
         throw runtime::Exception("shadow file update error");
