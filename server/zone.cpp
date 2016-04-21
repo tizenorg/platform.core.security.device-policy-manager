@@ -13,8 +13,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License
  */
-#include <iostream>
-
 #include <aul.h>
 #include <bundle.h>
 #include <tzplatform_config.h>
@@ -28,6 +26,7 @@
 
 #include "smack.h"
 #include "process.h"
+#include "packman.h"
 #include "filesystem.h"
 #include "auth/user.h"
 #include "auth/group.h"
@@ -55,6 +54,7 @@
 namespace DevicePolicyManager {
 
 static const char *defaultGroups[] = {"audio", "video", "display", "log", NULL};
+static const char *defaultAppDir[] = {"cache", "data", "shared", NULL};
 
 static int setZoneState(uid_t id, int state)
 {
@@ -227,6 +227,7 @@ int Zone::createZone(const std::string& name, const std::string& setupWizAppid)
                 runtime::Smack::setTransmute(dir, true);
             }
             std::string homeDir = ::tzplatform_getenv(TZ_USER_HOME);
+            std::string appDir = ::tzplatform_getenv(TZ_USER_APP);
             ::tzplatform_reset_user();
 
             //create systemd user unit directory
@@ -254,6 +255,25 @@ int Zone::createZone(const std::string& name, const std::string& setupWizAppid)
                     "security-manager-cmd", "--manage-users=add",
                     "--uid=" + std::to_string(user.getUid()),
                     "--usertype=normal");
+
+            //initialize package rw directory in home
+            std::vector<std::string> pkgList = PackageManager::instance().
+                                        getInstalledPackageList(user.getUid());
+            for (std::vector<std::string>::iterator it = pkgList.begin();
+                 it != pkgList.end(); it++) {
+                runtime::File dir(appDir + "/" + *it);
+                try {
+                    dir.makeDirectory();
+                    dir.chown(user.getUid(), user.getGid());
+                    runtime::Smack::setAccess(dir, APP_SMACKLABEL + *it);
+                    runtime::Smack::setTransmute(dir, true);
+                    for (int i = 0; defaultAppDir[i]; i++) {
+                        runtime::File insideDir(dir.getPath() + "/" + defaultAppDir[i]);
+                        insideDir.makeDirectory();
+                        insideDir.chown(user.getUid(), user.getGid());
+                    }
+                } catch (runtime::Exception& e) {}
+            }
 
             //read manifest xml file
             bundleXml = std::unique_ptr<xml::Document>(xml::Parser::parseFile(provisionDirPath + "/manifest.xml"));
