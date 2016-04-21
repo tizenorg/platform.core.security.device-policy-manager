@@ -38,7 +38,7 @@
 #define ZONE_UID_MIN       60001
 #define ZONE_UID_MAX       65000
 
-#define ZONE_GROUP         "zones"
+#define ZONE_GROUP         "users"
 
 #define ZONE_MANIFEST_DIR   CONF_PATH "/zone/"
 #define ZONE_PROVISION_DIR  "/tmp/zone/provision/"
