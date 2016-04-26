@@ -19,19 +19,38 @@
 
 #include "dpm-syspopup.h"
 
-static void __terminate_cb (void *user_data)
-{
-	return;
-}
-
-static void __end_key_cb (void *user_data)
-{
-	return;
-}
-
 popup_info_s popup_list[DPM_SYSPOPUP_MAX] = {
-	{"restriction_camera", "IDS_DPM_POP_RESTRICTION_CAMERA_TITLE", "IDS_DPM_POP_RESTRICTION_CAMERA_CONTENT", __terminate_cb, __end_key_cb},
-	{"restriction_location", "IDS_DPM_POP_RESTRICTION_LOCATION_TITLE", "IDS_DPM_POP_RESTRICTION_CONTENT", __terminate_cb, __end_key_cb},
+	/* Application Policy */
+	{"install_mode",   "IDS_DPM_HEADER_APPLICATION_POLICY", "IDS_DPM_BODY_DISALLOW_INSTALL_MODE"},
+	{"uninstall_mode", "IDS_DPM_HEADER_APPLICATION_POLICY", "IDS_DPM_BODY_DISALLOW_UNINSTALL_MODE"},
+
+	/* Password Policy */
+	{"password_quality",        "IDS_DPM_HEADER_PASSWORD_POLICY", "IDS_DPM_BODY_PASSWORD_QUALITY"},
+	{"password_expired",        "IDS_DPM_HEADER_PASSWORD_POLICY", "IDS_DPM_BODY_PASSWORD_EXPIRED"},
+	{"password_reset",          "IDS_DPM_HEADER_PASSWORD_POLICY", "IDS_DPM_BODY_PASSWORD_RESET"},
+	{"password_enforce_change", "IDS_DPM_HEADER_PASSWORD_POLICY", "IDS_DPM_BODY_PASSWORD_ENFORCE_CHANGE"},
+
+	/* Wi-Fi Policy */
+	{"wifi",    "IDS_DPM_HEADER_WIFI_POLICY", "IDS_DPM_BODY_DISALLOW_WIFI"},
+	{"hotspot", "IDS_DPM_HEADER_WIFI_POLICY", "IDS_DPM_BODY_DISALLOW_HOTSPOT"},
+
+	/* Restriction Policy */
+	{"camera",     "IDS_DPM_HEADER_CAMERA_POLICY",   "IDS_DPM_BODY_DISALLOW_CAMERA"},
+	{"microphone", "IDS_DPM_HEADER_RECORD_POLICY",   "IDS_DPM_BODY_DISALLOW_MICROPHONE"},
+	{"location",   "IDS_DPM_HEADER_LOCATION_POLICY", "IDS_DPM_BODY_DISALLOW_LOCATION"},
+
+	/* Storage Policy */
+	{"external_storage",   "IDS_DPM_HEADER_STORAGE_POLICY", "IDS_DPM_BODY_DISALLOW_EXTERNAL_STORAGE"},
+	{"storage_encryption", "IDS_DPM_HEADER_STORAGE_POLICY", "IDS_DPM_BODY_DISALLOW_STORAGE_ENCRYPTION"},
+	{"storage_decryption", "IDS_DPM_HEADER_STORAGE_POLICY", "IDS_DPM_BODY_DISALLOW_STORAGE_DECRYPTION"},
+	{"wipe_data",          "IDS_DPM_HEADER_STORAGE_POLICY", "IDS_DPM_BODY_WIPE_STORAGE_DATA"},
+
+	/* Bluetooth Policy */
+	{"bluetooth", "IDS_DPM_HEADER_DISALLOW_BLUETOOTH", "IDS_DPM_BODY_DISALLOW_BLUETOOTH"},
+
+	/* Container Policy */
+	{"create_zone", "IDS_DPM_HEADER_CONTAINER_POLICY", "IDS_DPM_BODY_CREATE_CONTAINER"},
+	{"remove_zone", "IDS_DPM_HEADER_CONTAINER_POLICY", "IDS_DPM_BODY_REMOVE_CONTAINER"},
 };
 
 popup_info_s *_get_dpm_popup_info(const char *popup_name)
