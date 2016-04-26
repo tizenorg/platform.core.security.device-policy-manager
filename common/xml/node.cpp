@@ -67,20 +67,24 @@ void Node::setName(const std::string& name)
 
 void Node::setContent(const std::string& content)
 {
-    if (implementation->type == XML_ELEMENT_NODE) {
+    if (implementation->type != XML_ELEMENT_NODE) {
         throw runtime::Exception("Can not set content for this node type");
     }
 
-    xmlNodeSetContent(implementation, (xmlChar*)content.c_str());
+    auto child = implementation->xmlChildrenNode;
+    xmlNodeSetContent(child, (xmlChar*)content.c_str());
 }
 
 std::string Node::getContent() const
 {
-    if (implementation->type == XML_ELEMENT_NODE) {
+    if (implementation->type != XML_ELEMENT_NODE) {
         throw runtime::Exception("This node type does not have content");
     }
-
-    return implementation->content ? (char*)implementation->content : "";
+    xmlNode* child = implementation->xmlChildrenNode;
+    if (child == NULL || xmlIsBlankNode(child)) {
+        return "";
+    }
+    return child->content ? (char*)child->content : "";
 }
 
 void Node::setProp(const std::string& name, const std::string& val)
