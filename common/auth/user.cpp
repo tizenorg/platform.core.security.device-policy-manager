@@ -195,7 +195,7 @@ void User::remove()
     int ngroups = 0;
     getgrouplist(name.c_str(), gid, NULL, &ngroups);
 
-    std::unique_ptr<gid_t> groups(new gid_t[ngroups]);
+    std::unique_ptr<gid_t[]> groups(new gid_t[ngroups]);
     getgrouplist(name.c_str(), gid, groups.get(), &ngroups);
 
     for (int i = 0; i < ngroups; i++) {
