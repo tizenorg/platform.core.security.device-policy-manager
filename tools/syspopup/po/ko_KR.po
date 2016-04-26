@@ -1,11 +1,77 @@
-msgid "IDS_DPM_POP_RESTRICTION_LOCATION_CONTENT"
-msgstr "보안정책에 따라 위치 정보를 사용할 수 없습니다."
+msgid "IDS_DPM_BODY_PREVENT_BLUETOOTH"
+msgstr "보안정책에 따라 블루투스를 사용할 수 없습니다."
 
-msgid "IDS_DPM_POP_RESTRICTION_LOCATION_TITLE"
-msgstr "위치 정보 정책"
+msgid "IDS_DPM_HEADER_BLUETOOTH_POLICY"
+msgstr "블루투스 정책"
 
-msgid "IDS_DPM_POP_RESTRICTION_CAMERA_CONTENT"
+msgid "IDS_DPM_BODY_WIPE_STORAGE_DATA"
+msgstr "기기 저장공간의 데이터를 삭제합니다."
+
+msgid "IDS_DPM_BODY_PREVENT_STORAGE_DECRYPTION"
+msgstr "보안정책에 따라 저장공간 암호화를 해제할 수 없습니다."
+
+msgid "IDS_DPM_BODY_PREVENT_EXTERNAL_STORAGE"
+msgstr "보안정책에 따라 외부 저장공간을 사용할 수 없습니다."
+
+msgid "IDS_DPM_HEADER_STORAGE_POLICY"
+msgstr "저장공간 정책"
+
+msgid "IDS_DPM_BODY_PREVENT_SETTINGS_CHANGES"
+msgstr "보안 정책에 따라 설정 변경을 사용할 수 없습니다."
+
+msgid "IDS_DPM_HEADER_SETTING_POLICY"
+msgstr "설정 정책"
+
+msgid "IDS_DPM_BODY_PREVENT_LOCATION"
+msgstr "보안정책에 따라 위치정보를 사용할 수 없습니다."
+
+msgid "IDS_DPM_HEADER_LOCATION_POLICY"
+msgstr "위치 정책"
+
+msgid "IDS_DPM_BODY_PREVENT_MICROPHONE"
+msgstr "보안정책에 따라 Microphone을 사용할 수 없습니다."
+
+msgid "IDS_DPM_HEADER_RECORD_POLICY"
+msgstr "기록 정책"
+
+msgid "IDS_DPM_BODY_PREVENT_CAMERA"
 msgstr "보안정책에 따라 카메라를 사용할 수 없습니다."
 
-msgid "IDS_DPM_POP_RESTRICTION_CAMERA_TITLE"
+msgid "IDS_DPM_HEADER_CAMERA_POLICY"
 msgstr "카메라 정책"
+
+msgid "IDS_DPM_BODY_PREVENT_HOTSPOT"
+msgstr "보안정책에 따라 Hotspot을 사용할 수 없습니다."
+
+msgid "IDS_DPM_BODY_PREVENT_WIFI"
+msgstr "보안정책에 따라 Wi-Fi를 사용할 수 없습니다."
+
+msgid "IDS_DPM_HEADER_WIFI_POLICY"
+msgstr "와이파이 정책"
+
+msgid "IDS_DPM_BODY_PASSWORD_SET_PATTERN"
+msgstr "보안정책에 따라 비밀번호 패턴을 설정합니다."
+
+msgid "IDS_DPM_BODY_PASSWORD_DELETE_PATTERN"
+msgstr "보안정책에 따라 비밀번호 패턴을 제거합니다."
+
+msgid "IDS_DPM_BODY_PASSWORD_ENFORCE_CHANGE"
+msgstr "보안정책에 따라 비밀번호를 변경합니다."
+
+msgid "IDS_DPM_BODY_PASSWORD_RESET"
+msgstr "새 비밀번호를 설정하세요."
+
+msgid "IDS_DPM_BODY_PASSWORD_EXPIRES"
+msgstr "만료된 비밀번호입니다."
+
+msgid "IDS_DPM_HEADER_PASSWORD_POLICY"
+msgstr "비밀번호 정책"
+
+msgid "IDS_DPM_BODY_PREVENT_APPLICATION_UNINSTALLATION_MODE"
+msgstr "보안정책에 따라 어플리케이션 삭제를 할 수 없습니다."
+
+msgid "IDS_DPM_BODY_PREVENT_APPLICATION_INSTALLATION_MODE"
+msgstr "보안정책에 따라 어플리케이션 설치를 할 수 없습니다."
+
+msgid "IDS_DPM_HEADER_APPLICATION_POLICY"
+msgstr "어플리케이션 정책"
