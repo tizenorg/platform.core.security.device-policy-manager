@@ -75,6 +75,9 @@ TARGET_COMPILE_DEFINITIONS(${TARGET} PRIVATE
     DB_PATH="${DB_INSTALL_DIR}"
 )
 
+CONFIGURE_FILE(systemd/device-policy-manager.service.in systemd/device-policy-manager.service)
+
 INSTALL(TARGETS ${TARGET} DESTINATION bin)
+INSTALL(FILES systemd/device-policy-manager.service DESTINATION ${SYSTEMD_UNIT_INSTALL_DIR})
 INSTALL(FILES data/PolicyManifest.xml DESTINATION ${CONF_INSTALL_DIR}/policy)
 INSTALL(FILES data/DefaultBundleManifest.xml DESTINATION ${CONF_INSTALL_DIR}/zone RENAME owner.xml)

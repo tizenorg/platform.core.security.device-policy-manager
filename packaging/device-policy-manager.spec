@@ -47,6 +47,8 @@ managing device policies.
 %config %{TZ_SYS_ETC}/dpm/policy/PolicyManifest.xml
 %attr(700,root,root) %dir %{TZ_SYS_ETC}/dpm/zone
 %attr(600,root,root) %config %{TZ_SYS_ETC}/dpm/zone/owner.xml
+%{_unitdir}/device-policy-manager.service
+%{_unitdir}/multi-user.target.wants/device-policy-manager.service
 
 %prep
 %setup -q
@@ -74,9 +76,10 @@ managing device policies.
 make %{?jobs:-j%jobs}
 
 %install
-rm -rf %{buildroot}
-mkdir -p %{buildroot}/usr/apps/org.tizen.zone-setup-wizard/data
 %make_install
+mkdir -p %{buildroot}/usr/apps/org.tizen.zone-setup-wizard/data
+mkdir -p %{buildroot}/%{_unitdir}/multi-user.target.wants
+ln -s ../device-policy-manager.service %{buildroot}/%{_unitdir}/multi-user.target.wants/device-policy-manager.service
 
 %clean
 rm -rf %{buildroot}
