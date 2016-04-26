@@ -36,7 +36,7 @@
 #endif
 #define LOG_TAG "org.tizen.dpm-syspopup"
 
-#define DPM_SYSPOPUP_MAX 2
+#define DPM_SYSPOPUP_MAX 100 
 
 typedef struct {
 	const char *name;

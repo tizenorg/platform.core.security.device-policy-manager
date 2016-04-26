@@ -30,8 +30,44 @@ static void __end_key_cb (void *user_data)
 }
 
 popup_info_s popup_list[DPM_SYSPOPUP_MAX] = {
-	{"restriction_camera", "IDS_DPM_POP_RESTRICTION_CAMERA_TITLE", "IDS_DPM_POP_RESTRICTION_CAMERA_CONTENT", __terminate_cb, __end_key_cb},
-	{"restriction_location", "IDS_DPM_POP_RESTRICTION_LOCATION_TITLE", "IDS_DPM_POP_RESTRICTION_CONTENT", __terminate_cb, __end_key_cb},
+	/* Application Policy */
+	{"install_mode", "IDS_DPM_HEADER_APPLICATION_POLICY", "IDS_DPM_BODY_DISALLOW_INSTALL_MODE", __terminate_cb, __end_key_cb},
+	{"uninstall_mode", "IDS_DPM_HEADER_APPLICATION_POLICY", "IDS_DPM_BODY_DISALLOW_UNINSTALL_MODE", __terminate_cb, __end_key_cb},
+
+	/* Password Policy */
+	{"password_expired", "IDS_DPM_HEADER_PASSWORD_POLICY", "IDS_DPM_BODY_PASSWORD_EXPIRED", __terminate_cb, __end_key_cb},
+	{"password_reset", "IDS_DPM_HEADER_PASSWORD_POLICY", "IDS_DPM_BODY_PASSWORD_RESET", __terminate_cb, __end_key_cb},
+	{"password_enforce_change", "IDS_DPM_HEADER_PASSWORD_POLICY", "IDS_DPM_BODY_PASSWORD_ENFORCE_CHANGE", __terminate_cb, __end_key_cb},
+
+	/* Wi-Fi Policy */
+	{"wifi", "IDS_DPM_HEADER_WIFI_POLICY", "IDS_DPM_BODY_DISALLOW_WIFI", __terminate_cb, __end_key_cb},
+	{"hotspot", "IDS_DPM_HEADER_WIFI_POLICY", "IDS_DPM_BODY_DISALLOW_HOTSPOT", __terminate_cb, __end_key_cb},
+
+	/* Restriction Policy */
+	{"camera", "IDS_DPM_HEADER_CAMERA_POLICY", "IDS_DPM_BODY_DISALLOW_CAMERA", __terminate_cb, __end_key_cb},
+	{"microphone", "IDS_DPM_HEADER_RECORD_POLICY", "IDS_DPM_BODY_DISALLOW_MICROPHONE", __terminate_cb, __end_key_cb},
+	{"location", "IDS_DPM_HEADER_LOCATION_POLICY", "IDS_DPM_BODY_DISALLOW_LOCATION", __terminate_cb, __end_key_cb},
+
+	/* Storage Policy */
+	{"external_storage", "IDS_DPM_HEADER_STORAGE_POLICY", "IDS_DPM_BODY_DISALLOW_EXTERNAL_STORAGE", __terminate_cb, __end_key_cb},
+	{"storage_encryption", "IDS_DPM_HEADER_STORAGE_POLICY", "IDS_DPM_BODY_DISALLOW_STORAGE_ENCRYPTION", __terminate_cb, __end_key_cb},
+	{"storage_decryption", "IDS_DPM_HEADER_STORAGE_POLICY", "IDS_DPM_BODY_DISALLOW_STORAGE_DECRYPTION", __terminate_cb, __end_key_cb},
+	{"wipe_device", "IDS_DPM_HEADER_STORAGE_POLICY", "IDS_DPM_BODY_WIPE_DEVICE", __terminate_cb, __end_key_cb},
+
+	/* Bluetooth Policy */
+	{"bluetooth", "IDS_DPM_HEADER_DISALLOW_BLUETOOTH", "IDS_DPM_BODY_DISALLOW_BLUETOOTH", __terminate_cb, __end_key_cb},
+
+	/* Container Policy */
+	{"create_zone", "IDS_DPM_HEADER_CONTAINER_POLICY", "IDS_DPM_BODY_CREATE_CONTAINER", __terminate_cb, __end_key_cb},
+	{"remove_zone", "IDS_DPM_HEADER_CONTAINER_POLICY", "IDS_DPM_BODY_REMOVE_CONTAINER", __terminate_cb, __end_key_cb},
+	/* undeginated policy */
+	/*{"text_messaging", "IDS_DPM_HEADER_MESSAGE_POLICY", "IDS_DPM_BODY_DISALLOW_TEXT_MESSAGING", __terminate_cb, __end_key_cb},
+	{"email", "IDS_DPM_HEADER_EMAIL_POLICY", "IDS_DPM_BODY_DISALLOW_EMAIL", __terminate_cb, __end_key_cb},
+	{"tethering", "IDS_DPM_HEADER_WIFI_POLICY", "IDS_DPM_BODY_DISALLOW_TETHERING", __terminate_cb, __end_key_cb},
+	{"browser", "IDS_DPM_HEADER_BROWSER_POLICY", "IDS_DPM_BODY_DISALLOW_BROWSER", __terminate_cb, __end_key_cb},
+	{"nfc", "IDS_DPM_HEADER_NFC_POLICY", "IDS_DPM_BODY_DISALLOW_NFC", __terminate_cb, __end_key_cb},
+	{"clipboard", "IDS_DPM_HEADER_CLIPBOARD_POLICY", "IDS_DPM_BODY_DISALLOW_CLIPBOARD", __terminate_cb, __end_key_cb},
+	{"screen_capture", "IDS_DPM_HEADER_SCREEN_CAPTURE_POLICY", "IDS_DPM_BODY_DISALLOW_SCREEN_CAPTURE", __terminate_cb, __end_key_cb},*/
 };
 
 popup_info_s *_get_dpm_popup_info(const char *popup_name)
