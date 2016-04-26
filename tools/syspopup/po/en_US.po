@@ -1,11 +1,89 @@
-msgid "IDS_DPM_POP_RESTRICTION_LOCATION_CONTENT"
-msgstr "Security policy restricts use of location data."
+msgid "IDS_DPM_BODY_REMOVE_CONTAINER"
+msgstr "Remove a container"
 
-msgid "IDS_DPM_POP_RESTRICTION_LOCATION_TITLE"
-msgstr "Location Data Policy"
+msgid "IDS_DPM_BODY_CREATE_CONTAINER"
+msgstr "Create a new container"
 
-msgid "IDS_DPM_POP_RESTRICTION_CAMERA_CONTENT"
-msgstr "Security policy restricts use of camera."
+msgid "IDS_DPM_HEADER_CONTAINER_POLICY"
+msgstr "Container Policy"
 
-msgid "IDS_DPM_POP_RESTRICTION_CAMERA_TITLE"
+msgid "IDS_DPM_BODY_PREVENT_BLUETOOTH"
+msgstr "Security policy prevents use of bluetooth"
+
+msgid "IDS_DPM_HEADER_BLUETOOTH_POLICY"
+msgstr "Bluetooth Policy"
+
+msgid "IDS_DPM_BODY_PREVENT_WIPE_STORAGE_DATA"
+msgstr "Wipe data on device"
+
+msgid "IDS_DPM_BODY_PREVENT_STORAGE_DECRYTPION"
+msgstr "Security policy prevents storage decryption"
+
+msgid "IDS_DPM_BODY_PREVENT_STORAGE_ENCRYPTION"
+msgstr "Security policy prevents storage encryption"
+
+msgid "IDS_DPM_BODY_PREVENT_EXTERNAL_STORAGE"
+msgstr "Security policy prevents use of external storage"
+
+msgid "IDS_DPM_HEADER_STORAGE_POLICY"
+msgstr "Storage Policy"
+
+msgid "IDS_DPM_BODY_PREVENT_SETTINGS_CHANGES"
+msgstr "Security policy prevents use of settings changes"
+
+msgid "IDS_DPM_HEADER_SETTING_POLICY"
+msgstr "Setting Policy"
+
+msgid "IDS_DPM_BODY_PREVENT_LOCATION"
+msgstr "Security policy prevents use of location data"
+
+msgid "IDS_DPM_HEADER_LOCATION_POLICY"
+msgstr "Location Policy"
+
+msgid "IDS_DPM_BODY_PREVENT_MICROPHONE"
+msgstr "Security policy prevents use of microphone"
+
+msgid "IDS_DPM_HEADER_RECORD_POLICY"
+msgstr "Record Policy"
+
+msgid "IDS_DPM_BODY_PREVENT_CAMERA"
+msgstr "Security policy prevents use of camera"
+
+msgid "IDS_DPM_HEADER_CAMERA_POLICY"
 msgstr "Camera Policy"
+
+msgid "IDS_DPM_BODY_PREVENT_HOTSPOT"
+msgstr "Security policy prevents use of Hotspot"
+
+msgid "IDS_DPM_BODY_PREVENT_WIFI"
+msgstr "Security policy prevents use of Wi-Fi"
+
+msgid "IDS_DPM_HEADER_WIFI_POLICY"
+msgstr "Wi-Fi Policy"
+
+msgid "IDS_DPM_BODY_PASSWORD_SET_PATTERN"
+msgstr "Security policy set the password pattern"
+
+msgid "IDS_DPM_BODY_PASSWORD_DELETE_PATTERN"
+msgstr "Security policy deletes the password pattern"
+
+msgid "IDS_DPM_BODY_PASSWORD_ENFORCE_CHANGE"
+msgstr "Security policy enforce password change"
+
+msgid "IDS_DPM_BODY_PASSWORD_RESET"
+msgstr "Set a new password"
+
+msgid "IDS_DPM_BODY_PASSWORD_EXPIRES"
+msgstr "Password expired"
+
+msgid "IDS_DPM_HEADER_PASSWORD_POLICY"
+msgstr "Password Policy"
+
+msgid "IDS_DPM_BODY_PREVENT_APPLICATION_UNISTALLATION_MODE"
+msgstr "Security policy prevents uninstallation of applications"
+
+msgid "IDS_DPM_BODY_PREVENT_APPLICATION_INSTALLATION_MODE"
+msgstr "Security policy prevents installation of applications"
+
+msgid "IDS_DPM_HEADER_APPLICATION_POLICY"
+msgstr "Application Policy"
