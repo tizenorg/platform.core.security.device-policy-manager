@@ -41,7 +41,6 @@ managing device policies.
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/device-policy-manager
 %attr(700,root,root) %{_bindir}/factory-reset
-%attr(755,root,root) %{_bindir}/zone-tui
 %dir %{TZ_SYS_DATA}/dpm
 %dir %{TZ_SYS_ETC}/dpm/policy
 %config %{TZ_SYS_ETC}/dpm/policy/PolicyManifest.xml
