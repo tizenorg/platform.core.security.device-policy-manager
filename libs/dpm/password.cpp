@@ -254,17 +254,17 @@ int dpm_password_delete_pattern(dpm_password_policy_h handle)
     return ret;
 }
 
-int dpm_password_get_pattern(dpm_password_policy_h handle, char* pattern)
+int dpm_password_get_pattern(dpm_password_policy_h handle, char** pattern)
 {
     int ret = 0;
 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-	RET_ON_FAILURE(pattern, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(*pattern, DPM_ERROR_INVALID_PARAMETER);
 
     PasswordPolicy& password = GetPolicyInterface<PasswordPolicy>(handle);
 
     if (password.getPasswordPolicyPattern().size() > 0) {
-        pattern = ::strdup(password.getPasswordPolicyPattern().c_str());
+        *pattern = ::strdup(password.getPasswordPolicyPattern().c_str());
 		ret = DPM_ERROR_NONE;
     }
 	else
