@@ -157,11 +157,6 @@ BuildRequires: pkgconfig(evas)
 %description -n org.tizen.ode
 Tizen ODE User Interface for device policy management
 
-%post -n org.tizen.ode
-/sbin/ldconfig
-%postun -n org.tizen.ode
-/sbin/ldconfig
-
 %define odeapp_home %{TZ_SYS_RO_APP}/org.tizen.ode
 
 %files -n org.tizen.ode
@@ -181,11 +176,6 @@ Requires: libdpm = %{version}-%{release}
 
 %description -n org.tizen.zone-setup-wizard
 Tizen ZONE setup wizard interface for zone
-
-%post -n org.tizen.zone-setup-wizard
-%{_sbindir}/ldconfig
-%postun -n org.tizen.zone-setup-wizard
-%{_sbindir}/ldconfig
 
 %define setup_home %{TZ_SYS_RO_APP}/org.tizen.zone-setup-wizard
 
@@ -212,12 +202,6 @@ BuildRequires: pkgconfig(capi-system-system-settings)
 %description -n org.tizen.dpm-syspopup
 Tizen DPM system popup interface package
 
-%post -n org.tizen.dpm-syspopup
-%{_sbindir}/ldconfig
-
-%postun -n org.tizen.dpm-syspopup
-%{_sbindir}/ldconfig
-
 %files -n org.tizen.dpm-syspopup
 %defattr(-,root,root,-)
 %{TZ_SYS_RO_APP}/org.tizen.dpm-syspopup/bin/*
@@ -232,6 +216,13 @@ Requires: systemd
 
 %description -n dpm-pam-zone
 PAM Plugin for zone policy in device policy manager and CLI tool
+
+%post -n dpm-pam-zone
+mv /etc/pam.d/systemd-user /etc/pam.d/systemd-user.old
+cp /etc/pam.d/systemd-user-zone /etc/pam.d/systemd-user
+
+%postun -n dpm-pam-zone
+mv /etc/pam.d/systemd-user.old /etc/pam.d/systemd-user
 
 %files -n dpm-pam-zone
 %defattr(600,root,root,700)
