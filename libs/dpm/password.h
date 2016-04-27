@@ -357,7 +357,7 @@ DPM_API int dpm_password_delete_pattern(dpm_password_policy_h handle);
  * @see         dpm_context_acquire_password_policy()
  * @see         dpm_context_release_password_policy()
  */
-DPM_API int dpm_password_get_pattern(dpm_password_policy_h handle, char* pattern);
+DPM_API int dpm_password_get_pattern(dpm_password_policy_h handle, char** pattern);
 
 /**
  * @brief       Sets the maximum number of times a character can occur in

@@ -22,6 +22,9 @@
 namespace DevicePolicyManager
 {
 
+unsigned int cameraState;
+unsigned int microphoneState;
+
 RestrictionPolicy::RestrictionPolicy(PolicyControlContext& ctxt)
 	: context(ctxt)
 {
@@ -51,22 +54,34 @@ RestrictionPolicy::~RestrictionPolicy()
 
 int RestrictionPolicy::setCameraState(int state)
 {
-	return 0;
+    if((state == 0) || (state == 1))
+    {
+        cameraState = state;
+		return 0;
+    }
+	else
+		return -1;
 }
 
 int RestrictionPolicy::getCameraState()
 {
-	return 0;
+	return cameraState;
 }
 
 int RestrictionPolicy::setMicrophoneState(int state)
 {
-	return 0;
+    if((state == 0) || (state == 1))
+    {
+        microphoneState = state;
+		return 0;
+    }
+	else
+		return -1;
 }
 
 int RestrictionPolicy::getMicrophoneState()
 {
-	return 0;
+	return microphoneState;
 }
 
 int RestrictionPolicy::setClipboardState(int enable)
