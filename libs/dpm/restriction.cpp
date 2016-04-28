@@ -66,7 +66,7 @@ int dpm_restriction_set_microphone_state(dpm_restriction_policy_h handle, int en
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
 	RestrictionPolicy& restriction = GetPolicyInterface<RestrictionPolicy>(handle);
-	return restriction.setMicrophoneState(enable);
+         return restriction.setMicrophoneState(enable);
 }
 
 int dpm_restriction_get_microphone_state(dpm_restriction_policy_h handle, int *state)
