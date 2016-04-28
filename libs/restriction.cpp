@@ -29,7 +29,7 @@ RestrictionPolicy::~RestrictionPolicy()
 {
 }
 
-int RestrictionPolicy::setMicrophoneState(int enable)
+int RestrictionPolicy::setMicrophoneState(bool enable)
 {
 	try {
 		return context->methodCall<int>("RestrictionPolicy::setMicrophoneState", enable);
@@ -47,7 +47,7 @@ int RestrictionPolicy::getMicrophoneState()
 	}
 }
 
-int RestrictionPolicy::setCameraState(int enable)
+int RestrictionPolicy::setCameraState(bool enable)
 {
 	try {
 		return context->methodCall<int>("RestrictionPolicy::setCameraState", enable);

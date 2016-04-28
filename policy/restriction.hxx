@@ -29,10 +29,10 @@ public:
 	RestrictionPolicy(PolicyControlContext& ctxt);
 	~RestrictionPolicy();
 
-	int setCameraState(int enable);
+	int setCameraState(bool enable);
 	int getCameraState();
 
-	int setMicrophoneState(int enable);
+	int setMicrophoneState(bool enable);
 	int getMicrophoneState();
 
 	int setClipboardState(int enable);
