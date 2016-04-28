@@ -21,12 +21,11 @@
 
 #include "zone.hxx"
 
-#include "launchpad.h"
-
 #include "error.h"
 #include "smack.h"
 #include "process.h"
 #include "packman.h"
+#include "launchpad.h"
 #include "filesystem.h"
 #include "auth/user.h"
 #include "auth/group.h"
@@ -164,7 +163,7 @@ void deployPackages(const runtime::User& user)
         execute("/usr/bin/pkg_initdb", "pkg_initdb", std::to_string(user.getUid()));
 
         PackageManager& packageManager = PackageManager::instance();
-        std::vector<std::string> pkgList = packageManager.getInstalledPackageList(user.getUid());
+        std::vector<std::string> pkgList = packageManager.getPackageList(user.getUid());
 
         ::umask(0022);
 
@@ -299,9 +298,7 @@ int ZonePolicy::createZone(const std::string& name, const std::string& setupWizA
         bundle.add("provisionDir", provisionDirPath);
 
         Launchpad launchpad(context.getPeerUid());
-        if (launchpad.launch(setupWizAppid, bundle) < 0) {
-            throw runtime::Exception("Failed to launch application: " + setupWizAppid);
-        }
+        launchpad.launch(setupWizAppid, bundle);
 
         startZoneProvisioningThread(context, name, provisionDirPath);
     } catch (runtime::Exception& e) {

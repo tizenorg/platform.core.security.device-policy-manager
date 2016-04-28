@@ -35,12 +35,18 @@ public:
     {
     };
 
-    T *next()
+    T& next()
     {
+        T ret;
         if (it != list.end()) {
-            return &(*it++);
+            ret = *it++;
         }
-        return NULL;
+        return ret;
+    }
+
+    bool isEnd()
+    {
+        return it == list.end();
     }
 
 private:
