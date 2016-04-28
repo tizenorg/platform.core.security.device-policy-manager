@@ -34,23 +34,28 @@ Launchpad::Launchpad(const uid_t uid) :
     }
 }
 
-bool Launchpad::instantiated(const std::string& appid)
+bool Launchpad::isRunning(const std::string& appid)
 {
     return ::aul_app_is_running_for_uid(appid.c_str(), user);
 }
 
-int Launchpad::launch(const std::string& appid)
+void Launchpad::launch(const std::string& appid)
 {
-    return launch(appid, Bundle());
+    launch(appid, Bundle());
 }
 
-int Launchpad::launch(const std::string& appid, const Bundle& bundle)
+void Launchpad::launch(const std::string& appid, const Bundle& bundle)
 {
     if (::aul_launch_app_for_uid(appid.c_str(), bundle.get(), user) < 0) {
-        return -1;
+        throw runtime::Exception("Failed to launch app " + appid);
     }
+}
 
-    return 0;
+void Launchpad::resume(const std::string& appid)
+{
+    if (::aul_resume_app_for_uid(appid.c_str(), user) < 0) {
+        throw runtime::Exception("Failed to resume app " + appid);
+    }
 }
 
 void Launchpad::terminate(const std::string& appid)

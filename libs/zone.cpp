@@ -67,7 +67,7 @@ std::vector<std::string> ZonePolicy::getZoneList()
 {
     std::vector<std::string> empty;
     try {
-        return  context->methodCall<std::vector<std::string>>("ZonePolicy::getZoneList");
+        return context->methodCall<std::vector<std::string>>("ZonePolicy::getZoneList");
     } catch (runtime::Exception& e) {
         return empty;
     }
@@ -77,6 +77,92 @@ int ZonePolicy::getZoneState(const std::string& name)
 {
     try {
         return context->methodCall<int>("ZonePolicy::getZoneState", name);
+    } catch (runtime::Exception& e) {
+        return -1;
+    }
+}
+
+ZonePolicy::PkgInfo ZonePolicy::getPkg(const std::string& name, const std::string& pkgid)
+{
+    try {
+        return context->methodCall<ZonePolicy::PkgInfo>("ZonePolicy::getPkg", name, pkgid);
+    } catch (runtime::Exception& e) {}
+    return ZonePolicy::PkgInfo();
+}
+
+std::vector<ZonePolicy::PkgInfo> ZonePolicy::getPkgList(const std::string& zone)
+{
+    try {
+        return context->methodCall<std::vector<ZonePolicy::PkgInfo>>("ZonePolicy::getPkgList", zone);
+    } catch (runtime::Exception& e) {}
+    return std::vector<ZonePolicy::PkgInfo>();;
+}
+
+int ZonePolicy::installPkg(const std::string& name, const std::string& pkgid)
+{
+    try {
+        return context->methodCall<int>("ZonePolicy::installPkg", name, pkgid);
+    } catch (runtime::Exception& e) {
+        return -1;
+    }
+}
+
+int ZonePolicy::uninstallPkg(const std::string& name, const std::string& pkgid)
+{
+    try {
+        return context->methodCall<int>("ZonePolicy::uninstallPkg", name, pkgid);
+    } catch (runtime::Exception& e) {
+        return -1;
+    }
+}
+
+ZonePolicy::AppInfo ZonePolicy::getApp(const std::string& name, const std::string& appid)
+{
+    try {
+        return context->methodCall<ZonePolicy::AppInfo>("ZonePolicy::getApp", name, appid);
+    } catch (runtime::Exception& e) {}
+    return ZonePolicy::AppInfo();
+}
+
+std::vector<ZonePolicy::AppInfo> ZonePolicy::getUIAppList(const std::string& zone, const std::string& pkgid)
+{
+    try {
+        return context->methodCall<std::vector<ZonePolicy::AppInfo>>("ZonePolicy::getUIAppList", zone, pkgid);
+    } catch (runtime::Exception& e) {}
+    return std::vector<ZonePolicy::AppInfo>();;
+}
+
+int ZonePolicy::launchApp(const std::string& name, const std::string& appid)
+{
+    try {
+        return context->methodCall<int>("ZonePolicy::launchApp", name, appid);
+    } catch (runtime::Exception& e) {
+        return -1;
+    }
+}
+
+int ZonePolicy::resumeApp(const std::string& name, const std::string& appid)
+{
+    try {
+        return context->methodCall<int>("ZonePolicy::resumeApp", name, appid);
+    } catch (runtime::Exception& e) {
+        return -1;
+    }
+}
+
+int ZonePolicy::terminateApp(const std::string& name, const std::string& appid)
+{
+    try {
+        return context->methodCall<int>("ZonePolicy::terminateApp", name, appid);
+    } catch (runtime::Exception& e) {
+        return -1;
+    }
+}
+
+bool ZonePolicy::isRunningApp(const std::string& name, const std::string& appid)
+{
+    try {
+        return context->methodCall<bool>("ZonePolicy::isRunningApp", name, appid);
     } catch (runtime::Exception& e) {
         return -1;
     }
