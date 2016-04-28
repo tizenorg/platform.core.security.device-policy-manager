@@ -40,6 +40,8 @@ SET(SOURCES policy-client.cpp
             dpm/storage.cpp
 			dpm/wifi.cpp
 			dpm/zone.cpp
+#			zone/package-info.cpp
+#			zone/app-info.cpp
 )
 
 SET(CAPI_INCLUDE_FILES  dpm/device-policy-manager.h
@@ -53,6 +55,9 @@ SET(CAPI_INCLUDE_FILES  dpm/device-policy-manager.h
 						dpm/storage.h
 						dpm/wifi.h
 						dpm/zone.h
+						zone/zone.h
+						zone/package-info.h
+						zone/app-info.h
 )
 
 SET (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,noexecstack")

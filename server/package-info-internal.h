@@ -14,28 +14,13 @@
  *  limitations under the License
  */
 
-#ifndef __DPM_LAUNCHPAD_H__
-#define __DPM_LAUNCHPAD_H__
+#ifndef __DPM_PKGMGR_INFO_H__
+#define __DPM_PKGMGR_INFO_H__
 
 #include <string>
+#include <vector>
 
-#include "app-bundle.h"
-#include "exception.h"
+#include "data-type.h"
 
-class Launchpad {
-public:
-    Launchpad(const uid_t uid = 0);
-    Launchpad(const Launchpad&) = delete;
-    Launchpad(Launchpad&&) = delete;
 
-    void launch(const std::string& appid);
-    void launch(const std::string& appid, const Bundle& bundle);
-    void resume(const std::string& appid);
-    bool isRunning(const std::string& appid);
-    void terminate(const std::string& appid);
-
-private:
-    uid_t user;
-};
-
-#endif //__DPM_LAUNCHPAD_H__
+#endif //__DPM_PKGMGR_INFO_H__
