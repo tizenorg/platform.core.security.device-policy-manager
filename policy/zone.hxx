@@ -23,7 +23,7 @@
 namespace DevicePolicyManager {
 
 /**
- * This class provides APIs to create/remove and manage zones.
+ * This class provides APIs to create/remove and manage names.
  */
 
 class ZonePolicy {
@@ -31,14 +31,43 @@ public:
     ZonePolicy(PolicyControlContext& ctxt);
     ~ZonePolicy();
 
+    //management
     int createZone(const std::string& name, const std::string& setupWizardAppid);
     int removeZone(const std::string& name);
     int lockZone(const std::string& name);
     int unlockZone(const std::string& name);
 
     std::vector<std::string> getZoneList(void);
-
     int getZoneState(const std::string& name);
+
+    //package information
+    std::vector<std::string> getPackageList(const std::string& name);
+    std::string getPackageType(const std::string& name, const std::string& pkgid);
+    std::string getPackageIcon(const std::string& name, const std::string& pkgid);
+    std::string getPackageLabel(const std::string& name, const std::string& pkgid);
+    std::string getPackageVersion(const std::string& name, const std::string& pkgid);
+    bool isSystemPackage(const std::string& name, const std::string& pkgid);
+    bool isRemovablePackage(const std::string& name, const std::string& pkgid);
+    bool isPreloadPackage(const std::string& name, const std::string& pkgid);
+
+    //package manager request
+    int installPackage(const std::string& name, const std::string& pkgpath);
+    int uninstallPackage(const std::string& name, const std::string& pkgid);
+
+    //application information
+    std::vector<std::string> getUIAppList(const std::string& name, const std::string &pkgid);
+    std::string getAppIcon(const std::string& name, const std::string& appid);
+    std::string getAppLabel(const std::string& name, const std::string& appid);
+    bool isNoDisplayedApp(const std::string& name, const std::string& appid);
+    bool isTaskManagedApp(const std::string& name, const std::string& appid);
+
+    //app control for homescreen
+    int launchApp(const std::string& name, const std::string& appid);
+
+    //app control for task manager
+    int resumeApp(const std::string& name, const std::string& appid);
+    int terminateApp(const std::string& name, const std::string& appid);
+    bool isRunningApp(const std::string& name, const std::string& appid);
 
 private:
     PolicyControlContext& context;

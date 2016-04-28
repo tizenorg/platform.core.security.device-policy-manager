@@ -72,9 +72,10 @@ int SecurityPolicy::lockoutDevice()
 
 int SecurityPolicy::lockoutScreen()
 {
-    Launchpad launchpad(context.getPeerUid());
-
-    if (launchpad.launch(APPID_LOCKSCREEN) < 0) {
+    try {
+        Launchpad launchpad(context.getPeerUid());
+        launchpad.launch(APPID_LOCKSCREEN);
+   } catch (runtime::Exception &e) {
         ERROR("Failed to launch lockscreen: " + APPID_LOCKSCREEN);
         return -1;
     }
@@ -116,11 +117,9 @@ int SecurityPolicy::setInternalStorageEncryption(const bool encrypt)
         bundle.add("viewtype", encrypt ? "encryption" : "decryption");
 
         Launchpad launchpad(context.getPeerUid());
-        if (launchpad.launch(APPID_DEVICE_ENCRYPTION, bundle) < 0) {
-            ERROR("Failed to start device encryption");
-            return -1;
-        }
+        launchpad.launch(APPID_DEVICE_ENCRYPTION, bundle);
     } catch (runtime::Exception& e) {
+        ERROR("Failed to start device encryption");
         return -1;
     }
 

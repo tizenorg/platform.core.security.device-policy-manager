@@ -28,9 +28,10 @@ public:
     Launchpad(const Launchpad&) = delete;
     Launchpad(Launchpad&&) = delete;
 
-    int launch(const std::string& appid);
-    int launch(const std::string& appid, const Bundle& bundle);
-    bool instantiated(const std::string& appid);
+    void launch(const std::string& appid);
+    void launch(const std::string& appid, const Bundle& bundle);
+    void resume(const std::string& appid);
+    bool isRunning(const std::string& appid);
     void terminate(const std::string& appid);
 
 private:
