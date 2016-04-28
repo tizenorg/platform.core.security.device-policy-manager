@@ -84,60 +84,6 @@ int ApplicationPolicy::getApplicationState(const std::string& appid)
     }
 }
 
-std::vector<std::string> ApplicationPolicy::getInstalledPackageList()
-{
-    try {
-        return context->methodCall<std::vector<std::string>>("ApplicationPolicy::getInstalledPackageList");
-    } catch (runtime::Exception& e) {
-        return std::vector<std::string>();
-    }
-}
-
-bool ApplicationPolicy::isApplicationRunning(const std::string& appid)
-{
-    try {
-        return context->methodCall<bool>("ApplicationPolicy::isApplicationRunning", appid);
-    } catch (runtime::Exception& e) {
-        return false;
-    }
-}
-
-bool ApplicationPolicy::isApplicationInstalled(const std::string& appid)
-{
-    try {
-        return context->methodCall<bool>("ApplicationPolicy::isApplicationInstalled", appid);
-    } catch (runtime::Exception& e) {
-        return false;
-    }
-}
-
-bool ApplicationPolicy::isPackageInstalled(const std::string& pkgid)
-{
-    try {
-        return context->methodCall<bool>("ApplicationPolicy::isPackageInstalled", pkgid);
-    } catch (runtime::Exception& e) {
-        return false;
-    }
-}
-
-int ApplicationPolicy::installPackage(const std::string& pkgpath)
-{
-    try {
-        return context->methodCall<int>("ApplicationPolicy::installPackage", pkgpath);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
-}
-
-int ApplicationPolicy::uninstallPackage(const std::string& pkgid)
-{
-    try {
-        return context->methodCall<int>("ApplicationPolicy::uninstallPackage", pkgid);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
-}
-
 int ApplicationPolicy::disableApplication(const std::string& appid)
 {
     try {
@@ -151,24 +97,6 @@ int ApplicationPolicy::enableApplication(const std::string& appid)
 {
     try {
         return context->methodCall<int>("ApplicationPolicy::enableApplication", appid);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
-}
-
-int ApplicationPolicy::startApplication(const std::string& appid)
-{
-    try {
-        return context->methodCall<int>("ApplicationPolicy::startApplication", appid);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
-}
-
-int ApplicationPolicy::stopApplication(const std::string& appid)
-{
-    try {
-        return context->methodCall<int>("ApplicationPolicy::stopApplication", appid);
     } catch (runtime::Exception& e) {
         return -1;
     }
