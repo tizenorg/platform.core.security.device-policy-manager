@@ -174,12 +174,12 @@ DPM_API dpm_zone_iterator_h dpm_zone_create_iterator(dpm_zone_policy_h handle);
  * @see         dpm_zone_create_iterator()
  * @see         dpm_zone_destroy_iterator()
  */
-DPM_API int dpm_zone_iterator_next(dpm_zone_iterator_h iter, const char ** zone_name);
+DPM_API int dpm_zone_iterator_next(dpm_zone_iterator_h iter, const char** zone_name);
 
 /**
- * @brief       Frees the iterator.
- * @details     This API frees the iterator. This API must be called if the iterator
- *              no longer used.
+ * @brief       Frees the zone iterator.
+ * @details     This API frees the zone iterator. This API must be called
+ *              if the iterator no longer used.
  * @since_tizen 3.0
  * @param[in]   iter The iterator to be removed
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
@@ -250,10 +250,607 @@ typedef enum {
  * @see         dpm_context_release_zone_policy()
  * @see         dpm_zone_create()
  * @see         dpm_zone_destroy()
- * @see         dpm_zone_add_signal_cb()
- * @see         dpm_zone_remove_signal_cb()
  */
-DPM_API int dpm_zone_get_state(dpm_zone_policy_h handle, const char *name, dpm_zone_state_e *state);
+DPM_API int dpm_zone_get_state(dpm_zone_policy_h handle, const char* name, dpm_zone_state_e *state);
+
+/**
+ * @brief       The zone package list iterator handle
+ * @since_tizen 3.0
+ * @see         dpm_zone_pkg_create_iterator()
+ * @see         dpm_zone_pkg_iterator_next()
+ * @see         dpm_zone_pkg_destroy_iterator()
+ */
+typedef void* dpm_zone_pkg_iterator_h;
+
+/**
+ * @brief       Creates a package list iterator for the installed in the zone.
+ * @details     The package list iterator can be used to get all installed
+ *              package IDs in the zone.
+ * @since_tizen 3.0
+ * @param[in]   handle The zone policy handle
+ * @param[in]   name The zone name
+ * @return      A package ID list iterator on success, otherwise
+ *              null value
+ * @remark      The specific error code can be obtained by using the
+ *              get_last_result() method. Error codes are described in
+ *              exception section.
+ * @exception   #DPM_ERROR_NONE No error
+ * @exception   #DPM_ERROR_OUT_OF_MEMORY Out of memory
+ * @exception   #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @exception   #DPM_ERROR_TIMED_OUT Time out
+ * @pre         The handle must be created by dpm_context_acquire_zone_policy().
+ * @see         dpm_context_acquire_zone_policy()
+ * @see         dpm_context_release_zone_policy()
+ * @see         dpm_zone_pkg_iterator_next()
+ * @see         dpm_zone_pkg_destroy_iterator()
+ * @see         get_last_result()
+ */
+DPM_API dpm_zone_pkg_iterator_h dpm_zone_pkg_create_iterator(dpm_zone_policy_h handle, const char *name);
+
+/**
+ * @brief       Fetches a package ID and forwards the iterator.
+ * @details     This API returns package ID indicated by the iterator, and then
+ *              the iterator is moved to the next position. If the iterator reaches
+ *              the end of the list, null value will be returned.
+ * @since_tizen 3.0
+ * @param[in]   iter The iterator to be controlled
+ * @param[out]  pkg_id The package ID got from the iterator
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @pre         The iter must be created by dpm_zone_create_iterator().
+ * @see         dpm_zone_pkg_create_iterator()
+ * @see         dpm_zone_pkg_destroy_iterator()
+ */
+DPM_API int dpm_zone_pkg_iterator_next(dpm_zone_iterator_h iter, const char** pkg_id);
+
+/**
+ * @brief       Frees the zone package iterator.
+ * @details     This API frees the zone package iterator. This API must be called
+ *              if the iterator no longer used.
+ * @since_tizen 3.0
+ * @param[in]   iter The iterator to be removed
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @pre         The iter must be created by dpm_zone_create_iterator()
+ * @see         dpm_zone_pkg_create_iterator()
+ * @see         dpm_zone_pkg_iterator_next()
+ */
+DPM_API int dpm_zone_pkg_destroy_iterator(dpm_zone_iterator_h iter);
+
+/**
+ * @brief       Called to get all the IDs of the installed package in the zone.
+ * @since_tizen 3.0
+ * @param[in]   pkg_id The package ID
+ * @param[in]   user_data The user data passed from dpm_zone_foreach_name
+ * @see         dpm_zone_foreach_name()
+ */
+typedef void(*dpm_zone_pkg_foreach_cb)(const char* pkg_id, void *user_data);
+
+/**
+ * @brief       Retrieves all the IDs of the installed package in the zone.
+ * @details     This API calls dpm_zone_pkg_foreach_cb() once for each package
+ *              ID with traversing the installed package list in the zone.
+ * @since_tizen 3.0
+ * @param[in]   handle The zone policy handle
+ * @param[in]   name The zone name
+ * @param[in]   callback The iteration callback function
+ * @param[in]   user_data The user data passed to the callback function
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @pre         The handle must be created by dpm_context_acquire_zone_policy().
+ * @see         dpm_context_acquire_zone_policy()
+ * @see         dpm_context_release_zone_policy()
+ * @see         package_manager_foreach_package_info()
+ */
+DPM_API int dpm_zone_foreach_pkg_id(dpm_zone_policy_h handle, const char* name,
+                                    dpm_zone_foreach_cb callback, void* user_data);
+
+/**
+ * @brief       Gets the type of package in the zone.
+ * @details     This API can be used to get the type of package in the zone.
+ * @since_tizen 3.0
+ * @remarks     The @type should be freed using free().
+ * @param[in]   handle The zone policy handle
+ * @param[in]   name The zone name
+ * @param[in]   pkgid The package ID
+ * @param[out]  type The package type
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_NO_DATA No such package to get type
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @pre         The handle must be created by dpm_context_acquire_zone_policy().
+ * @see         dpm_context_acquire_zone_policy()
+ * @see         dpm_context_release_zone_policy()
+ * @see         package_info_get_type()
+ */
+DPM_API int dpm_zone_get_pkg_type(dpm_zone_policy_h handle, const char* name, const char* pkgid, const char** type);
+
+/**
+ * @brief       Gets the the absolute path to the icon image of package in the
+ *              zone.
+ * @details     This API can be used to get the icon image path of package
+ *              in the zone.
+ * @since_tizen 3.0
+ * @remarks     The @icon should be freed using free().
+ * @param[in]   handle The zone policy handle
+ * @param[in]   name The zone name
+ * @param[in]   pkgid The package ID
+ * @param[out]  icon The path of package icon image
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_NO_DATA No such package to get icon image path
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @pre         The handle must be created by dpm_context_acquire_zone_policy().
+ * @see         dpm_context_acquire_zone_policy()
+ * @see         dpm_context_release_zone_policy()
+ * @see         package_info_get_icon()
+ */
+DPM_API int dpm_zone_get_pkg_icon(dpm_zone_policy_h handle, const char* name, const char* pkgid, const char** icon);
+
+/**
+ * @brief       Gets the label of package in the zone.
+ * @details     This API can be used to get the label of package in the zone.
+ * @since_tizen 3.0
+ * @remarks     The @label should be freed using free().
+ * @param[in]   handle The zone policy handle
+ * @param[in]   name The zone name
+ * @param[in]   pkgid The package ID
+ * @param[out]  label The package label
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_NO_DATA No such package to get label
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @pre         The handle must be created by dpm_context_acquire_zone_policy().
+ * @see         dpm_context_acquire_zone_policy()
+ * @see         dpm_context_release_zone_policy()
+ * @see         package_info_get_label()
+ */
+DPM_API int dpm_zone_get_pkg_label(dpm_zone_policy_h handle, const char* name, const char* pkgid, const char* label);
+
+/**
+ * @brief       Gets the version of package in the zone.
+ * @details     This API can be used to get the version of package in the zone.
+ * @since_tizen 3.0
+ * @remarks     The @version should be freed using free().
+ * @param[in]   handle The zone policy handle
+ * @param[in]   name The zone name
+ * @param[in]   pkgid The package ID
+ * @param[out]  type The package version
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_NO_DATA No such package to get version
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @pre         The handle must be created by dpm_context_acquire_zone_policy().
+ * @see         dpm_context_acquire_zone_policy()
+ * @see         dpm_context_release_zone_policy()
+ * @see         package_info_get_version()
+ */
+DPM_API int dpm_zone_get_pkg_version(dpm_zone_policy_h handle, const char* name, const char* pkgid, const char* version);
+
+/**
+ * @brief       Checks whether the package in the zone is system package.
+ * @details     This API can be used to check whether the package in the zone
+ *              is system package.
+ * @since_tizen 3.0
+ * @param[in]   handle The zone policy handle
+ * @param[in]   name The zone name
+ * @param[in]   pkgid The package ID
+ * @param[out]  result true if the package is system package,
+ *              otherwise false if the package is not system package
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_NO_DATA No such pacakge to check
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @pre         The handle must be created by dpm_context_acquire_zone_policy().
+ * @see         dpm_context_acquire_zone_policy()
+ * @see         dpm_context_release_zone_policy()
+ * @see         package_info_is_removable_package()
+ * @see         package_info_is_preload_package()
+ */
+DPM_API int dpm_zone_is_system_pkg(dpm_zone_policy_h handle, const char* name, const char* pkgid, int* result);
+
+/**
+ * @brief       Checks whether the package in the zone is removable package.
+ * @details     This API can be used to check whether the package in the zone
+ *              is removable package.
+ * @since_tizen 3.0
+ * @param[in]   handle The zone policy handle
+ * @param[in]   name The zone name
+ * @param[in]   pkgid The package ID
+ * @param[out]  result true if the package can be removed,
+ *              otherwise false if the package can not be removed
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_NO_DATA No such pacakge to check
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @pre         The handle must be created by dpm_context_acquire_zone_policy().
+ * @see         dpm_context_acquire_zone_policy()
+ * @see         dpm_context_release_zone_policy()
+ * @see         package_info_is_system_package()
+ * @see         package_info_is_preload_package()
+ */
+DPM_API int dpm_zone_is_removable_pkg(dpm_zone_policy_h handle, const char* name, const char* pkgid, int* result);
+
+/**
+ * @brief       Checks whether the package in the zone is preload package.
+ * @details     This API can be used to check whether the package in the zone
+ *              is preload package.
+ * @since_tizen 3.0
+ * @param[in]   handle The zone policy handle
+ * @param[in]   name The zone name
+ * @param[in]   pkgid The package ID
+ * @param[out]  result true if the package is preloaded,
+ *              otherwise false if the package is not preloaded
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_NO_DATA No such pacakge to check
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @pre         The handle must be created by dpm_context_acquire_zone_policy().
+ * @see         dpm_context_acquire_zone_policy()
+ * @see         dpm_context_release_zone_policy()
+ * @see         package_info_is_system_package()
+ * @see         package_info_is_removable_package()
+ */
+DPM_API int dpm_zone_is_preload_pkg(dpm_zone_policy_h handle, const char* name, const char* pkgid, int* result);
+
+/**
+ * @brief       Installs the package located at the given path into the zone.
+ * @details     Administrator can use this API to install the package into the
+ *              zone.
+ * @since_tizen 3.0
+ * @param[in]   handle The zone policy handle
+ * @param[in]   name The zone name
+ * @param[in]   pkgpath The absolute path to the package to be installed
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @retval      #DPM_ERROR_NO_SUCH_FILE No such package file
+ * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
+ *              the privilege to call this API or the caller is not the owner
+ *              of the zone
+ * @pre         The handle must be created by dpm_context_acquire_zone_policy().
+ * @pre         The zone corresponding to the given name must be
+ *              created before use of this API.
+ * @see         dpm_context_acquire_zone_policy()
+ * @see         dpm_context_release_zone_policy()
+ * @see         dpm_zone_uninstall_pkg()
+ * @see         package_manager_request_install()
+ */
+DPM_API int dpm_zone_install_pkg(dpm_zone_policy_h handle, const char* name, const char* pkgpath);
+
+/**
+ * @brief       Uinstalls the package with the given ID from the zone.
+ * @details     Administrator can use this API to uninstall the package from the
+ *              zone.
+ * @since_tizen 3.0
+ * @param[in]   handle The zone policy handle
+ * @param[in]   name The zone name
+ * @param[in]   pkgid The package ID
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @retval      #DPM_ERROR_NO_DATA No such pacakge to unintall
+ * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
+ *              the privilege to call this API or the caller is not the owner
+ *              of the zone
+ * @pre         The handle must be created by dpm_context_acquire_zone_policy().
+ * @pre         The zone corresponding to the given name must be
+ *              created before use of this API.
+ * @see         dpm_context_acquire_zone_policy()
+ * @see         dpm_context_release_zone_policy()
+ * @see         dpm_zone_install_pkg()
+ * @see         package_manager_request_uninstall()
+ */
+DPM_API int dpm_zone_uninstall_pkg(dpm_zone_policy_h handle, const char* name, const char* pkgid);
+
+/**
+ * @brief       The zone application list iterator handle
+ * @since_tizen 3.0
+ * @see         dpm_zone_uiapp_create_iterator()
+ * @see         dpm_zone_uiapp_iterator_next()
+ * @see         dpm_zone_uiapp_destroy_iterator()
+ */
+typedef void* dpm_zone_uiapp_iterator_h;
+
+/**
+ * @brief       Creates an application list iterator for the installed in the zone.
+ * @details     The application list iterator can be used to get all installed
+ *              application IDs in the zone.
+ * @since_tizen 3.0
+ * @param[in]   handle The zone policy handle
+ * @param[in]   name The zone name
+ * @param[in]   pkgid The package ID
+ * @return      A application ID list iterator on success, otherwise
+ *              null value
+ * @remark      The specific error code can be obtained by using the
+ *              get_last_result() method. Error codes are described in
+ *              exception section.
+ * @exception   #DPM_ERROR_NONE No error
+ * @exception   #DPM_ERROR_OUT_OF_MEMORY Out of memory
+ * @exception   #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @exception   #DPM_ERROR_TIMED_OUT Time out
+ * @pre         The handle must be created by dpm_context_acquire_zone_policy().
+ * @see         dpm_context_acquire_zone_policy()
+ * @see         dpm_context_release_zone_policy()
+ * @see         dpm_zone_uiapp_iterator_next()
+ * @see         dpm_zone_uiapp_destroy_iterator()
+ * @see         get_last_result()
+ */
+DPM_API dpm_zone_uiapp_iterator_h dpm_zone_uiapp_create_iterator(dpm_zone_policy_h handle, const char *name, const char *pkgid);
+
+/**
+ * @brief       Fetches an application ID and forwards the iterator.
+ * @details     This API returns package ID indicated by the iterator, and then
+ *              the iterator is moved to the next position. If the iterator reaches
+ *              the end of the list, null value will be returned.
+ * @since_tizen 3.0
+ * @param[in]   iter The iterator to be controlled
+ * @param[out]  app_id The application ID got from the iterator
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @pre         The iter must be created by dpm_zone_create_iterator().
+ * @see         dpm_zone_uiapp_create_iterator()
+ * @see         dpm_zone_uiapp_destroy_iterator()
+ */
+DPM_API int dpm_zone_uiapp_iterator_next(dpm_zone_uiapp_iterator_h iter, const char** app_id);
+
+/**
+ * @brief       Frees the UI zone application iterator.
+ * @details     This API frees the UI zone application iterator. This API must be
+ *              called if the iterator no longer used.
+ * @since_tizen 3.0
+ * @param[in]   iter The iterator to be removed
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @pre         The iter must be created by dpm_zone_create_iterator()
+ * @see         dpm_zone_uiapp_create_iterator()
+ * @see         dpm_zone_uiapp_iterator_next()
+ */
+DPM_API int dpm_zone_uiapp_destroy_iterator(dpm_zone_uiapp_iterator_h iter);
+
+/**
+ * @brief       Called to get all the IDs of the installed UI application in the
+ *              zone.
+ * @since_tizen 3.0
+ * @param[in]   app_id The application ID
+ * @param[in]   user_data The user data passed from dpm_zone_foreach_name
+ * @see         dpm_zone_foreach_uiapp_id()
+ */
+typedef void(*dpm_zone_uiapp_foreach_cb)(const char* app_id, void *user_data);
+
+/**
+ * @brief       Retrieves all the IDs of the installed UI application in the zone.
+ * @details     This API calls dpm_zone_uiapp_foreach_cb() once for each UI
+ *              application ID with traversing the installed UI application list
+ *              in the zone.
+ * @since_tizen 3.0
+ * @param[in]   handle The zone policy handle
+ * @param[in]   name The zone name
+ * @param[in]   pkgid The package ID
+ * @param[in]   callback The iteration callback function
+ * @param[in]   user_data The user data passed to the callback function
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @pre         The handle must be created by dpm_context_acquire_zone_policy().
+ * @see         dpm_context_acquire_zone_policy()
+ * @see         dpm_context_release_zone_policy()
+ * @see         package_info_foreach_app_from_package() 
+*/
+DPM_API int dpm_zone_foreach_uiapp_id(dpm_zone_policy_h handle,
+                                    const char* name, const char* pkgid,
+                                    dpm_zone_uiapp_foreach_cb callback, void* user_data);
+
+/**
+ * @brief       Gets the the absolute path to the icon image of application
+ *              in the zone.
+ * @details     This API can be used to get the icon image path of application
+ *              in the zone.
+ * @since_tizen 3.0
+ * @remarks     The @icon should be freed using free().
+ * @param[in]   handle The zone policy handle
+ * @param[in]   name The zone name
+ * @param[in]   appid The application ID
+ * @param[out]  icon The path of application icon image
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_NO_DATA No such application to get icon image path
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @pre         The handle must be created by dpm_context_acquire_zone_policy().
+ * @see         dpm_context_acquire_zone_policy()
+ * @see         dpm_context_release_zone_policy()
+ */
+DPM_API int dpm_zone_get_app_icon(dpm_zone_policy_h handle, const char* name, const char* appid, const char** icon);
+
+/**
+ * @brief       Gets the label of application in the zone.
+ * @details     This API can be used to get the label of application in the zone.
+ * @since_tizen 3.0
+ * @remarks     The @label should be freed using free().
+ * @param[in]   handle The zone policy handle
+ * @param[in]   name The zone name
+ * @param[in]   appid The application ID
+ * @param[out]  label The application label
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_NO_DATA No such application to get label
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @pre         The handle must be created by dpm_context_acquire_zone_policy().
+ * @see         dpm_context_acquire_zone_policy()
+ * @see         dpm_context_release_zone_policy()
+ */
+DPM_API int dpm_zone_get_pkg_label(dpm_zone_policy_h handle, const char* name, const char* appid, const char* label);
+
+/**
+ * @brief       Checks whether the application in the zone is displayed.
+ * @details     This API can be used to check whether the application in the zone
+ *              is displayed.
+ * @since_tizen 3.0
+ * @param[in]   handle The zone policy handle
+ * @param[in]   name The zone name
+ * @param[in]   appid The application ID
+ * @param[out]  result true if the package is displayed,
+ *              otherwise false if the package is not displayed
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_NO_DATA No such application to check
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @pre         The handle must be created by dpm_context_acquire_zone_policy().
+ * @see         dpm_context_acquire_zone_policy()
+ * @see         dpm_context_release_zone_policy()
+ * @see         dpm_zone_is_taskmanaged_app()
+ * @see         dpm_zone_is_running_app()
+ */
+DPM_API int dpm_zone_is_nodisplayed_app(dpm_zone_policy_h handle, const char* name, const char* appid, int* result);
+
+/**
+ * @brief       Checks whether the application in the zone can be managed by task manager.
+ * @details     This API can be used to check whether the application in the zone
+ *              can be managed by task manager.
+ * @since_tizen 3.0
+ * @param[in]   handle The zone policy handle
+ * @param[in]   name The zone name
+ * @param[in]   appid The application ID
+ * @param[out]  result true if the package can be managed by task manager,
+ *              otherwise false if the package can not be managed
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_NO_DATA No such application to check
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @pre         The handle must be created by dpm_context_acquire_zone_policy().
+ * @see         dpm_context_acquire_zone_policy()
+ * @see         dpm_context_release_zone_policy()
+ * @see         dpm_zone_is_nodisplayed_app()
+ * @see         dpm_zone_is_running_app()
+ */
+DPM_API int dpm_zone_is_taskmanaged_app(dpm_zone_policy_h handle, const char* name, const char* appid, int* result);
+
+/**
+ * @brief       Launch the application located at the given path into the zone.
+ * @details     Administrator can use this API to launch the application in the
+ *              zone.
+ * @since_tizen 3.0
+ * @param[in]   handle The zone policy handle
+ * @param[in]   name The zone name
+ * @param[in]   appid The application ID to be launched
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @retval      #DPM_ERROR_NO_SUCH_FILE No such package file
+ * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
+ *              the privilege to call this API or the caller is not the owner
+ *              of the zone
+ * @pre         The handle must be created by dpm_context_acquire_zone_policy().
+ * @pre         The zone corresponding to the given name must be
+ *              created before use of this API.
+ * @see         dpm_context_acquire_zone_policy()
+ * @see         dpm_context_release_zone_policy()
+ * @see         dpm_zone_resume_app()
+ * @see         dpm_zone_terminate_app()
+ * @see         app_control_send_launch_request()
+ */
+DPM_API int dpm_zone_launch_app(dpm_zone_policy_h handle, const char* name, const char* appid);
+
+/**
+ * @brief       Resume the application located at the given path into the zone.
+ * @details     Administrator can use this API to resume the application in the
+ *              zone.
+ * @since_tizen 3.0
+ * @param[in]   handle The zone policy handle
+ * @param[in]   name The zone name
+ * @param[in]   appid The application ID to be resumed
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @retval      #DPM_ERROR_NO_SUCH_FILE No such package file
+ * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
+ *              the privilege to call this API or the caller is not the owner
+ *              of the zone
+ * @pre         The handle must be created by dpm_context_acquire_zone_policy().
+ * @pre         The zone corresponding to the given name must be
+ *              created before use of this API.
+ * @see         dpm_context_acquire_zone_policy()
+ * @see         dpm_context_release_zone_policy()
+ * @see         dpm_zone_launch_app()
+ * @see         dpm_zone_terminate_app()
+ */
+DPM_API int dpm_zone_resume_app(dpm_zone_policy_h handle, const char* name, const char* appid);
+
+/**
+ * @brief       Terminate the application located at the given path into the zone.
+ * @details     Administrator can use this API to terminate the application in
+ *              the zone.
+ * @since_tizen 3.0
+ * @param[in]   handle The zone policy handle
+ * @param[in]   name The zone name
+ * @param[in]   appid The application ID to be terminated
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @retval      #DPM_ERROR_NO_SUCH_FILE No such package file
+ * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
+ *              the privilege to call this API or the caller is not the owner
+ *              of the zone
+ * @pre         The handle must be created by dpm_context_acquire_zone_policy().
+ * @pre         The zone corresponding to the given name must be
+ *              created before use of this API.
+ * @see         dpm_context_acquire_zone_policy()
+ * @see         dpm_context_release_zone_policy()
+ * @see         dpm_zone_launch_app()
+ * @see         dpm_zone_resume_app()
+ * @see         app_control_send_terminate_request()
+ */
+DPM_API int dpm_zone_terminate_app(dpm_zone_policy_h handle, const char* name, const char* appid);
+
+/**
+ * @brief       Checks whether the application in the zone is running.
+ * @details     This API can be used to check whether the application in the zone
+ *              is running.
+ * @since_tizen 3.0
+ * @param[in]   handle The zone policy handle
+ * @param[in]   name The zone name
+ * @param[in]   appid The application ID
+ * @param[out]  result true if the application is running,
+ *              otherwise false if the application is not running
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_NO_DATA No such pacakge to check
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @pre         The handle must be created by dpm_context_acquire_zone_policy().
+ * @see         dpm_context_acquire_zone_policy()
+ * @see         dpm_context_release_zone_policy()
+ * @see         dpm_zone_is_nodisplayed_app()
+ * @see         dpm_zone_is_taskmanaged_app()
+ */
+DPM_API int dpm_zone_is_running_app(dpm_zone_policy_h handle, const char* name, const char* pkgid, int* result);
 
 /**
  * @}
