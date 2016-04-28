@@ -67,7 +67,7 @@ std::vector<std::string> ZonePolicy::getZoneList()
 {
     std::vector<std::string> empty;
     try {
-        return  context->methodCall<std::vector<std::string>>("ZonePolicy::getZoneList");
+        return context->methodCall<std::vector<std::string>>("ZonePolicy::getZoneList");
     } catch (runtime::Exception& e) {
         return empty;
     }
