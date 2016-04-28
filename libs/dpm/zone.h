@@ -42,7 +42,7 @@ extern "C" {
 typedef void* dpm_zone_policy_h;
 
 /**
- * @brief       Acquires the zone policy handle
+ * @brief       Acquires the zone policy handle.
  * @details     This API acquires zone policy handle required to call
  *              the zone policy APIs.
  * @since_tizen 3.0
@@ -61,11 +61,11 @@ typedef void* dpm_zone_policy_h;
 DPM_API dpm_zone_policy_h dpm_context_acquire_zone_policy(dpm_context_h handle);
 
 /**
- * @brief       Releases the zone policy handle
+ * @brief       Releases the zone policy handle.
  * @details     This API must be called if interaction with the device
  *              policy manager is no longer required.
  * @since_tizen 3.0
- * @param[in]   handle The device policy context
+ * @param[in]   context The device policy context
  * @param[in]   handle The zone policy handle
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
@@ -174,12 +174,12 @@ DPM_API dpm_zone_iterator_h dpm_zone_create_iterator(dpm_zone_policy_h handle);
  * @see         dpm_zone_create_iterator()
  * @see         dpm_zone_destroy_iterator()
  */
-DPM_API int dpm_zone_iterator_next(dpm_zone_iterator_h iter, const char ** zone_name);
+DPM_API int dpm_zone_iterator_next(dpm_zone_iterator_h iter, const char** zone_name);
 
 /**
- * @brief       Frees the iterator.
- * @details     This API frees the iterator. This API must be called if the iterator
- *              no longer used.
+ * @brief       Frees the zone iterator.
+ * @details     This API frees the zone iterator. This API must be called
+ *              if the iterator no longer used.
  * @since_tizen 3.0
  * @param[in]   iter The iterator to be removed
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
@@ -250,10 +250,8 @@ typedef enum {
  * @see         dpm_context_release_zone_policy()
  * @see         dpm_zone_create()
  * @see         dpm_zone_destroy()
- * @see         dpm_zone_add_signal_cb()
- * @see         dpm_zone_remove_signal_cb()
  */
-DPM_API int dpm_zone_get_state(dpm_zone_policy_h handle, const char *name, dpm_zone_state_e *state);
+DPM_API int dpm_zone_get_state(dpm_zone_policy_h handle, const char* name, dpm_zone_state_e *state);
 
 /**
  * @}

@@ -60,7 +60,7 @@ int dpm_zone_destroy(dpm_zone_policy_h handle, const char* name)
 
 typedef runtime::Array<std::string> dpm_zone_iterator;
 
-dpm_zone_iterator_h dpm_create_zone_iterator(dpm_zone_policy_h handle)
+dpm_zone_iterator_h dpm_zone_create_iterator(dpm_zone_policy_h handle)
 {
     RET_ON_FAILURE(handle, NULL);
 
@@ -69,22 +69,28 @@ dpm_zone_iterator_h dpm_create_zone_iterator(dpm_zone_policy_h handle)
     return reinterpret_cast<dpm_zone_iterator_h>(new dpm_zone_iterator(zone.getZoneList()));
 }
 
-int dpm_zone_iterator_next(dpm_zone_iterator_h iter, const char ** result)
+int dpm_zone_iterator_next(dpm_zone_iterator_h iter, const char** result)
 {
     RET_ON_FAILURE(iter, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(result, DPM_ERROR_INVALID_PARAMETER);
 
-    *result = reinterpret_cast<dpm_zone_iterator*>(iter)->next()->c_str();
+    dpm_zone_iterator* it = reinterpret_cast<dpm_zone_iterator*>(iter);
 
-    RET_ON_FAILURE(*result, DPM_ERROR_INVALID_PARAMETER);
+    if (it->isEnd())
+        *result = NULL;
+    else
+        *result = it->next().c_str();
 
     return 0;
 }
 
-void dpm_zone_free_iterator(dpm_zone_iterator_h iter)
+int dpm_zone_destroy_iterator(dpm_zone_iterator_h iter)
 {
-    RET_ON_FAILURE(iter, void());
+    RET_ON_FAILURE(iter, DPM_ERROR_INVALID_PARAMETER);
 
     delete reinterpret_cast<dpm_zone_iterator*>(iter);
+
+    return 0;
 }
 
 int dpm_zone_foreach_name(dpm_zone_policy_h handle,

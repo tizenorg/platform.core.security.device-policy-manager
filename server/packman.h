@@ -25,49 +25,62 @@
 #include <package-manager.h>
 #include <pkgmgr-info.h>
 
- class PackageInfo {
- public:
-     PackageInfo(const std::string& pkgid, uid_t uid = 0);
-     ~PackageInfo();
+class PackageInfo {
+public:
+    PackageInfo(const std::string& pkgid, uid_t uid = 0);
+    ~PackageInfo();
 
-     std::string getType() const;
-     std::string getVersion() const;
+    std::vector<std::string> getAppList() const;
 
- private:
-     uid_t user;
-     pkgmgrinfo_pkginfo_h handle;
- };
+    std::string getType() const;
+    std::string getIcon() const;
+    std::string getLabel() const;
+    std::string getVersion() const;
 
- class AppInfo {
- public:
-     AppInfo(const std::string& aid, uid_t uid = 0);
-     ~AppInfo();
+    bool isSystem() const;
+    bool isRemovable() const;
+    bool isPreload() const;
 
-     std::string getPackageId() const;
-     std::string getPackageName() const;
-     std::string getPackageType() const;
-     std::string getVersion() const;
+private:
+    uid_t user;
+    pkgmgrinfo_pkginfo_h handle;
+};
 
- private:
-     uid_t user;
-     std::string appid;
-     pkgmgrinfo_appinfo_h handle;
- };
+class ApplicationInfo {
+public:
+    ApplicationInfo(const std::string& aid, uid_t uid = 0);
+    ~ApplicationInfo();
 
- class PackageManager {
- public:
-     PackageInfo getPackageInfo(const std::string& pkgid, const uid_t user);
-     void activatePackage(const std::string& pkgid, const uid_t user);
-     void deactivatePackage(const std::string& pkgid, const uid_t user);
-     void installPackage(const std::string& pkgpath, const uid_t user);
-     void uninstallPackage(const std::string& pkgid, const uid_t user);
-     void wipePackageData(const std::string& pkgid, const uid_t user);
+    std::string getPackageId() const;
+    std::string getPackageName() const;
+    std::string getPackageType() const;
 
-     std::vector<std::string> getInstalledPackageList(const uid_t user);
+    std::string getIcon() const;
+    std::string getLabel() const;
 
-     void addPackageToBlacklist(const std::string& pkgid, const uid_t user);
-     void removePackageFromBlacklist(const std::string& pkgid, const uid_t user);
-     bool checkPackageIsBlacklisted(const std::string& pkgid, const uid_t user);
+    bool isNoDisplayed() const;
+    bool isTaskManaged() const;
+
+private:
+    uid_t user;
+    std::string appid;
+    pkgmgrinfo_appinfo_h handle;
+};
+
+class PackageManager {
+public:
+    PackageInfo getPackageInfo(const std::string& pkgid, const uid_t user);
+    void activatePackage(const std::string& pkgid, const uid_t user);
+    void deactivatePackage(const std::string& pkgid, const uid_t user);
+    void installPackage(const std::string& pkgpath, const uid_t user);
+    void uninstallPackage(const std::string& pkgid, const uid_t user);
+    void wipePackageData(const std::string& pkgid, const uid_t user);
+
+    std::vector<std::string> getPackageList(const uid_t user);
+
+    void addPackageToBlacklist(const std::string& pkgid, const uid_t user);
+    void removePackageFromBlacklist(const std::string& pkgid, const uid_t user);
+    bool checkPackageIsBlacklisted(const std::string& pkgid, const uid_t user);
 
     static PackageManager& instance();
 
@@ -77,5 +90,6 @@ private:
 
 private:
     pkgmgr_client *nativeHandle;
- };
- #endif // __DPM_PACKMAN_H__
+};
+
+#endif // __DPM_PACKMAN_H__
