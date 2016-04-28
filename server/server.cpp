@@ -14,6 +14,9 @@
  *  limitations under the License
  */
 
+#include <sys/types.h>
+#include <sys/stat.h>
+
 #include "server.h"
 
 namespace {
@@ -24,6 +27,8 @@ const std::string POLICY_MANAGER_ADDRESS = "/tmp/.device-policy-manager";
 
 Server::Server()
 {
+    ::umask(0);
+
     service.reset(new rmi::Service(POLICY_MANAGER_ADDRESS));
 
     service->registerParametricMethod(this, (FileDescriptor)(Server::registerNotificationSubscriber)(std::string));

@@ -14,8 +14,6 @@
  *  limitations under the License
  */
 
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <getopt.h>
@@ -44,8 +42,6 @@ static bool daemonize(void)
     if (::chdir("/") == -1) {
         return false;
     }
-
-    ::umask(0);
 
     int fd = ::open("/dev/null", O_RDWR);
     if (fd == -1) {

@@ -125,12 +125,14 @@ int ZonePolicy::createZone(const std::string& name, const std::string& setupWizA
 {
     std::string provisionDirPath(ZONE_PROVISION_DIR + name);
     runtime::File provisionDir(provisionDirPath);
+    mode_t old_mask;
     int ret;
 
     try {
         provisionDir.remove(true);
     } catch (runtime::Exception& e) {}
 
+    old_mask = ::umask(0);
     try {
         //create a directory for zone setup
         provisionDir.makeDirectory(true);
@@ -147,7 +149,12 @@ int ZonePolicy::createZone(const std::string& name, const std::string& setupWizA
         if (ret < 0) {
             throw runtime::Exception("Failed to launch application: " + std::to_string(ret));
         }
-    } catch (runtime::Exception& e) {}
+    } catch (runtime::Exception& e) {
+        ::umask(old_mask);
+        ERROR(e.what());
+        return -1;
+    }
+    ::umask(old_mask);
 
     auto create = [name, setupWizAppid, provisionDirPath, this] {
         std::unique_ptr<xml::Document> bundleXml;
