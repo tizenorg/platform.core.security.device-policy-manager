@@ -39,12 +39,15 @@
 #include <iostream>
 #include <utility>
 
+#include <zone/package-info.h>
+
 #include "../session.h"
 
 #include "error.h"
 #include "exception.h"
 #include "filesystem.h"
 #include "auth/user.h"
+
 
 #define DEFAULT_SHELL "/bin/bash"
 
@@ -67,9 +70,10 @@ static inline void usage(const std::string name)
               << "Run a program in the zone" << std::endl
               << std::endl
               << "Options :" << std::endl
-              << "   -a, --attach=zone execute command in the zone" << std::endl
-              << "   -l, --list        show all zone instances" << std::endl
-              << "   -h, --help        show this" << std::endl
+              << "   -a, --attach=zone  execute command in the zone" << std::endl
+              << "   -p, --pkginfo=zone show all packages in the zone" << std::endl
+              << "   -l, --list         show all zone instances" << std::endl
+              << "   -h, --help         show this" << std::endl
               << std::endl;
 }
 
@@ -174,6 +178,23 @@ int attachToZone(const std::string& name, char* args[])
     return 0;
 }
 
+bool PackgeListCallback(package_info_h package_info, void *user_data)
+{
+    std::cout << "WoW!!" << std::endl;
+    return true;
+}
+
+int showPkgInfo(const std::string& name)
+{
+    zone_package_manager_h pkgMgr;
+
+    zone_package_manager_create(&pkgMgr);
+    zone_package_manager_foreach_package_info(pkgMgr, name.c_str(), PackgeListCallback, NULL);
+    zone_package_manager_destroy(pkgMgr);
+
+    return 0;
+}
+
 int main(int argc, char* argv[])
 {
     int opt = 0, index, ret = 0;
@@ -181,6 +202,7 @@ int main(int argc, char* argv[])
     struct option options[] = {
         {"attach", required_argument, 0, 'a'},
         {"list", no_argument, 0, 'l'},
+        {"pkginfo", no_argument, 0, 'l'},
         {"help", no_argument, 0, 'h'},
         {0, 0, 0, 0}
     };
@@ -190,10 +212,13 @@ int main(int argc, char* argv[])
         return EXIT_SUCCESS;
     }
 
-    while ((opt = getopt_long(argc, argv, "a:lh", options, &index)) != -1) {
+    while ((opt = getopt_long(argc, argv, "a:p:lh", options, &index)) != -1) {
         switch (opt) {
         case 'a':
             ret = attachToZone(optarg, optind >= argc ? NULL : argv + optind);
+            break;
+        case 'p':
+            ret = showPkgInfo(optarg);
             break;
         case 'l':
             ret = showZoneInstances();

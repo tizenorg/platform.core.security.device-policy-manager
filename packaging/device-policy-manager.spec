@@ -109,7 +109,6 @@ The libdpm package contains the libraries needed to run DPM client.
 %attr(755,root,root) %{_libdir}/libdpm.so.%{version}
 %{_libdir}/libdpm.so.0
 
-
 ## Devel Package ##############################################################
 %package -n libdpm-devel
 Summary: Libraries and header files for device policy client development
@@ -126,6 +125,46 @@ developing the DPM client program.
 %{_libdir}/libdpm.so
 %{_includedir}/dpm
 %{_libdir}/pkgconfig/dpm.pc
+
+## Zone Client Package ########################################################
+%package -n libzone
+Summary: Tizen Zone Client library
+Group: Development/Libraries
+BuildRequires: pkgconfig(capi-appfw-package-manager)
+BuildRequires: pkgconfig(capi-appfw-app-manager)
+Requires: %{name} = %{version}-%{release}
+Requires(post): /sbin/ldconfig
+Requires(postun): /sbin/ldconfig
+
+%description -n libzone
+The libdpm package contains the libraries needed to control inside of the zone.
+
+%post -n libzone -p /sbin/ldconfig
+
+%postun -n libzone -p /sbin/ldconfig
+
+%files -n libzone
+%manifest device-policy-manager.manifest
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libzone.so.%{version}
+%{_libdir}/libzone.so.0
+
+## Devel Package ##############################################################
+%package -n libzone-devel
+Summary: Libraries and header files for zone client development
+Group: Development/Libraries
+Requires: libzone = %{version}-%{release}
+
+%description -n libzone-devel
+The libzone-devel package includes the libraries and header files necessary for
+developing the zone client program.
+
+%files -n libzone-devel
+%manifest device-policy-manager.manifest
+%defattr(644,root,root,755)
+%{_libdir}/libzone.so
+%{_includedir}/zone
+%{_libdir}/pkgconfig/zone.pc
 
 ## Test Package ##############################################################
 %package -n dpm-testcases

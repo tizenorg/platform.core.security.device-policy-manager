@@ -36,6 +36,8 @@ SET(POLICIES administration.cpp
 			 storage.cpp
 			 wifi.cpp
 			 zone.cpp
+			 zone/package-manager.cpp
+			 zone/app-manager.cpp
 )
 
 ADD_EXECUTABLE(${TARGET} ${SOURCES} ${POLICIES} ${INCLUDE_SRCS})
