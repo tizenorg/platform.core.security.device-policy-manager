@@ -46,21 +46,25 @@ RestrictionPolicy::RestrictionPolicy(PolicyControlContext& ctxt)
 	context.registerNonparametricMethod(this, (bool)(RestrictionPolicy::getWifiState));
 	context.registerParametricMethod(this, (int)(RestrictionPolicy::setWifiHotspotState)(bool));
 	context.registerNonparametricMethod(this, (bool)(RestrictionPolicy::getWifiHotspotState));
+
+	context.createNotification("camera");
+
+	cameraState = 1;
+	microphoneState = 1;
 }
 
 RestrictionPolicy::~RestrictionPolicy()
 {
 }
 
-int RestrictionPolicy::setCameraState(int state)
+int RestrictionPolicy::setCameraState(int enable)
 {
-    if((state == 0) || (state == 1))
-    {
-        cameraState = state;
-		return 0;
-    }
-	else
-		return -1;
+    cameraState = enable;
+    if(cameraState == 0)
+        context.notify("camera","disallowed");
+    else
+        context.notify("camera","allowed");
+    return 0;
 }
 
 int RestrictionPolicy::getCameraState()
@@ -68,15 +72,10 @@ int RestrictionPolicy::getCameraState()
 	return cameraState;
 }
 
-int RestrictionPolicy::setMicrophoneState(int state)
+int RestrictionPolicy::setMicrophoneState(int enable)
 {
-    if((state == 0) || (state == 1))
-    {
-        microphoneState = state;
-		return 0;
-    }
-	else
-		return -1;
+    microphoneState = enable;
+    return 0;
 }
 
 int RestrictionPolicy::getMicrophoneState()
