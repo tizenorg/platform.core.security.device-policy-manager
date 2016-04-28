@@ -39,18 +39,6 @@ public:
     int disableApplication(const std::string& appid);
     int enableApplication(const std::string& appid);
 
-    std::vector<std::string> getInstalledPackageList();
-
-    int installPackage(const std::string& pkgpath);
-    int uninstallPackage(const std::string& pkgid);
-
-    bool isApplicationInstalled(const std::string& appid);
-    bool isApplicationRunning(const std::string& appid);
-    bool isPackageInstalled(const std::string& pkgid);
-
-    int startApplication(const std::string& appid);
-    int stopApplication(const std::string& appid);
-
     int wipeApplicationData(const std::string& appid);
 
     int addPackageToBlacklist(const std::string& pkgid);

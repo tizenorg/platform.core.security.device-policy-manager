@@ -32,21 +32,13 @@ ApplicationPolicy::ApplicationPolicy(PolicyControlContext& ctxt) :
 {
     context.registerNonparametricMethod(this, (bool)(ApplicationPolicy::getApplicationInstallationMode)());
     context.registerNonparametricMethod(this, (bool)(ApplicationPolicy::getApplicationUninstallationMode)());
-    context.registerNonparametricMethod(this, (std::vector<std::string>)(ApplicationPolicy::getInstalledPackageList)());
 
     context.registerParametricMethod(this, (int)(ApplicationPolicy::setApplicationInstallationMode)(bool));
     context.registerParametricMethod(this, (int)(ApplicationPolicy::setApplicationUninstallationMode)(bool));
-    context.registerParametricMethod(this, (bool)(ApplicationPolicy::isPackageInstalled)(std::string));
-    context.registerParametricMethod(this, (bool)(ApplicationPolicy::isApplicationInstalled)(std::string));
-    context.registerParametricMethod(this, (bool)(ApplicationPolicy::isApplicationRunning)(std::string));
-    context.registerParametricMethod(this, (int)(ApplicationPolicy::installPackage)(std::string));
-    context.registerParametricMethod(this, (int)(ApplicationPolicy::uninstallPackage)(std::string));
     context.registerParametricMethod(this, (int)(ApplicationPolicy::disableApplication)(std::string));
     context.registerParametricMethod(this, (int)(ApplicationPolicy::enableApplication)(std::string));
     context.registerParametricMethod(this, (int)(ApplicationPolicy::getApplicationState)(std::string));
     context.registerParametricMethod(this, (int)(ApplicationPolicy::setApplicationState)(std::string, int));
-    context.registerParametricMethod(this, (int)(ApplicationPolicy::startApplication)(std::string));
-    context.registerParametricMethod(this, (int)(ApplicationPolicy::stopApplication)(std::string));
     context.registerParametricMethod(this, (int)(ApplicationPolicy::wipeApplicationData)(std::string));
     context.registerParametricMethod(this, (int)(ApplicationPolicy::addPackageToBlacklist)(std::string));
     context.registerParametricMethod(this, (int)(ApplicationPolicy::removePackageFromBlacklist)(std::string));
@@ -77,77 +69,11 @@ bool ApplicationPolicy::getApplicationUninstallationMode()
     return true;
 }
 
-std::vector<std::string> ApplicationPolicy::getInstalledPackageList()
-{
-    try {
-        PackageManager& packman = PackageManager::instance();
-        return packman.getInstalledPackageList(context.getPeerUid());
-    } catch (runtime::Exception& e) {
-        ERROR("Failed to retrieve package info installed in the devioce");
-        return std::vector<std::string>();
-    }
-}
-
-bool ApplicationPolicy::isApplicationInstalled(const std::string& appid)
-{
-    try {
-        AppInfo appInfo(appid, context.getPeerUid());
-
-        return true;
-    } catch (runtime::Exception& e) {
-        return false;
-    }
-}
-
-bool ApplicationPolicy::isApplicationRunning(const std::string& appid)
-{
-    Launchpad launchpad(context.getPeerUid());
-    return launchpad.instantiated(appid);
-}
-
-bool ApplicationPolicy::isPackageInstalled(const std::string& pkgid)
-{
-    try {
-        PackageInfo pkgInfo(pkgid);
-
-        return true;
-    } catch (runtime::Exception& e) {
-        return false;
-    }
-}
-
-
-int ApplicationPolicy::installPackage(const std::string& pkgpath)
-{
-    try {
-        PackageManager& packman = PackageManager::instance();
-        packman.installPackage(pkgpath, context.getPeerUid());
-    } catch (runtime::Exception& e) {
-        ERROR("Exception in Package Id");
-        return -1;
-    }
-
-    return 0;
-}
-
-int ApplicationPolicy::uninstallPackage(const std::string& pkgid)
-{
-    try {
-        PackageManager& packman = PackageManager::instance();
-        packman.uninstallPackage(pkgid, context.getPeerUid());
-    } catch (runtime::Exception& e) {
-        ERROR("Exception in Package Id");
-        return -1;
-    }
-
-    return 0;
-}
-
 int ApplicationPolicy::disableApplication(const std::string& appid)
 {
     try {
         Launchpad launchpad(context.getPeerUid());
-        if (launchpad.instantiated(appid)) {
+        if (launchpad.isRunning(appid)) {
             launchpad.terminate(appid);
             // Notify user that the app hass terminated due to the policy
         }
@@ -180,27 +106,6 @@ int ApplicationPolicy::getApplicationState(const std::string& appid)
 int ApplicationPolicy::setApplicationState(const std::string& appid, const int state)
 {
     return true;
-}
-
-int ApplicationPolicy::startApplication(const std::string& appid)
-{
-    Launchpad launchpad(context.getPeerUid());
-    if (launchpad.launch(appid) < 0) {
-        ERROR("Failed to start device encryption");
-        return -1;
-    }
-
-    return 0;
-}
-
-int ApplicationPolicy::stopApplication(const std::string& appid)
-{
-    Launchpad launchpad(context.getPeerUid());
-    if (launchpad.instantiated(appid)) {
-        launchpad.terminate(appid);
-    }
-
-    return 0;
 }
 
 int ApplicationPolicy::wipeApplicationData(const std::string& appid)
