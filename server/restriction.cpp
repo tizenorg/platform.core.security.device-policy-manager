@@ -22,15 +22,15 @@
 namespace DevicePolicyManager
 {
 
-unsigned int cameraState;
-unsigned int microphoneState;
+bool cameraState;
+bool microphoneState;
 
 RestrictionPolicy::RestrictionPolicy(PolicyControlContext& ctxt)
 	: context(ctxt)
 {
-	context.registerParametricMethod(this, (int)(RestrictionPolicy::setCameraState)(int));
+	context.registerParametricMethod(this, (int)(RestrictionPolicy::setCameraState)(bool));
 	context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getCameraState));
-	context.registerParametricMethod(this, (int)(RestrictionPolicy::setMicrophoneState)(int));
+	context.registerParametricMethod(this, (int)(RestrictionPolicy::setMicrophoneState)(bool));
 	context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getMicrophoneState));
 	context.registerParametricMethod(this, (int)(RestrictionPolicy::setClipboardState)(int));
 	context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getClipboardState));
@@ -46,21 +46,27 @@ RestrictionPolicy::RestrictionPolicy(PolicyControlContext& ctxt)
 	context.registerNonparametricMethod(this, (bool)(RestrictionPolicy::getWifiState));
 	context.registerParametricMethod(this, (int)(RestrictionPolicy::setWifiHotspotState)(bool));
 	context.registerNonparametricMethod(this, (bool)(RestrictionPolicy::getWifiHotspotState));
+
+	context.createNotification("camera");
+
+	cameraState = true;
+	microphoneState = true;
 }
 
 RestrictionPolicy::~RestrictionPolicy()
 {
 }
 
-int RestrictionPolicy::setCameraState(int state)
+int RestrictionPolicy::setCameraState(bool enable)
 {
-    if((state == 0) || (state == 1))
-    {
-        cameraState = state;
-		return 0;
-    }
-	else
-		return -1;
+    cameraState = enable;
+	
+    if(cameraState == true)
+        context.notify("camera","allowed");
+    else
+        context.notify("camera","disallowed");
+
+    return 0;
 }
 
 int RestrictionPolicy::getCameraState()
@@ -68,15 +74,11 @@ int RestrictionPolicy::getCameraState()
 	return cameraState;
 }
 
-int RestrictionPolicy::setMicrophoneState(int state)
+int RestrictionPolicy::setMicrophoneState(bool enable)
 {
-    if((state == 0) || (state == 1))
-    {
-        microphoneState = state;
-		return 0;
-    }
-	else
-		return -1;
+    microphoneState = enable;
+
+    return 0;
 }
 
 int RestrictionPolicy::getMicrophoneState()

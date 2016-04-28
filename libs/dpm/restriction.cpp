@@ -42,8 +42,15 @@ int dpm_restriction_set_camera_state(dpm_restriction_policy_h handle, int enable
 {
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
+         bool set_enable = TRUE;
+		 
 	RestrictionPolicy& restrict = GetPolicyInterface<RestrictionPolicy>(handle);
-	return restrict.setCameraState(enable);
+	if(enable == 0)
+            set_enable = FALSE;
+        else
+            set_enable = TRUE;
+
+	return restrict.setCameraState(set_enable);
 }
 
 int dpm_restriction_get_camera_state(dpm_restriction_policy_h handle, int *state)
@@ -65,8 +72,15 @@ int dpm_restriction_set_microphone_state(dpm_restriction_policy_h handle, int en
 {
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
+	bool set_enable = TRUE;
+
 	RestrictionPolicy& restriction = GetPolicyInterface<RestrictionPolicy>(handle);
-	return restriction.setMicrophoneState(enable);
+         if(enable == 0)
+             set_enable = FALSE;
+         else
+             set_enable = TRUE;
+	
+	return restriction.setMicrophoneState(set_enable);
 }
 
 int dpm_restriction_get_microphone_state(dpm_restriction_policy_h handle, int *state)
