@@ -45,8 +45,6 @@ static bool daemonize(void)
         return false;
     }
 
-    ::umask(0);
-
     int fd = ::open("/dev/null", O_RDWR);
     if (fd == -1) {
         return false;
@@ -102,6 +100,8 @@ int main(int argc, char *argv[])
     if (runAsDaemon && !daemonize()) {
         exit(EXIT_FAILURE);
     }
+
+    ::umask(0);
 
     try {
         Server& server = Server::instance();
