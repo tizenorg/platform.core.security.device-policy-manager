@@ -81,11 +81,11 @@ std::vector<std::string> ApplicationPolicy::getInstalledPackageList()
 {
     try {
         PackageManager& packman = PackageManager::instance();
-        return packman.getInstalledPackageList(context.getPeerUid());
+        return packman.getPackageList(context.getPeerUid());
     } catch (runtime::Exception& e) {
         ERROR("Failed to retrieve package info installed in the devioce");
-        return std::vector<std::string>();
     }
+    return std::vector<std::string>();
 }
 
 bool ApplicationPolicy::isApplicationInstalled(const std::string& appid)
@@ -102,7 +102,7 @@ bool ApplicationPolicy::isApplicationInstalled(const std::string& appid)
 bool ApplicationPolicy::isApplicationRunning(const std::string& appid)
 {
     Launchpad launchpad(context.getPeerUid());
-    return launchpad.instantiated(appid);
+    return launchpad.isRunning(appid);
 }
 
 bool ApplicationPolicy::isPackageInstalled(const std::string& pkgid)
@@ -147,7 +147,7 @@ int ApplicationPolicy::disableApplication(const std::string& appid)
 {
     try {
         Launchpad launchpad(context.getPeerUid());
-        if (launchpad.instantiated(appid)) {
+        if (launchpad.isRunning(appid)) {
             launchpad.terminate(appid);
             // Notify user that the app hass terminated due to the policy
         }
@@ -184,8 +184,10 @@ int ApplicationPolicy::setApplicationState(const std::string& appid, const int s
 
 int ApplicationPolicy::startApplication(const std::string& appid)
 {
-    Launchpad launchpad(context.getPeerUid());
-    if (launchpad.launch(appid) < 0) {
+    try {
+        Launchpad launchpad(context.getPeerUid());
+        launchpad.launch(appid);
+     } catch (runtime::Exception& e) {
         ERROR("Failed to start device encryption");
         return -1;
     }
@@ -196,7 +198,7 @@ int ApplicationPolicy::startApplication(const std::string& appid)
 int ApplicationPolicy::stopApplication(const std::string& appid)
 {
     Launchpad launchpad(context.getPeerUid());
-    if (launchpad.instantiated(appid)) {
+    if (launchpad.isRunning(appid)) {
         launchpad.terminate(appid);
     }
 
