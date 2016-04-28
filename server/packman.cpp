@@ -23,20 +23,7 @@
 #include "exception.h"
 #include "audit/logger.h"
 
- namespace {
-
-/*
- int ApplicationPolicyListCallback(pkgmgrinfo_appinfo_h handle, void *data)
- {
-     char* appid = nullptr;
-     ::pkgmgrinfo_appinfo_get_appid(handle, &appid);
-
-     std::vector<std::string>* appList = static_cast<std::vector<std::string>*>(data);
-     appList->push_back(appid);
-
-     return 0;
- }
-*/
+namespace {
 
 int PackageEventCallback(uid_t uid, int id, const char* type, const char* name,
                          const char* key, const char* val, const void* msg, void* data)
@@ -44,19 +31,29 @@ int PackageEventCallback(uid_t uid, int id, const char* type, const char* name,
     return 0;
 }
 
- int PackageListCallback(pkgmgrinfo_pkginfo_h handle, void *data)
- {
-     char* pkgid = nullptr;
-     ::pkgmgrinfo_pkginfo_get_pkgid(handle, &pkgid);
+int AppListCallback(pkgmgrinfo_appinfo_h handle, void *data)
+{
+    char* appid = nullptr;
 
-     std::cout << "PKG: " << pkgid << std::endl;
-     std::vector<std::string>* packageList = static_cast<std::vector<std::string>*>(data);
-     packageList->push_back(pkgid);
+    ::pkgmgrinfo_appinfo_get_appid(handle, &appid);
+    std::vector<std::string>* appList = static_cast<std::vector<std::string>*>(data);
+    appList->push_back(appid);
 
-     return 0;
- }
+    return 0;
+}
 
- } // namespace
+int PackageListCallback(pkgmgrinfo_pkginfo_h handle, void *data)
+{
+    char* pkgid = nullptr;
+
+    ::pkgmgrinfo_pkginfo_get_pkgid(handle, &pkgid);
+    std::vector<std::string>* packageList = static_cast<std::vector<std::string>*>(data);
+    packageList->push_back(pkgid);
+
+    return 0;
+}
+
+} // namespace
 
 PackageInfo::PackageInfo(const std::string& pkgid, uid_t uid) :
     user(uid), handle(nullptr)
@@ -75,14 +72,45 @@ PackageInfo::~PackageInfo()
     ::pkgmgrinfo_pkginfo_destroy_pkginfo(handle);
 }
 
+std::vector<std::string> PackageInfo::getUIAppList() const
+{
+    std::vector<std::string> appList;
+
+    if (::pkgmgrinfo_appinfo_get_usr_list(handle, PMINFO_UI_APP, AppListCallback, &appList, user) != PMINFO_R_OK) {
+        ERROR("Error in pkgmgrinfo_appinfo_get_usr_list");
+    }
+
+    return appList;
+}
+
 std::string PackageInfo::getType() const
 {
     char *pkgtype;
     if (::pkgmgrinfo_pkginfo_get_type(handle, &pkgtype) != PMINFO_R_OK) {
-        throw runtime::Exception("Unexpected operation");
+        throw runtime::Exception("Invalid operation");
     }
 
     return pkgtype;
+}
+
+std::string PackageInfo::getLabel() const
+{
+    char *label;
+    if (::pkgmgrinfo_pkginfo_get_label(handle, &label) != PMINFO_R_OK) {
+        throw runtime::Exception("Invalid operation");
+    }
+
+    return label;
+}
+
+std::string PackageInfo::getIcon() const
+{
+    char *icon;
+    if (::pkgmgrinfo_pkginfo_get_icon(handle, &icon) != PMINFO_R_OK) {
+        throw runtime::Exception("Invalid operation");
+    }
+
+    return icon;
 }
 
 std::string PackageInfo::getVersion() const
@@ -93,6 +121,36 @@ std::string PackageInfo::getVersion() const
     }
 
     return version;
+}
+
+bool PackageInfo::isSystem() const
+{
+    bool ret;
+    if (::pkgmgrinfo_pkginfo_is_system(handle, &ret) != PMINFO_R_OK) {
+        throw runtime::Exception("Invalid operation");
+    }
+
+    return ret;
+}
+
+bool PackageInfo::isRemovable() const
+{
+    bool ret;
+    if (::pkgmgrinfo_pkginfo_is_removable(handle, &ret) != PMINFO_R_OK) {
+        throw runtime::Exception("Invalid operation");
+    }
+
+    return ret;
+}
+
+bool PackageInfo::isPreload() const
+{
+    bool ret;
+    if (::pkgmgrinfo_pkginfo_is_preload(handle, &ret) != PMINFO_R_OK) {
+        throw runtime::Exception("Invalid operation");
+    }
+
+    return ret;
 }
 
 AppInfo::AppInfo(const std::string& aid, uid_t uid) :
@@ -140,6 +198,46 @@ std::string AppInfo::getPackageName() const
     }
 
     return name;
+}
+
+std::string AppInfo::getIcon() const
+{
+    char *icon;
+    if (::pkgmgrinfo_appinfo_get_icon(handle, &icon) != PMINFO_R_OK) {
+        throw runtime::Exception("Unexpected operation");
+    }
+
+    return icon;
+}
+
+std::string AppInfo::getLabel() const
+{
+    char *label;
+    if (::pkgmgrinfo_appinfo_get_label(handle, &label) != PMINFO_R_OK) {
+        throw runtime::Exception("Unexpected operation");
+    }
+
+    return label;
+}
+
+bool AppInfo::isNoDisplayed() const
+{
+    bool ret;
+    if (::pkgmgrinfo_appinfo_is_nodisplay(handle, &ret) != PMINFO_R_OK) {
+        throw runtime::Exception("Invalid operation");
+    }
+
+    return ret;
+}
+
+bool AppInfo::isTaskManaged() const
+{
+    bool ret;
+    if (::pkgmgrinfo_appinfo_is_taskmanage(handle, &ret) != PMINFO_R_OK) {
+        throw runtime::Exception("Invalid operation");
+    }
+
+    return ret;
 }
 
 PackageManager::PackageManager() :
@@ -222,13 +320,12 @@ void PackageManager::wipePackageData(const std::string& pkgid, const uid_t user)
     }
 }
 
-std::vector<std::string> PackageManager::getInstalledPackageList(const uid_t user)
+std::vector<std::string> PackageManager::getPackageList(const uid_t user)
 {
     std::vector<std::string> packageList;
 
     if (::pkgmgrinfo_pkginfo_get_usr_list(PackageListCallback, &packageList, user) != PMINFO_R_OK) {
         ERROR("Error in pkgmgrinfo_pkginfo_get_list");
-        return std::vector<std::string>();
     }
 
     return packageList;

@@ -27,6 +27,7 @@
 #include "smack.h"
 #include "process.h"
 #include "packman.h"
+#include "launchpad.h"
 #include "filesystem.h"
 #include "auth/user.h"
 #include "auth/group.h"
@@ -112,6 +113,29 @@ ZonePolicy::ZonePolicy(PolicyControlContext& ctx)
     context.registerParametricMethod(this, (int)(ZonePolicy::unlockZone)(std::string));
     context.registerNonparametricMethod(this, (std::vector<std::string>)(ZonePolicy::getZoneList)());
     context.registerParametricMethod(this, (int)(ZonePolicy::getZoneState)(std::string));
+
+    context.registerParametricMethod(this, (std::vector<std::string>)(ZonePolicy::getPackageList)(std::string));
+    context.registerParametricMethod(this, (std::string)(ZonePolicy::getPackageType)(std::string, std::string));
+    context.registerParametricMethod(this, (std::string)(ZonePolicy::getPackageIcon)(std::string, std::string));
+    context.registerParametricMethod(this, (std::string)(ZonePolicy::getPackageLabel)(std::string, std::string));
+    context.registerParametricMethod(this, (std::string)(ZonePolicy::getPackageVersion)(std::string, std::string));
+    context.registerParametricMethod(this, (bool)(ZonePolicy::isSystemPackage)(std::string, std::string));
+    context.registerParametricMethod(this, (bool)(ZonePolicy::isRemovablePackage)(std::string, std::string));
+    context.registerParametricMethod(this, (bool)(ZonePolicy::isPreloadPackage)(std::string, std::string));
+
+    context.registerParametricMethod(this, (int)(ZonePolicy::installPackage)(std::string, std::string));
+    context.registerParametricMethod(this, (int)(ZonePolicy::uninstallPackage)(std::string, std::string));
+
+    context.registerParametricMethod(this, (std::vector<std::string>)(ZonePolicy::getUIAppList)(std::string, std::string));
+    context.registerParametricMethod(this, (std::string)(ZonePolicy::getAppIcon)(std::string, std::string));
+    context.registerParametricMethod(this, (std::string)(ZonePolicy::getAppLabel)(std::string, std::string));
+    context.registerParametricMethod(this, (bool)(ZonePolicy::isNoDisplayedApp)(std::string, std::string));
+    context.registerParametricMethod(this, (bool)(ZonePolicy::isTaskManagedApp)(std::string, std::string));
+
+    context.registerParametricMethod(this, (int)(ZonePolicy::launchApp)(std::string, std::string));
+    context.registerParametricMethod(this, (int)(ZonePolicy::resumeApp)(std::string, std::string));
+    context.registerParametricMethod(this, (int)(ZonePolicy::terminateApp)(std::string, std::string));
+    context.registerParametricMethod(this, (int)(ZonePolicy::isAppRunning)(std::string, std::string));
 
     context.createNotification("ZonePolicy::created");
     context.createNotification("ZonePolicy::removed");
@@ -258,7 +282,7 @@ int ZonePolicy::createZone(const std::string& name, const std::string& setupWizA
 
             //initialize package rw directory in home
             std::vector<std::string> pkgList = PackageManager::instance().
-                                        getInstalledPackageList(user.getUid());
+                                        getPackageList(user.getUid());
             for (std::vector<std::string>::iterator it = pkgList.begin();
                  it != pkgList.end(); it++) {
                 runtime::File dir(appDir + "/" + *it);
@@ -424,6 +448,245 @@ std::vector<std::string> ZonePolicy::getZoneList()
 int ZonePolicy::getZoneState(const std::string& name)
 {
     return 0;
+}
+
+std::vector<std::string> ZonePolicy::getPackageList(const std::string& zone)
+{
+    try {
+        runtime::User user(zone);
+        PackageManager& packman = PackageManager::instance();
+        return packman.getPackageList(user.getUid());
+    } catch (runtime::Exception& e) {
+        ERROR("Failed to retrieve package info installed in the zone");
+    }
+    return std::vector<std::string>();
+}
+
+std::string ZonePolicy::getPackageType(const std::string& zone, const std::string& pkgid)
+{
+    try {
+        runtime::User user(zone);
+        PackageInfo pkginfo(pkgid, user.getUid());
+        return pkginfo.getType();
+    } catch (runtime::Exception& e) {
+        ERROR("Failed to retrieve package info installed in the zone");
+    }
+    return std::string();
+}
+
+std::string ZonePolicy::getPackageIcon(const std::string& zone, const std::string& pkgid)
+{
+    try {
+        runtime::User user(zone);
+        PackageInfo pkginfo(pkgid, user.getUid());
+        return pkginfo.getIcon();
+    } catch (runtime::Exception& e) {
+        ERROR("Failed to retrieve package info installed in the zone");
+        return "";
+    }
+    return std::string();
+}
+
+std::string ZonePolicy::getPackageLabel(const std::string& zone, const std::string& pkgid)
+{
+    try {
+        runtime::User user(zone);
+        PackageInfo pkginfo(pkgid, user.getUid());
+        return pkginfo.getLabel();
+    } catch (runtime::Exception& e) {
+        ERROR("Failed to retrieve package info installed in the zone");
+        return "";
+    }
+    return std::string();
+}
+
+std::string ZonePolicy::getPackageVersion(const std::string& zone, const std::string& pkgid)
+{
+    try {
+        runtime::User user(zone);
+        PackageInfo pkginfo(pkgid, user.getUid());
+        return pkginfo.getVersion();
+    } catch (runtime::Exception& e) {
+        ERROR("Failed to retrieve package info installed in the zone");
+        return "";
+    }
+    return std::string();
+}
+
+bool ZonePolicy::isSystemPackage(const std::string& zone, const std::string& pkgid)
+{
+    try {
+        runtime::User user(zone);
+        PackageInfo pkginfo(pkgid, user.getUid());
+        return pkginfo.isSystem();
+    } catch (runtime::Exception& e) {
+        ERROR("Failed to retrieve package info installed in the zone");
+    }
+    return false;
+}
+
+bool ZonePolicy::isRemovablePackage(const std::string& zone, const std::string& pkgid)
+{
+    try {
+        runtime::User user(zone);
+        PackageInfo pkginfo(pkgid, user.getUid());
+        return pkginfo.isRemovable();
+    } catch (runtime::Exception& e) {
+        ERROR("Failed to retrieve package info installed in the zone");
+    }
+    return false;
+}
+
+bool ZonePolicy::isPreloadPackage(const std::string& zone, const std::string& pkgid)
+{
+    try {
+        runtime::User user(zone);
+        PackageInfo pkginfo(pkgid, user.getUid());
+        return pkginfo.isPreload();
+    } catch (runtime::Exception& e) {
+        ERROR("Failed to retrieve package info installed in the zone");
+    }
+    return false;
+}
+
+int ZonePolicy::installPackage(const std::string& zone, const std::string& pkgpath)
+{
+    try {
+        runtime::User user(zone);
+        PackageManager& packman = PackageManager::instance();
+        packman.installPackage(pkgpath, user.getUid());
+    } catch (runtime::Exception& e) {
+        ERROR("Failed to install package in the zone");
+        return -1;
+    }
+
+    return 0;
+}
+
+int ZonePolicy::uninstallPackage(const std::string& zone, const std::string& pkgid)
+{
+    try {
+        runtime::User user(zone);
+        PackageManager& packman = PackageManager::instance();
+        packman.uninstallPackage(pkgid, user.getUid());
+    } catch (runtime::Exception& e) {
+        ERROR("Failed to uninstall package of pkgid in the zone");
+        return -1;
+    }
+    return 0;
+}
+
+std::vector<std::string> ZonePolicy::getUIAppList(const std::string& zone, const std::string& pkgid)
+{
+    try {
+        runtime::User user(zone);
+        PackageInfo pkginfo(pkgid, user.getUid());
+        return pkginfo.getUIAppList();
+    } catch (runtime::Exception& e) {
+        ERROR("Failed to retrieve app list installed in the zone");
+    }
+    return std::vector<std::string>();
+}
+
+std::string ZonePolicy::getAppIcon(const std::string& zone, const std::string& appid)
+{
+    try {
+        runtime::User user(zone);
+        AppInfo appinfo(appid, user.getUid());
+        return appinfo.getIcon();
+    } catch (runtime::Exception& e) {
+        ERROR("Failed to retrieve app info installed in the zone");
+        return "";
+    }
+    return std::string();
+}
+
+std::string ZonePolicy::getAppLabel(const std::string& zone, const std::string& appid)
+{
+    try {
+        runtime::User user(zone);
+        AppInfo appinfo(appid, user.getUid());
+        return appinfo.getLabel();
+    } catch (runtime::Exception& e) {
+        ERROR("Failed to retrieve app info installed in the zone");
+        return "";
+    }
+    return std::string();
+}
+
+bool ZonePolicy::isNoDisplayedApp(const std::string& zone, const std::string& appid)
+{
+    try {
+        runtime::User user(zone);
+        AppInfo appinfo(appid, user.getUid());
+        return appinfo.isNoDisplayed();
+    } catch (runtime::Exception& e) {
+        ERROR("Failed to retrieve app info installed in the zone");
+    }
+    return false;
+}
+
+bool ZonePolicy::isTaskManagedApp(const std::string& zone, const std::string& appid)
+{
+    try {
+        runtime::User user(zone);
+        AppInfo appinfo(appid, user.getUid());
+        return appinfo.isTaskManaged();
+    } catch (runtime::Exception& e) {
+        ERROR("Failed to retrieve app info installed in the zone");
+    }
+    return false;
+}
+
+int ZonePolicy::launchApp(const std::string& zone, const std::string& appid)
+{
+    try {
+        runtime::User user(zone);
+        Launchpad launchpad(user.getUid());
+        launchpad.launch(appid);
+    } catch (runtime::Exception& e) {
+        ERROR("Failed to launch app in the zone");
+        return -1;
+    }
+    return 0;
+}
+
+int ZonePolicy::resumeApp(const std::string& zone, const std::string& appid)
+{
+    try {
+        runtime::User user(zone);
+        Launchpad launchpad(user.getUid());
+        launchpad.resume(appid);
+    } catch (runtime::Exception& e) {
+        ERROR("Failed to terminate app in the zone");
+        return -1;
+    }
+    return 0;
+}
+
+int ZonePolicy::terminateApp(const std::string& zone, const std::string& appid)
+{
+    try {
+        runtime::User user(zone);
+        Launchpad launchpad(user.getUid());
+        launchpad.terminate(appid);
+    } catch (runtime::Exception& e) {
+        ERROR("Failed to terminate app in the zone");
+        return -1;
+    }
+    return 0;
+}
+
+bool ZonePolicy::isAppRunning(const std::string& zone, const std::string& appid)
+{
+    try {
+        runtime::User user(zone);
+        Launchpad launchpad(user.getUid());
+        return launchpad.isRunning(appid);
+    } catch (runtime::Exception& e) {
+        ERROR("Failed to get app running state in the zone");
+    }
+    return false;
 }
 
 ZonePolicy zonePolicy(Server::instance());
