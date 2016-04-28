@@ -43,6 +43,11 @@ public:
         return NULL;
     }
 
+    bool isEnd()
+    {
+        return it == list.end();
+    }
+
 private:
     std::vector<T> list;
     typename std::vector<T>::iterator it;

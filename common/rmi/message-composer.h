@@ -26,7 +26,7 @@ namespace rmi {
 
 class MessageComposer {
 public:
-    MessageComposer(size_t caps = 1024);
+    MessageComposer(size_t caps = 4096);
     MessageComposer(const MessageComposer& rhs);
     MessageComposer(MessageComposer&& rhs);
 
