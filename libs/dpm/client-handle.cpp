@@ -52,12 +52,12 @@ int dpm_context_destroy(dpm_context_h handle)
     return 0;
 }
 
-int dpm_add_policy_changed_listener(dpm_context_h handle, const char* name, dpm_policy_changed_cb handler, void* user_data, int* id)
+int dpm_context_add_policy_changed_cb(dpm_context_h handle, const char* name, dpm_policy_changed_cb callback, void* user_data, int* id)
 {
     assert(handle);
 
     DevicePolicyContext& client = GetDevicePolicyContext(handle);
-    int ret = client.subscribePolicyChange(name, handler, user_data);
+    int ret = client.subscribePolicyChange(name, callback, user_data);
     if (ret < 0) {
         return -1;
     }
@@ -66,12 +66,14 @@ int dpm_add_policy_changed_listener(dpm_context_h handle, const char* name, dpm_
     return 0;
 }
 
-void dpm_remove_policy_change_listener(dpm_context_h handle, int id)
+int dpm_context_remove_policy_changed_cb(dpm_context_h handle, int id)
 {
     assert(handle);
 
     DevicePolicyContext& client = GetDevicePolicyContext(handle);
     client.unsubscribePolicyChange(id);
+
+    return 0;
 }
 
 int dpm_context_add_signal_cb(dpm_context_h handle, const char* signal, dpm_signal_cb callback, void* user_data, int *id)
