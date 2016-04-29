@@ -27,17 +27,21 @@
 #include "xml/document.h"
 #include "xml/node.h"
 
+typedef xml::Node::NodeList PolicyGroupList;
+typedef xml::Node PolicyData;
+
 class PolicyStorage {
 public:
     PolicyStorage(const std::string& path, bool create = true);
-
     ~PolicyStorage();
 
     PolicyStorage(const PolicyStorage&) = delete;
     PolicyStorage& operator=(const PolicyStorage&) = delete;
 
     Policy evaluate(const std::string& expression);
-    Policy find(const std::string& name);
+    PolicyData getPolicyData(const std::string& name);
+
+    PolicyGroupList loadAllPolicies();
 
     void flush();
 

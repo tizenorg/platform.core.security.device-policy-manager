@@ -55,3 +55,18 @@ PolicyStorage::PolicyStorage(const std::string& path, bool create) :
 PolicyStorage::~PolicyStorage()
 {
 }
+
+PolicyGroupList PolicyStorage::loadAllPolicies()
+{
+    return data->evaluate("/manifest/policy-group/policy");
+}
+
+PolicyData PolicyStorage::getPolicyData(const std::string& name)
+{
+    PolicyGroupList policyList = data->evaluate("/manifest/policy-group/policy[@name='" + name + "']");
+    if (policyList.empty()) {
+        throw runtime::Exception("Invalid parameter");
+    }
+
+    return std::move(policyList[0]);
+}
