@@ -20,6 +20,8 @@
 #include <string>
 #include <memory>
 
+#include "policy-storage.h"
+
 #include "file-descriptor.h"
 #include "rmi/service.h"
 
@@ -61,6 +63,11 @@ public:
         service->createNotification(name);
     }
 
+    void updatePolicy(const std::string& name, const std::string& value);
+    void updatePolicy(const std::string& name, const std::string& value,
+                      const std::string& event, const std::string& info);
+    std::string getPolicy(const std::string& name) const;
+
     FileDescriptor registerNotificationSubscriber(const std::string& name);
     int unregisterNotificationSubscriber(const std::string& name, int id);
 
@@ -70,6 +77,7 @@ private:
     Server();
     ~Server();
 
+    std::unique_ptr<PolicyStorage> policyStorage;
     std::unique_ptr<rmi::Service> service;
 };
 

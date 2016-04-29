@@ -20,6 +20,8 @@
 
 #include "storage.hxx"
 
+#include "policy-helper.h"
+
 #include "exception.h"
 #include "process.h"
 #include "filesystem.h"
@@ -41,25 +43,11 @@ void WipeExternalMemoryCallback(int ret, void *user_data)
 StoragePolicy::StoragePolicy(PolicyControlContext& ctx) :
     context(ctx)
 {
-	context.registerParametricMethod(this, (int)(StoragePolicy::setExternalStorageState)(int));
-	context.registerNonparametricMethod(this, (int)(StoragePolicy::getExternalStorageState));
 	context.registerParametricMethod(this, (int)(StoragePolicy::wipeData)(int));
 }
 
 StoragePolicy::~StoragePolicy()
 {
-}
-
-int StoragePolicy::setExternalStorageState(int enable)
-{
-	INFO("Start StoragePolicy::setUsbMassStorageState");
-	return 0;
-}
-
-int StoragePolicy::getExternalStorageState()
-{
-	INFO("Start StoragePolicy::getUsbMassStorageState");
-	return true;
 }
 
 int StoragePolicy::wipeData(int id)

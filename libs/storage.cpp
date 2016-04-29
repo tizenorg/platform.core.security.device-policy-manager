@@ -29,24 +29,6 @@ StoragePolicy::~StoragePolicy()
 {
 }
 
-int StoragePolicy::setExternalStorageState(int state)
-{
-	try {
-		return context->methodCall<int>("StoragePolicy::setExternalStorageState", state);
-	} catch (runtime::Exception& e) {
-		return -1;
-	}
-}
-
-int StoragePolicy::getExternalStorageState()
-{
-	try {
-		return context->methodCall<int>("StoragePolicy::getExternalStorageState");
-	} catch (runtime::Exception& e) {
-		return -1;
-	}
-}
-
 int StoragePolicy::wipeData(int type)
 {
 	try {

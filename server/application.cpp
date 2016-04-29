@@ -21,6 +21,7 @@
 
 #include "application.hxx"
 
+#include "policy-helper.h"
 #include "packman.h"
 #include "launchpad.h"
 #include "audit/logger.h"
@@ -51,6 +52,9 @@ ApplicationPolicy::ApplicationPolicy(PolicyControlContext& ctxt) :
     context.registerParametricMethod(this, (int)(ApplicationPolicy::addPackageToBlacklist)(std::string));
     context.registerParametricMethod(this, (int)(ApplicationPolicy::removePackageFromBlacklist)(std::string));
     context.registerParametricMethod(this, (int)(ApplicationPolicy::checkPackageIsBlacklisted)(std::string));
+
+    context.createNotification("package-installation-mode");
+    context.createNotification("package-uninstallation-mode");
 }
 
 ApplicationPolicy::~ApplicationPolicy()
@@ -59,22 +63,25 @@ ApplicationPolicy::~ApplicationPolicy()
 
 int ApplicationPolicy::setApplicationInstallationMode(const bool mode)
 {
+    SetPolicyAllowed(context, "package-installation-mode", mode);
+
     return 0;
 }
 
 bool ApplicationPolicy::getApplicationInstallationMode()
 {
-    return true;
+    return IsPolicyAllowed(context, "package-installation-mode");
 }
 
 int ApplicationPolicy::setApplicationUninstallationMode(const bool mode)
 {
+    SetPolicyAllowed(context, "package-uninstallation-mode", mode);
     return 0;
 }
 
 bool ApplicationPolicy::getApplicationUninstallationMode()
 {
-    return true;
+    return IsPolicyAllowed(context, "package-uninstallation-mode");
 }
 
 std::vector<std::string> ApplicationPolicy::getInstalledPackageList()

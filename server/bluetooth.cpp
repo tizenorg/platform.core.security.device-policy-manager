@@ -15,6 +15,8 @@
  */
 
 #include "bluetooth.hxx"
+
+#include "policy-helper.h"
 #include "audit/logger.h"
 
 namespace DevicePolicyManager {
@@ -30,6 +32,10 @@ BluetoothPolicy::BluetoothPolicy(PolicyControlContext& ctxt) :
     ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::removeUuidFromBlacklist)(std::string));
     ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::setUuidRestriction)(bool));
     ctxt.registerNonparametricMethod(this, (bool)(BluetoothPolicy::isUuidRestricted));
+
+    ctxt.createNotification("bluetooth");
+    ctxt.createNotification("bluetooth-uuid-restriction");
+    ctxt.createNotification("bluetooth-device-restriction");
 }
 
 BluetoothPolicy::~BluetoothPolicy()
@@ -48,12 +54,13 @@ int BluetoothPolicy::removeDeviceFromBlacklist(const std::string& mac)
 
 int BluetoothPolicy::setDeviceRestriction(const bool enable)
 {
+    SetPolicyEnabled(context, "bluetooth-device-restriction", enable);
     return 0;
 }
 
 bool BluetoothPolicy::isDeviceRestricted()
 {
-    return false;
+    return IsPolicyEnabled(context, "bluetooth-device-restriction");
 }
 
 int BluetoothPolicy::addUuidToBlacklist(const std::string& uuid)
@@ -68,12 +75,13 @@ int BluetoothPolicy::removeUuidFromBlacklist(const std::string& uuid)
 
 int BluetoothPolicy::setUuidRestriction(const bool enable)
 {
+    SetPolicyEnabled(context, "bluetooth-uuid-restriction", enable);
     return 0;
 }
 
 bool BluetoothPolicy::isUuidRestricted()
 {
-    return false;
+    return IsPolicyEnabled(context, "bluetooth-uuid-restriction");
 }
 
 BluetoothPolicy bluetoothPolicy(Server::instance());

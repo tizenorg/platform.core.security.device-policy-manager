@@ -20,6 +20,7 @@
 
 #include "password.hxx"
 
+#include "policy-helper.h"
 #include "auth/user.h"
 #include "audit/logger.h"
 
