@@ -24,6 +24,9 @@
 #include <wifi.h>
 
 #include "wifi.hxx"
+
+#include "policy-helper.h"
+
 #include "app-bundle.h"
 #include "syspopup.h"
 #include "audit/logger.h"
@@ -40,6 +43,9 @@ WifiPolicy::WifiPolicy(PolicyControlContext& ctx) :
     context.registerNonparametricMethod(this, (bool)(WifiPolicy::isNetworkAccessRestricted));
     context.registerParametricMethod(this, (int)(WifiPolicy::addSsidToBlocklist)(std::string));
     context.registerParametricMethod(this, (int)(WifiPolicy::removeSsidFromBlocklist)(std::string));
+
+    context.createNotification("wifi-setting-changes");
+    context.createNotification("wifi-ssid-restriction");
 }
 
 WifiPolicy::~WifiPolicy()
@@ -48,22 +54,24 @@ WifiPolicy::~WifiPolicy()
 
 int WifiPolicy::allowSettingsChange(bool enable)
 {
-    return -1;
+    SetPolicyAllowed(context, "wifi-setting-changes", enable);
+    return 0;
 }
 
 bool WifiPolicy::isSettingsChangeAllowed(void)
 {
-    return true;
+    return IsPolicyAllowed(context, "wifi-setting-changes");
 }
 
 int WifiPolicy::setNetworkAccessRestriction(bool enable)
 {
-    return -1;
+    SetPolicyEnabled(context, "wifi-ssid-restriction", enable);
+    return 0;
 }
 
 bool WifiPolicy::isNetworkAccessRestricted(void)
 {
-    return true;
+    return IsPolicyEnabled(context, "wifi-ssid-restriction");
 }
 
 int WifiPolicy::addSsidToBlocklist(const std::string& ssid)

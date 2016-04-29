@@ -43,7 +43,7 @@ managing device policies.
 %attr(700,root,root) %{_bindir}/factory-reset
 %dir %{TZ_SYS_DATA}/dpm
 %dir %{TZ_SYS_ETC}/dpm/policy
-%config %{TZ_SYS_ETC}/dpm/policy/PolicyManifest.xml
+%{TZ_SYS_ETC}/dpm/policy/PolicyManifest.xml
 %attr(700,root,root) %dir %{TZ_SYS_ETC}/dpm/zone
 %attr(600,root,root) %config %{TZ_SYS_ETC}/dpm/zone/owner.xml
 %{_unitdir}/device-policy-manager.service

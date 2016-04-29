@@ -32,9 +32,6 @@ public:
     StoragePolicy(PolicyControlContext& ctxt);
     ~StoragePolicy();
 
-	int setExternalStorageState(int state);
-    int getExternalStorageState();
-
 	int wipeData(int id);
 
 private:
