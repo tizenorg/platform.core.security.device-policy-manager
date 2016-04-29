@@ -1,3 +1,15 @@
+msgid "IDS_DPM_BODY_PREVENT_USB_DEBUGGING"
+msgstr "보안정책에 따라 USB 디버깅을 사용할 수 없습니다."
+
+msgid "IDS_DPM_HEADER_DEBUGGING_POLICY"
+msgstr "디버깅 정책"
+
+msgid "IDS_DPM_BODY_PREVENT_CLIPBOARD"
+msgstr "보안정책에 따라 클립보드를 사용할 수 없습니다."
+
+msgid "IDS_DPM_HEADER_CLIPBOARD_POLICY"
+msgstr "클립보드 정책"
+
 msgid "IDS_DPM_BODY_PREVENT_BLUETOOTH"
 msgstr "보안정책에 따라 블루투스를 사용할 수 없습니다."
 
