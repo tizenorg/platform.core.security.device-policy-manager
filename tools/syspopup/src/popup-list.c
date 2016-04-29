@@ -42,6 +42,8 @@ popup_info_s popup_list[] = {
 	{"location",                "IDS_DPM_HEADER_LOCATION_POLICY",  "IDS_DPM_BODY_PREVENT_LOCATION"},
 	{"settings-changes",        "IDS_DPM_HEADER_SETTING_POLICY",   "IDS_DPM_BODY_PREVENT_SETTINGS_CHANGES"},
 	{"bluetooth",               "IDS_DPM_HEADER_BLUETOOTH_POLICY", "IDS_DPM_BODY_PREVENT_BLUETOOTH"},
+	{"clipboard",               "IDS_DPM_HEADER_CLIPBOARD_POLICY", "IDS_DPM_BODY_PREVENT_CLIPBOARD"},
+	{"usb-debugging",           "IDS_DPM_HEADER_DEBUGGING_POLICY", "IDS_DPM_BODY_PREVENT_USB_DEBUGGING"},
 
 	/* Storage Policy */
 	{"external-storage",   "IDS_DPM_HEADER_STORAGE_POLICY", "IDS_DPM_BODY_PREVENT_EXTERNAL_STORAGE"},
