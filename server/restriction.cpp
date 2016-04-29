@@ -14,19 +14,16 @@
  *  limitations under the License
  */
 
-#include "restriction.hxx"
-#include "audit/logger.h"
-
 #include <vconf.h>
 
-namespace DevicePolicyManager
-{
+#include "restriction.hxx"
+#include "policy-helper.h"
+#include "audit/logger.h"
 
-unsigned int cameraState;
-unsigned int microphoneState;
+namespace DevicePolicyManager {
 
-RestrictionPolicy::RestrictionPolicy(PolicyControlContext& ctxt)
-	: context(ctxt)
+RestrictionPolicy::RestrictionPolicy(PolicyControlContext& ctxt) :
+	context(ctxt)
 {
 	context.registerParametricMethod(this, (int)(RestrictionPolicy::setCameraState)(int));
 	context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getCameraState));
@@ -48,9 +45,14 @@ RestrictionPolicy::RestrictionPolicy(PolicyControlContext& ctxt)
 	context.registerNonparametricMethod(this, (bool)(RestrictionPolicy::getWifiHotspotState));
 
 	context.createNotification("camera");
-
-	cameraState = 1;
-	microphoneState = 1;
+	context.createNotification("clipboard");
+	context.createNotification("external-storage");
+	context.createNotification("microphone");
+	context.createNotification("location");
+	context.createNotification("settings-changes");
+	context.createNotification("usb-debugging");
+	context.createNotification("wifi");
+	context.createNotification("wifi-hotspot");
 }
 
 RestrictionPolicy::~RestrictionPolicy()
@@ -59,126 +61,102 @@ RestrictionPolicy::~RestrictionPolicy()
 
 int RestrictionPolicy::setCameraState(int enable)
 {
-    cameraState = enable;
-    if(cameraState == 0)
-        context.notify("camera","disallowed");
-    else
-        context.notify("camera","allowed");
-    return 0;
+	SetPolicyAllowed(context, "camera", enable);
+	return 0;
 }
 
 int RestrictionPolicy::getCameraState()
 {
-	return cameraState;
+	return IsPolicyAllowed(context, "camera");
 }
 
 int RestrictionPolicy::setMicrophoneState(int enable)
 {
-    microphoneState = enable;
-    return 0;
+	SetPolicyAllowed(context, "microphone", enable);
+	return 0;
 }
 
 int RestrictionPolicy::getMicrophoneState()
 {
-	return microphoneState;
+	return IsPolicyAllowed(context, "microphone");
 }
 
 int RestrictionPolicy::setClipboardState(int enable)
 {
+	SetPolicyAllowed(context, "clipboard", enable);
 	return 0;
 }
 
 int RestrictionPolicy::getClipboardState()
 {
-	return true;
+	return IsPolicyAllowed(context, "clipboard");
 }
 
 int RestrictionPolicy::setSettingsChangesState(int enable)
 {
+	SetPolicyAllowed(context, "settings-changes", enable);
 	return 0;
 }
 
 int RestrictionPolicy::getSettingsChangesState()
 {
-	return true;
+	return IsPolicyAllowed(context, "settings-changes");
 }
 
 int RestrictionPolicy::setUsbDebuggingState(int enable)
 {
-    INFO("Start Restriction::setUsbDebuggingRestriction");
-
-    // if enable is true, restrication will be working (0).
-    if (enable == true) {
-        if (::vconf_set_int(VCONFKEY_SETAPPL_USB_DEBUG_MODE_BOOL, 0) != 0) {
-            ERROR("Failed to set usb debugging mode status");
-            return -1;
-        }
-    } else {
-        if (::vconf_set_int(VCONFKEY_SETAPPL_USB_DEBUG_MODE_BOOL, 1) != 0) {
-            ERROR("Failed to set usb debugging mode status");
-            return -1;
-        }
-    }
-
+	SetPolicyAllowed(context, "usb-debugging", enable);
 	return 0;
 }
 
 int RestrictionPolicy::getUsbDebuggingState()
 {
-	int status;
-	INFO("Start Restriction::isUsbDebuggingRestricted");
-
-	// 0 is restrication true, 1 is restrication false
-    if (::vconf_get_int(VCONFKEY_SETAPPL_USB_DEBUG_MODE_BOOL, &status) != 0) {
-        ERROR("Failed to get usb debugging mode status");
-        return -1;
-    }
-
-    // How to return for error??
-    if (status == 1) {
-    	return false;
-    }
-    return true;
+	return IsPolicyAllowed(context, "usb-debugging");
 }
 
 int RestrictionPolicy::setExternalStorageState(int enable)
 {
+	SetPolicyAllowed(context, "external-storage", enable);
 	return 0;
 }
 
 int RestrictionPolicy::getExternalStorageState()
 {
-	return 0;
+	return IsPolicyAllowed(context, "external-storage");
 }
 
 int RestrictionPolicy::setLocationState(int enable)
 {
+	SetPolicyAllowed(context, "location", enable);
 	return 0;
 }
 
 int RestrictionPolicy::getLocationState()
 {
-	return 0;
+	return IsPolicyAllowed(context, "location");
 }
 
 int RestrictionPolicy::setWifiState(bool enable)
 {
+	SetPolicyAllowed(context, "wifi", enable);
 	return 0;
 }
 
 bool RestrictionPolicy::getWifiState()
 {
+	return IsPolicyAllowed(context, "wifi");
 	return 0;
 }
 
 int RestrictionPolicy::setWifiHotspotState(bool enable)
 {
+	SetPolicyAllowed(context, "wifi-hotspot", enable);
 	return 0;
 }
 
 bool RestrictionPolicy::getWifiHotspotState()
 {
-	return 0;
+	return IsPolicyAllowed(context, "wifi-hotspot");
 }
 
 RestrictionPolicy restrictionPolicy(Server::instance());

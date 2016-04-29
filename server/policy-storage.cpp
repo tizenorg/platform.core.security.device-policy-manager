@@ -37,7 +37,6 @@ PolicyStorage::PolicyStorage(const std::string& path, bool create) :
     data(nullptr)
 {
     std::string& source = location;
-
     if (create) {
         struct stat st;
         if ((stat(location.c_str(), &st) == -1)) {
@@ -49,9 +48,30 @@ PolicyStorage::PolicyStorage(const std::string& path, bool create) :
         }
     }
 
+
     data = std::unique_ptr<xml::Document>(xml::Parser::parseFile(source));
 }
 
 PolicyStorage::~PolicyStorage()
 {
+}
+
+PolicyGroupList PolicyStorage::loadAllPolicies()
+{
+    return data->evaluate("/manifest/policy-group/policy");
+}
+
+PolicyData PolicyStorage::getPolicyData(const std::string& name)
+{
+    PolicyGroupList policyList = data->evaluate("/manifest/policy-group/policy[@name='" + name + "']");
+    if (policyList.empty()) {
+        throw runtime::Exception("Invalid parameter");
+    }
+
+    return std::move(policyList[0]);
+}
+
+void PolicyStorage::flush()
+{
+    data->write(location, "UTF-8", true);
 }

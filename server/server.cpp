@@ -24,6 +24,8 @@ const std::string POLICY_MANAGER_ADDRESS = "/tmp/.device-policy-manager";
 
 Server::Server()
 {
+    policyStorage.reset(new PolicyStorage("/opt/etc/dpm/policy/PolicyManifest.xml"));
+
     service.reset(new rmi::Service(POLICY_MANAGER_ADDRESS));
 
     service->registerParametricMethod(this, (FileDescriptor)(Server::registerNotificationSubscriber)(std::string));
@@ -53,6 +55,27 @@ FileDescriptor Server::registerNotificationSubscriber(const std::string& name)
 int Server::unregisterNotificationSubscriber(const std::string& name, int id)
 {
     return service->unsubscribeNotification(name, id);
+}
+
+void Server::updatePolicy(const std::string& name, const std::string& value, const std::string& event, const std::string& info)
+{
+    PolicyData data = policyStorage->getPolicyData(name);
+    std::string old = data.getContent();
+    data.setContent(value);
+    if (old != value) {
+        service->notify(event, info);
+        policyStorage->flush();
+    }
+}
+
+void Server::updatePolicy(const std::string& name, const std::string& value)
+{
+    updatePolicy(name, value, name, value);
+}
+
+std::string Server::getPolicy(const std::string& name) const
+{
+    return policyStorage->getPolicyData(name).getContent();
 }
 
 Server& Server::instance()
