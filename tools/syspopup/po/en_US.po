@@ -1,3 +1,15 @@
+msgid "IDS_DPM_BODY_PREVENT_USB_DEBUGGING"
+msgstr "Security policy prevents use of usb debugging."
+
+msgid "IDS_DPM_HEADER_DEBUGGING_POLICY"
+msgstr "Debugging Policy"
+
+msgid "IDS_DPM_BODY_PREVENT_CLIPBOARD"
+msgstr "Security policy prevents use of clipboard."
+
+msgid "IDS_DPM_HEADER_CLIPBOARD_POLICY"
+msgstr "Clipboard Policy"
+
 msgid "IDS_DPM_BODY_PREVENT_BLUETOOTH"
 msgstr "Security policy prevents use of bluetooth."
 
