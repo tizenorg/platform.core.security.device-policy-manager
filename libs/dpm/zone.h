@@ -199,7 +199,7 @@ DPM_API int dpm_zone_destroy_iterator(dpm_zone_iterator_h iter);
  * @param[in]   user_data The user data passed from dpm_zone_foreach_name
  * @see         dpm_zone_foreach_name()
  */
-typedef void(*dpm_zone_foreach_cb)(const char* name, const char *user_data);
+typedef void(*dpm_zone_foreach_cb)(const char* name, void *user_data);
 
 /**
  * @brief       Retrieves all the name of created zones
