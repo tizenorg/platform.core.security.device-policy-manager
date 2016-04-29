@@ -20,6 +20,8 @@
 
 #include "storage.hxx"
 
+#include "policy-helper.h"
+
 #include "exception.h"
 #include "process.h"
 #include "filesystem.h"
@@ -44,6 +46,8 @@ StoragePolicy::StoragePolicy(PolicyControlContext& ctx) :
 	context.registerParametricMethod(this, (int)(StoragePolicy::setExternalStorageState)(int));
 	context.registerNonparametricMethod(this, (int)(StoragePolicy::getExternalStorageState));
 	context.registerParametricMethod(this, (int)(StoragePolicy::wipeData)(int));
+
+    context.createNotification("external-storage");
 }
 
 StoragePolicy::~StoragePolicy()
@@ -52,14 +56,13 @@ StoragePolicy::~StoragePolicy()
 
 int StoragePolicy::setExternalStorageState(int enable)
 {
-	INFO("Start StoragePolicy::setUsbMassStorageState");
+    SetPolicyAllowed(context, "external-storage", enable);
 	return 0;
 }
 
 int StoragePolicy::getExternalStorageState()
 {
-	INFO("Start StoragePolicy::getUsbMassStorageState");
-	return true;
+	return IsPolicyAllowed(context, "external-storage");
 }
 
 int StoragePolicy::wipeData(int id)
