@@ -76,17 +76,17 @@ DPM_API dpm_wifi_policy_h dpm_context_acquire_wifi_policy(dpm_context_h handle, 
 DPM_API int dpm_context_release_wifi_policy(dpm_context_h context, dpm_wifi_policy_h handle);
 
 /**
- * @brief       Allows or disallows user to modify some Wi-Fi settings of network settings.
+ * @brief       Allows or disallows user to modify some Wi-Fi profiles of network settings.
  * @details     An administrator can use this API to allow or disallow users to modify selected
- *              Wi-Fi settings like static ip configuration, proxy settings, security type
+ *              Wi-Fi profiles like static ip configuration, proxy settings, security type
  *              and others. When this policy is in effect the user is only allowed to
  *              modify only the username, password, anonymous identity, and wep key.
- *              In addition, the user cannot remove the networ. When false, the user can
- *              modify all Wi-fi network settings normally and also remove it.
+ *              In addition, the user cannot remove the network. When false, the user can
+ *              modify all Wi-fi network profiles normally and also remove it.
  *              Also the apps that uses wifi_ap_set_* APIs follow this restriction.
  * @since_tizen 3.0
  * @param[in]   handle Wi-Fi policy handle
- * @param[in]   enable TRUE to enable wifi setting changes, else FALSE
+ * @param[in]   enable TRUE to enable wifi profile changes, else FALSE
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_TIMEOUT Time out
@@ -96,19 +96,19 @@ DPM_API int dpm_context_release_wifi_policy(dpm_context_h context, dpm_wifi_poli
  * @pre         handle must be created by dpm_context_acquire_wifi_policy()
  * @see         dpm_context_acquire_wifi_policy()
  * @see         dpm_context_release_wifi_policy()
- * @see         dpm_wifi_is_settings_changes_allowed()
+ * @see         dpm_wifi_is_profile_change_restricted()
  */
-DPM_API int dpm_wifi_allow_settings_change(dpm_wifi_policy_h handle, int enable);
+DPM_API int dpm_wifi_set_profile_change_restriction(dpm_wifi_policy_h handle, int enable);
 
 /**
- * @brief       Checks if the user is allowed to modify certain Wi-Fi network settings.
+ * @brief       Checks if the user is allowed to modify certain Wi-Fi profiles.
  * @details     An administrator can use this API to check whether or not the user is
- *              allowed to modify Wi-Fi settings. The user is restricted in modifying
- *              Wi-Fi settings if at least one administrator has set the value to TRUE.
+ *              allowed to modify Wi-Fi profiles. The user is restricted in modifying
+ *              Wi-Fi profiles if at least one administrator has set the value to TRUE.
  * @since_tizen 3.0
  * @param[in]   handle Wi-Fi policy handle
  * @param[out]  enable TRUE if one or more administrators enabled restriction
- *              FALSE if user can change all Wi-Fi network settings
+ *              FALSE if user can change all Wi-Fi profiles
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_TIMEOUT Time out
@@ -116,9 +116,9 @@ DPM_API int dpm_wifi_allow_settings_change(dpm_wifi_policy_h handle, int enable)
  * @pre         handle must be created by dpm_context_acquire_wifi_policy()
  * @see         dpm_context_acquire_wifi_policy()
  * @see         dpm_context_release_wifi_policy()
- * @see         dpm_wifi_allow_settings_change()
+ * @see         dpm_wifi_set_profile_change_restriction()
  */
-DPM_API int dpm_wifi_is_settings_changes_allowed(dpm_wifi_policy_h handle, int *enable);
+DPM_API int dpm_wifi_is_profile_change_restricted(dpm_wifi_policy_h handle, int *enable);
 
 /**
  * @brief       Restricts network accessed based on the Wi-Fi network service set

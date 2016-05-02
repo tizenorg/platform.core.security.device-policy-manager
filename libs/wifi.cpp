@@ -28,19 +28,19 @@ WifiPolicy::~WifiPolicy()
 {
 }
 
-int WifiPolicy::allowSettingsChange(bool enable)
+int WifiPolicy::setProfileChangeRestriction(bool enable)
 {
     try {
-        return context->methodCall<int>("WifiPolicy::allowSettingsChange", enable);
+        return context->methodCall<int>("WifiPolicy::setProfileChangeRestriction", enable);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-bool WifiPolicy::isSettingsChangeAllowed(void)
+bool WifiPolicy::isProfileChangeRestricted(void)
 {
     try {
-        return context->methodCall<bool>("WifiPolicy::isSettingsChangeAllowed");
+        return context->methodCall<bool>("WifiPolicy::isProfileChangeRestricted");
     } catch (runtime::Exception &e) {
         return -1;
     }
