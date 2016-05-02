@@ -54,15 +54,15 @@ static void connectionStateChanged(wifi_connection_state_e state,
 WifiPolicy::WifiPolicy(PolicyControlContext& ctx) :
     context(ctx)
 {
-    context.registerParametricMethod(this, (int)(WifiPolicy::allowSettingsChange)(bool));
-    context.registerNonparametricMethod(this, (bool)(WifiPolicy::isSettingsChangeAllowed));
+    context.registerParametricMethod(this, (int)(WifiPolicy::setProfileChangeRestriction)(bool));
+    context.registerNonparametricMethod(this, (bool)(WifiPolicy::isProfileChangeRestricted));
 
     context.registerParametricMethod(this, (int)(WifiPolicy::setNetworkAccessRestriction)(bool));
     context.registerNonparametricMethod(this, (bool)(WifiPolicy::isNetworkAccessRestricted));
     context.registerParametricMethod(this, (int)(WifiPolicy::addSsidToBlocklist)(std::string));
     context.registerParametricMethod(this, (int)(WifiPolicy::removeSsidFromBlocklist)(std::string));
 
-    context.createNotification("wifi-setting-changes");
+    context.createNotification("wifi-profile-change");
     context.createNotification("wifi-ssid-restriction");
 }
 
@@ -70,15 +70,15 @@ WifiPolicy::~WifiPolicy()
 {
 }
 
-int WifiPolicy::allowSettingsChange(bool enable)
+int WifiPolicy::setProfileChangeRestriction(bool enable)
 {
-    SetPolicyAllowed(context, "wifi-setting-changes", enable);
+    SetPolicyAllowed(context, "wifi-profile-change", enable);
     return 0;
 }
 
-bool WifiPolicy::isSettingsChangeAllowed(void)
+bool WifiPolicy::isProfileChangeRestricted(void)
 {
-    return IsPolicyAllowed(context, "wifi-setting-changes");
+    return IsPolicyAllowed(context, "wifi-profile-change");
 }
 
 int WifiPolicy::setNetworkAccessRestriction(bool enable)
