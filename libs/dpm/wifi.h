@@ -96,9 +96,9 @@ DPM_API int dpm_context_release_wifi_policy(dpm_context_h context, dpm_wifi_poli
  * @pre         handle must be created by dpm_context_acquire_wifi_policy()
  * @see         dpm_context_acquire_wifi_policy()
  * @see         dpm_context_release_wifi_policy()
- * @see         dpm_wifi_is_settings_changes_allowed()
+ * @see         dpm_wifi_is_setting_change_restricted()
  */
-DPM_API int dpm_wifi_allow_settings_change(dpm_wifi_policy_h handle, int enable);
+DPM_API int dpm_wifi_set_setting_change_restriction(dpm_wifi_policy_h handle, int enable);
 
 /**
  * @brief       Checks if the user is allowed to modify certain Wi-Fi network settings.
@@ -116,9 +116,9 @@ DPM_API int dpm_wifi_allow_settings_change(dpm_wifi_policy_h handle, int enable)
  * @pre         handle must be created by dpm_context_acquire_wifi_policy()
  * @see         dpm_context_acquire_wifi_policy()
  * @see         dpm_context_release_wifi_policy()
- * @see         dpm_wifi_allow_settings_change()
+ * @see         dpm_wifi_set_setting_change_restriction()
  */
-DPM_API int dpm_wifi_is_settings_changes_allowed(dpm_wifi_policy_h handle, int *enable);
+DPM_API int dpm_wifi_is_setting_change_restricted(dpm_wifi_policy_h handle, int *enable);
 
 /**
  * @brief       Restricts network accessed based on the Wi-Fi network service set

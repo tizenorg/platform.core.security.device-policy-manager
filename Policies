@@ -8,9 +8,9 @@ their operations in some circumstance.
 |         Policy Name      |     Policy state     |                Query API                        |
 +--------------------------+----------------------+-------------------------------------------------+
 | wifi                     | allowed / disallowed | dpm_restriction_get_wifi_state                  |
-| wifi-state-change        | allowed / disallowed | dpm_restirction_is_wifi_state_change_allowed    |
 | wifi-hotspot             | allowed / disallowed | dpm_restriction_get_wifi_hotspot                |
-| wifi-setting-changes     | allowed / disallowed | dpm_wifi_get_setting_changes_state              |
+| wifi-setting-change      | allowed / disallowed | dpm_wifi_is_setting_change_restricted           |
+| wifi-ssid-restriction    | allowed / disallowed | dpm_wifi_is_network_access_restricted           |
 | bluetooth                | allowed / disallowed | dpm_restriction_get_bluetooth_state             |
 | bluetooth-tethering      | allowed / disallowed | dpm_restriction_get_bluetooth_tethering_state   |
 | usb                      | allowed / disallowed | dpm_restriction_get_usb_state                   |

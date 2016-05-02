@@ -38,21 +38,21 @@ int dpm_context_release_wifi_policy(dpm_context_h context, dpm_wifi_policy_h han
     return DPM_ERROR_NONE;
 }
 
-int dpm_wifi_allow_settings_change(dpm_wifi_policy_h handle, int enable)
+int dpm_wifi_set_setting_change_restriction(dpm_wifi_policy_h handle, int enable)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
     WifiPolicy& wifi = GetPolicyInterface<WifiPolicy>(handle);
-    return wifi.allowSettingsChange(enable);
+    return wifi.setSettingChangeRestriction(enable);
 }
 
-int dpm_wifi_is_settings_changes_allowed(dpm_wifi_policy_h handle, int *enable)
+int dpm_wifi_is_setting_change_restricted(dpm_wifi_policy_h handle, int *enable)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(enable, DPM_ERROR_INVALID_PARAMETER);
 
     WifiPolicy& wifi = GetPolicyInterface<WifiPolicy>(handle);
-    *enable = wifi.isSettingsChangeAllowed();
+    *enable = wifi.isSettingChangeRestricted();
 
     return DPM_ERROR_NONE;
 }

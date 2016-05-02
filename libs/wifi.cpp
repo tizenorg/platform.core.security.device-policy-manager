@@ -28,19 +28,19 @@ WifiPolicy::~WifiPolicy()
 {
 }
 
-int WifiPolicy::allowSettingsChange(bool enable)
+int WifiPolicy::setSettingChangeRestriction(bool enable)
 {
     try {
-        return context->methodCall<int>("WifiPolicy::allowSettingsChange", enable);
+        return context->methodCall<int>("WifiPolicy::setSettingChangeRestriction", enable);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-bool WifiPolicy::isSettingsChangeAllowed(void)
+bool WifiPolicy::isSettingChangeRestricted(void)
 {
     try {
-        return context->methodCall<bool>("WifiPolicy::isSettingsChangeAllowed");
+        return context->methodCall<bool>("WifiPolicy::isSettingChangeRestricted");
     } catch (runtime::Exception &e) {
         return -1;
     }

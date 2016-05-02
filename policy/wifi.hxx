@@ -31,14 +31,8 @@ public:
     WifiPolicy(PolicyControlContext& ctxt);
     ~WifiPolicy(void);
 
-    int allowStateChange(bool restrict);
-    bool isStateChangeAllowed(void);
-
-    int allowSettingsChange(bool restrict);
-    bool isSettingsChangeAllowed(void);
-
-    int allowHotspotStateChange(bool restrict);
-    bool isHotspotStateChangeAllowed(void);
+    int setSettingChangeRestriction(bool restrict);
+    bool isSettingChangeRestricted(void);
 
     int setNetworkAccessRestriction(bool restrict);
     bool isNetworkAccessRestricted(void);
