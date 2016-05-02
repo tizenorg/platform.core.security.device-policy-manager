@@ -24,6 +24,8 @@
 #include "auth/user.h"
 #include "audit/logger.h"
 
+#define SIMPLE_PASSWORD_LENGTH 7
+
 namespace DevicePolicyManager {
 
 namespace {
@@ -47,6 +49,9 @@ int transformValueFromIntToQualityType(const int quality, PasswordPolicy::Passwo
     switch (quality) {
     case PasswordPolicy::DPM_PASSWORD_QUALITY_UNSPECIFIED:
         changed_quality = PasswordPolicy::DPM_PASSWORD_QUALITY_UNSPECIFIED;
+        break;
+    case PasswordPolicy::DPM_PASSWORD_QUALITY_SIMPLE_PASSWORD:
+        changed_quality = PasswordPolicy::DPM_PASSWORD_QUALITY_SIMPLE_PASSWORD;
         break;
     case PasswordPolicy::DPM_PASSWORD_QUALITY_SOMETHING:
         changed_quality = PasswordPolicy::DPM_PASSWORD_QUALITY_SOMETHING;
@@ -73,6 +78,9 @@ int transformQualityFromDPMToAuth(const int dpm_quality, password_quality_type &
 {
     switch (dpm_quality) {
     case PasswordPolicy::DPM_PASSWORD_QUALITY_UNSPECIFIED:
+        auth_quality = AUTH_PWD_QUALITY_UNSPECIFIED;
+        break;
+    case PasswordPolicy::DPM_PASSWORD_QUALITY_SIMPLE_PASSWORD:
         auth_quality = AUTH_PWD_QUALITY_UNSPECIFIED;
         break;
     case PasswordPolicy::DPM_PASSWORD_QUALITY_SOMETHING:
@@ -164,6 +172,13 @@ int PasswordPolicy::setPasswordPolicyQuality(const int quality)
         return -1;
     }
 
+    if(qualityType == PasswordPolicy::DPM_PASSWORD_QUALITY_SIMPLE_PASSWORD) {
+        if (auth_passwd_set_min_length(p_policy, SIMPLE_PASSWORD_LENGTH) != AUTH_PASSWD_API_SUCCESS) {
+            auth_passwd_free_policy(p_policy);
+            return -1;
+        }
+    }
+
     if (auth_passwd_set_policy(p_policy) != AUTH_PASSWD_API_SUCCESS) {
         auth_passwd_free_policy(p_policy);
         return -1;
@@ -172,6 +187,7 @@ int PasswordPolicy::setPasswordPolicyQuality(const int quality)
     auth_passwd_free_policy(p_policy);
 
     SetPasswordPolicy(__context, "password-quality", quality);
+    SetPasswordPolicy(__context, "password-minimum-length", SIMPLE_PASSWORD_LENGTH);
 
     return ret;
 }
