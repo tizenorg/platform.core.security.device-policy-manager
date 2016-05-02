@@ -16,8 +16,8 @@
 #include <arpa/inet.h>
 
 #include <cstdlib>
-#include <iostream>
 #include <functional>
+#include <unordered_set>
 
 #include <vconf.h>
 #include <vconf-keys.h>
@@ -32,6 +32,24 @@
 #include "audit/logger.h"
 
 namespace DevicePolicyManager {
+
+static std::unordered_set<std::string> blockSsidList;
+static void connectionStateChanged(wifi_connection_state_e state,
+                                   wifi_ap_h ap, void *user_data)
+{
+    char *ssid;
+
+    if (state == WIFI_CONNECTION_STATE_FAILURE ||
+        state == WIFI_CONNECTION_STATE_DISCONNECTED) {
+        return;
+    }
+
+    ::wifi_ap_get_essid(ap, &ssid);
+    if (blockSsidList.find(ssid) != blockSsidList.end()) {
+        ::wifi_forget_ap(ap);
+    }
+    ::free(ssid);
+}
 
 WifiPolicy::WifiPolicy(PolicyControlContext& ctx) :
     context(ctx)
@@ -66,6 +84,13 @@ bool WifiPolicy::isSettingsChangeAllowed(void)
 int WifiPolicy::setNetworkAccessRestriction(bool enable)
 {
     SetPolicyEnabled(context, "wifi-ssid-restriction", enable);
+
+    if (enable) {
+        ::wifi_set_connection_state_changed_cb(connectionStateChanged, NULL);
+    } else {
+         ::wifi_unset_connection_state_changed_cb();
+    }
+
     return 0;
 }
 
@@ -76,12 +101,24 @@ bool WifiPolicy::isNetworkAccessRestricted(void)
 
 int WifiPolicy::addSsidToBlocklist(const std::string& ssid)
 {
-    return -1;
+    try {
+        blockSsidList.insert(ssid);
+    } catch (runtime::Exception& e) {
+        ERROR("Failed to allocate memory for wifi blocklist");
+        return -1;
+    }
+    return 0;
 }
 
 int WifiPolicy::removeSsidFromBlocklist(const std::string& ssid)
 {
-    return -1;
+    std::unordered_set<std::string>::iterator it = blockSsidList.find(ssid);
+
+    if (it == blockSsidList.end())
+        return -1;
+
+    blockSsidList.erase(it);
+    return 0;
 }
 
 
