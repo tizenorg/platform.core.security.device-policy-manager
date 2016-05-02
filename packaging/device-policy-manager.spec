@@ -217,11 +217,11 @@ Requires: systemd
 PAM Plugin for zone policy in device policy manager and CLI tool
 
 %post -n dpm-pam-zone
-mv /etc/pam.d/systemd-user /etc/pam.d/systemd-user.old
-cp /etc/pam.d/systemd-user-zone /etc/pam.d/systemd-user
+##mv /etc/pam.d/systemd-user /etc/pam.d/systemd-user.old
+##cp /etc/pam.d/systemd-user-zone /etc/pam.d/systemd-user
 
 %postun -n dpm-pam-zone
-mv /etc/pam.d/systemd-user.old /etc/pam.d/systemd-user
+##mv /etc/pam.d/systemd-user.old /etc/pam.d/systemd-user
 
 %files -n dpm-pam-zone
 %defattr(600,root,root,700)
