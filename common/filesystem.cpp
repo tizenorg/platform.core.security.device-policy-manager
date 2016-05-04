@@ -28,6 +28,7 @@
 #include "filesystem.h"
 #include "error.h"
 #include "exception.h"
+#include "cryptofs.h"
 
 namespace runtime {
 
@@ -487,6 +488,42 @@ void Mount::mountEntry(const std::string& src, const std::string& dest, const st
             throw runtime::Exception("failed to mount " + src + " on " + dest);
         }
     }
+}
+
+void Mount::mountCryptoEntry(const std::string& src, const std::string& keyName)
+{
+    int rc;
+    char* sig;
+    Cryptofs cryptofs;
+
+    if (cryptofs.keymngt.keySearch(keyName.c_str()) != 1) {
+        try {
+            cryptofs.keymngt.keyNew(keyName.c_str());
+        } catch (runtime::Exception &e) {
+            throw e;
+        }
+    }
+
+    try {
+        cryptofs.keymngt.keyPush(keyName.c_str());
+        sig = cryptofs.keymngt.keyGetSig(keyName.c_str());
+    } catch (runtime::Exception &e) {
+        throw e;
+    }
+
+    rc = cryptofs.mountEcryptfs(src, sig);
+    if (rc != 0)
+        throw runtime::Exception("Failed to ecryptfs mount");
+}
+
+void Mount::umountCryptoEntry(const std::string& src)
+{
+    int ret;
+    Cryptofs cryptofs;
+
+    ret = cryptofs.umountEcryptfs(src.c_str());
+    if (ret != 0)
+        throw runtime::Exception("Failed to unmount error is " + std::to_string(ret));
 }
 
 } // namespace runtime

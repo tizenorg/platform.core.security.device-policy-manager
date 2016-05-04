@@ -26,6 +26,7 @@ FILE(GLOB DPM_COMMON_SRCS				${DPM_COMMON}/filesystem.cpp
 							${DPM_COMMON}/auth/user.cpp
 							${DPM_COMMON}/auth/group.cpp
 							${DPM_COMMON}/auth/shadow.cpp
+							${DPM_COMMON}/cryptofs.cpp
 )
 
 
