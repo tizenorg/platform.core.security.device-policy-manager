@@ -31,6 +31,10 @@
 #include "filesystem.h"
 #include "error.h"
 #include "exception.h"
+#include "ecryptfs.h"
+#include "key/ring.h"
+#include "key/manager.h"
+#include "key/generator.h"
 
 namespace runtime {
 
@@ -586,6 +590,83 @@ void Mount::mountEntry(const std::string& src, const std::string& dest, const st
             throw runtime::Exception("failed to mount " + src + " on " + dest);
         }
     }
+}
+
+void Mount::mountEcryptfsEntry(const std::string& src, const std::string& keyName)
+{
+    std::string key;
+    int rc;
+    ecryptfs_payload* authTok = NULL;
+    char ecryptfsOpts[1024];
+
+    if (!key::Manager::isKeyExist(keyName)) {
+        std::string pass, salt, wrappedKey;
+
+        pass = key::Generator::generateRandomKey(ECRYPTFS_MAX_KEY_SIZE);
+        salt = key::Generator::generateRandomKey(ECRYPTFS_MAX_SALT_SIZE);
+        wrappedKey = key::Generator::wrapKey(pass, salt, ECRYPTFS_MAX_KEY_SIZE);
+        key::Manager::addKey(keyName, wrappedKey);
+    }
+
+    key = key::Manager::getKey(keyName);
+
+    rc = key::Ring::link(KEY_SPEC_USER_KEYRING, KEY_SPEC_SESSION_KEYRING);
+    if (rc != 0) {
+        throw runtime::Exception("failed to validate keyring " + std::to_string(errno));
+    }
+
+    try {
+        key::Generator::generateToken((char*)key.c_str(), &authTok);
+    } catch (runtime::Exception& e) {
+        ::free(authTok);
+        throw e;
+    }
+
+    rc = key::Ring::search(KEY_SPEC_USER_KEYRING, "user", (const char*)authTok->token.password.signature, 0);
+    if (rc == -1 && errno != ENOKEY) {
+        throw runtime::Exception("keyctl search failed");
+    }
+    if (rc == -1) {
+        rc = key::Ring::add("user", (const char*)authTok->token.password.signature, (void*)authTok, sizeof(ecryptfs_payload), KEY_SPEC_USER_KEYRING);
+        if (rc == -1) {
+            throw runtime::Exception("failed to add key to keyring");
+        }
+    }
+
+    ::snprintf(ecryptfsOpts, 1024, "ecryptfs_passthrough,"
+                "ecryptfs_cipher=aes,"
+                "ecryptfs_key_bytes=%d,"
+                "ecryptfs_sig=%s,"
+                "smackfsroot=*,smackfsdef=*",
+                ECRYPTFS_MAX_KEY_SIZE, (const char*)authTok->token.password.signature);
+
+    rc = ::mount(src.c_str(), src.c_str(), "ecryptfs", MS_NODEV, ecryptfsOpts);
+    if (rc != 0)
+        throw runtime::Exception("Failed to ecryptfs mount " + std::string(ecryptfsOpts) + " error num is " + std::to_string(errno));
+}
+
+void Mount::umountEntry(const std::string& dest)
+{
+    int ret;
+
+    ret = umount(dest.c_str());
+    if (ret != 0) {
+        ret = umount2(dest.c_str(), MNT_EXPIRE);
+        if (ret != 0 || errno == EAGAIN) {
+            ret = umount2(dest.c_str(), MNT_EXPIRE);
+            ret = (ret != 0) ? -errno : 0;
+        } else {
+            ret = 0;
+        }
+    }
+
+    if (ret != 0) {
+        ::sync();
+        ret = umount2(dest.c_str(), MNT_DETACH);
+    }
+
+    if (ret != 0)
+        throw runtime::Exception("Failed to unmount");
 }
 
 } // namespace runtime
