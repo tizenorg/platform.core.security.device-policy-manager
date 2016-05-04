@@ -23,6 +23,8 @@ SET (COMMON_SOURCES     ${DPM_COMMON}/error.cpp
                         ${DPM_COMMON}/mainloop.cpp
                         ${DPM_COMMON}/filesystem.cpp
                         ${DPM_COMMON}/thread-pool.cpp
+                        ${DPM_COMMON}/cryptofs.cpp
+                        ${DPM_COMMON}/keymngt.cpp
                         ${DPM_COMMON}/rmi/socket.cpp
                         ${DPM_COMMON}/rmi/client.cpp
                         ${DPM_COMMON}/rmi/message.cpp
@@ -52,6 +54,9 @@ ADD_LIBRARY(${PROJECT_NAME} STATIC ${COMMON_SOURCES})
 
 PKG_CHECK_MODULES(COMMON_DEPS REQUIRED  libxml-2.0
                                         sqlite3
+                                        libsmack
+                                        openssl
+                                        key-manager
                                         libsmack
 )
 
