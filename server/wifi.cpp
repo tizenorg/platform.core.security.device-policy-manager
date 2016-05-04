@@ -19,6 +19,7 @@
 #include <functional>
 #include <unordered_set>
 
+#include <glib.h>
 #include <vconf.h>
 #include <vconf-keys.h>
 #include <wifi.h>
@@ -34,21 +35,40 @@
 namespace DevicePolicyManager {
 
 static std::unordered_set<std::string> blockSsidList;
+static inline void applyBlocklist(wifi_ap_h ap)
+{
+    char *ssid;
+    ::wifi_ap_get_essid(ap, &ssid);
+    if (blockSsidList.find(ssid) != blockSsidList.end()) {
+        ::wifi_forget_ap(ap);
+    }
+
+    ::free(ssid);
+}
+static std::atomic<bool> blockEnabled;
 static void connectionStateChanged(wifi_connection_state_e state,
                                    wifi_ap_h ap, void *user_data)
 {
-    char *ssid;
+    WifiPolicy* policy = reinterpret_cast<WifiPolicy*>(user_data);
+
+    if (policy->isNetworkAccessRestricted())
+        return;
 
     if (state == WIFI_CONNECTION_STATE_FAILURE ||
         state == WIFI_CONNECTION_STATE_DISCONNECTED) {
         return;
     }
+    applyBlocklist(ap);
+}
 
-    ::wifi_ap_get_essid(ap, &ssid);
-    if (blockSsidList.find(ssid) != blockSsidList.end()) {
-        ::wifi_forget_ap(ap);
+static inline void applyBlocklistToConnectedAP() {
+    wifi_ap_h ap;
+
+    ::wifi_initialize();
+    if (::wifi_get_connected_ap(&ap) == WIFI_ERROR_NONE) {
+        applyBlocklist(ap);
+        ::wifi_ap_destroy(ap);
     }
-    ::free(ssid);
 }
 
 WifiPolicy::WifiPolicy(PolicyControlContext& ctx) :
@@ -64,10 +84,14 @@ WifiPolicy::WifiPolicy(PolicyControlContext& ctx) :
 
     context.createNotification("wifi-profile-change");
     context.createNotification("wifi-ssid-restriction");
+
+    ::wifi_initialize();
+    ::wifi_set_connection_state_changed_cb(connectionStateChanged, this);
 }
 
 WifiPolicy::~WifiPolicy()
 {
+    ::wifi_unset_connection_state_changed_cb();
 }
 
 int WifiPolicy::setProfileChangeRestriction(bool enable)
@@ -85,12 +109,6 @@ int WifiPolicy::setNetworkAccessRestriction(bool enable)
 {
     SetPolicyEnabled(context, "wifi-ssid-restriction", enable);
 
-    if (enable) {
-        ::wifi_set_connection_state_changed_cb(connectionStateChanged, NULL);
-    } else {
-         ::wifi_unset_connection_state_changed_cb();
-    }
-
     return 0;
 }
 
@@ -103,10 +121,14 @@ int WifiPolicy::addSsidToBlocklist(const std::string& ssid)
 {
     try {
         blockSsidList.insert(ssid);
+        if (IsPolicyEnabled(context, "wifi-ssid-restriction")) {
+            applyBlocklistToConnectedAP();
+        }
     } catch (runtime::Exception& e) {
         ERROR("Failed to allocate memory for wifi blocklist");
         return -1;
     }
+
     return 0;
 }
 
