@@ -46,6 +46,9 @@ SET (COMMON_SOURCES     ${DPM_COMMON}/error.cpp
                         ${DPM_COMMON}/dbus/error.cpp
                         ${DPM_COMMON}/dbus/variant.cpp
                         ${DPM_COMMON}/dbus/connection.cpp
+                        ${DPM_COMMON}/key/manager.cpp
+                        ${DPM_COMMON}/key/ring.cpp
+                        ${DPM_COMMON}/key/generator.cpp
 )
 
 SET (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,noexecstack")
@@ -56,6 +59,7 @@ PKG_CHECK_MODULES(COMMON_DEPS REQUIRED  libxml-2.0
                                         sqlite3
                                         libsmack
                                         gio-2.0
+                                        key-manager
 )
 
 INCLUDE_DIRECTORIES(SYSTEM  ${DPM_COMMON}

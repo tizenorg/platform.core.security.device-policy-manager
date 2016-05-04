@@ -32,6 +32,7 @@ BuildRequires: pkgconfig(capi-network-connection)
 BuildRequires: pkgconfig(capi-network-bluetooth)
 BuildRequires: pkgconfig(capi-location-manager)
 BuildRequires: pkgconfig(capi-system-system-settings)
+BuildRequires: pkgconfig(key-manager)
 
 %description
 The device-policy-manager package provides a daemon which is responsible for
