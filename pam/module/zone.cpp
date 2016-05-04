@@ -73,7 +73,7 @@ pam_sm_open_session(pam_handle_t* pamh, int flags,
     std::unique_ptr<xml::Document> bundle;
     xml::Node::NodeList nodes;
     int unshare_flags = 0;
-    std::string dest, src, type, opts, noexists, optional;
+    std::string dest, src, type, opts, noexists, optional, cryptosrc;
     std::string user;
     pid_t pid;
 
@@ -151,6 +151,17 @@ pam_sm_open_session(pam_handle_t* pamh, int flags,
     ::umask(0022);
 
     if (!(pidfile >> pid).good()) {
+
+        /* encryption */
+        try {
+            cryptosrc = "/home/" + user;
+            ::pam_syslog(pamh, LOG_DEBUG, "cryptosrc is %s", cryptosrc.c_str());
+            runtime::Mount::mountCryptoEntry(cryptosrc, user);
+        } catch (runtime::Exception& e) {
+            ::pam_syslog(pamh, LOG_ERR, "%s", e.what());
+            return PAM_SESSION_ERR;
+        }
+
         if (::unshare(unshare_flags) != 0) {
             ::pam_syslog(pamh, LOG_ERR, "failed to unshare namespace");
             return PAM_SESSION_ERR;

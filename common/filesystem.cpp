@@ -28,6 +28,8 @@
 #include "filesystem.h"
 #include "error.h"
 #include "exception.h"
+#include "ecryptfs.h"
+#include "keymngt.h"
 
 namespace runtime {
 
@@ -487,6 +489,63 @@ void Mount::mountEntry(const std::string& src, const std::string& dest, const st
             throw runtime::Exception("failed to mount " + src + " on " + dest);
         }
     }
+}
+
+void Mount::mountCryptoEntry(const std::string& src, const std::string& keyName)
+{
+    int rc;
+    char* sig;
+    char ecryptfsOpts[1024];
+    Keymngt keymngt;
+
+    if (keymngt.keySearch(keyName.c_str()) != 1) {
+        try {
+            keymngt.keyNew(keyName.c_str());
+        } catch (runtime::Exception &e) {
+            throw e;
+        }
+    }
+
+    try {
+        keymngt.keyPush(keyName.c_str());
+        sig = keymngt.keyGetSig(keyName.c_str());
+    } catch (runtime::Exception &e) {
+        throw e;
+    }
+
+    snprintf(ecryptfsOpts, 1024, "ecryptfs_passthrough,"
+            "ecryptfs_cipher=aes,"
+            "ecryptfs_key_bytes=%d,"
+            "ecryptfs_sig=%s,"
+            "smackfsroot=*,smackfsdef=*",
+            32, sig);
+    rc = ::mount(src.c_str(), src.c_str(), "ecryptfs", MS_NODEV, ecryptfsOpts);
+    if (rc != 0)
+        throw runtime::Exception("Failed to ecryptfs mount");
+}
+
+void Mount::umountEntry(const std::string& src)
+{
+    int ret;
+
+    ret = umount(src.c_str());
+    if (ret != 0) {
+        ret = umount2(src.c_str(), MNT_EXPIRE);
+        if (ret != 0 || errno == EAGAIN) {
+            ret = umount2(src.c_str(), MNT_EXPIRE);
+            ret = (ret != 0) ? -errno : 0;
+        } else {
+            ret = 0;
+        }
+    }
+
+    if (ret != 0) {
+        ::sync();
+        ret = umount2(src.c_str(), MNT_DETACH);
+    }
+
+    if (ret != 0)
+        throw runtime::Exception("Failed to unmount error is " + std::to_string(ret));
 }
 
 } // namespace runtime
