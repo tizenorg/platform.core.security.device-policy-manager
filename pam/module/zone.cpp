@@ -34,6 +34,7 @@
 #include "auth/user.h"
 #include "xml/parser.h"
 #include "xml/document.h"
+#include "cryptofs.h"
 
 #define ZONE_MANIFEST_DIR CONF_PATH "/zone/"
 
@@ -76,6 +77,7 @@ pam_sm_open_session(pam_handle_t* pamh, int flags,
     std::string dest, src, type, opts, noexists, optional;
     std::string user;
     pid_t pid;
+    runtime::Cryptofs cryptofs;
 
     const void* retItem;
     int error = ::pam_get_item(pamh, PAM_USER, &retItem);
@@ -93,6 +95,9 @@ pam_sm_open_session(pam_handle_t* pamh, int flags,
     if (user == "root") {
         return PAM_SUCCESS;
     }
+
+    /* encryption */
+    cryptofs.crypto_mount_dir(pamh);
 
     ::umask(077);
 
