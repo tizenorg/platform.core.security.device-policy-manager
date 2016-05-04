@@ -588,4 +588,28 @@ void Mount::mountEntry(const std::string& src, const std::string& dest, const st
     }
 }
 
+void Mount::umountEntry(const std::string& dest)
+{
+    int ret;
+
+    ret = umount(dest.c_str());
+    if (ret != 0) {
+        ret = umount2(dest.c_str(), MNT_EXPIRE);
+        if (ret != 0 || errno == EAGAIN) {
+            ret = umount2(dest.c_str(), MNT_EXPIRE);
+            ret = (ret != 0) ? -errno : 0;
+        } else {
+            ret = 0;
+        }
+    }
+
+    if (ret != 0) {
+        ::sync();
+        ret = umount2(dest.c_str(), MNT_DETACH);
+    }
+
+    if (ret != 0)
+        throw runtime::Exception("Failed to unmount");
+}
+
 } // namespace runtime
