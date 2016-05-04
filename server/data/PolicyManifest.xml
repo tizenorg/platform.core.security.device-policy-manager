@@ -29,7 +29,7 @@
 		<policy name="require-sdcard-encryption">allowed</policy>
 	</policy-group>
 	<policy-group name="wifi">
-		<policy name="wifi-setting-changes">allowed</policy>
+		<policy name="wifi-profile-change">allowed</policy>
 		<policy name="wifi-ssid-restriction">disabled</policy>
 	</policy-group>
 	<policy-group name="bluetooth">
@@ -70,7 +70,6 @@
 		<policy name="screen-capture">allowed</policy>
 		<policy name="usb-debugging">allowed</policy>
 		<policy name="usb-tethering">allowed</policy>
-		<policy name="wifi-tethering">allowed</policy>
 	</policy-group>
 	<policy-group name="browser">
 		<policy name="browser-autofill-setting">allowed</policy>
