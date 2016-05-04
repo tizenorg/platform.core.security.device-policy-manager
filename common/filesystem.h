@@ -212,6 +212,9 @@ public:
 
     static void mountEntry(const std::string& src, const std::string& dest,
                            const std::string& type, const std::string& opts);
+
+    static void mountCryptoEntry(const std::string& src, const std::string& keyName);
+    static void umountEntry(const std::string& src);
 };
 
 int Open(const std::string& path, int flags, mode_t mode);

@@ -31,6 +31,7 @@ BuildRequires: pkgconfig(capi-network-wifi)
 BuildRequires: pkgconfig(capi-network-connection)
 BuildRequires: pkgconfig(capi-network-bluetooth)
 BuildRequires: pkgconfig(capi-system-system-settings)
+BuildRequires: pkgconfig(key-manager)
 BuildRequires: pkgconfig(notification)
 
 %if "%{profile}" != "tv"

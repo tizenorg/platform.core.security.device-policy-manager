@@ -24,6 +24,8 @@ SET (COMMON_SOURCES     ${DPM_COMMON}/error.cpp
                         ${DPM_COMMON}/filesystem.cpp
                         ${DPM_COMMON}/backtrace.cpp
                         ${DPM_COMMON}/thread-pool.cpp
+                        ${DPM_COMMON}/keymngt.cpp
+                        ${DPM_COMMON}/keyctl.cpp
                         ${DPM_COMMON}/rmi/socket.cpp
                         ${DPM_COMMON}/rmi/client.cpp
                         ${DPM_COMMON}/rmi/message.cpp
@@ -57,6 +59,8 @@ PKG_CHECK_MODULES(COMMON_DEPS REQUIRED  libxml-2.0
                                         sqlite3
                                         libsmack
                                         gio-2.0
+                                        openssl
+                                        key-manager
 )
 
 INCLUDE_DIRECTORIES(SYSTEM  ${DPM_COMMON}
