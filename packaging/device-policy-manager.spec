@@ -31,6 +31,9 @@ BuildRequires: pkgconfig(capi-network-wifi)
 BuildRequires: pkgconfig(capi-network-connection)
 BuildRequires: pkgconfig(capi-location-manager)
 BuildRequires: pkgconfig(capi-system-system-settings)
+BuildRequires: pkgconfig(openssl)
+BuildRequires: pkgconfig(key-manager)
+BuildRequires: pkgconfig(libsmack)
 
 %description
 The device-policy-manager package provides a daemon which is responsible for
