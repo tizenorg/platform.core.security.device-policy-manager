@@ -33,6 +33,7 @@ BuildRequires: pkgconfig(capi-network-connection)
 BuildRequires: pkgconfig(capi-network-bluetooth)
 BuildRequires: pkgconfig(capi-system-system-settings)
 BuildRequires: pkgconfig(notification)
+BuildRequires: pkgconfig(key-manager)
 
 %if "%{profile}" != "tv"
 BuildRequires: pkgconfig(capi-location-manager)
@@ -310,6 +311,7 @@ mv /etc/pam.d/systemd-user.keep /etc/pam.d/systemd-user
 %defattr(600,root,root,700)
 %attr(700,root,root) %{_libdir}/security/pam_*.so
 %attr(700,root,root) %{_sbindir}/zone-admin-cli
+%attr(700,root,root) %{_sbindir}/zone-volume-manager
 %attr(700,root,root) %dir %{TZ_SYS_ETC}/dpm/zone
 %attr(600,root,root) %config %{TZ_SYS_ETC}/dpm/zone/owner.xml
 %attr(644,root,root) /opt/data/dpm/zone-indicator.png
