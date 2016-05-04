@@ -67,6 +67,8 @@ void ZoneBuilder::containerize(bool create)
                            entry.getProp("type"), entry.getProp("options"));
     }
 
+    runtime::Mount::mountEcryptfsEntry("/home/" + name, name);
+
     bindFilesystemNode("/home/" + name,
                        "/home/" + name + "/.zone/" + name,
                        "none", "rw,bind");
