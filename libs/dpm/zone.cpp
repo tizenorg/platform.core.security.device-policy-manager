@@ -87,6 +87,22 @@ void dpm_zone_free_iterator(dpm_zone_iterator_h iter)
     delete reinterpret_cast<dpm_zone_iterator*>(iter);
 }
 
+int dpm_zone_foreach_name(dpm_zone_policy_h handle,
+                          dpm_zone_foreach_cb callback, void* user_data)
+{
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(callback, DPM_ERROR_INVALID_PARAMETER);
+
+    ZonePolicy& zone = GetPolicyInterface<ZonePolicy>(handle);
+    std::vector<std::string> list = zone.getZoneList();
+    for (std::vector<std::string>::iterator it = list.begin();
+         it != list.end(); it++) {
+        callback((*it).c_str(), user_data);
+    }
+
+    return 0;
+}
+
 int dpm_zone_get_state(dpm_zone_policy_h handle, const char* name, dpm_zone_state_e *state)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
