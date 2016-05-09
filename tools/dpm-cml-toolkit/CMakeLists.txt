@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2016 Samsung Electronics Co., Ltd All Rights Reserved
+# Copyright (c) 2015 Samsung Electronics Co., Ltd All Rights Reserved
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,15 +13,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+SET(CML_TOOLKIT_TARGET	"dpm-cml-toolkit")
 
-SET(DPM_CLI ${DPM_TOOLS}/cli)
-SET(DPM_ODE ${DPM_TOOLS}/ode)
-SET(DPM_ZONE_SETUP_WIZARD ${DPM_TOOLS}/zone-setup-wizard)
-SET(DPM_SYSPOPUP ${DPM_TOOLS}/syspopup)
-SET(DPM_TOOLKIT ${DPM_TOOLS}/dpm-cml-toolkit)
+SET(CML_TOOLKIT_SOURCES main.c
+    dpm-cml-toolkit.c
+    bluetooth.c
+    password.c
+    restriction.c
+    zone.c
+)
 
-ADD_SUBDIRECTORY(${DPM_CLI})
-ADD_SUBDIRECTORY(${DPM_ODE})
-ADD_SUBDIRECTORY(${DPM_ZONE_SETUP_WIZARD})
-ADD_SUBDIRECTORY(${DPM_SYSPOPUP})
-ADD_SUBDIRECTORY(${DPM_TOOLKIT})
+ADD_EXECUTABLE(${CML_TOOLKIT_TARGET} ${CML_TOOLKIT_SOURCES})
+
+INCLUDE_DIRECTORIES(SYSTEM ${DPM_LIBS} ${DPM_TOOLS})
+
+TARGET_LINK_LIBRARIES(${CML_TOOLKIT_TARGET} dpm)
+
+INSTALL(TARGETS ${CML_TOOLKIT_TARGET} DESTINATION bin)
