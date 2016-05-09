@@ -228,3 +228,16 @@ PAM Plugin for zone policy in device policy manager and CLI tool
 %attr(700,root,root) %{_libdir}/security/pam_*.so
 %attr(700,root,root) %{_sbindir}/nsattach
 %config /etc/pam.d/*
+
+## CLI Toolkit Package ##############################################################
+%package -n dpm-cli-toolkit
+Summary: Device Policy Manager command line interface toolkit
+Group: Development/Libraries
+Requires: libdpm = %{version}-%{release}
+
+%description -n dpm-cli-toolkit
+Command line interface toolkit for device policy manager
+
+%files -n dpm-cli-toolkit
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_bindir}/dpm-cli-toolkit
