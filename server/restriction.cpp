@@ -15,6 +15,7 @@
  */
 
 #include <vconf.h>
+#include <location_batch.h>
 
 #include "restriction.hxx"
 #include "policy-helper.h"
@@ -127,6 +128,13 @@ int RestrictionPolicy::getExternalStorageState()
 
 int RestrictionPolicy::setLocationState(int enable)
 {
+	int ret = -1;
+
+	ret = location_manager_enable_restriction(enable);
+	if (ret != 0) {
+		return -1;
+	}
+
 	SetPolicyAllowed(context, "location", enable);
 	return 0;
 }
