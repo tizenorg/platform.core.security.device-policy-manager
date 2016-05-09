@@ -39,7 +39,7 @@ Server::~Server()
 void Server::run()
 {
     // Prepare execution environment
-    service->start();
+    service->start(true);
 }
 
 void Server::terminate()
