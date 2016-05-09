@@ -53,6 +53,7 @@ ADD_LIBRARY(${PROJECT_NAME} STATIC ${COMMON_SOURCES})
 PKG_CHECK_MODULES(COMMON_DEPS REQUIRED  libxml-2.0
                                         sqlite3
                                         libsmack
+                                        gio-2.0
 )
 
 INCLUDE_DIRECTORIES(SYSTEM  ${DPM_COMMON}
