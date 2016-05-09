@@ -73,7 +73,7 @@ public:
     Service(const Service&) = delete;
     Service& operator=(const Service&) = delete;
 
-    void start();
+    void start(bool useGMainloop = false);
     void stop();
 
     void setNewConnectionCallback(const ConnectionCallback& callback);

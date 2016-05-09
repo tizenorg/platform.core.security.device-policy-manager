@@ -39,7 +39,7 @@ Service::~Service()
 {
 }
 
-void Service::start()
+void Service::start(bool useGMainloop)
 {
     Socket socket(Socket::create(address));
 
@@ -50,7 +50,8 @@ void Service::start()
     mainloop.addEventSource(socket.getFd(),
                             EPOLLIN | EPOLLHUP | EPOLLRDHUP,
                             accept);
-    mainloop.run();
+
+    mainloop.run(useGMainloop);
 }
 
 void Service::stop()

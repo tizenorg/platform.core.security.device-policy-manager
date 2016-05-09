@@ -41,7 +41,7 @@ public:
     void addEventSource(const int fd, const Event events, Callback&& callback);
     void removeEventSource(const int fd);
     bool dispatch(const int timeout);
-    void run();
+    void run(bool useGMainloop = false);
     void stop();
 
 private:
@@ -52,6 +52,8 @@ private:
     int pollFd;
     std::atomic<bool> stopped;
     runtime::EventFD wakeupSignal;
+
+    void prepare();
 };
 
 } // namespace runtime
