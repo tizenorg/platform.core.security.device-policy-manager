@@ -14,12 +14,12 @@
  *  limitations under the License
  */
 
-#include <sys/epoll.h>
-#include <string.h>
+#include <cstring>
+#include <iostream>
 #include <unistd.h>
 #include <assert.h>
-
-#include <iostream>
+#include <gio/gio.h>
+#include <sys/epoll.h>
 
 #include "error.h"
 #include "exception.h"
@@ -28,6 +28,17 @@
 #define MAX_EPOLL_EVENTS	16
 
 namespace runtime {
+
+namespace {
+
+gboolean GIOCallback(GIOChannel* channel, GIOCondition condition, void *data)
+{
+    Mainloop* mainloop = reinterpret_cast<Mainloop*>(data);
+    mainloop->dispatch(-1);
+    return TRUE;
+}
+
+} // namespace
 
 Mainloop::Mainloop() :
     pollFd(::epoll_create1(EPOLL_CLOEXEC)),
@@ -133,8 +144,17 @@ void Mainloop::run()
 
     addEventSource(wakeupSignal.getFd(), EPOLLIN, wakeupMainloop);
 
+    GIOChannel* channel;
+    channel = g_io_channel_unix_new(pollFd);
+    if (channel == NULL) {
+        std::cout << "GMAINLOOP CHANNEL ALLOC FAILED" << std::endl;
+        return;
+    }
+    g_io_add_watch(channel, (GIOCondition)(G_IO_IN|G_IO_HUP), GIOCallback, this);
+    g_io_channel_unref(channel);
+
     while (!stopped) {
-        dispatch(-1);
+        g_main_iteration(TRUE);
     }
 }
 
