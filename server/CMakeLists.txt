@@ -75,6 +75,10 @@ TARGET_COMPILE_DEFINITIONS(${TARGET} PRIVATE
     DB_PATH="${DB_INSTALL_DIR}"
 )
 
+IF(NOT "${TIZEN_PROFILE_NAME}" STREQUAL "tv")
+	ADD_DEFINITIONS(-DLOCATION_ON)
+ENDIF()
+
 CONFIGURE_FILE(systemd/device-policy-manager.service.in systemd/device-policy-manager.service)
 
 INSTALL(TARGETS ${TARGET} DESTINATION bin)
