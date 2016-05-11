@@ -101,10 +101,13 @@ Evas_Object *_create_progressbar(Evas_Object *parent, const char *style)
 {
 	Evas_Object *progressbar = elm_progressbar_add(parent);
 
-	elm_object_style_set(progressbar, style);
+	if (style != NULL)
+		elm_object_style_set(progressbar, style);
+
 	evas_object_size_hint_align_set(progressbar, EVAS_HINT_FILL, 0.5);
 	evas_object_size_hint_weight_set(progressbar, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	elm_progressbar_pulse(progressbar, EINA_TRUE);
+	elm_progressbar_unit_format_set(progressbar, "%.0f %%");
 	elm_progressbar_value_set(progressbar, 0.0);
 	evas_object_show(progressbar);
 
