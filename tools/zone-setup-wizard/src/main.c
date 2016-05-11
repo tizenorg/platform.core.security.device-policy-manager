@@ -22,7 +22,7 @@
 static void __create_zone_done(const char *from, const char *info, void *user_data)
 {
 	appdata_s *ad = (appdata_s *) user_data;
-        ad->create_done = true;
+	ad->create_done = true;
 }
 
 static bool __app_create(void *data)
@@ -32,12 +32,12 @@ static bool __app_create(void *data)
 
 static void __app_pause(void *data)
 {
-	return ;
+	return;
 }
 
 static void __app_resume(void *data)
 {
-	return ;
+	return;
 }
 
 static void __app_terminate(void *data)
@@ -83,7 +83,7 @@ static void __app_control(app_control_h app_control, void *data)
 	elm_app_base_scale_set(1.8);
 	_create_base_window(ad);
 
-	return ;
+	return;
 }
 
 int main(int argc, char *argv[])
