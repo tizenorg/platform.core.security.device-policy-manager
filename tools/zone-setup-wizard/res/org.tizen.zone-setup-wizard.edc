@@ -19,6 +19,5 @@ collections {
 	base_scale: 1.8;
 	#include "./edc_resource/layout.edc"
 	#include "./edc_resource/welcome.edc"
-	#include "./edc_resource/create-popup.edc"
-	#include "./edc_resource/setup-complete.edc"
+	#include "./edc_resource/setup.edc"
 }

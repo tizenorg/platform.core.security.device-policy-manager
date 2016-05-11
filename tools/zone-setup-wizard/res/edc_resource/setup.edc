@@ -1,43 +1,22 @@
-/*
- * Tizen Zone Setup-Wizard Layout
- *
- * Copyright (c) 2016 Samsung Electronics Co., Ltd All Rights Reserved
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
-group { name: "welcome_layout";
+group { name: "setup_layout";
 	images {
 		image: "../images/icon.png" COMP;
-		image: "../images/theme_bg.png" COMP;
 	}
 	parts {
 		part { name: "bg";
-			type: IMAGE;
+			type: RECT;
 			scale: 1;
 			description { state: "default" 0.0;
+				color: 228 228 228 255;
 				rel1 { relative: 0.0 0.0; }
 				rel2 { relative: 1.0 1.0; }
-				image.normal: "../images/theme_bg.png";
 			}
 		}
 		part { name: "title";
 			type: TEXT;
 			scale: 1;
-			effect: SHADOW;
 			description { state: "default" 0.0;
-				color: 255 255 255 255;
-				color3: 85 88 88 255;
+				color: 0 0 0 255;
 				rel1 { relative: 0.0 0.0; to: "bg"; offset: 22 150;}
 				rel2 { relative: 1.0 0.0; to: "bg"; offset: -22 300;}
 				text { font: "Tizen:style=Regular"; size: "48"; align: 0.5 0.5; text: "Separated Zone";}
@@ -63,20 +42,36 @@ group { name: "welcome_layout";
 				image.normal: "../images/icon.png";
 			}
 		}
-		part { name: "top_padding";
-			type: RECT;
+		part { name: "progressbar_msg";
+			type: TEXT;
 			scale: 1;
 			description { state: "default" 0.0;
-				rel1 { relative: 0.0 1.0; to: "icon_base"; }
-				rel2 { relative: 1.0 1.0; to: "icon_base"; offset: 0 80;}
-				visible: 0;
+				color: 0 0 0 255;
+				rel1 { relative: 0.0 1.0; to_x: "bg"; to_y: "icon_base"; offset: 22 50;}
+				rel2 { relative: 1.0 1.0; to_x: "bg"; to_y: "icon_base"; offset: -22 150;}
+				text { font: "Tizen:style=Regular"; size: "30"; align: 0.5 0.5; text: "Creating Folder instance...";}
+			}
+		}
+		part { name: "progressbar";
+			type: SWALLOW;
+			scale: 1;
+			description { state: "default" 0.0;
+				rel1 { relative: 0.0 1.0; to_x: "bg"; to_y: "progressbar_msg"; offset: 22 22;}
+				rel2 { relative: 1.0 1.0; to_x: "bg"; to_y: "progressbar_msg"; offset: -22 52;}
 			}
 		}
 		part { name: "content_text";
 			type: SWALLOW;
 			scale: 1;
 			description { state: "default" 0.0;
-				rel1 { relative: 0.0 1.0; to: "top_padding";}
+				rel1 { relative: 0.0 1.0; to_x: "bg"; to_y: "progressbar"; offset: 22 0;}
+				rel2 { relative: 1.0 1.0; to: "bg"; offset: -22 0;}
+			}
+		}
+		part { name: "bottom_pending";
+			type: SPACER;
+			description { state: "default" 0.0;
+				rel1 { relative: 0.0 1.0; to: "bg"; offset: 0 -162;}
 				rel2 { relative: 1.0 1.0; to: "bg";}
 			}
 		}
