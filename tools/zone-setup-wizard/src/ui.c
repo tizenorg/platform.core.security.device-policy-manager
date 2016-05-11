@@ -19,10 +19,11 @@
 #include "zone-setup.h"
 #include "widget.h"
 
-#define SETUP_TITLE "Tizen ZONE"
-#define WELCOME_TEXT "Welcome<br>Keep your applications and content safe<br>with ZONE."
-#define POPUP_CONTENT_TEXT "Creating Zone..."
-#define COMPLETE_SUB_TEXT "The application shortcut will be created<br>on your personal home screen."
+#define WELCOME_HEADER "Separated Zone"
+#define WELCOME_INFO_MESSAGE "Welcome<br>Use your applications separately<br>with SZ.<br>The folder will be created on your<br>personal home screen."
+#define SETUP_HEADER "Separated Zone"
+#define SETUP_PROGRESS_MESSAGE "Creating Folder instance..."
+#define SETUP_INFO_MESSAGE "The folder will be created on your<br>presonal home screen."
 
 typedef struct {
 	Evas_Object *win;
@@ -50,6 +51,18 @@ static Eina_Bool __naviframe_pop_cb(void *data, Elm_Object_Item *it)
 	}
 }
 
+static void __prev_btn_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	switch (ud.current_view) {
+	case WELCOME_VIEW:
+		ui_app_exit();
+		break;
+	default:
+		break;
+	}
+	return ;
+}
+
 static void __next_btn_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	appdata_s *ad = (appdata_s *)data;
@@ -59,7 +72,7 @@ static void __next_btn_cb(void *data, Evas_Object *obj, void *event_info)
 		ud.current_view = SETUP_COMPLETE_VIEW;
 		if (_send_zone_provision_data(ad->zone_name, ad->provision_path) != 0)
 			ui_app_exit();
-		_create_zone_popup(ad);
+		_create_setup_view(ad);
 		break;
 	case SETUP_COMPLETE_VIEW:
 		ui_app_exit();
@@ -70,7 +83,7 @@ static void __next_btn_cb(void *data, Evas_Object *obj, void *event_info)
 	return ;
 }
 
-static void __set_one_btn_bottom_layout(Evas_Object *layout, appdata_s *ad, const char *btn_text)
+/*static void __set_one_btn_bottom_layout(Evas_Object *layout, appdata_s *ad, const char *btn_text)
 {
 	Evas_Object *bottom_layout;
 	Evas_Object *btn;
@@ -83,9 +96,28 @@ static void __set_one_btn_bottom_layout(Evas_Object *layout, appdata_s *ad, cons
 
 	elm_object_part_content_set(layout, "bottom_layout", bottom_layout);
 	return ;
+}*/
+
+static void __set_two_btn_bottom_layout(Evas_Object *layout, appdata_s *ad, const char *prev_btn_text, const char *next_btn_text)
+{
+	Evas_Object *bottom_layout;
+	Evas_Object *prev_btn, *next_btn;
+
+	bottom_layout = _create_layout(layout, ud.edj_path, "two_button_layout");
+
+	prev_btn = _create_button(bottom_layout, prev_btn_text, "bottom");
+	elm_object_part_content_set(bottom_layout, "prev_button", prev_btn);
+	evas_object_smart_callback_add(prev_btn, "clicked", __prev_btn_cb, NULL);
+
+	next_btn = _create_button(bottom_layout, next_btn_text, "bottom");
+	elm_object_part_content_set(bottom_layout, "next_button", next_btn);
+	evas_object_smart_callback_add(next_btn, "clicked", __next_btn_cb, ad);
+
+	elm_object_part_content_set(layout, "bottom_layout", bottom_layout);
+	return ;
 }
 
-static void __popup_del_cb(void *data, Evas *e, Evas_Object *obj, void *event_info)
+/*static void __popup_del_cb(void *data, Evas *e, Evas_Object *obj, void *event_info)
 {
 	appdata_s *ad = (appdata_s *)data;
 
@@ -95,9 +127,9 @@ static void __popup_del_cb(void *data, Evas *e, Evas_Object *obj, void *event_in
 	eext_object_event_callback_add(ud.nf, EEXT_CALLBACK_BACK, eext_naviframe_back_cb, NULL);
 	_create_setup_complete_view(ad);
 	return ;
-}
+}*/
 
-static Eina_Bool __progressbar_timer_cb(void *data)
+/*static Eina_Bool __progressbar_timer_cb(void *data)
 {
 	appdata_s *ad = (appdata_s *) data;
 
@@ -109,7 +141,7 @@ static Eina_Bool __progressbar_timer_cb(void *data)
 	}
 
 	return ECORE_CALLBACK_RENEW;
-}
+}*/
 
 void _create_base_window(appdata_s *ad)
 {
@@ -162,14 +194,15 @@ void _create_welcome_view(appdata_s *ad)
 	welcome_layout = _create_layout(layout, ud.edj_path, "welcome_layout");
 
 	text_st = evas_textblock_style_new();
-	evas_textblock_style_set(text_st, SETUP_TEXT_STYLE);
-	text = _create_textblock(welcome_layout, WELCOME_TEXT, text_st);
+	evas_textblock_style_set(text_st, WELCOME_TEXT_STYLE);
+	text = _create_textblock(welcome_layout, WELCOME_INFO_MESSAGE, text_st);
 	elm_object_part_content_set(welcome_layout, "content_text", text);
 	evas_textblock_style_free(text_st);
 
 	elm_object_part_content_set(layout, "content_layout", welcome_layout);
 
-	__set_one_btn_bottom_layout(layout, ad, "Set up");
+	//__set_one_btn_bottom_layout(layout, ad, "Set up");
+	__set_two_btn_bottom_layout(layout, ad, "Cancel", "Set up");
 
 	nf_it = elm_naviframe_item_push(ud.nf, NULL, NULL, NULL, layout, NULL);
 	elm_naviframe_item_title_enabled_set(nf_it, EINA_FALSE, EINA_TRUE);
@@ -178,6 +211,37 @@ void _create_welcome_view(appdata_s *ad)
 	return ;
 }
 
+void _create_setup_view(appdata_s *ad)
+{
+	Elm_Object_Item *nf_it;
+	Evas_Object *layout, *setup_layout;
+	Evas_Object *progressbar, *text;
+	Evas_Textblock_Style *text_st;
+
+	eext_object_event_callback_del(ud.nf, EEXT_CALLBACK_BACK, eext_naviframe_back_cb);
+
+	layout = _create_layout(ud.nf, ud.edj_path, "base_layout");
+	setup_layout = _create_layout(layout, ud.edj_path, "setup_layout");
+
+	progressbar = _create_progressbar(setup_layout, NULL);
+	elm_object_part_content_set(setup_layout, "progressbar", progressbar);
+
+	text_st = evas_textblock_style_new();
+	evas_textblock_style_set(text_st, SETUP_TEXT_STYLE);
+	text = _create_textblock(setup_layout, SETUP_INFO_MESSAGE, text_st);
+	elm_object_part_content_set(setup_layout, "content_text", text);
+	evas_textblock_style_free(text_st);
+
+	elm_object_part_content_set(layout, "content_layout", setup_layout);
+
+	nf_it = elm_naviframe_item_push(ud.nf, NULL, NULL, NULL, layout, NULL);
+	elm_naviframe_item_title_enabled_set(nf_it, EINA_FALSE, EINA_TRUE);
+	elm_naviframe_item_pop_cb_set(nf_it, __naviframe_pop_cb, NULL);
+
+	return ;
+}
+
+/*
 void _create_zone_popup(appdata_s *ad)
 {
 	Evas_Object *layout;
@@ -201,15 +265,15 @@ void _create_zone_popup(appdata_s *ad)
 	evas_object_show(popup);
 	ud.popup = popup;
 
-	/* set popup timer callback*/
+	// set popup timer callback
 	timer = ecore_timer_add(0.1, __progressbar_timer_cb, ad);
 	evas_object_data_set(popup, "timer", timer);
 	evas_object_event_callback_add(popup, EVAS_CALLBACK_DEL, __popup_del_cb, ad);
 
 	return ;
-}
+}*/
 
-void _create_setup_complete_view(appdata_s *ad)
+/*void _create_setup_complete_view(appdata_s *ad)
 {
 	Elm_Object_Item *nf_it;
 	Evas_Object *layout, *complete_layout;
@@ -230,4 +294,4 @@ void _create_setup_complete_view(appdata_s *ad)
 	elm_naviframe_item_pop_cb_set(nf_it, __naviframe_pop_cb, NULL);
 
 	return ;
-}
+}*/
