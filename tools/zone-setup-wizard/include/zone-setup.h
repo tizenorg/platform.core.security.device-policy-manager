@@ -40,12 +40,8 @@
 #define PACKAGE "org.tizen.zone-setup-wizard"
 #endif
 
-#define SETUP_TEXT_STYLE "DEFAULT='font=Tizen:style=Regular font_size=34 color=#ffffff wrap=mixed align=center'"
-
-typedef enum {
-	WELCOME_VIEW = 0,
-	SETUP_COMPLETE_VIEW,
-} view_num;
+#define WELCOME_TEXT_STYLE "DEFAULT='font=Tizen:style=Regular font_size=34 color=#ffffff wrap=mixed align=center'"
+#define SETUP_TEXT_STYLE "DEFAULT='font=Tizen:style=Regular font_size=34 color=#000000 wrap=mixed align=center'"
 
 typedef struct {
 	char *zone_name;
@@ -57,8 +53,7 @@ typedef struct {
 
 void _create_base_window(appdata_s *data);
 void _create_welcome_view(appdata_s *data);
-void _create_zone_popup(appdata_s *data);
-void _create_setup_complete_view(appdata_s *data);
+void _create_setup_view(appdata_s *data);
 
 int _send_zone_provision_data(const char *zone_name, const char *target_path);
 
