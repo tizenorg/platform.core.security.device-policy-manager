@@ -27,16 +27,40 @@ static bool __app_create(void *data)
 static void __app_control(app_control_h app_control, void *data)
 {
 	int ret = 0;
-	char *popup_name = NULL;
+	char *id = NULL;
+	char *style = NULL;
+	char *status = NULL;
 
-	ret = app_control_get_extra_data(app_control, "dpm-syspopup", &popup_name);
+	ret = app_control_get_extra_data(app_control, "id", &id);
 	if (ret != APP_CONTROL_ERROR_NONE) {
-		dlog_print(DLOG_ERROR, LOG_TAG, "failed to get bundle data");
+		dlog_print(DLOG_ERROR, LOG_TAG, "failed to get popup id");
 		return;
 	}
 
-	_create_syspopup(popup_name);
+	ret = app_control_get_extra_data(app_control, "viewtype", &style);
+	if (ret == APP_CONTROL_ERROR_KEY_NOT_FOUND) {
+		style = strdup(DPM_SYSPOPUP_DEFAULT_STYLE);
+	} else if (ret != APP_CONTROL_ERROR_NONE) {
+		dlog_print(DLOG_ERROR, LOG_TAG, "failed to get popup style");
+		free(id);
+		return;
+	}
 
+	ret = app_control_get_extra_data(app_control, "status", &status);
+	if (ret == APP_CONTROL_ERROR_KEY_NOT_FOUND) {
+		status = strdup(DPM_SYSPOPUP_DEFAULT_STATUS);
+	} else if (ret != APP_CONTROL_ERROR_NONE) {
+		dlog_print(DLOG_ERROR, LOG_TAG, "failed to get popup status");
+		free(id);
+		free(style);
+		return;
+	}
+
+	_create_syspopup(id, style, status);
+
+	free(id);
+	free(style);
+	free(status);
 	return;
 }
 
