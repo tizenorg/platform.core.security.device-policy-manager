@@ -81,7 +81,7 @@ void password_policy_handler(void)
     int input_status = 0;
     int ret = -1;
     int value = 0;
-    char pattern[200], new_password[200];
+    char pattern[100], new_password[100];
     char *get_pattern = NULL;
 
     print_menu(DPM_PASSWORD);
@@ -153,7 +153,7 @@ void password_policy_handler(void)
         break;
     case 7:
         printf("pattern> ");
-        if (scanf("%s", pattern) < 0) {
+        if (scanf("%100s", pattern) < 0) {
             input_status = -1;
             goto out;
         }
@@ -161,7 +161,7 @@ void password_policy_handler(void)
         break;
     case 8:
         printf("new password> ");
-        if (scanf("%s", new_password) < 0) {
+        if (scanf("%100s", new_password) < 0) {
             input_status = -1;
             goto out;
         }
@@ -313,7 +313,7 @@ void zone_policy_handler(void)
     int channel;
     int input_status = 0;
     int ret = -1;
-    char name[200];
+    char name[100];
 
     print_menu(DPM_ZONE);
     if (scanf("%d", &channel) < 0) {
@@ -324,7 +324,7 @@ void zone_policy_handler(void)
     switch (channel) {
     case 1:
         printf("zone name> ");
-        if (scanf("%s", name) < 0) {
+        if (scanf("%100s", name) < 0) {
             input_status = -1;
             goto out;
         }
@@ -332,7 +332,7 @@ void zone_policy_handler(void)
         break;
     case 2:
         printf("zone name> ");
-        if (scanf("%s", name) < 0) {
+        if (scanf("%100s", name) < 0) {
             input_status = -1;
             goto out;
         }
@@ -363,7 +363,7 @@ void bluetooth_policy_handler(void)
     int channel;
     int input_status = 0;
     int ret = -1, enable = 0;
-    char mac_address[200], uuid[200];
+    char mac_address[100], uuid[100];
 
     print_menu(DPM_BLUETOOTH);
     if (scanf("%d", &channel) < 0) {
@@ -374,7 +374,7 @@ void bluetooth_policy_handler(void)
     switch (channel) {
     case 1:
         printf("mac address> ");
-        if (scanf("%s", mac_address) < 0) {
+        if (scanf("%100s", mac_address) < 0) {
             input_status = -1;
             goto out;
         }
@@ -382,7 +382,7 @@ void bluetooth_policy_handler(void)
         break;
     case 2:
         printf("mac address> ");
-        if (scanf("%s", mac_address) < 0) {
+        if (scanf("%100s", mac_address) < 0) {
             input_status = -1;
             goto out;
         }
@@ -411,7 +411,7 @@ void bluetooth_policy_handler(void)
         break;
     case 5:
         printf("uuid> ");
-        if (scanf("%s", uuid) < 0) {
+        if (scanf("%100s", uuid) < 0) {
             input_status = -1;
             goto out;
         }
@@ -419,7 +419,7 @@ void bluetooth_policy_handler(void)
         break;
     case 6:
         printf("uuid> ");
-        if (scanf("%s", uuid) < 0) {
+        if (scanf("%100s", uuid) < 0) {
             input_status = -1;
             goto out;
         }
