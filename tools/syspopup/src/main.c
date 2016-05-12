@@ -27,15 +27,22 @@ static bool __app_create(void *data)
 static void __app_control(app_control_h app_control, void *data)
 {
 	int ret = 0;
-	char *popup_name = NULL;
+	char *style = NULL;
+	char *id = NULL;
 
-	ret = app_control_get_extra_data(app_control, "dpm-syspopup", &popup_name);
+	ret = app_control_get_extra_data(app_control, "viewtype", &style);
 	if (ret != APP_CONTROL_ERROR_NONE) {
-		dlog_print(DLOG_ERROR, LOG_TAG, "failed to get bundle data");
+		dlog_print(DLOG_ERROR, LOG_TAG, "failed to get popup style");
 		return;
 	}
 
-	_create_syspopup(popup_name);
+	ret = app_control_get_extra_data(app_control, "id", &id);
+	if (ret != APP_CONTROL_ERROR_NONE) {
+		dlog_print(DLOG_ERROR, LOG_TAG, "failed to get popup name");
+		return;
+	}
+
+	_create_syspopup(style, id);
 
 	return;
 }

@@ -39,12 +39,13 @@
 #define DPM_SYSPOPUP_MAX 100
 
 typedef struct {
-	const char *name;
+	const char *id;
 	const char *title;
 	const char *content;
+	const char *toast_content;
 } popup_info_s;
 
-void _create_syspopup(const char *popup_name);
-popup_info_s *_get_dpm_popup_info(const char *popup_name);
+void _create_syspopup(const char *style, const char *popup_id);
+popup_info_s *_get_dpm_popup_info(const char *popup_id);
 
 #endif /* __DPM_SYSPOPUP_H__ */
