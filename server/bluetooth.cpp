@@ -14,6 +14,10 @@
  *  limitations under the License
  */
 
+#include <bluetooth.h>
+#include <bluetooth_internal.h>
+#include <bluetooth-api.h>
+
 #include "bluetooth.hxx"
 
 #include "policy-helper.h"
