@@ -23,28 +23,6 @@
 #include "policy-helper.h"
 #include "audit/logger.h"
 
-namespace DevicePolicyManager {
-
-BluetoothPolicy::BluetoothPolicy(PolicyControlContext& ctxt) :
-    context(ctxt)
-{
-    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::addDeviceToBlacklist)(std::string));
-    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::removeDeviceFromBlacklist)(std::string));
-    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::setDeviceRestriction)(bool));
-    ctxt.registerNonparametricMethod(this, (bool)(BluetoothPolicy::isDeviceRestricted));
-    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::addUuidToBlacklist)(std::string));
-    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::removeUuidFromBlacklist)(std::string));
-    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::setUuidRestriction)(bool));
-    ctxt.registerNonparametricMethod(this, (bool)(BluetoothPolicy::isUuidRestricted));
-
-    ctxt.createNotification("bluetooth");
-    ctxt.createNotification("bluetooth-uuid-restriction");
-    ctxt.createNotification("bluetooth-device-restriction");
-}
-
-BluetoothPolicy::~BluetoothPolicy()
-{
-}
 
 namespace {
 
@@ -68,7 +46,95 @@ int convertBluetoothDeviceAddress(const std::string addr_str, bluetooth_device_a
     return 0;
 }
 
+// int isBluetoothEnabled()
+// {
+//     if (bt_initialize() != BT_ERROR_NONE)
+//         return -1;
+//
+//     bt_adapter_state_e state = BT_ADAPTER_DISABLED;
+//     if (bt_adapter_get_state(&state) != BT_ERROR_NONE)
+//         return -1;
+//
+//     if (bt_deinitialize() != BT_ERROR_NONE)
+//         return -1;
+//
+//     return state == BT_ADAPTER_ENABLED ? 1 : 0;
+// }
+
+void hello(int result, bt_adapter_state_e state, void *user_data)
+{
+    std::cout << "SHONG_DEBUG: called hello\n";
+    ERROR("bt adapter state changed callback");
+    ERROR("state : " + std::string(state == BT_ADAPTER_ENABLED ? "enabled" : "disabled"));
+    std::cout << "SHONG_DEBUG: state : " << std::string(state == BT_ADAPTER_ENABLED ? "enabled" : "disabled") << '\n';
+}
+
 } // namespace
+
+namespace DevicePolicyManager {
+
+BluetoothPolicy::BluetoothPolicy(PolicyControlContext& ctxt) :
+    context(ctxt)
+{
+    // for restriction CPIs
+    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::setModeChangeState)(bool));
+    ctxt.registerNonparametricMethod(this, (bool)(BluetoothPolicy::getModeChangeState));
+    // for bluetooth CPIs
+    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::addDeviceToBlacklist)(std::string));
+    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::removeDeviceFromBlacklist)(std::string));
+    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::setDeviceRestriction)(bool));
+    ctxt.registerNonparametricMethod(this, (bool)(BluetoothPolicy::isDeviceRestricted));
+    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::addUuidToBlacklist)(std::string));
+    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::removeUuidFromBlacklist)(std::string));
+    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::setUuidRestriction)(bool));
+    ctxt.registerNonparametricMethod(this, (bool)(BluetoothPolicy::isUuidRestricted));
+
+    ctxt.createNotification("bluetooth");
+    ctxt.createNotification("bluetooth-uuid-restriction");
+    ctxt.createNotification("bluetooth-device-restriction");
+
+    // callback
+    int ret = bt_initialize();
+    std::cout << "SHONG_DEBUG: ret: " << std::to_string(ret) << '\n';
+    if (ret == BT_ERROR_NONE) {
+        ret = bt_adapter_set_state_changed_cb(::hello, NULL);
+        std::cout << "SHONG_DEBUG: ret: " << std::to_string(ret) << '\n';
+    }
+    // ERROR("initailze: ret = " + ret);
+}
+
+BluetoothPolicy::~BluetoothPolicy()
+{
+}
+
+int BluetoothPolicy::setModeChangeState(const bool enable)
+{
+    int ret = BLUETOOTH_DPM_RESULT_SUCCESS;
+    ret = bluetooth_dpm_set_allow_mode(enable == true ? BLUETOOTH_DPM_BT_ALLOWED : BLUETOOTH_DPM_BT_RESTRICTED);
+    if (ret == BLUETOOTH_DPM_RESULT_ACCESS_DENIED ||
+        ret == BLUETOOTH_DPM_RESULT_FAIL) {
+        return -1;
+    }
+
+    SetPolicyEnabled(context, "bluetooth", enable);
+
+    return 0;
+}
+
+bool BluetoothPolicy::getModeChangeState()
+{
+    // return IsPolicyEnabled(context, "bluetooth");
+
+    // int bt_state = isBluetoothEnabled();
+    // if (bt_state == 1)
+    //     ERROR("isBluetoothEnabled: true");
+    // else if (bt_state == 0)
+    //     ERROR("isBluetoothEnabled: false");
+    // else
+    //     ERROR("isBluetoothEnabled: error -> " + bt_state);
+
+    return true;
+}
 
 int BluetoothPolicy::addDeviceToBlacklist(const std::string& mac)
 {
