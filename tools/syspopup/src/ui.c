@@ -57,37 +57,51 @@ static void __block_clicked_cb(void *data, Evas_Object *obj, void *event_info)
 	return;
 }
 
-void _create_syspopup(const char *popup_name)
+static void __popup_btn_clicked_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	Evas_Object *popup = (Evas_Object *)data;
+	evas_object_del(popup);
+	return;
+}
+
+void _create_syspopup(const char *id, const char *style, const char *status)
 {
 	Evas_Object *win = NULL;
 	Evas_Object *popup = NULL;
+	Evas_Object *btn = NULL;
 
-	popup_info_s *info = NULL;
-	char *lp_title = NULL;
-	char *lp_content = NULL;
+	char header[PATH_MAX] = "\0";
+	char body[PATH_MAX] = "\0";
 
-	info = _get_dpm_popup_info(popup_name);
-	if (info == NULL) {
-		dlog_print(DLOG_ERROR, LOG_TAG, "failed to get popup info");
+	int ret = 0;
+	ret = _get_dpm_syspopup_text(id, status, header, body);
+	if (ret != 0) {
 		return;
 	}
 
-	lp_title = dgettext("dpm-syspopup", info->title);
-	lp_content = dgettext("dpm-syspopup", info->content);
-
 	win = __create_win("dpm-syspopup");
-
 	popup = elm_popup_add(win);
-	elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
 	evas_object_size_hint_weight_set(popup, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+	elm_object_style_set(popup, style);
 
-	elm_object_part_text_set(popup, "title,text", lp_title);
-	elm_object_item_part_text_translatable_set(popup, "title,text", EINA_TRUE);
-	elm_object_text_set(popup, lp_content);
+	if (!strcmp(style, "default")) {
+		elm_object_part_text_set(popup, "title,text", header);
+		elm_object_item_part_text_translatable_set(popup, "title,text", EINA_TRUE);
 
-	elm_popup_timeout_set(popup, 3.0);
-	evas_object_smart_callback_add(popup, "block,clicked", __block_clicked_cb, NULL);
-	evas_object_smart_callback_add(popup, "timeout", __popup_timeout_cb, NULL);
+		elm_object_text_set(popup, body);
+		elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
+
+		btn = elm_button_add(popup);
+		elm_object_style_set(btn, "popup");
+		elm_object_text_set(btn, __("IDS_DPM_POPUP_OK"));
+		elm_object_part_content_set(popup, "button1", btn);
+		evas_object_smart_callback_add(btn, "clicked", __popup_btn_clicked_cb, popup);
+	} else {
+		elm_object_text_set(popup, body);
+		elm_popup_timeout_set(popup, 3.0);
+		evas_object_smart_callback_add(popup, "timeout", __popup_timeout_cb, NULL);
+		evas_object_smart_callback_add(popup, "block,clicked", __block_clicked_cb, NULL);
+	}
 
 	eext_object_event_callback_add(popup, EEXT_CALLBACK_BACK, eext_popup_back_cb, win);
 	evas_object_event_callback_add(popup, EVAS_CALLBACK_DEL, __popup_del_cb, win);
