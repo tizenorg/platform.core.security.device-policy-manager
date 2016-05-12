@@ -57,33 +57,47 @@ static void __block_clicked_cb(void *data, Evas_Object *obj, void *event_info)
 	return;
 }
 
-void _create_syspopup(const char *popup_name)
+void _create_syspopup(const char *id, const char *style, const char *status)
 {
 	Evas_Object *win = NULL;
 	Evas_Object *popup = NULL;
-
 	popup_info_s *info = NULL;
-	char *lp_title = NULL;
-	char *lp_content = NULL;
 
-	info = _get_dpm_popup_info(popup_name);
+	char *lp_policy = NULL;
+	char *lp_header = NULL;
+	char *lp_body = NULL;
+	char text[PATH_MAX] = "\0";
+
+	info = _get_dpm_popup_info(id);
 	if (info == NULL) {
 		dlog_print(DLOG_ERROR, LOG_TAG, "failed to get popup info");
 		return;
 	}
+	lp_policy = __(info->text);
 
-	lp_title = dgettext("dpm-syspopup", info->title);
-	lp_content = dgettext("dpm-syspopup", info->content);
+	if (!strcmp(status, "ongoing"))
+		lp_body = __("IDS_DPM_BODY_ONGOING_PREVENT_TEXT");
+	else
+		lp_body = __("IDS_DPM_BODY_PREVENT_TEXT");
 
 	win = __create_win("dpm-syspopup");
-
 	popup = elm_popup_add(win);
-	elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
 	evas_object_size_hint_weight_set(popup, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+	elm_object_style_set(popup, style);
 
-	elm_object_part_text_set(popup, "title,text", lp_title);
-	elm_object_item_part_text_translatable_set(popup, "title,text", EINA_TRUE);
-	elm_object_text_set(popup, lp_content);
+	if (!strcmp(style, "default")) {
+		lp_header = __("IDS_DPM_HEADER_PREVENT_TEXT");
+		snprintf(text, PATH_MAX, lp_header, lp_policy);
+		elm_object_part_text_set(popup, "title,text", text);
+		elm_object_item_part_text_translatable_set(popup, "title,text", EINA_TRUE);
+
+		snprintf(text, PATH_MAX, lp_body, lp_policy);
+		elm_object_text_set(popup, text);
+		elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
+	} else {
+		snprintf(text, PATH_MAX, lp_body, lp_policy);
+		elm_object_text_set(popup, text);
+	}
 
 	elm_popup_timeout_set(popup, 3.0);
 	evas_object_smart_callback_add(popup, "block,clicked", __block_clicked_cb, NULL);
