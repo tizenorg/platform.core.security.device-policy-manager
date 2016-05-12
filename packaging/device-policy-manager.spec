@@ -29,6 +29,7 @@ BuildRequires: pkgconfig(capi-base-common)
 BuildRequires: pkgconfig(capi-system-info)
 BuildRequires: pkgconfig(capi-network-wifi)
 BuildRequires: pkgconfig(capi-network-connection)
+BuildRequires: pkgconfig(capi-network-bluetooth)
 BuildRequires: pkgconfig(capi-location-manager)
 BuildRequires: pkgconfig(capi-system-system-settings)
 
