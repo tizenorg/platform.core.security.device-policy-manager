@@ -36,15 +36,24 @@
 #endif
 #define LOG_TAG "org.tizen.dpm-syspopup"
 
-#define DPM_SYSPOPUP_MAX 100
+#define __(str) dgettext("dpm-syspopup", str)
+
+#define DPM_SYSPOPUP_DEFAULT_STATUS "stop"
 
 typedef struct {
-	const char *name;
-	const char *title;
-	const char *content;
+	const char *id;
+	char *title;
+	char *content;
+	char *style;
+	char *left_btn;
+	char *right_btn;
+	void (*left_btn_cb)(void *data, Evas_Object *obj, void *event_info);
+	void (*right_btn_cb)(void *data, Evas_Object *obj, void *event_info);
 } popup_info_s;
 
-void _create_syspopup(const char *popup_name);
-popup_info_s *_get_dpm_popup_info(const char *popup_name);
+popup_info_s *_get_popup_info(const char *id);
+int _get_popup_text(const char *id, const char *status, char *header, char *body);
+
+void _create_syspopup(const char *id, char *style, const char *status, const char *user_data);
 
 #endif /* __DPM_SYSPOPUP_H__ */
