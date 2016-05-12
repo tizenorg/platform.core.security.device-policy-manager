@@ -36,15 +36,14 @@
 #endif
 #define LOG_TAG "org.tizen.dpm-syspopup"
 
-#define DPM_SYSPOPUP_MAX 100
+#define DPM_SYSPOPUP_DEFAULT_STYLE "toast"
 
 typedef struct {
-	const char *name;
-	const char *title;
-	const char *content;
+	const char *id;
+	const char *text;
 } popup_info_s;
 
-void _create_syspopup(const char *popup_name);
-popup_info_s *_get_dpm_popup_info(const char *popup_name);
+void _create_syspopup(const char *style, const char *id);
+popup_info_s *_get_dpm_popup_info(const char *id);
 
 #endif /* __DPM_SYSPOPUP_H__ */
