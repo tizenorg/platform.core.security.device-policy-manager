@@ -24,47 +24,84 @@
 
 popup_info_s popup_list[] = {
 	/* Application Policy */
-	{"package-installation-mode",   "IDS_DPM_HEADER_APPLICATION_POLICY", "IDS_DPM_BODY_PREVENT_APPLICATION_INSTALLATION_MODE"},
-	{"package-uninstallation-mode", "IDS_DPM_HEADER_APPLICATION_POLICY", "IDS_DPM_BODY_PREVENT_APPLICATION_UNINSTALLATION_MODE"},
+	{"package-installation-mode",   "IDS_DPM_PACKAGE_INSTALLATION",   NULL},
+	{"package-uninstallation-mode", "IDS_DPM_PACKAGE_UNINSTALLATION", NULL},
 
 	/* Password Policy */
-	{"password-expires",        "IDS_DPM_HEADER_PASSWORD_POLICY", "IDS_DPM_BODY_PASSWORD_EXPIRES"},
-	{"password-reset",          "IDS_DPM_HEADER_PASSWORD_POLICY", "IDS_DPM_BODY_PASSWORD_RESET"},
-	{"password-enforce-change", "IDS_DPM_HEADER_PASSWORD_POLICY", "IDS_DPM_BODY_PASSWORD_ENFORCE_CHANGE"},
-	{"password-delete-pattern", "IDS_DPM_HEADER_PASSWORD_POLICY", "IDS_DPM_BODY_PASSWORD_DELETE_PATTERN"},
-	{"password-set-pattern",    "IDS_DPM_HEADER_PASSWORD_POLICY", "IDS_DPM_BODY_PASSWORD_SET_PATTERN"},
+	{"password-expires",        "IDS_DPM_PASSWORD", "IDS_DPM_BODY_PASSWORD_EXPIRES"},
+	{"password-reset",          "IDS_DPM_PASSWORD", "IDS_DPM_BODY_PASSWORD_RESET"},
+	{"password-enforce-change", "IDS_DPM_PASSWORD", "IDS_DPM_BODY_PASSWORD_ENFORCE_CHANGE"},
+	{"password-delete-pattern", "IDS_DPM_PASSWORD", "IDS_DPM_BODY_PASSWORD_DELETE_PATTERN"},
+	{"password-set-pattern",    "IDS_DPM_PASSWORD", "IDS_DPM_BODY_PASSWORD_SET_PATTERN"},
 
 	/* Restriction Policy */
-	{"wifi",                    "IDS_DPM_HEADER_WIFI_POLICY",      "IDS_DPM_BODY_PREVENT_WIFI"},
-	{"wifi-hotspot",            "IDS_DPM_HEADER_WIFI_POLICY",      "IDS_DPM_BODY_PREVENT_HOTSPOT"},
-	{"camera",                  "IDS_DPM_HEADER_CAMERA_POLICY",    "IDS_DPM_BODY_PREVENT_CAMERA"},
-	{"microphone",              "IDS_DPM_HEADER_RECORD_POLICY",    "IDS_DPM_BODY_PREVENT_MICROPHONE"},
-	{"location",                "IDS_DPM_HEADER_LOCATION_POLICY",  "IDS_DPM_BODY_PREVENT_LOCATION"},
-	{"settings-changes",        "IDS_DPM_HEADER_SETTING_POLICY",   "IDS_DPM_BODY_PREVENT_SETTINGS_CHANGES"},
-	{"bluetooth",               "IDS_DPM_HEADER_BLUETOOTH_POLICY", "IDS_DPM_BODY_PREVENT_BLUETOOTH"},
-	{"clipboard",               "IDS_DPM_HEADER_CLIPBOARD_POLICY", "IDS_DPM_BODY_PREVENT_CLIPBOARD"},
-	{"usb-debugging",           "IDS_DPM_HEADER_DEBUGGING_POLICY", "IDS_DPM_BODY_PREVENT_USB_DEBUGGING"},
+	{"wifi",                    "IDS_DPM_WIFI",              NULL},
+	{"wifi-hotspot",            "IDS_DPM_WIFI_HOTSPOT",      NULL},
+	{"camera",                  "IDS_DPM_CAMERA",            NULL},
+	{"microphone",              "IDS_DPM_MICROPHONE",        NULL},
+	{"location",                "IDS_DPM_LOCATION",          NULL},
+	{"settings-changes",        "IDS_DPM_SETTINGS_CHANGES",  NULL},
+	{"bluetooth",               "IDS_DPM_BLUETOOTH",         NULL},
+	{"clipboard",               "IDS_DPM_CLIPBOARD",         NULL},
+	{"usb-debugging",           "IDS_DPM_USB_DEBUGGING",     NULL},
+	{"nfc",                     "IDS_DPM_NFC",               NULL},
+	{"message-sending",         "IDS_DPM_MESSAGE_SENDING",   NULL},
+	{"message-receiving",       "IDS_DPM_MESSAGE_RECEIVING", NULL},
+	{"browser",                 "IDS_DPM_BROWSER",           NULL},
+	{"screen-capture",          "IDS_DPM_SCREEN_CAPTURE",    NULL},
 
 	/* Storage Policy */
-	{"external-storage",   "IDS_DPM_HEADER_STORAGE_POLICY", "IDS_DPM_BODY_PREVENT_EXTERNAL_STORAGE"},
-	{"storage-decryption", "IDS_DPM_HEADER_STORAGE_POLICY", "IDS_DPM_BODY_PREVENT_STORAGE_DECRYPTION"},
-	{"wipe-data",          "IDS_DPM_HEADER_STORAGE_POLICY", "IDS_DPM_BODY_WIPE_STORAGE_DATA"},
+	{"external-storage",   "IDS_DPM_EXTERNAL_STORAGE",   NULL},
+	{"storage-decryption", "IDS_DPM_STORAGE_DECRYPTION", NULL},
+	{"wipe-data",          "IDS_DPM_WIPE_DATA",          NULL},
 };
 
-popup_info_s *_get_dpm_popup_info(const char *popup_name)
+static popup_info_s *__get_popup_info(const char *id)
 {
 	int i = 0;
 
-	if (popup_name == NULL) {
+	if (id == NULL) {
 		dlog_print(DLOG_ERROR, LOG_TAG, "popup_name is NULL");
 		return NULL;
 	}
 
 	for (i = 0; i < ARRAY_SIZE(popup_list); i++) {
-		if (!strcmp(popup_name, popup_list[i].name))
+		if (!strcmp(id, popup_list[i].id))
 			return &popup_list[i];
 	}
 
-	dlog_print(DLOG_ERROR, LOG_TAG, "[%s] popup is not exist", popup_name);
+	dlog_print(DLOG_ERROR, LOG_TAG, "[%s] popup is not exist", id);
 	return NULL;
+}
+
+int _get_dpm_syspopup_text(const char *id, const char *status, char *header, char *body)
+{
+	popup_info_s *info = NULL;
+	char *lp_policy = NULL;
+	char *lp_header = NULL;
+	char *lp_body = NULL;
+
+	info = __get_popup_info(id);
+	if (info == NULL) {
+		dlog_print(DLOG_ERROR, LOG_TAG, "failed to get popup info");
+		return -1;
+	}
+
+	lp_policy = __(info->title);
+
+	if (info->content == NULL) {
+		if (!strcmp(status, "ongoing"))
+			lp_body = __("IDS_DPM_BODY_ONGOING_PREVENT_TEXT");
+		else
+			lp_body = __("IDS_DPM_BODY_PREVENT_TEXT");
+		snprintf(body, PATH_MAX, lp_body, lp_policy);
+	} else {
+		lp_body = __(info->content);
+		snprintf(body, PATH_MAX, "%s", lp_body);
+	}
+
+	lp_header = __("IDS_DPM_HEADER_PREVENT_TEXT");
+	snprintf(header, PATH_MAX, lp_header, lp_policy);
+
+	return 0;
 }

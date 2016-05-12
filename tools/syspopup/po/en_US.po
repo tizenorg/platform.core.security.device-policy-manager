@@ -1,65 +1,8 @@
-msgid "IDS_DPM_BODY_PREVENT_USB_DEBUGGING"
-msgstr "Security policy prevents use of usb debugging."
+msgid "IDS_DPM_BODY_WIPE_DATA"
+msgstr "Security policy wipe the data on device."
 
-msgid "IDS_DPM_HEADER_DEBUGGING_POLICY"
-msgstr "Debugging Policy"
-
-msgid "IDS_DPM_BODY_PREVENT_CLIPBOARD"
-msgstr "Security policy prevents use of clipboard."
-
-msgid "IDS_DPM_HEADER_CLIPBOARD_POLICY"
-msgstr "Clipboard Policy"
-
-msgid "IDS_DPM_BODY_PREVENT_BLUETOOTH"
-msgstr "Security policy prevents use of bluetooth."
-
-msgid "IDS_DPM_HEADER_BLUETOOTH_POLICY"
-msgstr "Bluetooth Policy"
-
-msgid "IDS_DPM_BODY_WIPE_STORAGE_DATA"
-msgstr "Wipe data on device."
-
-msgid "IDS_DPM_BODY_PREVENT_STORAGE_DECRYPTION"
-msgstr "Security policy prevents storage decryption."
-
-msgid "IDS_DPM_BODY_PREVENT_EXTERNAL_STORAGE"
-msgstr "Security policy prevents use of external storage."
-
-msgid "IDS_DPM_HEADER_STORAGE_POLICY"
-msgstr "Storage Policy"
-
-msgid "IDS_DPM_BODY_PREVENT_SETTINGS_CHANGES"
-msgstr "Security policy prevents use of settings changes."
-
-msgid "IDS_DPM_HEADER_SETTING_POLICY"
-msgstr "Setting Policy"
-
-msgid "IDS_DPM_BODY_PREVENT_LOCATION"
-msgstr "Security policy prevents use of location data."
-
-msgid "IDS_DPM_HEADER_LOCATION_POLICY"
-msgstr "Location Policy"
-
-msgid "IDS_DPM_BODY_PREVENT_MICROPHONE"
-msgstr "Security policy prevents use of microphone."
-
-msgid "IDS_DPM_HEADER_RECORD_POLICY"
-msgstr "Record Policy"
-
-msgid "IDS_DPM_BODY_PREVENT_CAMERA"
-msgstr "Security policy prevents use of camera."
-
-msgid "IDS_DPM_HEADER_CAMERA_POLICY"
-msgstr "Camera Policy"
-
-msgid "IDS_DPM_BODY_PREVENT_HOTSPOT"
-msgstr "Security policy prevents use of Hotspot."
-
-msgid "IDS_DPM_BODY_PREVENT_WIFI"
-msgstr "Security policy prevents use of Wi-Fi."
-
-msgid "IDS_DPM_HEADER_WIFI_POLICY"
-msgstr "Wi-Fi Policy"
+msgid "IDS_DPM_BODY_PASSWORD_EXPIRES"
+msgstr "Password expired."
 
 msgid "IDS_DPM_BODY_PASSWORD_SET_PATTERN"
 msgstr "Security policy set the password pattern."
@@ -67,23 +10,74 @@ msgstr "Security policy set the password pattern."
 msgid "IDS_DPM_BODY_PASSWORD_DELETE_PATTERN"
 msgstr "Security policy deletes the password pattern."
 
-msgid "IDS_DPM_BODY_PASSWORD_ENFORCE_CHANGE"
-msgstr "Security policy enforce password change."
-
 msgid "IDS_DPM_BODY_PASSWORD_RESET"
-msgstr "Set a new password."
+msgstr "Security policy set a new password."
 
-msgid "IDS_DPM_BODY_PASSWORD_EXPIRES"
-msgstr "Password expired."
+msgid "IDS_DPM_BODY_PASSWORD_ENFORCE_CHANGE"
+msgstr "Security policy enforce the password change."
 
-msgid "IDS_DPM_HEADER_PASSWORD_POLICY"
-msgstr "Password Policy"
+msgid "IDS_DPM_PASSWORD"
+msgstr "Password"
 
-msgid "IDS_DPM_BODY_PREVENT_APPLICATION_UNINSTALLATION_MODE"
-msgstr "Security policy prevents uninstallation of applications."
+msgid "IDS_DPM_SCREEN_CAPTURE"
+msgstr "Screen capture"
 
-msgid "IDS_DPM_BODY_PREVENT_APPLICATION_INSTALLATION_MODE"
-msgstr "Security policy prevents installation of applications."
+msgid "IDS_DPM_BROWSER"
+msgstr "Browser"
 
-msgid "IDS_DPM_HEADER_APPLICATION_POLICY"
-msgstr "Application Policy"
+msgid "IDS_DPM_MESSAGE_RECEIVING"
+msgstr "Receiving SMS/MMS"
+
+msgid "IDS_DPM_MESSAGE_SENDING"
+msgstr "Sending SMS/MMS"
+
+msgid "IDS_DPM_USB_DEBUGGING"
+msgstr "USB debugging"
+
+msgid "IDS_DPM_SETTINGS_CHANGES"
+msgstr "Settings changes"
+
+msgid "IDS_DPM_CLIPBOARD"
+msgstr "Clipboard"
+
+msgid "IDS_DPM_STORAGE_DECRYPTION"
+msgstr "Storage decryption"
+
+msgid "IDS_DPM_EXTERNAL_STORAGE"
+msgstr "External storage"
+
+msgid "IDS_DPM_BLUETOOTH"
+msgstr "Bluetooth"
+
+msgid "IDS_DPM_NFC"
+msgstr "NFC"
+
+msgid "IDS_DPM_WIFI_HOTSPOT"
+msgstr "Hotspot"
+
+msgid "IDS_DPM_WIFI"
+msgstr "Wi-Fi"
+
+msgid "IDS_DPM_MICROPHONE"
+msgstr "Recording"
+
+msgid "IDS_DPM_LOCATION"
+msgstr "Location"
+
+msgid "IDS_DPM_CAMERA"
+msgstr "Camera"
+
+msgid "IDS_DPM_PACKAGE_UNINSTALLATION"
+msgstr "Uninstallation of Application"
+
+msgid "IDS_DPM_PACKAGE_INSTALLATION"
+msgstr "Installation of Application"
+
+msgid "IDS_DPM_HEADER_PREVENT_TEXT"
+msgstr "%s unavailable"
+
+msgid "IDS_DPM_BODY_PREVENT_TEXT"
+msgstr "Security policy prevents use of %s."
+
+msgid "IDS_DPM_BODY_ONGOING_PREVENT_TEXT"
+msgstr "Security policy prevents use of %s. All process will be terminated."
