@@ -17,13 +17,16 @@
 #include <sys/types.h>
 #include <sys/mount.h>
 #include <sys/stat.h>
+#include <sys/file.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <dirent.h>
 #include <string.h>
+#include <syslog.h>
 
 #include <string>
 #include <sstream>
+#include <iostream>
 
 #include "filesystem.h"
 #include "error.h"
@@ -95,6 +98,11 @@ File::File()
 {
 }
 
+File::File(const char* pathname)
+    : descriptor(-1), path(pathname)
+{
+}
+
 File::File(const std::string& pathname)
     : descriptor(-1), path(pathname)
 {
@@ -108,6 +116,12 @@ File::File(const Path& filePath)
 File::File(const File& file)
     : File(file.getPath())
 {
+}
+
+File::File(const std::string& pathname, int flags)
+    : File(pathname)
+{
+    open(flags);
 }
 
 File::~File()
@@ -226,10 +240,24 @@ std::string File::toString() const
     return std::string("Test String");
 }
 
-void File::open(int flags, mode_t mode)
+void File::create(mode_t mode)
 {
     while (1) {
-        descriptor = ::open(path.getPathname().c_str(), flags, mode);
+        descriptor = ::creat(path.getPathname().c_str(), mode);
+        if (descriptor == -1) {
+            if (errno != EINTR) {
+                continue;
+            }
+            throw runtime::Exception(runtime::GetSystemErrorMessage());
+        }
+        return;
+    }
+}
+
+void File::open(int flags)
+{
+    while (1) {
+        descriptor = ::open(path.getPathname().c_str(), flags);
         if (descriptor == -1) {
             if (errno != EINTR) {
                 continue;
@@ -249,6 +277,38 @@ void File::close()
             }
         }
         return;
+    }
+}
+
+void File::read(void *buffer, const size_t size) const
+{
+    size_t total = 0;
+
+    while (total < size) {
+        int bytes = ::read(descriptor, reinterpret_cast<char*>(buffer) + total, size - total);
+        if (bytes >= 0) {
+            total += bytes;
+        } else if (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR) {
+            continue;
+        } else {
+            throw runtime::Exception(runtime::GetSystemErrorMessage());
+        }
+    }
+}
+
+void File::write(const void *buffer, const size_t size) const
+{
+    size_t written = 0;
+
+    while (written < size) {
+        int bytes = ::write(descriptor, reinterpret_cast<const char*>(buffer) + written, size - written);
+        if (bytes >= 0) {
+            written += bytes;
+        } else if (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR) {
+            continue;
+        } else {
+            throw runtime::Exception(runtime::GetSystemErrorMessage());
+        }
     }
 }
 
@@ -284,16 +344,39 @@ void File::remove(bool recursive)
     }
 }
 
-void File::makeDirectory(bool recursive)
+void File::makeBaseDirectory(uid_t uid, gid_t gid)
+{
+    std::string::size_type i = path.isRelative() ? -1 : 0;
+    const std::string& pathStr = path.getPathname();
+    while ((i = pathStr.find('/', i + 1)) != std::string::npos) {
+        std::string substr = pathStr.substr(0, i);
+        int ret = ::mkdir(substr.c_str(), 0777);
+        if ((ret == -1) && (errno == EEXIST)) {
+            continue;
+        } else if (ret == 0) {
+            if ((uid | gid) != 0) {
+                if (::chown(substr.c_str(), uid, gid) == -1) {
+                    throw runtime::Exception(runtime::GetSystemErrorMessage());
+                }
+            }
+        } else {
+            throw runtime::Exception(runtime::GetSystemErrorMessage());
+        }
+    }
+}
+
+void File::makeDirectory(bool recursive, uid_t uid, gid_t gid)
 {
     if (recursive) {
-        const std::string& pathStr = path.getPathname();
-        for (unsigned int i = 0; i != std::string::npos;) {
-            i = pathStr.find('/', i + 1);
-            ::mkdir(pathStr.substr(0, i).c_str(), 0777);
-        }
-    } else if (::mkdir(path.getPathname().c_str(), 0777) != 0) {
-        throw runtime::Exception(runtime::GetSystemErrorMessage());
+        makeBaseDirectory(uid, gid);
+    }
+
+    if (::mkdir(path.getPathname().c_str(), 0777) == -1) {
+        throw runtime::Exception("mkdir failed in makefirectory: " + path.getPathname());
+    }
+
+    if ((uid | gid) != 0) {
+        chown(uid, gid);
     }
 }
 
@@ -307,6 +390,20 @@ void File::chown(uid_t uid, gid_t gid)
 void File::chmod(mode_t mode)
 {
     if (::chmod(path.getPathname().c_str(), mode) != 0) {
+        throw runtime::Exception(runtime::GetSystemErrorMessage());
+    }
+}
+
+void File::lock() const
+{
+    if (::flock(descriptor, LOCK_EX) == -1) {
+        throw runtime::Exception(runtime::GetSystemErrorMessage());
+    }
+}
+
+void File::unlock() const
+{
+    if (::flock(descriptor, LOCK_UN) == -1) {
         throw runtime::Exception(runtime::GetSystemErrorMessage());
     }
 }

@@ -2,4 +2,4 @@ auth     include        system-auth
 account  include        system-auth
 password include        system-auth
 session  include        system-auth
-session  required       pam_zone.so
+session  required       pam_zone.so attach
