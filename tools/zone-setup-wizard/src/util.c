@@ -18,7 +18,7 @@
  */
 #include "zone-setup.h"
 
-#define TARGET_ZONE "ZoneName"
+#define TARGET_ZONE "workspace"
 #define PROVISION_DATA "/manifest.xml"
 #define PROVISION_COMPLETE "/.completed"
 
@@ -36,7 +36,7 @@ static char *__get_zone_metadata(void)
 		dlog_print(DLOG_ERROR, LOG_TAG, "failed to get resource path");
 		return NULL;
 	}
-	snprintf(metadata_path, PATH_MAX, "%s%s", res_path, "data/.sample-BundleManifest.xml");
+	snprintf(metadata_path, PATH_MAX, "%s%s", res_path, "data/ZoneManifest.xml");
 	free(res_path);
 
 	fp = fopen(metadata_path, "r");
