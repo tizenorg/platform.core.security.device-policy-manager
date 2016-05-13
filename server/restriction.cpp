@@ -43,6 +43,8 @@ RestrictionPolicy::RestrictionPolicy(PolicyControlContext& ctxt) :
 	context.registerNonparametricMethod(this, (bool)(RestrictionPolicy::getWifiState));
 	context.registerParametricMethod(this, (int)(RestrictionPolicy::setWifiHotspotState)(bool));
 	context.registerNonparametricMethod(this, (bool)(RestrictionPolicy::getWifiHotspotState));
+	context.registerParametricMethod(this, (int)(RestrictionPolicy::setBluetoothTetheringState)(bool));
+	context.registerNonparametricMethod(this, (bool)(RestrictionPolicy::getBluetoothTetheringState));
 
 	context.createNotification("camera");
 	context.createNotification("clipboard");
@@ -53,6 +55,7 @@ RestrictionPolicy::RestrictionPolicy(PolicyControlContext& ctxt) :
 	context.createNotification("usb-debugging");
 	context.createNotification("wifi");
 	context.createNotification("wifi-hotspot");
+	context.createNotification("bluetooth-tethering");
 }
 
 RestrictionPolicy::~RestrictionPolicy()
@@ -157,6 +160,17 @@ int RestrictionPolicy::setWifiHotspotState(bool enable)
 bool RestrictionPolicy::getWifiHotspotState()
 {
 	return IsPolicyAllowed(context, "wifi-hotspot");
+}
+
+int RestrictionPolicy::setBluetoothTetheringState(bool enable)
+{
+	SetPolicyAllowed(context, "bluetooth-tethering", enable);
+	return 0;
+}
+
+bool RestrictionPolicy::getBluetoothTetheringState()
+{
+	return IsPolicyAllowed(context, "bluetooth-tethering");
 }
 
 RestrictionPolicy restrictionPolicy(Server::instance());

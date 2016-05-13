@@ -56,6 +56,9 @@ public:
 	int setWifiHotspotState(bool enable);
 	bool getWifiHotspotState();
 
+	int setBluetoothTetheringState(bool enable);
+	bool getBluetoothTetheringState();
+
 private:
 	PolicyControlContext& context;
 };
