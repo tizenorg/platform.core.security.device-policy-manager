@@ -19,6 +19,12 @@
 #include "restriction.hxx"
 #include "policy-helper.h"
 #include "audit/logger.h"
+#include "dbus/connection.h"
+
+#define PULSEAUDIO_LOGIN_INTERFACE \
+    "org.pulseaudio.Server",   \
+    "/org/pulseaudio/StreamManager",  \
+    "org.pulseaudio.StreamManager"
 
 namespace DevicePolicyManager {
 
@@ -64,102 +70,110 @@ RestrictionPolicy::~RestrictionPolicy()
 
 int RestrictionPolicy::setCameraState(int enable)
 {
-	SetPolicyAllowed(context, "camera", enable);
-	return 0;
+    SetPolicyAllowed(context, "camera", enable);
+    return 0;
 }
 
 int RestrictionPolicy::getCameraState()
 {
-	return IsPolicyAllowed(context, "camera");
+    return IsPolicyAllowed(context, "camera");
 }
 
 int RestrictionPolicy::setMicrophoneState(int enable)
 {
-	SetPolicyAllowed(context, "microphone", enable);
-	return 0;
+    char *result = NULL;
+    dbus::Connection &systemDBus = dbus::Connection::getSystem();
+    systemDBus.methodcall(PULSEAUDIO_LOGIN_INTERFACE, "UpdateRestriction",
+                          -1, "(s)", "(su)", "block_recording_media", enable).get("(s)", &result);
+    if (strcmp(result, "STREAM_MANAGER_RETURN_OK") == 0) {
+        SetPolicyAllowed(context, "microphone", enable);
+    } else
+        return -1;
+
+    return 0;
 }
 
 int RestrictionPolicy::getMicrophoneState()
 {
-	return IsPolicyAllowed(context, "microphone");
+    return IsPolicyAllowed(context, "microphone");
 }
 
 int RestrictionPolicy::setClipboardState(int enable)
 {
-	SetPolicyAllowed(context, "clipboard", enable);
-	return 0;
+    SetPolicyAllowed(context, "clipboard", enable);
+    return 0;
 }
 
 int RestrictionPolicy::getClipboardState()
 {
-	return IsPolicyAllowed(context, "clipboard");
+    return IsPolicyAllowed(context, "clipboard");
 }
 
 int RestrictionPolicy::setSettingsChangesState(int enable)
 {
-	SetPolicyAllowed(context, "settings-changes", enable);
-	return 0;
+    SetPolicyAllowed(context, "settings-changes", enable);
+    return 0;
 }
 
 int RestrictionPolicy::getSettingsChangesState()
 {
-	return IsPolicyAllowed(context, "settings-changes");
+    return IsPolicyAllowed(context, "settings-changes");
 }
 
 int RestrictionPolicy::setUsbDebuggingState(int enable)
 {
-	SetPolicyAllowed(context, "usb-debugging", enable);
-	return 0;
+    SetPolicyAllowed(context, "usb-debugging", enable);
+    return 0;
 }
 
 int RestrictionPolicy::getUsbDebuggingState()
 {
-	return IsPolicyAllowed(context, "usb-debugging");
+    return IsPolicyAllowed(context, "usb-debugging");
 }
 
 int RestrictionPolicy::setExternalStorageState(int enable)
 {
-	SetPolicyAllowed(context, "external-storage", enable);
-	return 0;
+    SetPolicyAllowed(context, "external-storage", enable);
+    return 0;
 }
 
 int RestrictionPolicy::getExternalStorageState()
 {
-	return IsPolicyAllowed(context, "external-storage");
+    return IsPolicyAllowed(context, "external-storage");
 }
 
 int RestrictionPolicy::setLocationState(int enable)
 {
-	SetPolicyAllowed(context, "location", enable);
-	return 0;
+    SetPolicyAllowed(context, "location", enable);
+    return 0;
 }
 
 int RestrictionPolicy::getLocationState()
 {
-	return IsPolicyAllowed(context, "location");
+    return IsPolicyAllowed(context, "location");
 }
 
 int RestrictionPolicy::setWifiState(bool enable)
 {
-	SetPolicyAllowed(context, "wifi", enable);
-	return 0;
+    SetPolicyAllowed(context, "wifi", enable);
+    return 0;
 }
 
 bool RestrictionPolicy::getWifiState()
 {
-	return IsPolicyAllowed(context, "wifi");
-	return 0;
+    return IsPolicyAllowed(context, "wifi");
+    return 0;
 }
 
 int RestrictionPolicy::setWifiHotspotState(bool enable)
 {
-	SetPolicyAllowed(context, "wifi-hotspot", enable);
-	return 0;
+    SetPolicyAllowed(context, "wifi-hotspot", enable);
+    return 0;
 }
 
 bool RestrictionPolicy::getWifiHotspotState()
 {
-	return IsPolicyAllowed(context, "wifi-hotspot");
+    return IsPolicyAllowed(context, "wifi-hotspot");
 }
 
 int RestrictionPolicy::setBluetoothTetheringState(bool enable)
