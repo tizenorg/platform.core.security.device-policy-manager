@@ -20,6 +20,7 @@
 #include <dirent.h>
 
 #include <string>
+#include <functional>
 
 namespace runtime {
 
@@ -53,7 +54,7 @@ public:
 
     bool isRelative() const
     {
-        return !(pathname[0] == '/');
+        return (pathname[0] != '/');
     }
 
     const std::string& getPathname() const
@@ -72,9 +73,11 @@ private:
 class File {
 public:
     File();
+    File(const char* pathname);
     File(const std::string& pathname);
     File(const File& file);
     File(const Path& filePath);
+    File(const std::string& path, int flags);
 
     ~File();
 
@@ -122,13 +125,20 @@ public:
     bool isDevice() const;
     bool isHidden() const;
 
-    void open(int flags, mode_t mode);
+    void create(mode_t mode);
+    void open(int flags);
+    void read(void *buffer, const size_t size) const;
+    void write(const void *buffer, const size_t size) const;
     void close();
     void copyTo(const std::string& pathname) const;
     void moveTo(const std::string& pathname);
     void renameTo(const std::string& pathname);
     void remove(bool recursive = false);
-    void makeDirectory(bool recursive = false);
+    void makeBaseDirectory(uid_t uid = 0, gid_t gid = 0);
+    void makeDirectory(bool recursive = false, uid_t uid = 0, gid_t gid = 0);
+
+    void lock() const;
+    void unlock() const;
 
     void chown(uid_t uid, gid_t gid);
     void chmod(mode_t mode);

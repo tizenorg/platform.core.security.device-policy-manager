@@ -13,5 +13,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+#SET(DPM_ADMIN_CLI_TARGET	"dpm-admin-cli")
 
+#SET(DPM_ADMIN_CLI_SOURCES dpm-admin-cli.cpp)
+
+#ADD_EXECUTABLE(${DPM_ADMIN_CLI_TARGET} ${DPM_ADMIN_CLI_SOURCES})
+
+#INCLUDE_DIRECTORIES(SYSTEM ${DPM_LIBS})
+
+#TARGET_LINK_LIBRARIES(${DPM_ADMIN_CLI_TARGET} dpm)
+
+#INSTALL(TARGETS ${DPM_ADMIN_CLI_TARGET} DESTINATION bin)
 INSTALL(FILES factory-reset DESTINATION bin)
