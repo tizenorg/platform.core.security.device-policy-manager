@@ -134,6 +134,8 @@ void restriction_policy_command_handler(char *policy, int command, int state)
         settings_policy_handler(command, state);
     else if (strcmp(policy, "usb_debugging") == 0)
         usb_debugging_policy_handler(command, state);
+    else if (strcmp(policy, "bluetooth-tethering") == 0)
+        bluetooth_tethering_policy_handler(command, state);
     else {
         printf("Wrong policy name! Please refer to the policy names bleow.\n");
         print_rule();

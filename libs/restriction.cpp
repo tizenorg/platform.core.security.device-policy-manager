@@ -192,4 +192,22 @@ bool RestrictionPolicy::getWifiHotspotState()
     }
 }
 
+int RestrictionPolicy::setBluetoothTetheringState(bool enable)
+{
+    try {
+        return context->methodCall<int>("RestrictionPolicy::setBluetoothTetheringState", enable);
+    } catch (runtime::Exception& e) {
+        return -1;
+    }
+}
+
+bool RestrictionPolicy::getBluetoothTetheringState()
+{
+    try {
+        return context->methodCall<bool>("RestrictionPolicy::getBluetoothTetheringState");
+    } catch (runtime::Exception &e) {
+        return -1;
+    }
+}
+
 } //namespace DevicePolicyManager

@@ -39,6 +39,7 @@ void location_policy_handler(int command, int state);
 void clipboard_policy_handler(int command, int state);
 void settings_policy_handler(int command, int state);
 void usb_debugging_policy_handler(int command, int state);
+void bluetooth_tethering_policy_handler(int command, int state);
 
 int set_password_quality_handler(int password_quality);
 int set_password_min_length_handler(int min_length);
@@ -83,5 +84,7 @@ int set_settings_changes_restriction_handler(int state);
 int get_settings_changes_restriction_handler(int *state);
 int set_usb_debugging_state_handler(int state);
 int get_usb_debugging_state_handler(int *state);
+int set_bluetooth_tethering_state_handler(int state);
+int get_bluetooth_tethering_state_handler(int *state);
 
 #endif /* !__DPM_CLI_TOOLKIT_H__ */
