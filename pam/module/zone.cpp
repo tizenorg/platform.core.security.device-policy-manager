@@ -158,7 +158,7 @@ pam_sm_open_session(pam_handle_t* pamh, int flags,
 
         if (unshare_flags & CLONE_NEWUTS) {
             nodes = bundle->evaluate("//bundle-manifest/namespace/hostname");
-            std::string hostname = nodes.begin()->getChildren().begin()->getContent();
+            std::string hostname = nodes.begin()->getContent();
             int ret = ::sethostname(hostname.c_str(), hostname.size());
             if (ret != 0) {
                 ::pam_syslog(pamh, LOG_ERR, "failed to set hostname");
