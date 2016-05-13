@@ -258,7 +258,7 @@ int ZonePolicy::createZone(const std::string& name, const std::string& setupWizA
             nodes = bundleXml->evaluate("//bundle-manifest/hooks/create");
             for (xml::Node::NodeList::iterator it = nodes.begin();
                     it != nodes.end(); it++) {
-                std::string path = it->getChildren().begin()->getContent();
+                std::string path = it->getContent();
                 args[0] = path;
                 runtime::Process exec(path, args);
                 exec.execute();
@@ -324,7 +324,7 @@ int ZonePolicy::removeZone(const std::string& name)
             nodes = bundleXml->evaluate("//bundle-manifest/hooks/destroy");
             for (xml::Node::NodeList::iterator it = nodes.begin();
                     it != nodes.end(); it++) {
-                std::string path = it->getChildren().begin()->getContent();
+                std::string path = it->getContent();
                 args[0] = path;
                 runtime::Process exec(path, args);
                 exec.execute();
