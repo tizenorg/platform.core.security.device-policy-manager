@@ -22,12 +22,11 @@
 
 using namespace DevicePolicyManager;
 
-dpm_application_policy_h dpm_context_acquire_application_policy(dpm_context_h handle, const char* zone)
+dpm_application_policy_h dpm_context_acquire_application_policy(dpm_context_h handle)
 {
     RET_ON_FAILURE(handle, NULL);
 
     DevicePolicyContext& client = GetDevicePolicyContext(handle);
-    //return client.createPolicyInterface<ApplicationPolicy>(zone);
     return client.createPolicyInterface<ApplicationPolicy>();
 }
 

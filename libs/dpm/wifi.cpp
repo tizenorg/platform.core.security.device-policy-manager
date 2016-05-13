@@ -22,7 +22,7 @@
 
 using namespace DevicePolicyManager;
 
-dpm_wifi_policy_h dpm_context_acquire_wifi_policy(dpm_context_h handle, const char* zone)
+dpm_wifi_policy_h dpm_context_acquire_wifi_policy(dpm_context_h handle)
 {
     RET_ON_FAILURE(handle, NULL);
 

@@ -47,7 +47,6 @@ typedef void* dpm_application_policy_h;
  *              the application policies.
  * @since_tizen 3.0
  * @param[in]   handle The device policy context handle
- * @param[in]   zone The container name
  * @return      Application policy handle on success, otherwise NULL
  * @remark      The specific error code can be obtained by using the
  *              get_last_result() method. Error codes are described in
@@ -58,7 +57,7 @@ typedef void* dpm_application_policy_h;
  * @see         dpm_context_release_application_policy()
  * @see         get_last_result()
  */
-DPM_API dpm_application_policy_h dpm_context_acquire_application_policy(dpm_context_h handle, const char* zone);
+DPM_API dpm_application_policy_h dpm_context_acquire_application_policy(dpm_context_h handle);
 
 /**
  * @brief       Releases the application policy handle.

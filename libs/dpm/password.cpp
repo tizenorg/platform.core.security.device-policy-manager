@@ -25,7 +25,7 @@
 
 using namespace DevicePolicyManager;
 
-dpm_password_policy_h dpm_context_acquire_password_policy(dpm_context_h handle, const char* zone)
+dpm_password_policy_h dpm_context_acquire_password_policy(dpm_context_h handle)
 {
     RET_ON_FAILURE(handle, NULL);
 

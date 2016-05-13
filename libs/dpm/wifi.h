@@ -57,7 +57,7 @@ typedef void* dpm_wifi_policy_h;
  * @see         dpm_context_release_wifi_policy()
  * @see         get_last_result()
  */
-DPM_API dpm_wifi_policy_h dpm_context_acquire_wifi_policy(dpm_context_h handle, const char* zone);
+DPM_API dpm_wifi_policy_h dpm_context_acquire_wifi_policy(dpm_context_h handle);
 
 /**
  * @brief       Releases the Wi-Fi policy handle.

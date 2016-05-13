@@ -6,7 +6,6 @@ int set_password_quality_handler(int password_quality)
     dpm_context_h handle;
     dpm_password_policy_h password_policy_handle;
     dpm_password_quality_e quality;
-    const char param_zone[] = "owner";
 
     switch (password_quality) {
     case 0:
@@ -38,7 +37,7 @@ int set_password_quality_handler(int password_quality)
         return -1;
     }
 
-    password_policy_handle = dpm_context_acquire_password_policy(handle, param_zone);
+    password_policy_handle = dpm_context_acquire_password_policy(handle);
     if (password_policy_handle == NULL) {
         printf("Failed to create password policy handle\n");
         return -1;
@@ -59,7 +58,6 @@ int set_password_min_length_handler(int min_length)
 {
     dpm_context_h handle;
     dpm_password_policy_h password_policy_handle;
-    const char param_zone[] = "owner";
 
     handle = dpm_context_create();
     if (handle == NULL) {
@@ -67,7 +65,7 @@ int set_password_min_length_handler(int min_length)
         return -1;
     }
 
-    password_policy_handle = dpm_context_acquire_password_policy(handle, param_zone);
+    password_policy_handle = dpm_context_acquire_password_policy(handle);
     if (password_policy_handle == NULL) {
         printf("Failed to create password policy handle\n");
         return -1;
@@ -88,7 +86,6 @@ int set_password_min_complex_chars_handler(int min_complex_chars)
 {
     dpm_context_h handle;
     dpm_password_policy_h password_policy_handle;
-    const char param_zone[] = "owner";
 
     handle = dpm_context_create();
     if (handle == NULL) {
@@ -96,7 +93,7 @@ int set_password_min_complex_chars_handler(int min_complex_chars)
         return -1;
     }
 
-    password_policy_handle = dpm_context_acquire_password_policy(handle, param_zone);
+    password_policy_handle = dpm_context_acquire_password_policy(handle);
     if (password_policy_handle == NULL) {
         printf("Failed to create password policy handle\n");
         return -1;
@@ -117,7 +114,6 @@ int set_password_max_failed_attempts_for_wipe_handler(int max_failed_attempts)
 {
     dpm_context_h handle;
     dpm_password_policy_h password_policy_handle;
-    const char param_zone[] = "owner";
 
     handle = dpm_context_create();
     if (handle == NULL) {
@@ -125,7 +121,7 @@ int set_password_max_failed_attempts_for_wipe_handler(int max_failed_attempts)
         return -1;
     }
 
-    password_policy_handle = dpm_context_acquire_password_policy(handle, param_zone);
+    password_policy_handle = dpm_context_acquire_password_policy(handle);
     if (password_policy_handle == NULL) {
         printf("Failed to create password policy handle\n");
         return -1;
@@ -146,7 +142,6 @@ int set_password_expires_handler(int expired_day)
 {
     dpm_context_h handle;
     dpm_password_policy_h password_policy_handle;
-    const char param_zone[] = "owner";
 
     handle = dpm_context_create();
     if (handle == NULL) {
@@ -154,7 +149,7 @@ int set_password_expires_handler(int expired_day)
         return -1;
     }
 
-    password_policy_handle = dpm_context_acquire_password_policy(handle, param_zone);
+    password_policy_handle = dpm_context_acquire_password_policy(handle);
     if (password_policy_handle == NULL) {
         printf("Failed to create password policy handle\n");
         return -1;
@@ -175,7 +170,6 @@ int set_password_history_handler(int history)
 {
     dpm_context_h handle;
     dpm_password_policy_h password_policy_handle;
-    const char param_zone[] = "owner";
 
     handle = dpm_context_create();
     if (handle == NULL) {
@@ -183,7 +177,7 @@ int set_password_history_handler(int history)
         return -1;
     }
 
-    password_policy_handle = dpm_context_acquire_password_policy(handle, param_zone);
+    password_policy_handle = dpm_context_acquire_password_policy(handle);
     if (password_policy_handle == NULL) {
         printf("Failed to create password policy handle\n");
         return -1;
@@ -204,7 +198,6 @@ int set_password_pattern_handler(char *pattern)
 {
     dpm_context_h handle;
     dpm_password_policy_h password_policy_handle;
-    const char param_zone[] = "owner";
 
     handle = dpm_context_create();
     if (handle == NULL) {
@@ -212,7 +205,7 @@ int set_password_pattern_handler(char *pattern)
         return -1;
     }
 
-    password_policy_handle = dpm_context_acquire_password_policy(handle, param_zone);
+    password_policy_handle = dpm_context_acquire_password_policy(handle);
     if (password_policy_handle == NULL) {
         printf("Failed to create password policy handle\n");
         return -1;
@@ -233,7 +226,6 @@ int reset_password_handler(char *new_password)
 {
     dpm_context_h handle;
     dpm_password_policy_h password_policy_handle;
-    const char param_zone[] = "owner";
 
     handle = dpm_context_create();
     if (handle == NULL) {
@@ -241,7 +233,7 @@ int reset_password_handler(char *new_password)
         return -1;
     }
 
-    password_policy_handle = dpm_context_acquire_password_policy(handle, param_zone);
+    password_policy_handle = dpm_context_acquire_password_policy(handle);
     if (password_policy_handle == NULL) {
         printf("Failed to create password policy handle\n");
         return -1;
@@ -262,7 +254,6 @@ int enforce_password_change_handler(void)
 {
     dpm_context_h handle;
     dpm_password_policy_h password_policy_handle;
-    const char param_zone[] = "owner";
 
     handle = dpm_context_create();
     if (handle == NULL) {
@@ -270,7 +261,7 @@ int enforce_password_change_handler(void)
         return -1;
     }
 
-    password_policy_handle = dpm_context_acquire_password_policy(handle, param_zone);
+    password_policy_handle = dpm_context_acquire_password_policy(handle);
     if (password_policy_handle == NULL) {
         printf("Failed to create password policy handle\n");
         return -1;
@@ -291,7 +282,6 @@ int set_max_inactivity_time_device_lock_handler(int max_inactivity_time)
 {
     dpm_context_h handle;
     dpm_password_policy_h password_policy_handle;
-    const char param_zone[] = "owner";
 
     handle = dpm_context_create();
     if (handle == NULL) {
@@ -299,7 +289,7 @@ int set_max_inactivity_time_device_lock_handler(int max_inactivity_time)
         return -1;
     }
 
-    password_policy_handle = dpm_context_acquire_password_policy(handle, param_zone);
+    password_policy_handle = dpm_context_acquire_password_policy(handle);
     if (password_policy_handle == NULL) {
         printf("Failed to create password policy handle\n");
         return -1;
@@ -320,7 +310,6 @@ int get_max_inactivity_time_device_lock_handler(int *max_inactivity_time)
 {
     dpm_context_h handle;
     dpm_password_policy_h password_policy_handle;
-    const char param_zone[] = "owner";
 
     handle = dpm_context_create();
     if (handle == NULL) {
@@ -328,7 +317,7 @@ int get_max_inactivity_time_device_lock_handler(int *max_inactivity_time)
         return -1;
     }
 
-    password_policy_handle = dpm_context_acquire_password_policy(handle, param_zone);
+    password_policy_handle = dpm_context_acquire_password_policy(handle);
     if (password_policy_handle == NULL) {
         printf("Failed to create password policy handle\n");
         return -1;
@@ -349,7 +338,6 @@ int set_password_status_handler(int status)
 {
     dpm_context_h handle;
     dpm_password_policy_h password_policy_handle;
-    const char param_zone[] = "owner";
 
     handle = dpm_context_create();
     if (handle == NULL) {
@@ -357,7 +345,7 @@ int set_password_status_handler(int status)
         return -1;
     }
 
-    password_policy_handle = dpm_context_acquire_password_policy(handle, param_zone);
+    password_policy_handle = dpm_context_acquire_password_policy(handle);
     if (password_policy_handle == NULL) {
         printf("Failed to create password policy handle\n");
         return -1;
@@ -378,7 +366,6 @@ int delete_password_pattern_handler(void)
 {
     dpm_context_h handle;
     dpm_password_policy_h password_policy_handle;
-    const char param_zone[] = "owner";
 
     handle = dpm_context_create();
     if (handle == NULL) {
@@ -386,7 +373,7 @@ int delete_password_pattern_handler(void)
         return -1;
     }
 
-    password_policy_handle = dpm_context_acquire_password_policy(handle, param_zone);
+    password_policy_handle = dpm_context_acquire_password_policy(handle);
     if (password_policy_handle == NULL) {
         printf("Failed to create password policy handle\n");
         return -1;
@@ -407,7 +394,6 @@ int get_password_pattern_handler(char **password_pattern)
 {
     dpm_context_h handle;
     dpm_password_policy_h password_policy_handle;
-    const char param_zone[] = "owner";
 
     handle = dpm_context_create();
     if (handle == NULL) {
@@ -415,7 +401,7 @@ int get_password_pattern_handler(char **password_pattern)
         return -1;
     }
 
-    password_policy_handle = dpm_context_acquire_password_policy(handle, param_zone);
+    password_policy_handle = dpm_context_acquire_password_policy(handle);
     if (password_policy_handle == NULL) {
         printf("Failed to create password policy handle\n");
         return -1;
@@ -436,7 +422,6 @@ int set_max_char_occurrences_handler(int max_char_occur)
 {
     dpm_context_h handle;
     dpm_password_policy_h password_policy_handle;
-    const char param_zone[] = "owner";
 
     handle = dpm_context_create();
     if (handle == NULL) {
@@ -444,7 +429,7 @@ int set_max_char_occurrences_handler(int max_char_occur)
         return -1;
     }
 
-    password_policy_handle = dpm_context_acquire_password_policy(handle, param_zone);
+    password_policy_handle = dpm_context_acquire_password_policy(handle);
     if (password_policy_handle == NULL) {
         printf("Failed to create password policy handle\n");
         return -1;
@@ -465,7 +450,6 @@ int get_max_char_occurrences_handler(int *max_char_occur)
 {
     dpm_context_h handle;
     dpm_password_policy_h password_policy_handle;
-    const char param_zone[] = "owner";
 
     handle = dpm_context_create();
     if (handle == NULL) {
@@ -473,7 +457,7 @@ int get_max_char_occurrences_handler(int *max_char_occur)
         return -1;
     }
 
-    password_policy_handle = dpm_context_acquire_password_policy(handle, param_zone);
+    password_policy_handle = dpm_context_acquire_password_policy(handle);
     if (password_policy_handle == NULL) {
         printf("Failed to create password policy handle\n");
         return -1;
@@ -494,7 +478,6 @@ int set_max_numeric_sequence_length_handler(int max_numeric_seq_length)
 {
     dpm_context_h handle;
     dpm_password_policy_h password_policy_handle;
-    const char param_zone[] = "owner";
 
     handle = dpm_context_create();
     if (handle == NULL) {
@@ -502,7 +485,7 @@ int set_max_numeric_sequence_length_handler(int max_numeric_seq_length)
         return -1;
     }
 
-    password_policy_handle = dpm_context_acquire_password_policy(handle, param_zone);
+    password_policy_handle = dpm_context_acquire_password_policy(handle);
     if (password_policy_handle == NULL) {
         printf("Failed to create password policy handle\n");
         return -1;
@@ -523,7 +506,6 @@ int get_max_numeric_sequence_length_handler(int *max_numeric_seq_length)
 {
     dpm_context_h handle;
     dpm_password_policy_h password_policy_handle;
-    const char param_zone[] = "owner";
 
     handle = dpm_context_create();
     if (handle == NULL) {
@@ -531,7 +513,7 @@ int get_max_numeric_sequence_length_handler(int *max_numeric_seq_length)
         return -1;
     }
 
-    password_policy_handle = dpm_context_acquire_password_policy(handle, param_zone);
+    password_policy_handle = dpm_context_acquire_password_policy(handle);
     if (password_policy_handle == NULL) {
         printf("Failed to create password policy handle\n");
         return -1;

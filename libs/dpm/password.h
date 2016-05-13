@@ -60,7 +60,6 @@ typedef enum {
  *              the policy password policies
  * @since_tizen 3.0
  * @param[in]   handle Device policy context handle
- * @param[in]   zone Target container name.
  * @return      Password policy handle on success, otherwise NULL
  * @remark      The specific error code can be obtained by using the
  *              get_last_result() method. Error codes are described in
@@ -71,7 +70,7 @@ typedef enum {
  * @see         dpm_context_release_password_policy()
  * @see         get_last_result()
  */
-DPM_API dpm_password_policy_h dpm_context_acquire_password_policy(dpm_context_h handle, const char* zone);
+DPM_API dpm_password_policy_h dpm_context_acquire_password_policy(dpm_context_h handle);
 
 /**
  * @brief       Releases the password policy Handle.
