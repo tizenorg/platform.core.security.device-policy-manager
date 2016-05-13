@@ -81,4 +81,3 @@ CONFIGURE_FILE(systemd/device-policy-manager.service.in systemd/device-policy-ma
 INSTALL(TARGETS ${TARGET} DESTINATION bin)
 INSTALL(FILES systemd/device-policy-manager.service DESTINATION ${SYSTEMD_UNIT_INSTALL_DIR})
 INSTALL(FILES data/PolicyManifest.xml DESTINATION ${CONF_INSTALL_DIR}/policy)
-INSTALL(FILES data/DefaultBundleManifest.xml DESTINATION ${CONF_INSTALL_DIR}/zone RENAME owner.xml)
