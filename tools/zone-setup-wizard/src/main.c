@@ -55,13 +55,13 @@ static void __app_control(app_control_h app_control, void *data)
 	appdata_s *ad = (appdata_s *) data;
 	int id, ret = 0;
 
-	ret = app_control_get_extra_data(app_control, "Name", &ad->zone_name);
+	ret = app_control_get_extra_data(app_control, "zone", &ad->zone_name);
 	if (ret != APP_CONTROL_ERROR_NONE) {
 		dlog_print(DLOG_ERROR, LOG_TAG, "failed to get zone name");
 		ui_app_exit();
 	}
 
-	ret = app_control_get_extra_data(app_control, "ProvisionDir", &ad->provision_path);
+	ret = app_control_get_extra_data(app_control, "provisionDir", &ad->provision_path);
 	if (ret != APP_CONTROL_ERROR_NONE) {
 		dlog_print(DLOG_ERROR, LOG_TAG, "failed to get zone provision data path");
 		ui_app_exit();

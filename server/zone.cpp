@@ -13,16 +13,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License
  */
-#include <aul.h>
-#include <bundle.h>
-#include <tzplatform_config.h>
-
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/inotify.h>
 
+#include <tzplatform_config.h>
+
 #include "zone.hxx"
 
+#include "launchpad.h"
+
+#include "error.h"
 #include "smack.h"
 #include "process.h"
 #include "packman.h"
@@ -37,41 +38,229 @@
 #define ZONE_UID_MIN       60001
 #define ZONE_UID_MAX       65000
 
-#define ZONE_GROUP         "users"
-
-#define ZONE_MANIFEST_DIR   CONF_PATH "/zone/"
-#define ZONE_PROVISION_DIR  "/tmp/zone/provision/"
-
-#define FREEDESKTOP_LOGIN_INTERFACE \
-    "org.freedesktop.login1",   \
-    "/org/freedesktop/login1",  \
-    "org.freedesktop.login1.Manager"
-
-#define HOME_SMACKLABEL     "User::Home"
-#define SHARED_SMACKLABEL   "User::App::Shared"
-#define APP_SMACKLABEL   "User::Pkg::"
-
 namespace DevicePolicyManager {
 
-static const char *defaultGroups[] = {"audio", "video", "display", "log", NULL};
-static const char *defaultAppDir[] = {"cache", "data", "shared", NULL};
+namespace {
 
-static void setZoneState(uid_t id, int state)
-{
-    dbus::Connection& systemDBus = dbus::Connection::getSystem();
-    systemDBus.methodcall(FREEDESKTOP_LOGIN_INTERFACE, "SetUserLinger",
-                          -1, "", "(ubb)", id, state, 1);
-}
+const std::vector<std::string> defaultGroups = {
+    "audio",
+    "video",
+    "display",
+    "log"
+};
+
+const std::vector<std::string> defaultAppDirs = {
+    "cache",
+    "data",
+    "shared"
+};
+
+const std::vector<std::string> unitsToMask = {
+    "starter.service",
+    "scim.service"
+};
+
+const std::string ZONE_MANIFEST_DIR = CONF_PATH "/zone/";
+const std::string ZONE_PROVISION_DIR = "/tmp/zone/provision/";
+
+const std::string HOME_SMACKLABEL = "User::Home";
+const std::string SHARED_SMACKLABEL = "User::App::Shared";
+const std::string APP_SMACKLABEL = "User::Pkg::";
+
+const std::string ZONE_GROUP = "users";
 
 template <typename... Args>
-void execute(const std::string& path, Args&&... args)
+inline void execute(const std::string& path, Args&&... args)
 {
     std::vector<std::string> argsVector = { args... };
     runtime::Process proc(path, argsVector);
     proc.execute();
 }
 
+void waitForSetupWizard(const std::string& watch)
+{
+    int fd = ::inotify_init();
+    if (fd < 0) {
+        throw runtime::Exception("Failed to initialize inotify");
+    }
 
+    std::string createfile;
+    char inotifyBuf[sizeof (struct inotify_event) + PATH_MAX + 1];
+    struct inotify_event *event = reinterpret_cast<struct inotify_event *>((void*)inotifyBuf);
+    int wd = ::inotify_add_watch(fd, watch.c_str(), IN_CREATE);
+
+    while (createfile != ".completed") {
+        int ret = ::read(fd, inotifyBuf, sizeof(inotifyBuf));
+        if (ret < 0) {
+            throw runtime::Exception("Failed to get inotify");
+        }
+        createfile = event->name;
+    }
+
+    ::inotify_rm_watch(fd, wd);
+    ::close(fd);
+}
+
+std::string prepareDirectories(const runtime::User& user)
+{
+    //create zone home directories
+    const struct {
+        enum tzplatform_variable dir;
+        const std::string& smack;
+    } dirs[] = {
+        {TZ_USER_HOME, HOME_SMACKLABEL},
+        {TZ_USER_CACHE, SHARED_SMACKLABEL},
+        {TZ_USER_APPROOT, HOME_SMACKLABEL},
+        {TZ_USER_DB, HOME_SMACKLABEL},
+        {TZ_USER_PACKAGES, HOME_SMACKLABEL},
+        {TZ_USER_ICONS, HOME_SMACKLABEL},
+        {TZ_USER_CONFIG, SHARED_SMACKLABEL},
+        {TZ_USER_DATA, HOME_SMACKLABEL},
+        {TZ_USER_SHARE, SHARED_SMACKLABEL},
+        {TZ_USER_ETC, HOME_SMACKLABEL},
+        {TZ_USER_LIVE, HOME_SMACKLABEL},
+        {TZ_USER_UG, HOME_SMACKLABEL},
+        {TZ_USER_APP, HOME_SMACKLABEL},
+        {TZ_USER_CONTENT, SHARED_SMACKLABEL},
+        {TZ_USER_CAMERA, SHARED_SMACKLABEL},
+        {TZ_USER_VIDEOS, SHARED_SMACKLABEL},
+        {TZ_USER_IMAGES, SHARED_SMACKLABEL},
+        {TZ_USER_SOUNDS, SHARED_SMACKLABEL},
+        {TZ_USER_MUSIC, SHARED_SMACKLABEL},
+        {TZ_USER_GAMES, SHARED_SMACKLABEL},
+        {TZ_USER_DOCUMENTS, SHARED_SMACKLABEL},
+        {TZ_USER_OTHERS, SHARED_SMACKLABEL},
+        {TZ_USER_DOWNLOADS, SHARED_SMACKLABEL},
+        {TZ_SYS_HOME, ""},
+    };
+
+    ::umask(0022);
+
+    ::tzplatform_set_user(user.getUid());
+
+    std::string pivot(::tzplatform_getenv(TZ_USER_HOME));
+
+    try {
+        for (int i = 0; dirs[i].dir != TZ_SYS_HOME; i++) {
+            runtime::File dir(::tzplatform_getenv(dirs[i].dir));
+            dir.makeDirectory(false, user.getUid(), user.getGid());
+            runtime::Smack::setAccess(dir, dirs[i].smack);
+            runtime::Smack::setTransmute(dir, true);
+        }
+    } catch (runtime::Exception& e) {
+        ::tzplatform_reset_user();
+        throw runtime::Exception(e.what());
+    }
+
+    ::tzplatform_reset_user();
+
+    return pivot;
+}
+
+void deployPackages(const runtime::User& user)
+{
+    try {
+        //initialize package db
+        execute("/usr/bin/pkg_initdb", "pkg_initdb", std::to_string(user.getUid()));
+
+        PackageManager& packageManager = PackageManager::instance();
+        std::vector<std::string> pkgList = packageManager.getInstalledPackageList(user.getUid());
+
+        ::umask(0022);
+
+        ::tzplatform_set_user(user.getUid());
+        for (const std::string& pkgid : pkgList) {
+            std::string appbase = std::string(::tzplatform_getenv(TZ_USER_APP)) + "/" + pkgid;
+            runtime::File dir(appbase);
+            dir.makeDirectory(false, user.getUid(), user.getGid());
+            runtime::Smack::setAccess(dir, APP_SMACKLABEL + pkgid);
+            runtime::Smack::setTransmute(dir, true);
+
+            for (const std::string& subdir : defaultAppDirs) {
+                runtime::File insideDir(appbase + "/" + subdir);
+                insideDir.makeDirectory(false, user.getUid(), user.getGid());
+            }
+        }
+        ::tzplatform_reset_user();
+    } catch (runtime::Exception& e) {
+        ::tzplatform_reset_user();
+        throw runtime::Exception(e.what());
+    }
+}
+
+void maskUserServices(const std::string& pivot, const runtime::User& user)
+{
+    runtime::File unitbase(pivot + "/.config/systemd/user");
+    unitbase.makeDirectory(true);
+    unitbase.chmod(S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+
+    for (const std::string& unit : unitsToMask) {
+        std::string target = unitbase.getPath() + "/" + unit;
+        if (::symlink("/dev/null", target.c_str()) == -1) {
+            throw runtime::Exception(runtime::GetSystemErrorMessage());
+        }
+    }
+}
+
+void setZoneState(uid_t id, int state)
+{
+    dbus::Connection& systemDBus = dbus::Connection::getSystem();
+    systemDBus.methodcall("org.freedesktop.login1",
+                          "/org/freedesktop/login1",
+                          "org.freedesktop.login1.Manager",
+                          "SetUserLinger",
+                          -1, "", "(ubb)", id, state, 1);
+}
+
+void startZoneProvisioningThread(PolicyControlContext& context, const std::string& name, const std::string& watch)
+{
+    auto provisioningWorker = [name, watch, &context]() {
+        std::unique_ptr<xml::Document> manifest;
+
+        mode_t omask = ::umask(0);
+        try {
+            waitForSetupWizard(watch);
+
+            //create zone user
+            runtime::User user = runtime::User::create(name, ZONE_GROUP, ZONE_UID_MIN, ZONE_UID_MAX);
+            for (const std::string& grp : defaultGroups) {
+                runtime::Group group(grp);
+                group.addMember(name);
+            }
+
+            std::string pivot = prepareDirectories(user);
+            maskUserServices(pivot, user);
+            deployPackages(user);
+
+            //initialize security-manager
+            execute("/usr/bin/security-manager-cmd",
+                    "security-manager-cmd", "--manage-users=add",
+                    "--uid=" + std::to_string(user.getUid()),
+                    "--usertype=normal");
+
+            manifest.reset(xml::Parser::parseFile(watch + "/manifest.xml"));
+            ::umask(0077);
+            manifest->write(ZONE_MANIFEST_DIR + name + ".xml", "UTF-8", true);
+
+            //TODO: write container owner info
+
+            //unlock the user
+            setZoneState(user.getUid(), 1);
+
+            context.notify("ZonePolicy::created", name, std::string());
+        } catch (runtime::Exception& e) {
+            ERROR(e.what());
+            context.notify("ZonePolicy::removed", name, std::string());
+        }
+
+        ::umask(omask);
+    };
+
+    std::thread asyncWork(provisioningWorker);
+    asyncWork.detach();
+}
+
+} // namespace
 
 ZonePolicy::ZonePolicy(PolicyControlContext& ctx)
     : context(ctx)
@@ -95,211 +284,46 @@ int ZonePolicy::createZone(const std::string& name, const std::string& setupWizA
 {
     std::string provisionDirPath(ZONE_PROVISION_DIR + name);
     runtime::File provisionDir(provisionDirPath);
-    int ret;
 
     try {
-        provisionDir.remove(true);
-    } catch (runtime::Exception& e) {}
+        if (provisionDir.exists()) {
+            provisionDir.remove(true);
+        }
 
-    try {
         //create a directory for zone setup
         provisionDir.makeDirectory(true);
         runtime::Smack::setAccess(provisionDir, APP_SMACKLABEL + setupWizAppid);
 
-        //launch setup-wizard app
-        bundle *b = ::bundle_create();
-        ::bundle_add_str(b, "Name", name.c_str());
-        ::bundle_add_str(b, "ProvisionDir", provisionDirPath.c_str());
+        Bundle bundle;
+        bundle.add("zone", name);
+        bundle.add("provisionDir", provisionDirPath);
 
-        ret = ::aul_launch_app_for_uid(setupWizAppid.c_str(), b, context.getPeerUid());
-        ::bundle_free(b);
-
-        if (ret < 0) {
-            throw runtime::Exception("Failed to launch application: " + std::to_string(ret));
+        Launchpad launchpad(context.getPeerUid());
+        if (launchpad.launch(setupWizAppid, bundle) < 0) {
+            throw runtime::Exception("Failed to launch application: " + setupWizAppid);
         }
-    } catch (runtime::Exception& e) {}
 
-    auto create = [name, setupWizAppid, provisionDirPath, this] {
-        std::unique_ptr<xml::Document> bundleXml;
-        xml::Node::NodeList nodes;
-        mode_t old_mask;
-        int ret;
+        startZoneProvisioningThread(context, name, provisionDirPath);
+    } catch (runtime::Exception& e) {
+        ERROR(e.what());
 
-        old_mask = ::umask(0);
-        try {
-            //attach a directory for inotify
-            int fd = inotify_init();
-            if (fd < 0) {
-                throw runtime::Exception("Failed to initialize inotify");
-            }
-
-            std::string createfile;
-            char inotifyBuf[sizeof (struct inotify_event) + PATH_MAX + 1];
-            struct inotify_event *event = reinterpret_cast<struct inotify_event *>((void*)inotifyBuf);
-            int wd = inotify_add_watch(fd, provisionDirPath.c_str(), IN_CREATE);
-
-            while (createfile != ".completed") {
-                ret = read(fd, inotifyBuf, sizeof(inotifyBuf));
-                if (ret < 0) {
-                    throw runtime::Exception("Failed to get inotify");
-                }
-                createfile = event->name;
-            }
-
-            inotify_rm_watch(fd, wd);
-            close(fd);
-
-            //create zone user
-            runtime::User user = runtime::User::create
-                                (name, ZONE_GROUP, ZONE_UID_MIN, ZONE_UID_MAX);
-
-            //create zone home directories
-            const struct {
-                enum tzplatform_variable dir;
-                const char* smack;
-            } dirs[] = {
-                {TZ_USER_HOME, HOME_SMACKLABEL},
-                {TZ_USER_CACHE, SHARED_SMACKLABEL},
-                {TZ_USER_APPROOT, HOME_SMACKLABEL},
-                {TZ_USER_DB, HOME_SMACKLABEL},
-                {TZ_USER_PACKAGES, HOME_SMACKLABEL},
-                {TZ_USER_ICONS, HOME_SMACKLABEL},
-                {TZ_USER_CONFIG, SHARED_SMACKLABEL},
-                {TZ_USER_DATA, HOME_SMACKLABEL},
-                {TZ_USER_SHARE, SHARED_SMACKLABEL},
-                {TZ_USER_ETC, HOME_SMACKLABEL},
-                {TZ_USER_LIVE, HOME_SMACKLABEL},
-                {TZ_USER_UG, HOME_SMACKLABEL},
-                {TZ_USER_APP, HOME_SMACKLABEL},
-                {TZ_USER_CONTENT, SHARED_SMACKLABEL},
-                {TZ_USER_CAMERA, SHARED_SMACKLABEL},
-                {TZ_USER_VIDEOS, SHARED_SMACKLABEL},
-                {TZ_USER_IMAGES, SHARED_SMACKLABEL},
-                {TZ_USER_SOUNDS, SHARED_SMACKLABEL},
-                {TZ_USER_MUSIC, SHARED_SMACKLABEL},
-                {TZ_USER_GAMES, SHARED_SMACKLABEL},
-                {TZ_USER_DOCUMENTS, SHARED_SMACKLABEL},
-                {TZ_USER_OTHERS, SHARED_SMACKLABEL},
-                {TZ_USER_DOWNLOADS, SHARED_SMACKLABEL},
-                {TZ_SYS_HOME, NULL},
-            };
-
-            ::umask(0022);
-
-            ::tzplatform_set_user(user.getUid());
-            for (int i = 0; dirs[i].dir != TZ_SYS_HOME; i++) {
-                runtime::File dir(std::string(::tzplatform_getenv(dirs[i].dir)));
-                try {
-                    dir.makeDirectory();
-                } catch (runtime::Exception& e) {}
-                dir.chown(user.getUid(), user.getGid());
-                runtime::Smack::setAccess(dir, dirs[i].smack);
-                runtime::Smack::setTransmute(dir, true);
-            }
-            std::string homeDir = ::tzplatform_getenv(TZ_USER_HOME);
-            std::string appDir = ::tzplatform_getenv(TZ_USER_APP);
-            ::tzplatform_reset_user();
-
-            //create systemd user unit directory
-            runtime::File systemdUserUnit(homeDir + "/.config/systemd/user");
-            systemdUserUnit.makeDirectory(true);
-
-            //mask systemd user unit
-            ret = ::symlink("/dev/null",
-                      (systemdUserUnit.getPath() + "/starter.service").c_str());
-
-            if (ret != 0)
-                throw runtime::Exception("Failed to mask starter.service");
-
-            for (int i = 0; defaultGroups[i]; i++) {
-                runtime::Group grp(defaultGroups[i]);
-                grp.addMember(name);
-            }
-
-            //initialize package db
-            execute("/usr/bin/pkg_initdb",
-                    "pkg_initdb", std::to_string(user.getUid()));
-
-            //initialize security-manager
-            execute("/usr/bin/security-manager-cmd",
-                    "security-manager-cmd", "--manage-users=add",
-                    "--uid=" + std::to_string(user.getUid()),
-                    "--usertype=normal");
-
-            //initialize package rw directory in home
-            std::vector<std::string> pkgList = PackageManager::instance().
-                                        getInstalledPackageList(user.getUid());
-            for (std::vector<std::string>::iterator it = pkgList.begin();
-                 it != pkgList.end(); it++) {
-                runtime::File dir(appDir + "/" + *it);
-                try {
-                    dir.makeDirectory();
-                    dir.chown(user.getUid(), user.getGid());
-                    runtime::Smack::setAccess(dir, APP_SMACKLABEL + *it);
-                    runtime::Smack::setTransmute(dir, true);
-                    for (int i = 0; defaultAppDir[i]; i++) {
-                        runtime::File insideDir(dir.getPath() + "/" + defaultAppDir[i]);
-                        insideDir.makeDirectory();
-                        insideDir.chown(user.getUid(), user.getGid());
-                    }
-                } catch (runtime::Exception& e) {}
-            }
-
-            //read manifest xml file
-            bundleXml = std::unique_ptr<xml::Document>(xml::Parser::parseFile(provisionDirPath + "/manifest.xml"));
-
-            //execute hooks of creation
-            std::vector<std::string> args;
-            args.push_back("");
-            args.push_back(name);
-            args.push_back(std::to_string(user.getUid()));
-            args.push_back(std::to_string(user.getGid()));
-
-            nodes = bundleXml->evaluate("//bundle-manifest/hooks/create");
-            for (xml::Node::NodeList::iterator it = nodes.begin();
-                    it != nodes.end(); it++) {
-                std::string path = it->getChildren().begin()->getContent();
-                args[0] = path;
-                runtime::Process exec(path, args);
-                exec.execute();
-            }
-
-            //TODO: write container owner info
-
-            //write manifest file
-            ::umask(0077);
-            bundleXml->write(ZONE_MANIFEST_DIR + name + ".xml", "UTF-8", true);
-
-            //unlock the user
-            setZoneState(user.getUid(), 1);
-
-            context.notify("ZonePolicy::created", name, std::string());
-        } catch (runtime::Exception& e) {
-            ERROR(e.what());
+        if (provisionDir.exists()) {
+            provisionDir.remove(true);
         }
-        ::umask(old_mask);
-    };
-
-    std::thread asyncWork(create);
-    asyncWork.detach();
+        return -1;
+    }
 
     return 0;
 }
 
 int ZonePolicy::removeZone(const std::string& name)
 {
-    int ret;
-
-    //lock the user
-    ret = lockZone(name);
-    if (ret != 0) {
+    if (lockZone(name) != 0) {
         return -1;
     }
 
     auto remove = [name, this] {
-        runtime::File bundle(ZONE_MANIFEST_DIR + name + ".xml");
-        std::unique_ptr<xml::Document> bundleXml;
-        xml::Node::NodeList nodes;
+        runtime::File manifest(ZONE_MANIFEST_DIR + name + ".xml");
 
         try {
             runtime::User user(name);
@@ -307,33 +331,16 @@ int ZonePolicy::removeZone(const std::string& name)
             //remove notification for ckm-tool
             execute("/usr/bin/ckm_tool",
                     "ckm_tool", "-d", std::to_string(user.getUid()));
+
             //initialize security-manager
             execute("/usr/bin/security-manager-cmd",
                     "security-manager-cmd",
                     "--manage-users=remove",
                     "--uid=" + std::to_string(user.getUid()));
 
-            //execute hooks of destroy
-            std::vector<std::string> args;
-            args.push_back("");
-            args.push_back(name);
-            args.push_back(std::to_string(user.getUid()));
-            args.push_back(std::to_string(user.getGid()));
-
-            bundleXml = std::unique_ptr<xml::Document>(xml::Parser::parseFile(bundle.getPath()));
-            nodes = bundleXml->evaluate("//bundle-manifest/hooks/destroy");
-            for (xml::Node::NodeList::iterator it = nodes.begin();
-                    it != nodes.end(); it++) {
-                std::string path = it->getChildren().begin()->getContent();
-                args[0] = path;
-                runtime::Process exec(path, args);
-                exec.execute();
-            }
-
             //remove zone user
             user.remove();
-
-            bundle.remove();
+            manifest.remove();
 
             context.notify("ZonePolicy::removed", name, std::string());
         } catch (runtime::Exception& e) {

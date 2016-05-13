@@ -186,7 +186,7 @@ mkdir -p %{setup_home}/data
 %manifest tools/zone-setup-wizard/org.tizen.zone-setup-wizard.manifest
 %{setup_home}/bin/*
 %{setup_home}/res/*
-%{setup_home}/res/data/.sample-BundleManifest.xml
+%{setup_home}/res/data/ZoneManifest.xml
 %{setup_home}/data
 %{TZ_SYS_RO_PACKAGES}/org.tizen.zone-setup-wizard.xml
 
@@ -218,16 +218,16 @@ Requires: systemd
 PAM Plugin for zone policy in device policy manager and CLI tool
 
 %post -n dpm-pam-zone
-##mv /etc/pam.d/systemd-user /etc/pam.d/systemd-user.old
-##cp /etc/pam.d/systemd-user-zone /etc/pam.d/systemd-user
+mv /etc/pam.d/systemd-user /etc/pam.d/systemd-user.keep
+cp /etc/pam.d/systemd-user-zone /etc/pam.d/systemd-user
 
 %postun -n dpm-pam-zone
-##mv /etc/pam.d/systemd-user.old /etc/pam.d/systemd-user
+mv /etc/pam.d/systemd-user.keep /etc/pam.d/systemd-user
 
 %files -n dpm-pam-zone
 %defattr(600,root,root,700)
 %attr(700,root,root) %{_libdir}/security/pam_*.so
-%attr(700,root,root) %{_sbindir}/nsattach
+%attr(700,root,root) %{_sbindir}/zone-admin-cli
 %config /etc/pam.d/*
 
 ## CLI Toolkit Package ##############################################################
