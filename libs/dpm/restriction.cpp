@@ -16,6 +16,7 @@
 
 #include "restriction.h"
 #include "restriction.hxx"
+#include "bluetooth.hxx"
 
 #include "debug.h"
 #include "policy-client.h"
@@ -257,5 +258,28 @@ int dpm_restriction_get_bluetooth_tethering_state(dpm_restriction_policy_h handl
         return -1;
     }
     *state = ret;
+    return DPM_ERROR_NONE;
+}
+
+int dpm_restriction_set_bluetooth_mode_change_state(dpm_restriction_policy_h handle, int enable)
+{
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+
+    BluetoothPolicy& bluetooth = GetPolicyInterface<BluetoothPolicy>(handle);
+    return bluetooth.setModeChangeState(enable);
+}
+
+int dpm_restriction_get_bluetooth_mode_change_state(dpm_restriction_policy_h handle, int *enable)
+{
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(enable, DPM_ERROR_INVALID_PARAMETER);
+
+    BluetoothPolicy& bluetooth = GetPolicyInterface<BluetoothPolicy>(handle);
+    int ret = bluetooth.getModeChangeState();
+    if (ret < 0) {
+        return -1;
+    }
+    *enable = ret;
+
     return DPM_ERROR_NONE;
 }
