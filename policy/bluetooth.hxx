@@ -32,6 +32,8 @@ public:
     BluetoothPolicy(PolicyControlContext& ctxt);
     ~BluetoothPolicy();
 
+    PolicyControlContext& getContext() { return context; }
+
     int addDeviceToBlacklist(const std::string& mac);
     int removeDeviceFromBlacklist(const std::string& mac);
     int setDeviceRestriction(const bool enable);
