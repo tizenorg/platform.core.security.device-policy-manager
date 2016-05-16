@@ -72,6 +72,8 @@ int add_uuid_to_blacklist_handler(const char *uuid);
 int remove_uuid_from_blacklist_handler(const char *uuid);
 int set_uuid_restriction_handler(const int enable);
 int is_uuid_restricted_handler(int *enable);
+int set_mode_change_state_handler(const int enable);
+int is_mode_change_state_handler(int *enable);
 
 int set_camera_state_handler(int state);
 int get_camera_state_handler(int *state);

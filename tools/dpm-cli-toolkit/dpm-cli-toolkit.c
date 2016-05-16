@@ -68,6 +68,8 @@ void print_menu(int num)
         printf("6. Remove uuid from blacklist\n");
         printf("7. Set uuid restriction\n");
         printf("8. Check uuid restriction\n");
+        printf("9. Set mode change state\n");
+        printf("10. Check mode change state\n");
         break;
     default:
         break;
@@ -444,6 +446,27 @@ void bluetooth_policy_handler(void)
                 printf("UUID Restriction: Disallowed\n");
             else
                 printf("UUID Restriction: Allowed\n");
+        }
+        break;
+    case 9:
+        printf("enable(1) or disable(0)> ");
+        if (scanf("%d", &enable) < 0) {
+            input_status = -1;
+            goto out;
+        }
+        if ((enable != 0) && (enable != 1)) {
+            input_status = -1;
+            goto out;
+        }
+        ret = set_mode_change_state_handler(enable);
+        break;
+    case 10:
+        ret = is_mode_change_state_handler(&enable);
+        if (ret == 0) {
+            if (enable == 0)
+                printf("Mode change state: Disallowed\n");
+            else
+                printf("Mode change state: Allowed\n");
         }
         break;
     default:
