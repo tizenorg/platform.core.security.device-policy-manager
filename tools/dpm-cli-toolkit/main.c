@@ -32,7 +32,7 @@ void print_rule(void)
     printf("Ex: dpm-cli-toolkit -s password\n");
     printf("--------------------------------------------------------------\n");
     printf("[Restrictioin Polocy]\n");
-    printf("camera, microphone, location, clipboard, settings, usb_debugging\n");
+    printf("camera, microphone, location, clipboard, settings, usb_debugging, bluetooth_tethering\n");
     printf("Usage: dpm-cli-toolkit -s [policy-name] -v [value: 0 or 1]\n");
     printf("Ex: dpm-cli-toolkit -s camera -v 1\n");
     printf("--------------------------------------------------------------\n");
@@ -134,7 +134,7 @@ void restriction_policy_command_handler(char *policy, int command, int state)
         settings_policy_handler(command, state);
     else if (strcmp(policy, "usb_debugging") == 0)
         usb_debugging_policy_handler(command, state);
-    else if (strcmp(policy, "bluetooth-tethering") == 0)
+    else if (strcmp(policy, "bluetooth_tethering") == 0)
         bluetooth_tethering_policy_handler(command, state);
     else {
         printf("Wrong policy name! Please refer to the policy names bleow.\n");
