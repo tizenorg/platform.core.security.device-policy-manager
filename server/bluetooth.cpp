@@ -23,6 +23,32 @@
 #include "policy-helper.h"
 #include "audit/logger.h"
 
+namespace {
+
+/**
+ * @brief The callback function to invoke when BT adaper's stae were changed.
+ */
+void bluetoothAdapterStateChangedCb(int result, bt_adapter_state_e state, void *user_data)
+{
+    if (state == BT_ADAPTER_ENABLED) {
+        DevicePolicyManager::BluetoothPolicy* bluetooth_policy = (DevicePolicyManager::BluetoothPolicy*)user_data;
+        if (bluetooth_policy == nullptr)
+            throw runtime::Exception("Invalid argument");
+
+        int ret = BLUETOOTH_DPM_RESULT_SUCCESS;
+        ret = bluetooth_policy->setDeviceRestriction(IsPolicyEnabled(bluetooth_policy->getContext(), "bluetooth-device-restriction"));
+        if (ret != BLUETOOTH_DPM_RESULT_SUCCESS) {
+            (bluetooth_policy->getContext()).notify("bluetooth-fail-set-policy", "bluetooth-device-restriction");
+        }
+        bluetooth_policy->setUuidRestriction(IsPolicyEnabled(bluetooth_policy->getContext(), "bluetooth-uuid-restriction"));
+        if (ret != BLUETOOTH_DPM_RESULT_SUCCESS) {
+            (bluetooth_policy->getContext()).notify("bluetooth-fail-set-policy", "bluetooth-uuid-restriction");
+        }
+    }
+}
+
+} // namespace
+
 namespace DevicePolicyManager {
 
 BluetoothPolicy::BluetoothPolicy(PolicyControlContext& ctxt) :
@@ -40,10 +66,25 @@ BluetoothPolicy::BluetoothPolicy(PolicyControlContext& ctxt) :
     ctxt.createNotification("bluetooth");
     ctxt.createNotification("bluetooth-uuid-restriction");
     ctxt.createNotification("bluetooth-device-restriction");
+
+    // When fail to call bluetooth APIs, notify what policy was failed to DPM.
+    // Re-enforcing notification for DPM
+    ctxt.createNotification("bluetooth-fail-set-policy");
+
+    // Register
+    int ret = bt_initialize();
+    if (ret != BT_ERROR_NONE) {
+        throw runtime::Exception("failed to initialize the Bluetooth API");
+    }
+    ret = bt_adapter_set_state_changed_cb(::bluetoothAdapterStateChangedCb, this);
+    if (ret != BT_ERROR_NONE) {
+        throw runtime::Exception("failed to register a callback function to be invoked when the Bluetooth adapter state changes");
+    }
 }
 
 BluetoothPolicy::~BluetoothPolicy()
 {
+    bt_deinitialize();
 }
 
 int BluetoothPolicy::addDeviceToBlacklist(const std::string& mac)
