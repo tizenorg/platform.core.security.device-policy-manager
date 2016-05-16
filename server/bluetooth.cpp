@@ -23,6 +23,18 @@
 #include "policy-helper.h"
 #include "audit/logger.h"
 
+namespace {
+
+void bluetoothAdapterStateChangedCb(int result, bt_adapter_state_e state, void *user_data)
+{
+    //TODO(seok85.hong): user_data -> convert -> context
+    //TODO(seok85.hong): context
+    ERROR("bt adapter state changed callback");
+    ERROR("state : " + std::string(state == BT_ADAPTER_ENABLED ? "enabled" : "disabled"));
+}
+
+} // namespace
+
 namespace DevicePolicyManager {
 
 BluetoothPolicy::BluetoothPolicy(PolicyControlContext& ctxt) :
