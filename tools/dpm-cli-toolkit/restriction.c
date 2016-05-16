@@ -584,3 +584,58 @@ int is_mode_change_state_handler(int *enable)
 
     return 0;
 }
+
+int set_bluetooth_desktop_connectivity_handler(int state)
+{
+    dpm_context_h context;
+    context = dpm_context_create();
+    if (context == NULL) {
+        printf("Failed to create client context\n");
+        return -1;
+    }
+
+    dpm_restriction_policy_h policy = dpm_context_acquire_restriction_policy(context);
+    if (policy == NULL) {
+        printf("Failed to get restriction policy interface\n");
+        dpm_context_destroy(context);
+        return -1;
+    }
+
+    if (dpm_restriction_set_bluetooth_desktop_connectivity_state(policy, state) < 0) {
+        printf("Failed to set mode change state\n");
+        dpm_context_release_restriction_policy(context, policy);
+        dpm_context_destroy(context);
+        return -1;
+    }
+
+    return 0;
+}
+
+int get_bluetooth_desktop_connectivity_handler(int *state)
+{
+    dpm_context_h context;
+    context = dpm_context_create();
+    if (context == NULL) {
+        printf("Failed to create client context\n");
+        return -1;
+    }
+
+    dpm_restriction_policy_h policy = dpm_context_acquire_restriction_policy(context);
+    if (policy == NULL) {
+        printf("Failed to get restriction policy interface\n");
+        dpm_context_destroy(context);
+        return -1;
+    }
+
+    if (dpm_restriction_get_bluetooth_desktop_connectivity_state(policy, state) != DPM_ERROR_NONE) {
+        printf("Failed to check mode change state\n");
+        dpm_context_release_restriction_policy(context, policy);
+        dpm_context_destroy(context);
+        return -1;
+    }
+
+    dpm_context_release_restriction_policy(context, policy);
+    dpm_context_destroy(context);
+
+    return 0;
+}
