@@ -37,6 +37,8 @@ public:
     // for restriction CPIs
     int setModeChangeState(const bool enable);
     bool getModeChangeState();
+    int setDesktopConnectivityState(const bool enable);
+    bool getDesktopConnectivityState();
 
     // for bluetooth CAPIs
     int addDeviceToBlacklist(const std::string& mac);
