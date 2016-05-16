@@ -28,6 +28,26 @@ BluetoothPolicy::~BluetoothPolicy()
 {
 }
 
+// for restriction CPIs
+int BluetoothPolicy::setModeChangeState(const bool enable)
+{
+    try {
+        return context->methodCall<int>("BluetoothPolicy::setModeChangeState", enable);
+    } catch (runtime::Exception& e) {
+        return -1;
+    }
+}
+
+bool BluetoothPolicy::getModeChangeState()
+{
+    try {
+        return context->methodCall<bool>("BluetoothPolicy::getModeChangeState");
+    } catch (runtime::Exception& e) {
+        return -1;
+    }
+}
+
+// for bluetooth CAPIs
 int BluetoothPolicy::addDeviceToBlacklist(const std::string& mac)
 {
     try {
