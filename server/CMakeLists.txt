@@ -54,6 +54,7 @@ PKG_CHECK_MODULES(SERVER_DEPS
 				  deviced
 				  libtzplatform-config
 				  bluetooth-api
+				  capi-network-bluetooth
 				  auth-fw-admin
 				  capi-network-wifi
 				  capi-system-info

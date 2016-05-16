@@ -32,6 +32,11 @@ public:
     BluetoothPolicy(PolicyControlContext& ctxt);
     ~BluetoothPolicy();
 
+    // for restriction CPIs
+    int setModeChangeState(const bool enable);
+    bool getModeChangeState();
+
+    // for bluetooth CAPIs
     int addDeviceToBlacklist(const std::string& mac);
     int removeDeviceFromBlacklist(const std::string& mac);
     int setDeviceRestriction(const bool enable);

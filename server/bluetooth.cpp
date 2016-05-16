@@ -54,13 +54,17 @@ void bluetoothAdapterStateChangedCb(int result, bt_adapter_state_e state, void *
         // NOTE: "re-enforce-policy" : we can notify to admin client with this notification,
         //                             when we should be re-enforced again for the policy that we were failed to set into Bluetooth
         int ret = BLUETOOTH_DPM_RESULT_SUCCESS;
+        ret = bt_policy.setModeChangeState(IsPolicyEnabled(bt_ctxt, "bluetooth"));
+        if (ret != BLUETOOTH_DPM_RESULT_SUCCESS) {
+            bt_ctxt.notify("re-enforce-policy", "bluetooth");
+        }
         ret = bt_policy.setDeviceRestriction(IsPolicyEnabled(bt_ctxt, "bluetooth-device-restriction"));
         if (ret != BLUETOOTH_DPM_RESULT_SUCCESS) {
-            (bt_ctxt).notify("re-enforce-policy", "bluetooth-device-restriction");
+            bt_ctxt.notify("re-enforce-policy", "bluetooth-device-restriction");
         }
         ret = bt_policy.setUuidRestriction(IsPolicyEnabled(bt_ctxt, "bluetooth-uuid-restriction"));
         if (ret != BLUETOOTH_DPM_RESULT_SUCCESS) {
-            (bt_ctxt).notify("re-enforce-policy", "bluetooth-uuid-restriction");
+            bt_ctxt.notify("re-enforce-policy", "bluetooth-uuid-restriction");
         }
     }
 }
@@ -72,6 +76,10 @@ namespace DevicePolicyManager {
 BluetoothPolicy::BluetoothPolicy(PolicyControlContext& ctxt) :
     context(ctxt)
 {
+    // for restriction CPIs
+    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::setModeChangeState)(bool));
+    ctxt.registerNonparametricMethod(this, (bool)(BluetoothPolicy::getModeChangeState));
+    // for bluetooth CPIs
     ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::addDeviceToBlacklist)(std::string));
     ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::removeDeviceFromBlacklist)(std::string));
     ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::setDeviceRestriction)(bool));
@@ -100,6 +108,25 @@ BluetoothPolicy::BluetoothPolicy(PolicyControlContext& ctxt) :
 BluetoothPolicy::~BluetoothPolicy()
 {
     bt_deinitialize();
+}
+
+int BluetoothPolicy::setModeChangeState(const bool enable)
+{
+    int ret = BLUETOOTH_DPM_RESULT_SUCCESS;
+    ret = bluetooth_dpm_set_allow_mode(enable == true ? BLUETOOTH_DPM_BT_ALLOWED : BLUETOOTH_DPM_BT_RESTRICTED);
+    if (ret == BLUETOOTH_DPM_RESULT_ACCESS_DENIED ||
+        ret == BLUETOOTH_DPM_RESULT_FAIL) {
+        return -1;
+    }
+
+    SetPolicyEnabled(context, "bluetooth", enable);
+
+    return 0;
+}
+
+bool BluetoothPolicy::getModeChangeState()
+{
+    return IsPolicyEnabled(context, "bluetooth");
 }
 
 int BluetoothPolicy::addDeviceToBlacklist(const std::string& mac)
