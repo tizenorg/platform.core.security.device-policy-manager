@@ -30,6 +30,10 @@ Server::Server()
 
     service->registerParametricMethod(this, (FileDescriptor)(Server::registerNotificationSubscriber)(std::string));
     service->registerParametricMethod(this, (int)(Server::unregisterNotificationSubscriber)(std::string, int));
+
+    // NOTE: "re-enforce-policy" : we can notify to admin client with this notification,
+    //                             when we should be re-enforced again for the policy that we were failed to set into platform
+    createNotification("re-enforce-policy");
 }
 
 Server::~Server()
