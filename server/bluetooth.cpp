@@ -48,17 +48,43 @@ BluetoothPolicy::~BluetoothPolicy()
 
 int BluetoothPolicy::addDeviceToBlacklist(const std::string& mac)
 {
-    return 0;
+    int ret = BLUETOOTH_DPM_RESULT_SUCCESS;
+    // to avoid mac address check and convert to bluetooth_device_address_t,
+    // use capi-network-bluetooth CAPI without bluetooth-api CAPI.
+    ret = bt_dpm_add_devices_to_blacklist(mac.c_str());
+    if (ret == BLUETOOTH_DPM_RESULT_ACCESS_DENIED ||
+        ret == BLUETOOTH_DPM_RESULT_FAIL) {
+        return -1;
+    }
+
+    return ret;
 }
 
 int BluetoothPolicy::removeDeviceFromBlacklist(const std::string& mac)
 {
-    return 0;
+    int ret = BLUETOOTH_DPM_RESULT_SUCCESS;
+    // to avoid mac address check and convert to bluetooth_device_address_t,
+    // use capi-network-bluetooth CAPI without bluetooth-api CAPI.
+    ret = bt_dpm_remove_device_from_blacklist(mac.c_str());
+    if (ret == BLUETOOTH_DPM_RESULT_ACCESS_DENIED ||
+        ret == BLUETOOTH_DPM_RESULT_FAIL) {
+        return -1;
+    }
+
+    return ret;
 }
 
 int BluetoothPolicy::setDeviceRestriction(const bool enable)
 {
+    int ret = BLUETOOTH_DPM_RESULT_SUCCESS;
+    ret = bluetooth_dpm_activate_device_restriction(enable == true ? BLUETOOTH_DPM_RESTRICTED : BLUETOOTH_DPM_ALLOWED);
+    if (ret == BLUETOOTH_DPM_RESULT_ACCESS_DENIED ||
+        ret == BLUETOOTH_DPM_RESULT_FAIL) {
+        return -1;
+    }
+
     SetPolicyEnabled(context, "bluetooth-device-restriction", enable);
+
     return 0;
 }
 
@@ -69,17 +95,39 @@ bool BluetoothPolicy::isDeviceRestricted()
 
 int BluetoothPolicy::addUuidToBlacklist(const std::string& uuid)
 {
-    return 0;
+    int ret = BLUETOOTH_DPM_RESULT_SUCCESS;
+    ret = bluetooth_dpm_add_uuids_to_blacklist(uuid.c_str());
+    if (ret == BLUETOOTH_DPM_RESULT_ACCESS_DENIED ||
+        ret == BLUETOOTH_DPM_RESULT_FAIL) {
+        return -1;
+    }
+
+    return ret;
 }
 
 int BluetoothPolicy::removeUuidFromBlacklist(const std::string& uuid)
 {
-    return 0;
+    int ret = BLUETOOTH_DPM_RESULT_SUCCESS;
+    ret = bluetooth_dpm_remove_uuid_from_blacklist(uuid.c_str());
+    if (ret == BLUETOOTH_DPM_RESULT_ACCESS_DENIED ||
+        ret == BLUETOOTH_DPM_RESULT_FAIL) {
+        return -1;
+    }
+
+    return ret;
 }
 
 int BluetoothPolicy::setUuidRestriction(const bool enable)
 {
+    int ret = BLUETOOTH_DPM_RESULT_SUCCESS;
+    ret = bluetooth_dpm_activate_uuid_restriction(enable == true ? BLUETOOTH_DPM_RESTRICTED : BLUETOOTH_DPM_ALLOWED);
+    if (ret == BLUETOOTH_DPM_RESULT_ACCESS_DENIED ||
+        ret == BLUETOOTH_DPM_RESULT_FAIL) {
+        return -1;
+    }
+
     SetPolicyEnabled(context, "bluetooth-uuid-restriction", enable);
+
     return 0;
 }
 
