@@ -47,6 +47,25 @@ bool BluetoothPolicy::getModeChangeState()
     }
 }
 
+int BluetoothPolicy::setDesktopConnectivityState(const bool enable)
+{
+    try {
+        return context->methodCall<bool>("BluetoothPolicy::setDesktopConnectivityState");
+    } catch (runtime::Exception& e) {
+        return -1;
+    }
+}
+
+bool BluetoothPolicy::getDesktopConnectivityState()
+{
+    try {
+        return context->methodCall<bool>("BluetoothPolicy::getDesktopConnectivityState");
+    } catch (runtime::Exception& e) {
+        return -1;
+    }
+}
+
+
 // for bluetooth CAPIs
 int BluetoothPolicy::addDeviceToBlacklist(const std::string& mac)
 {
