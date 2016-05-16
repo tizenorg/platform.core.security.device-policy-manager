@@ -535,6 +535,46 @@ DPM_API int dpm_restriction_set_bluetooth_mode_change_state(dpm_restriction_poli
 DPM_API int dpm_restriction_get_bluetooth_mode_change_state(dpm_restriction_policy_h handle, int *enable);
 
 /**
+ * @brief       Checks whether the the Bluetooth desktop connectivity is restricted.
+ * @details     An administrator can use this API to check whether the Bluetooth desktop connectivity
+ *              is restricted.
+ *              If the Bluetooth desktop connectivity is restricted, the UI is grayed out so user can not
+ *              change its state.
+ * @since_tizen 3.0
+ * @param[in]   handle The restriction policy handle
+ * @param[out]  enable TRUE if modification is allowed,
+ *              FALSE if modification is denied
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_TIMEOUT Time out
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @pre         handle must be created by dpm_context_acquire_restriction_policy()
+ * @see         dpm_context_acquire_restriction_policy()
+ * @see         dpm_context_release_restriction_policy()
+ * @see         dpm_restriction_get_bluetooth_desktop_connectivity_state()
+ */
+DPM_API int dpm_restriction_set_bluetooth_desktop_connectivity_state(dpm_restriction_policy_h handle, const int enable);
+
+/**
+ * @brief       Checks whether the the Bluetooth desktop connectivity is restricted.
+ * @details     An administrator can use this API to check whether the Bluetooth desktop connectivity is restricted.
+ *              If the Bluetooth desktop connectivity is restricted, the UI is grayed out so user can not change its state.
+ * @since_tizen 3.0
+ * @param[in]   handle The restriction policy handle
+ * @param[out]  enable TRUE if modification is allowed,
+ *              FALSE if modification is denied
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_TIMEOUT Time out
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @pre         handle must be created by dpm_context_acquire_restriction_policy()
+ * @see         dpm_context_acquire_restriction_policy()
+ * @see         dpm_context_release_restriction_policy()
+ * @see         dpm_restriction_set_bluetooth_desktop_connectivity_state()
+ */
+DPM_API int dpm_restriction_get_bluetooth_desktop_connectivity_state(dpm_restriction_policy_h handle, int *enable);
+
+/**
  * @} // end of DPM_RESTRICTION_POLICY
  */
 

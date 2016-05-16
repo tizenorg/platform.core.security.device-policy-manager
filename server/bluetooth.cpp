@@ -58,6 +58,10 @@ void bluetoothAdapterStateChangedCb(int result, bt_adapter_state_e state, void *
         if (ret != BLUETOOTH_DPM_RESULT_SUCCESS) {
             // TODO(seok85.hong): we can notify to admin client with this notification.
         }
+        ret = policy.setDesktopConnectivityState(IsPolicyEnabled(context, "bluetooth-desktop-connectivity"));
+        if (ret != BLUETOOTH_DPM_RESULT_SUCCESS) {
+            // TODO(seok85.hong): we can notify to admin client with this notification.
+        }
         ret = policy.setDeviceRestriction(IsPolicyEnabled(context, "bluetooth-device-restriction"));
         if (ret != BLUETOOTH_DPM_RESULT_SUCCESS) {
             // TODO(seok85.hong): we can notify to admin client with this notification.
@@ -79,6 +83,8 @@ BluetoothPolicy::BluetoothPolicy(PolicyControlContext& ctxt) :
     // for restriction CPIs
     ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::setModeChangeState)(bool));
     ctxt.registerNonparametricMethod(this, (bool)(BluetoothPolicy::getModeChangeState));
+    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::setDesktopConnectivityState)(bool));
+    ctxt.registerNonparametricMethod(this, (bool)(BluetoothPolicy::getDesktopConnectivityState));
     // for bluetooth CPIs
     ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::addDeviceToBlacklist)(std::string));
     ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::removeDeviceFromBlacklist)(std::string));
@@ -90,6 +96,7 @@ BluetoothPolicy::BluetoothPolicy(PolicyControlContext& ctxt) :
     ctxt.registerNonparametricMethod(this, (bool)(BluetoothPolicy::isUuidRestricted));
 
     ctxt.createNotification("bluetooth");
+    ctxt.createNotification("bluetooth-desktop-connectivity");
     ctxt.createNotification("bluetooth-uuid-restriction");
     ctxt.createNotification("bluetooth-device-restriction");
 
@@ -127,6 +134,25 @@ int BluetoothPolicy::setModeChangeState(const bool enable)
 bool BluetoothPolicy::getModeChangeState()
 {
     return IsPolicyEnabled(context, "bluetooth");
+}
+
+int BluetoothPolicy::setDesktopConnectivityState(const bool enable)
+{
+    int ret = BLUETOOTH_DPM_RESULT_SUCCESS;
+    ret = bluetooth_dpm_set_desktop_connectivity_state(enable == true ? BLUETOOTH_DPM_ALLOWED : BLUETOOTH_DPM_RESTRICTED);
+    if (ret == BLUETOOTH_DPM_RESULT_ACCESS_DENIED ||
+        ret == BLUETOOTH_DPM_RESULT_FAIL) {
+        return -1;
+    }
+
+    SetPolicyEnabled(context, "bluetooth-desktop-connectivity", enable);
+
+    return 0;
+}
+
+bool BluetoothPolicy::getDesktopConnectivityState()
+{
+    return IsPolicyEnabled(context, "bluetooth-desktop-connectivity");
 }
 
 int BluetoothPolicy::addDeviceToBlacklist(const std::string& mac)
