@@ -569,6 +569,24 @@ void usb_debugging_policy_handler(int command, int state)
         printf("usb_debugging state: %s\n", state_text[p_state]);
 }
 
+void usb_tethering_policy_handler(int command, int state)
+{
+    int ret = 1;
+    int p_state = 1;
+    char state_text[2][10] = {"DISALLOW", "ALLOW"};
+
+    if (command == 'v') {
+        p_state = state;
+        ret = set_usb_tethering_state_handler(p_state);
+    } else
+        ret = get_usb_tethering_state_handler(&p_state);
+
+    if (ret < 0)
+        printf("usb-tethering policy operation is failed.\n");
+    else
+        printf("usb-tethering state: %s\n", state_text[p_state]);
+}
+
 void bluetooth_tethering_policy_handler(int command, int state)
 {
     int ret = 1;

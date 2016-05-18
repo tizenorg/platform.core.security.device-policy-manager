@@ -442,6 +442,94 @@ out:
         return 0;
 }
 
+int set_usb_tethering_state_handler(int state)
+{
+    dpm_context_h context = NULL;
+    dpm_restriction_policy_h policy = NULL;
+    int ret = 0;
+    int get_value = 0;
+
+    context = dpm_context_create();
+    if (context == NULL) {
+        printf("Failed in dpm_context_create()\n");
+        return -1;
+    }
+
+    policy = dpm_context_acquire_restriction_policy(context);
+    if (policy == NULL) {
+        printf("Failed in dpm_context_acquire_restriction_policy()\n");
+        dpm_context_destroy(context);
+        return -1;
+    }
+
+    if (dpm_restriction_set_usb_tethering_state(policy, state) != 0) {
+        printf("Failed in dpm_restriction_set_usb_tethering_state()\n");
+        ret = -1;
+        goto out;
+    }
+
+    if (dpm_restriction_get_usb_tethering_state(policy, &get_value) < 0) {
+        printf("Failed in dpm_restriction_get_usb_tethering_state()\n");
+        ret = -1;
+        goto out;
+    }
+
+    if (state != get_value) {
+        printf("Failed to set value of restriction\n");
+        ret = -1;
+        goto out;
+    }
+
+out:
+    dpm_context_release_restriction_policy(context, policy);
+    dpm_context_destroy(context);
+
+    if (ret == -1)
+        return ret;
+    else
+        return 0;
+}
+
+int get_usb_tethering_state_handler(int *state)
+{
+    dpm_context_h context = NULL;
+    dpm_restriction_policy_h policy = NULL;
+    int ret = 0;
+
+    context = dpm_context_create();
+    if (context == NULL) {
+        printf("Failed in dpm_context_create()\n");
+        return -1;
+    }
+
+    policy = dpm_context_acquire_restriction_policy(context);
+    if (policy == NULL) {
+        printf("Failed in dpm_context_acquire_restriction_policy()\n");
+        dpm_context_destroy(context);
+        return -1;
+    }
+
+    if (dpm_restriction_get_usb_tethering_state(policy, state) < 0) {
+        printf("Failed in dpm_restriction_get_usb_tethering_state()\n");
+        ret = -1;
+        goto out;
+    }
+
+    if (*state == 1 || *state == 0)
+        ret = 0;
+    else
+        ret = -1;
+
+out:
+    dpm_context_release_restriction_policy(context, policy);
+    dpm_context_destroy(context);
+
+    if (ret == -1)
+        return ret;
+    else
+        return 0;
+}
+
 int set_bluetooth_tethering_state_handler(int state)
 {
     dpm_context_h context = NULL;
