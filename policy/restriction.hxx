@@ -44,6 +44,9 @@ public:
 	int setUsbDebuggingState(int enable);
 	int getUsbDebuggingState();
 
+	int setUsbTetheringState(bool enable);
+	bool getUsbTetheringState();
+
 	int setExternalStorageState(int enable);
 	int getExternalStorageState();
 

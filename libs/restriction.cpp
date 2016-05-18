@@ -119,6 +119,23 @@ int RestrictionPolicy::getUsbDebuggingState()
 	}
 }
 
+int RestrictionPolicy::setUsbTetheringState(bool enable)
+{
+	try {
+		return context->methodCall<int>("RestrictionPolicy::setUsbTetheringState", enable);
+	} catch (runtime::Exception &e) {
+		return -1;
+	}
+}
+bool RestrictionPolicy::getUsbTetheringState()
+{
+	try {
+		return context->methodCall<int>("RestrictionPolicy::getUsbTetheringState");
+	} catch (runtime::Exception &e) {
+		return -1;
+	}
+}
+
 int RestrictionPolicy::setExternalStorageState(int enable)
 {
 	try {

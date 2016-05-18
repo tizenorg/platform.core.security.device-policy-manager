@@ -127,6 +127,28 @@ int dpm_restriction_get_usb_debugging_state(dpm_restriction_policy_h handle, int
     return DPM_ERROR_NONE;
 }
 
+int dpm_restriction_set_usb_tethering_state(dpm_restriction_policy_h handle, int enable)
+{
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+
+    RestrictionPolicy& restriction = GetPolicyInterface<RestrictionPolicy>(handle);
+    return restriction.setUsbTetheringState(enable);
+}
+
+int dpm_restriction_get_usb_tethering_state(dpm_restriction_policy_h handle, int *state)
+{
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(state, DPM_ERROR_INVALID_PARAMETER);
+
+    RestrictionPolicy& restriction = GetPolicyInterface<RestrictionPolicy>(handle);
+    int ret = restriction.getUsbTetheringState();
+    if (ret < 0) {
+        return -1;
+    }
+    *state = ret;
+    return DPM_ERROR_NONE;
+}
+
 int dpm_restriction_set_settings_changes_state(dpm_restriction_policy_h handle, int enable)
 {
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);

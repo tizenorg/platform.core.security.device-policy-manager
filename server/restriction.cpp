@@ -41,6 +41,8 @@ RestrictionPolicy::RestrictionPolicy(PolicyControlContext& ctxt) :
 	context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getSettingsChangesState));
 	context.registerParametricMethod(this, (int)(RestrictionPolicy::setUsbDebuggingState)(int));
 	context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getUsbDebuggingState));
+    context.registerParametricMethod(this, (int)(RestrictionPolicy::setUsbTetheringState)(int));
+    context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getUsbTetheringState));
 	context.registerParametricMethod(this, (int)(RestrictionPolicy::setExternalStorageState)(int));
 	context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getExternalStorageState));
 	context.registerParametricMethod(this, (int)(RestrictionPolicy::setLocationState)(int));
@@ -59,6 +61,7 @@ RestrictionPolicy::RestrictionPolicy(PolicyControlContext& ctxt) :
 	context.createNotification("location");
 	context.createNotification("settings-changes");
 	context.createNotification("usb-debugging");
+    context.createNotification("usb-tethering");
 	context.createNotification("wifi");
 	context.createNotification("wifi-hotspot");
 	context.createNotification("bluetooth-tethering");
@@ -129,6 +132,17 @@ int RestrictionPolicy::setUsbDebuggingState(int enable)
 int RestrictionPolicy::getUsbDebuggingState()
 {
     return IsPolicyAllowed(context, "usb-debugging");
+}
+
+int RestrictionPolicy::setUsbTetheringState(bool enable)
+{
+    SetPolicyAllowed(context, "usb-tethering", enable);
+    return 0;
+}
+
+bool RestrictionPolicy::getUsbTetheringState()
+{
+    return IsPolicyAllowed(context, "usb-tethering");
 }
 
 int RestrictionPolicy::setExternalStorageState(int enable)
