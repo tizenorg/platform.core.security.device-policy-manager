@@ -1,3 +1,9 @@
+msgid "IDS_DPM_BODY_ZONE_CREATE"
+msgstr "보안정책에 따라 Separated Zone을 사용합니다. OK 버튼을 누르면 Separated Zone을 생성합니다."
+
+msgid "IDS_DPM_ZONE_CREATE"
+msgstr "Separated Zone 생성"
+
 msgid "IDS_DPM_CANCEL"
 msgstr "취소"
 

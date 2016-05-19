@@ -42,6 +42,7 @@
 
 typedef struct {
 	const char *id;
+	bool title_prefix;
 	char *title;
 	char *content;
 	char *style;
@@ -54,6 +55,6 @@ typedef struct {
 popup_info_s *_get_popup_info(const char *id);
 int _get_popup_text(const char *id, const char *status, char *header, char *body);
 
-void _create_syspopup(const char *id, char *style, const char *status, const char *user_data);
+void _create_syspopup(const char *id, char *style, const char *status, app_control_h svc);
 
 #endif /* __DPM_SYSPOPUP_H__ */
