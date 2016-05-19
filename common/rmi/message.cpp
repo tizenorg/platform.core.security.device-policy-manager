@@ -81,9 +81,12 @@ Message Message::createReplyMessage() const
     return Message(id(), Reply, target());
 }
 
-Message Message::createErrorMessage() const
+Message Message::createErrorMessage(const std::string& message) const
 {
-    return Message(id(), Error, target());
+    Message error(id(), Error, target());
+    error.enclose(message);
+
+    return error;
 }
 
 template<> void Message::enclose(FileDescriptor&& fd)

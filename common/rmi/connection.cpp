@@ -15,6 +15,7 @@
  */
 
 #include <utility>
+#include <iostream>
 
 #include "connection.h"
 
@@ -43,9 +44,15 @@ void Connection::send(const Message& message) const
 Message Connection::dispatch() const
 {
     Message message;
-
     std::lock_guard<std::mutex> lock(receiveMutex);
+
     message.decode(socket);
+    if (message.isError()) {
+        std::string exception;
+        message.disclose(exception);
+
+        throw runtime::Exception(exception);
+    }
 
     return message;
 }

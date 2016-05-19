@@ -22,6 +22,7 @@
 #include "exception.h"
 #include "service.h"
 #include "message.h"
+#include "audit/logger.h"
 
 namespace rmi {
 
@@ -60,8 +61,6 @@ void Service::stop()
 
 Service::ConnectionRegistry::iterator Service::getConnectionIterator(const int id)
 {
-    std::lock_guard<std::mutex> lock(stateLock);
-
     return std::find_if(connectionRegistry.begin(), connectionRegistry.end(),
                         [id](const std::shared_ptr<Connection>& connection) {
         return id == connection->getFd();
@@ -72,6 +71,8 @@ void Service::setNewConnectionCallback(const ConnectionCallback& connectionCallb
 {
     auto callback = [connectionCallback, this](const std::shared_ptr<Connection>& connection) {
         auto handle = [&](int fd, runtime::Mainloop::Event event) {
+            std::lock_guard<std::mutex> lock(stateLock);
+
             auto iter = getConnectionIterator(fd);
             if (iter == connectionRegistry.end()) {
                 return;
@@ -91,6 +92,7 @@ void Service::setNewConnectionCallback(const ConnectionCallback& connectionCallb
             mainloop.addEventSource(connection->getFd(),
                                     EPOLLIN | EPOLLHUP | EPOLLRDHUP,
                                     handle);
+            std::lock_guard<std::mutex> lock(stateLock);
             connectionRegistry.push_back(connection);
         }
     };
@@ -120,12 +122,12 @@ void Service::createNotification(const std::string& name)
         throw runtime::Exception("Notification already registered");
     }
 
-    notificationRegistry.emplace(name, name);
+    notificationRegistry.emplace(name, Notification(name));
 }
 
 int Service::subscribeNotification(const std::string& name)
 {
-    auto closeHandler = [&, name](int fd, runtime::Mainloop::Event event) {
+    auto closeHandler = [&, name, this](int fd, runtime::Mainloop::Event event) {
         if ((event & EPOLLHUP) || (event & EPOLLRDHUP)) {
             unsubscribeNotification(name, fd);
             return;
@@ -146,6 +148,7 @@ int Service::subscribeNotification(const std::string& name)
         mainloop.addEventSource(slot.first, EPOLLHUP | EPOLLRDHUP, closeHandler);
         return slot.second;
     } catch (runtime::Exception& e) {
+        ERROR(e.what());
         return -1;
     }
 
@@ -164,34 +167,40 @@ int Service::unsubscribeNotification(const std::string& name, const int id)
     Notification& notification = notificationRegistry[name];
     notificationLock.unlock();
 
-    notification.removeSubscriber(id);
-
     mainloop.removeEventSource(id);
+
+    notification.removeSubscriber(id);
 
     return 0;
 }
 
 void Service::onMessageProcess(const std::shared_ptr<Connection>& connection)
 {
-    auto process = [&](Message& request) {
+    // The connection object can be destroyed in main-thread when peer is closed.
+    // To make sure that the connection object is valid on that situation,
+    // we should increase the reference count of the shared_ptr by capturing it as value
+    auto process = [&, connection](Message& request) {
         try {
-            //stateLock.lock();
             std::shared_ptr<MethodDispatcher> methodDispatcher = methodRegistry.at(request.target());
-            //stateLock.unlock();
 
             // [TBD] Request authentication before dispatching method handler.
             processingContext = ProcessingContext(connection);
             connection->send((*methodDispatcher)(request));
         } catch (std::exception& e) {
-            std::cerr << e.what() << std::endl;
-            connection->send(request.createErrorMessage());
+            try {
+                // Forward the exception to the peer
+                connection->send(request.createErrorMessage(e.what()));
+            } catch (std::exception& ex) {
+                // The connection is abnormally closed by the peer.
+                ERROR(ex.what());
+            }
         }
     };
 
     try {
         workqueue.submit(std::bind(process, connection->dispatch()));
-    } catch (runtime::Exception& e) {
-        std::cerr << e.what() << std::endl;
+    } catch (std::exception& e) {
+        ERROR(e.what());
     }
 }
 

@@ -172,7 +172,6 @@ int RestrictionPolicy::getLocationState()
 	}
 }
 
-
 int RestrictionPolicy::setWifiState(bool enable)
 {
     try {

@@ -47,7 +47,7 @@ SubscriptionId Notification::createSubscriber()
     }
 
     std::lock_guard<std::mutex> lock(subscriberLock);
-	subscribers.emplace_back(std::make_shared<Socket>(fds[0]));
+	subscribers.push_back(std::make_shared<Socket>(fds[0]));
 
     return SubscriptionId(fds[0], fds[1]);
 }
@@ -56,13 +56,14 @@ int Notification::removeSubscriber(const int id)
 {
     std::lock_guard<std::mutex> lock(subscriberLock);
 
-    std::vector<std::shared_ptr<Socket>>::iterator it = subscribers.begin();
+    std::list<std::shared_ptr<Socket>>::iterator it = subscribers.begin();
 
     while (it != subscribers.end()) {
        if ((*it)->getFd() == id) {
             subscribers.erase(it);
             return 0;
        }
+       ++it;
     }
 
     return -1;
