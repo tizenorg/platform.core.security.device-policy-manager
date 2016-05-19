@@ -57,7 +57,22 @@ static void __block_clicked_cb(void *data, Evas_Object *obj, void *event_info)
 	return;
 }
 
-void _create_syspopup(const char *id, char *style, const char *status, const char *user_data)
+
+static Eina_Bool __home_key_cb(void *data, int type, void *event)
+{
+	Evas_Object *left_btn = (Evas_Object *)data;
+	typedef void (*btnCBPtr)(void *, Evas_Object *, void *);
+
+	btnCBPtr btn_cb = (btnCBPtr)evas_object_data_get(left_btn, "callback");
+
+	if (btn_cb != NULL) {
+		btn_cb(NULL, left_btn, NULL);
+	}
+
+	return EINA_TRUE;
+}
+
+void _create_syspopup(const char *id, char *style, const char *status, char **user_data)
 {
 	Evas_Object *win = NULL;
 	Evas_Object *popup = NULL;
@@ -99,10 +114,18 @@ void _create_syspopup(const char *id, char *style, const char *status, const cha
 			elm_object_style_set(left_btn, "popup");
 			elm_object_text_set(left_btn, __(info->left_btn));
 			elm_object_part_content_set(popup, "button1", left_btn);
+
 			evas_object_data_set(left_btn, "target", popup);
 			evas_object_data_set(popup, "target", popup);
+
 			evas_object_smart_callback_add(left_btn, "clicked", info->left_btn_cb, user_data);
 			eext_object_event_callback_add(popup, EEXT_CALLBACK_BACK, info->left_btn_cb, (void *)user_data);
+
+			evas_object_data_set(left_btn, "callback", info->left_btn_cb);
+
+			/*add home key callback*/
+			eext_win_keygrab_set(win, "XF86HOME");
+			ecore_event_handler_add(ECORE_EVENT_KEY_DOWN, __home_key_cb, (void *)left_btn);
 		} else {
 			eext_object_event_callback_add(popup, EEXT_CALLBACK_BACK, eext_popup_back_cb, win);
 		}
