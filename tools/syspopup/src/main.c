@@ -30,7 +30,8 @@ static void __app_control(app_control_h app_control, void *data)
 	char *id = NULL;
 	char *style = NULL;
 	char *status = NULL;
-	char *user_data = NULL;
+	char **user_data = NULL;
+	int data_size = 0;
 
 	ret = app_control_get_extra_data(app_control, "id", &id);
 	if (ret != APP_CONTROL_ERROR_NONE) {
@@ -57,10 +58,8 @@ static void __app_control(app_control_h app_control, void *data)
 		return;
 	}
 
-	ret = app_control_get_extra_data(app_control, "user-data", &user_data);
-	if (ret == APP_CONTROL_ERROR_KEY_NOT_FOUND) {
-		user_data = NULL;
-	} else if (ret != APP_CONTROL_ERROR_NONE) {
+	ret = app_control_get_extra_data_array(app_control, "user-data", &user_data, &data_size);
+	if (ret != APP_CONTROL_ERROR_KEY_NOT_FOUND && ret != APP_CONTROL_ERROR_NONE) {
 		dlog_print(DLOG_ERROR, LOG_TAG, "failed to get popup user data");
 		free(id);
 		free(style);
@@ -73,7 +72,6 @@ static void __app_control(app_control_h app_control, void *data)
 	free(id);
 	free(style);
 	free(status);
-	free(user_data);
 	return;
 }
 
