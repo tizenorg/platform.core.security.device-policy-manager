@@ -1,3 +1,21 @@
+msgid "IDS_DPM_NOTI_BODY_CREATE_ZONE"
+msgstr "Tap here to create Separated Zone"
+
+msgid "IDS_DPM_NOTI_CREATE_ZONE"
+msgstr "Separated zone creation"
+
+msgid "IDS_DPM_NOTI_BODY_PASSWORD_ENFORCE_CHANGE"
+msgstr "Tap here to change password"
+
+msgid "IDS_DPM_NOTI_PASSWORD_ENFORCE_CHANGE"
+msgstr "Change password"
+
+msgid "IDS_DPM_BODY_ZONE_CREATE"
+msgstr "Security policy force to use of the Separated Zone. Tap OK to create Separated zone."
+
+msgid "IDS_DPM_ZONE_CREATE"
+msgstr "Create Separated Zone"
+
 msgid "IDS_DPM_CANCEL"
 msgstr "Cancel"
 

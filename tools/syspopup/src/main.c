@@ -19,61 +19,114 @@
 
 #include "dpm-syspopup.h"
 
+typedef struct {
+	char *id;
+	char *style;
+	char *status;
+	char **user_data;
+	int data_size;
+} bundle_data_s;
+
+static bundle_data_s bundle_data = {NULL, NULL, NULL, NULL, 0};
+
+static int __create_app_control(app_control_h svc)
+{
+	int i;
+
+	for (i = 0; i < bundle_data.data_size - 1; i++) {
+		char *key = NULL;
+		char *value = NULL;
+
+		key = bundle_data.user_data[i++];
+		value = bundle_data.user_data[i];
+
+		if (!strcmp(key, "app-id")) {
+			if (app_control_set_app_id(svc, value) != APP_CONTROL_ERROR_NONE)
+				return -1;
+		} else {
+			if (app_control_add_extra_data(svc, key, value) != APP_CONTROL_ERROR_NONE)
+				return -1;
+		}
+	}
+
+	return 0;
+}
+
 static bool __app_create(void *data)
 {
 	return true;
 }
 
+static void __free_data(void)
+{
+	int i = 0;
+
+	free(bundle_data.id);
+	free(bundle_data.style);
+	free(bundle_data.status);
+
+	for (i = 0; i < bundle_data.data_size; i++) {
+		free(bundle_data.user_data[i]);
+	}
+
+	return;
+}
+
 static void __app_control(app_control_h app_control, void *data)
 {
 	int ret = 0;
-	char *id = NULL;
-	char *style = NULL;
-	char *status = NULL;
-	char *user_data = NULL;
+	app_control_h svc = NULL;
 
-	ret = app_control_get_extra_data(app_control, "id", &id);
+	ret = app_control_get_extra_data(app_control, "id", &bundle_data.id);
 	if (ret != APP_CONTROL_ERROR_NONE) {
 		dlog_print(DLOG_ERROR, LOG_TAG, "failed to get popup id");
+		app_control_destroy(app_control);
+		__free_data();
 		return;
 	}
 
-	ret = app_control_get_extra_data(app_control, "viewtype", &style);
+	ret = app_control_get_extra_data(app_control, "viewtype", &bundle_data.style);
 	if (ret == APP_CONTROL_ERROR_KEY_NOT_FOUND) {
-		style = NULL;
+		bundle_data.style = NULL;
 	} else if (ret != APP_CONTROL_ERROR_NONE) {
 		dlog_print(DLOG_ERROR, LOG_TAG, "failed to get popup style");
-		free(id);
+		__free_data();
 		return;
 	}
 
-	ret = app_control_get_extra_data(app_control, "status", &status);
+	ret = app_control_get_extra_data(app_control, "status", &bundle_data.status);
 	if (ret == APP_CONTROL_ERROR_KEY_NOT_FOUND) {
-		status = strdup(DPM_SYSPOPUP_DEFAULT_STATUS);
+		bundle_data.status = strdup(DPM_SYSPOPUP_DEFAULT_STATUS);
 	} else if (ret != APP_CONTROL_ERROR_NONE) {
 		dlog_print(DLOG_ERROR, LOG_TAG, "failed to get popup status");
-		free(id);
-		free(style);
+		__free_data();
 		return;
 	}
 
-	ret = app_control_get_extra_data(app_control, "user-data", &user_data);
-	if (ret == APP_CONTROL_ERROR_KEY_NOT_FOUND) {
-		user_data = NULL;
-	} else if (ret != APP_CONTROL_ERROR_NONE) {
+	ret = app_control_get_extra_data_array(app_control, "user-data", &bundle_data.user_data, &bundle_data.data_size);
+	if (ret != APP_CONTROL_ERROR_KEY_NOT_FOUND && ret != APP_CONTROL_ERROR_NONE) {
 		dlog_print(DLOG_ERROR, LOG_TAG, "failed to get popup user data");
-		free(id);
-		free(style);
-		free(status);
+		__free_data();
 		return;
 	}
 
-	_create_syspopup(id, style, status, user_data);
+	ret = app_control_create(&svc);
+	if (ret != APP_CONTROL_ERROR_NONE) {
+		dlog_print(DLOG_ERROR, LOG_TAG, "failed to create app_control handler");
+		__free_data();
+		return;
+	}
 
-	free(id);
-	free(style);
-	free(status);
-	free(user_data);
+	if (__create_app_control(svc) != 0) {
+		dlog_print(DLOG_ERROR, LOG_TAG, "failed to set app_control handler");
+		app_control_destroy(svc);
+		__free_data();
+		return;
+	}
+
+	_create_syspopup(bundle_data.id, bundle_data.style, bundle_data.status, svc);
+
+	__free_data();
 	return;
 }
 
