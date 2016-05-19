@@ -12,6 +12,8 @@ PKG_CHECK_MODULES(dpm_syspopup_pkgs REQUIRED
 	elementary
 	capi-appfw-application
 	capi-system-system-settings
+	vconf
+	notification
 )
 
 INCLUDE_DIRECTORIES(${dpm_syspopup_pkgs_INCLUDE_DIRS} ${DPM_LIBS})
@@ -28,10 +30,11 @@ SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pie")
 ADD_EXECUTABLE(${PKG_NAME} ${PKG_SRC})
 INSTALL(TARGETS ${PKG_NAME} DESTINATION ${APP_INSTALL_PREFIX}/${PKG_NAME}/bin)
 
-TARGET_LINK_LIBRARIES(${PKG_NAME} ${dpm_syspopup_pkgs_LIBRARIES})
+TARGET_LINK_LIBRARIES(${PKG_NAME} ${dpm_syspopup_pkgs_LIBRARIES} dpm)
 
 #Install app data
 INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PKG_NAME}.xml DESTINATION ${APP_SHARE_PACKAGES_DIR})
+INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/res/${PKG_NAME}.png DESTINATION /usr/share/icons/default/small)
 
 # i18n
 ADD_SUBDIRECTORY(po)

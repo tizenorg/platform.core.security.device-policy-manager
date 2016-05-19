@@ -19,6 +19,25 @@
 
 #include "dpm-syspopup.h"
 
+static void __create_app_control(char **user_data, int data_size, app_control_h svc)
+{
+	int i;
+	for (i = 0; i < data_size - 1; i++) {
+		char *key = NULL;
+		char *value = NULL;
+
+		key = user_data[i++];
+		value = user_data[i];
+
+		if (!strcmp(key, "app-id"))
+			app_control_set_app_id(svc, value);
+		else
+			app_control_add_extra_data(svc, key, value);
+	}
+
+	return;
+}
+
 static bool __app_create(void *data)
 {
 	return true;
@@ -30,7 +49,11 @@ static void __app_control(app_control_h app_control, void *data)
 	char *id = NULL;
 	char *style = NULL;
 	char *status = NULL;
-	char *user_data = NULL;
+	char **user_data = NULL;
+	int data_size = 0;
+	app_control_h svc = NULL;
+
+	app_control_create(&svc);
 
 	ret = app_control_get_extra_data(app_control, "id", &id);
 	if (ret != APP_CONTROL_ERROR_NONE) {
@@ -57,10 +80,8 @@ static void __app_control(app_control_h app_control, void *data)
 		return;
 	}
 
-	ret = app_control_get_extra_data(app_control, "user-data", &user_data);
-	if (ret == APP_CONTROL_ERROR_KEY_NOT_FOUND) {
-		user_data = NULL;
-	} else if (ret != APP_CONTROL_ERROR_NONE) {
+	ret = app_control_get_extra_data_array(app_control, "user-data", &user_data, &data_size);
+	if (ret != APP_CONTROL_ERROR_KEY_NOT_FOUND && ret != APP_CONTROL_ERROR_NONE) {
 		dlog_print(DLOG_ERROR, LOG_TAG, "failed to get popup user data");
 		free(id);
 		free(style);
@@ -68,12 +89,12 @@ static void __app_control(app_control_h app_control, void *data)
 		return;
 	}
 
-	_create_syspopup(id, style, status, user_data);
+	__create_app_control(user_data, data_size, svc);
+	_create_syspopup(id, style, status, svc);
 
 	free(id);
 	free(style);
 	free(status);
-	free(user_data);
 	return;
 }
 
