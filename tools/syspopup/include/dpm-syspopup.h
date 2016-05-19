@@ -39,21 +39,28 @@
 #define __(str) dgettext("dpm-syspopup", str)
 
 #define DPM_SYSPOPUP_DEFAULT_STATUS "stop"
+#define DPM_SYSPOPUP_ICON_PATH "/usr/share/icons/default/small/org.tizen.dpm-syspopup.png"
+
+typedef struct {
+	char *title;
+	char *content;
+} noti_info_s;
 
 typedef struct {
 	const char *id;
+	bool title_prefix;
 	char *title;
 	char *content;
 	char *style;
 	char *left_btn;
 	char *right_btn;
-	void (*left_btn_cb)(void *data, Evas_Object *obj, void *event_info);
-	void (*right_btn_cb)(void *data, Evas_Object *obj, void *event_info);
+	char *noti_title;
+	char *noti_content;
 } popup_info_s;
 
 popup_info_s *_get_popup_info(const char *id);
 int _get_popup_text(const char *id, const char *status, char *header, char *body);
 
-void _create_syspopup(const char *id, char *style, const char *status, const char *user_data);
+void _create_syspopup(const char *id, char *style, const char *status, app_control_h svc);
 
 #endif /* __DPM_SYSPOPUP_H__ */

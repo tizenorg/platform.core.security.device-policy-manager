@@ -31,6 +31,7 @@ BuildRequires: pkgconfig(capi-network-wifi)
 BuildRequires: pkgconfig(capi-network-connection)
 BuildRequires: pkgconfig(capi-network-bluetooth)
 BuildRequires: pkgconfig(capi-system-system-settings)
+BuildRequires: pkgconfig(notification)
 
 %if "%{profile}" != "tv"
 BuildRequires: pkgconfig(capi-location-manager)
@@ -181,9 +182,11 @@ Tizen DPM system popup interface package
 
 %files -n org.tizen.dpm-syspopup
 %defattr(-,root,root,-)
+%manifest tools/syspopup/org.tizen.dpm-syspopup.manifest
 %{TZ_SYS_RO_APP}/org.tizen.dpm-syspopup/bin/*
 %{TZ_SYS_RO_APP}/org.tizen.dpm-syspopup/res/locale/*
 %{TZ_SYS_RO_PACKAGES}/org.tizen.dpm-syspopup.xml
+/usr/share/icons/default/small/org.tizen.dpm-syspopup.png
 
 ## Begin of mobile feature ###################################################
 %if "%{profile}" == "mobile"
