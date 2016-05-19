@@ -32,6 +32,7 @@ DevicePolicyContext::DevicePolicyContext() noexcept
 
 DevicePolicyContext::~DevicePolicyContext() noexcept
 {
+    disconnect();
 }
 
 int DevicePolicyContext::connect(const std::string& address) noexcept
@@ -64,8 +65,13 @@ int DevicePolicyContext::subscribePolicyChange(const std::string& name,
         listener(policy.c_str(), state.c_str(), data);
     };
 
-    return client->subscribe<std::string, std::string>(SUBSCRIBER_REGISTER,
-                                                       name, listenerDispatcher);
+    try {
+        return client->subscribe<std::string, std::string>(SUBSCRIBER_REGISTER,
+                                                           name, listenerDispatcher);
+    } catch (runtime::Exception& e) {
+        std::cout << e.what() << std::endl;
+        return -1;
+    }
 }
 
 int DevicePolicyContext::unsubscribePolicyChange(int subscriberId)
@@ -81,8 +87,13 @@ int DevicePolicyContext::subscribeSignal(const std::string& name,
         listener(from.c_str(), object.c_str(), data);
     };
 
-    return client->subscribe<std::string, std::string, std::string>
-                            (SUBSCRIBER_REGISTER, name, listenerDispatcher);
+    try {
+        return client->subscribe<std::string, std::string, std::string>(SUBSCRIBER_REGISTER,
+                                                                        name, listenerDispatcher);
+    } catch (runtime::Exception& e) {
+        std::cout << e.what() << std::endl;
+        return -1;
+    }
 }
 
 int DevicePolicyContext::unsubscribeSignal(int subscriberId)

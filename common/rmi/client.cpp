@@ -37,6 +37,7 @@ void Client::connect()
 
 int Client::unsubscribe(const std::string& provider, int id)
 {
+    // file descriptor(id) is automatically closed when mainloop callback is destroyed.
     mainloop.removeEventSource(id);
     return 0;
 }
@@ -47,12 +48,8 @@ int Client::subscribe(const std::string& provider, const std::string& name)
     request.packParameters(name);
     connection->send(request);
 
-    Message reply = connection->dispatch();
-    if (reply.isError()) {
-        return -1;
-    }
-
     FileDescriptor response;
+    Message reply = connection->dispatch();
     reply.disclose(response);
 
     return response.fileDescriptor;
