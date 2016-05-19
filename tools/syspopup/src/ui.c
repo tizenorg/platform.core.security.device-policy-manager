@@ -16,7 +16,7 @@
  * limitations under the License.
  *
  */
-
+#include <notification.h>
 #include "dpm-syspopup.h"
 
 static void __win_delete_request_cb(void *data, Evas_Object *obj, void *event_info)
@@ -57,7 +57,99 @@ static void __block_clicked_cb(void *data, Evas_Object *obj, void *event_info)
 	return;
 }
 
-void _create_syspopup(const char *id, char *style, const char *status, const char *user_data)
+static int __send_launch_request(app_control_h app_control)
+{
+	if (app_control_set_launch_mode(app_control, APP_CONTROL_LAUNCH_MODE_GROUP) != APP_CONTROL_ERROR_NONE)
+		return -1;
+
+	if (app_control_send_launch_request(app_control, NULL, NULL) != APP_CONTROL_ERROR_NONE)
+		return -1;
+
+	return 0;
+}
+
+static void __ok_btn_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	Evas_Object *popup = (Evas_Object *)evas_object_data_get(obj, "target");
+
+	/* call application */
+	app_control_h app_control = (app_control_h) data;
+
+	if (__send_launch_request(app_control) != 0)
+		dlog_print(DLOG_ERROR, LOG_TAG, "failed to send launch request");
+
+	app_control_destroy(app_control);
+	evas_object_del(popup);
+	return;
+}
+
+static int __set_notification(notification_h noti_handle, app_control_h app_control, char *title, char *content)
+{
+	int ret = NOTIFICATION_ERROR_NONE;
+
+	ret = notification_set_text(noti_handle, NOTIFICATION_TEXT_TYPE_TITLE, __(title), NULL, NOTIFICATION_VARIABLE_TYPE_NONE);
+	if (ret != NOTIFICATION_ERROR_NONE)
+		return -1;
+
+	ret = notification_set_text(noti_handle, NOTIFICATION_TEXT_TYPE_CONTENT, __(content), NULL, NOTIFICATION_VARIABLE_TYPE_NONE);
+	if (ret != NOTIFICATION_ERROR_NONE)
+		return -1;
+
+	ret = notification_set_display_applist(noti_handle, NOTIFICATION_DISPLAY_APP_ALL);
+	if (ret != NOTIFICATION_ERROR_NONE)
+		return -1;
+
+	ret = notification_set_image(noti_handle, NOTIFICATION_IMAGE_TYPE_THUMBNAIL, DPM_SYSPOPUP_ICON_PATH);
+	if (ret != NOTIFICATION_ERROR_NONE)
+		return -1;
+
+	ret = notification_set_launch_option(noti_handle, NOTIFICATION_LAUNCH_OPTION_APP_CONTROL, app_control);
+	if (ret != NOTIFICATION_ERROR_NONE)
+		return -1;
+
+	return ret;
+}
+
+static void __cancel_btn_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	popup_info_s *info = (popup_info_s *)data;
+	app_control_h app_control = (app_control_h)evas_object_data_get(obj, "app-control");
+	Evas_Object *popup = (Evas_Object *)evas_object_data_get(obj, "target");
+
+	int ret = NOTIFICATION_ERROR_NONE;
+
+	/* create notification */
+	notification_h noti_handle = NULL;
+	noti_handle = notification_create(NOTIFICATION_TYPE_NOTI);
+
+	ret = __set_notification(noti_handle, app_control, info->noti_title, info->noti_content);
+	if (ret != NOTIFICATION_ERROR_NONE) {
+		notification_free(noti_handle);
+		app_control_destroy(app_control);
+		evas_object_del(popup);
+		return;
+	}
+
+	notification_post(noti_handle);
+
+	notification_free(noti_handle);
+	app_control_destroy(app_control);
+	evas_object_del(popup);
+	return;
+}
+
+static Eina_Bool __home_key_cb(void *data, int type, void *event)
+{
+	Evas_Object *left_btn = (Evas_Object *)data;
+	app_control_h svc = (app_control_h)evas_object_data_get(left_btn, "app-control");
+	popup_info_s *info = (popup_info_s *)evas_object_data_get(left_btn, "info");
+
+	__cancel_btn_cb(svc, left_btn, info);
+
+	return EINA_TRUE;
+}
+
+void _create_syspopup(const char *id, char *style, const char *status, app_control_h svc)
 {
 	Evas_Object *win = NULL;
 	Evas_Object *popup = NULL;
@@ -99,10 +191,19 @@ void _create_syspopup(const char *id, char *style, const char *status, const cha
 			elm_object_style_set(left_btn, "popup");
 			elm_object_text_set(left_btn, __(info->left_btn));
 			elm_object_part_content_set(popup, "button1", left_btn);
+
 			evas_object_data_set(left_btn, "target", popup);
 			evas_object_data_set(popup, "target", popup);
-			evas_object_smart_callback_add(left_btn, "clicked", info->left_btn_cb, user_data);
-			eext_object_event_callback_add(popup, EEXT_CALLBACK_BACK, info->left_btn_cb, (void *)user_data);
+
+			evas_object_data_set(left_btn, "app-control", svc);
+
+			evas_object_smart_callback_add(left_btn, "clicked", __cancel_btn_cb, info);
+			eext_object_event_callback_add(popup, EEXT_CALLBACK_BACK, __cancel_btn_cb, (void *)info);
+
+			evas_object_data_set(left_btn, "info", &info);
+			/*add home key callback*/
+			eext_win_keygrab_set(win, "XF86HOME");
+			ecore_event_handler_add(ECORE_EVENT_KEY_DOWN, __home_key_cb, (void *)left_btn);
 		} else {
 			eext_object_event_callback_add(popup, EEXT_CALLBACK_BACK, eext_popup_back_cb, win);
 		}
@@ -113,7 +214,7 @@ void _create_syspopup(const char *id, char *style, const char *status, const cha
 			elm_object_text_set(right_btn, __(info->right_btn));
 			elm_object_part_content_set(popup, "button2", right_btn);
 			evas_object_data_set(right_btn, "target", popup);
-			evas_object_smart_callback_add(right_btn, "clicked", info->right_btn_cb, user_data);
+			evas_object_smart_callback_add(right_btn, "clicked", __ok_btn_cb, svc);
 		}
 	} else {
 		elm_object_text_set(popup, body);
