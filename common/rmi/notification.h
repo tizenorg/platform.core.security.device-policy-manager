@@ -21,6 +21,7 @@
 #include <vector>
 #include <mutex>
 #include <unordered_map>
+#include <list>
 #include <utility>
 #include <memory>
 
@@ -47,7 +48,7 @@ public:
 
 private:
 	std::string signalName;
-	std::vector<std::shared_ptr<Socket>> subscribers;
+	std::list<std::shared_ptr<Socket>> subscribers;
     std::mutex subscriberLock;
 };
 
@@ -59,7 +60,7 @@ void Notification::notify(Args&&... args)
 
     std::lock_guard<std::mutex> lock(subscriberLock);
 
-    for (std::shared_ptr<Socket>& subscriber : subscribers) {
+    for (const std::shared_ptr<Socket>& subscriber : subscribers) {
         try {
             msg.encode(*subscriber);
         } catch (runtime::Exception& e) {

@@ -22,6 +22,7 @@
 #include <functional>
 #include <memory>
 #include <vector>
+#include <list>
 #include <unordered_map>
 #include <thread>
 
@@ -116,7 +117,7 @@ private:
         Credentials credentials;
     };
 
-    typedef std::vector<std::shared_ptr<Connection>> ConnectionRegistry;
+    typedef std::list<std::shared_ptr<Connection>> ConnectionRegistry;
     typedef std::function<void(const std::shared_ptr<Connection>& connection)> CallbackDispatcher;
 
     typedef std::function<Message(Message& message)> MethodDispatcher;
@@ -140,6 +141,7 @@ private:
     runtime::ThreadPool workqueue;
     std::mutex stateLock;
     std::mutex notificationLock;
+    std::mutex methodRegistryLock;
 
     static thread_local ProcessingContext processingContext;
 };
@@ -156,7 +158,7 @@ void Service::setMethodHandler(const std::string& method,
         return reply;
     };
 
-    std::lock_guard<std::mutex> lock(stateLock);
+    std::lock_guard<std::mutex> lock(methodRegistryLock);
 
     if (methodRegistry.count(method)) {
         throw runtime::Exception("Method handler already registered");
@@ -168,6 +170,8 @@ void Service::setMethodHandler(const std::string& method,
 template <typename... Args>
 void Service::notify(const std::string& name, Args&&... args)
 {
+    std::lock_guard<std::mutex> lock(notificationLock);
+
     Notification& slot = notificationRegistry[name];
     slot.notify(name, std::forward<Args>(args)...);
 }

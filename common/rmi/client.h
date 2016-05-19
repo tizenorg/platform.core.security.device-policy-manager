@@ -98,9 +98,8 @@ Type Client::methodCall(const std::string& method, Args&&... args)
     request.packParameters(std::forward<Args>(args)...);
     connection->send(request);
 
-    Message reply = connection->dispatch();
-
     Type response;
+    Message reply = connection->dispatch();
     reply.disclose<Type>(response);
 
     return response;

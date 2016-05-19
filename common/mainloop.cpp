@@ -64,7 +64,7 @@ void Mainloop::addEventSource(const int fd, const Event events, Callback&& callb
     std::lock_guard<Mutex> lock(mutex);
 
     if (callbacks.find(fd) != callbacks.end()) {
-        throw Exception(GetSystemErrorMessage());
+        throw Exception("Event source already registered");
     }
 
     ::memset(&event, 0, sizeof(epoll_event));
