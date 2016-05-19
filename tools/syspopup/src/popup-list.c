@@ -16,11 +16,62 @@
  * limitations under the License.
  *
  */
+#include <dpm/password.h>
+#include <vconf.h>
+#include <vconf-keys.h>
 
 #include "dpm-syspopup.h"
 
 #define ARRAY_SIZE(_array_) \
 	(sizeof(_array_) / sizeof(_array_[0]))
+
+static void __password_enforce_change_cb(void *data, Evas_Object *obj, void *user_data)
+{
+	Evas_Object *popup = (Evas_Object *)evas_object_data_get(obj, "target");
+
+	int lock_type = 0;
+	app_control_h app_control;
+	app_control_create(&app_control);
+
+	vconf_get_int(VCONFKEY_SETAPPL_SCREEN_LOCK_TYPE_INT, &lock_type);
+
+	if (lock_type == SETTING_SCREEN_LOCK_TYPE_SIMPLE_PASSWORD)
+		app_control_add_extra_data(app_control, "viewtype", "SETTING_PW_TYPE_SET_SIMPLE_PASSWORD");
+	else
+		app_control_add_extra_data(app_control, "viewtype", "SETTING_PW_TYPE_SET_PASSWORD");
+
+	app_control_add_extra_data(app_control, "caller", "DPM");
+
+	app_control_set_launch_mode(app_control, APP_CONTROL_LAUNCH_MODE_GROUP);
+	app_control_set_app_id(app_control, "setting-password-efl");
+	app_control_send_launch_request(app_control, NULL, NULL);
+
+	app_control_destroy(app_control);
+
+	evas_object_del(popup);
+	return;
+}
+
+static void __password_enforce_change_cancel_cb(void *data, Evas_Object *obj, void *user_data)
+{
+	Evas_Object *popup = (Evas_Object *)evas_object_data_get(obj, "target");
+
+	int status = 2;
+	dpm_context_h ctx = NULL;
+	dpm_password_policy_h policy_handle = NULL;
+
+	ctx = dpm_context_create();
+	policy_handle = dpm_context_acquire_password_policy(ctx);
+
+	if (dpm_password_set_status(policy_handle, status) != 0)
+		dlog_print(DLOG_ERROR, LOG_TAG, "failed to set password status");
+
+	dpm_context_release_password_policy(ctx, policy_handle);
+	dpm_context_destroy(ctx);
+
+	evas_object_del(popup);
+	return;
+}
 
 popup_info_s popup_list[] = {
 
@@ -33,7 +84,7 @@ popup_info_s popup_list[] = {
 	/* Password Policy */
 	{"password-expires",        "IDS_DPM_PASSWORD", "IDS_DPM_BODY_PASSWORD_EXPIRES", "toast", NULL, NULL, NULL, NULL},
 	{"password-reset",          "IDS_DPM_PASSWORD", "IDS_DPM_BODY_PASSWORD_RESET", "toast", NULL, NULL, NULL, NULL},
-	{"password-enforce-change", "IDS_DPM_PASSWORD", "IDS_DPM_BODY_PASSWORD_ENFORCE_CHANGE", "default", "IDS_DPM_CANCEL", "IDS_DPM_OK", NULL, NULL},
+	{"password-enforce-change", "IDS_DPM_PASSWORD", "IDS_DPM_BODY_PASSWORD_ENFORCE_CHANGE", "default", "IDS_DPM_CANCEL", "IDS_DPM_OK", __password_enforce_change_cancel_cb, __password_enforce_change_cb},
 
 	/* Restriction Policy */
 	{"wifi",                    "IDS_DPM_WIFI",              NULL, "toast", NULL, NULL, NULL, NULL},
