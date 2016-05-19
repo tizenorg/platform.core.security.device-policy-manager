@@ -1,3 +1,9 @@
+msgid "IDS_DPM_BODY_ZONE_CREATE"
+msgstr "Security policy force to use of the Separated Zone. Tap OK to create Separated zone."
+
+msgid "IDS_DPM_ZONE_CREATE"
+msgstr "Create Separated Zone"
+
 msgid "IDS_DPM_CANCEL"
 msgstr "Cancel"
 

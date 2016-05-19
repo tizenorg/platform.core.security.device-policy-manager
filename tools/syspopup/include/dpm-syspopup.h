@@ -39,9 +39,11 @@
 #define __(str) dgettext("dpm-syspopup", str)
 
 #define DPM_SYSPOPUP_DEFAULT_STATUS "stop"
+#define MAX_DATA 2
 
 typedef struct {
 	const char *id;
+	bool title_prefix;
 	char *title;
 	char *content;
 	char *style;
@@ -51,9 +53,13 @@ typedef struct {
 	void (*right_btn_cb)(void *data, Evas_Object *obj, void *event_info);
 } popup_info_s;
 
+typedef struct {
+	char *data[MAX_DATA];
+} user_data_s;
+
 popup_info_s *_get_popup_info(const char *id);
 int _get_popup_text(const char *id, const char *status, char *header, char *body);
 
-void _create_syspopup(const char *id, char *style, const char *status, const char *user_data);
+void _create_syspopup(const char *id, char *style, const char *status, char **user_data);
 
 #endif /* __DPM_SYSPOPUP_H__ */
