@@ -17,6 +17,10 @@
 #include <sys/types.h>
 
 #include <auth-passwd-admin.h>
+#include <bundle.h>
+#include <aul.h>
+#include <notification.h>
+#include <vconf.h>
 
 #include "password.hxx"
 
@@ -25,6 +29,7 @@
 #include "audit/logger.h"
 
 #define SIMPLE_PASSWORD_LENGTH 7
+#define PASSWORD_NOTI "DPM_PASSWORD_CHANGE_NOTI"
 
 namespace DevicePolicyManager {
 
@@ -34,12 +39,77 @@ PasswordPolicy::PasswordPolicyQuality qualityType;
 std::string PasswordPattern;
 std::vector<std::string> ForbiddenStrings;
 
-void SetPasswordPolicy(PolicyControlContext& context, const std::string& name, int value)
+int createNotificationLaunch(void)
+{
+    int lock_type = 0, view_type = 0;
+    app_control_h app_control = NULL;
+    static notification_h passwdNoti = NULL;
+    char sViewtype[][40] = {"SETTING_PW_TYPE_SET_SIMPLE_PASSWORD", "SETTING_PW_TYPE_SET_PASSWORD"};
+
+    vconf_get_int(VCONFKEY_SETAPPL_SCREEN_LOCK_TYPE_INT, &lock_type);
+    std::cerr << "Lock Type: " << lock_type << std::endl;
+    if (lock_type == SETTING_SCREEN_LOCK_TYPE_SIMPLE_PASSWORD)
+        view_type = 0;
+    else
+        view_type = 1;
+
+    passwdNoti = notification_create(NOTIFICATION_TYPE_NOTI);
+    if (passwdNoti != NULL) {
+        std::cerr << "Password Notification" << std::endl;
+        if (notification_set_text(passwdNoti, NOTIFICATION_TEXT_TYPE_TITLE, "Password Change", NULL, NOTIFICATION_VARIABLE_TYPE_NONE) != NOTIFICATION_ERROR_NONE) {
+            notification_free(passwdNoti);
+            return -1;
+        }
+        if (notification_set_display_applist(passwdNoti, NOTIFICATION_DISPLAY_APP_ALL) != NOTIFICATION_ERROR_NONE) {
+            notification_free(passwdNoti);
+            return -1;
+        }
+        if (app_control_create(&app_control) != APP_CONTROL_ERROR_NONE) {
+            notification_free(passwdNoti);
+            return -1;
+        }
+        if (app_control_set_app_id(app_control, "setting-password-efl") != APP_CONTROL_ERROR_NONE) {
+            app_control_destroy(app_control);
+            notification_free(passwdNoti);
+            return -1;
+        }
+        if (app_control_add_extra_data(app_control, "viewtype", sViewtype[view_type]) != APP_CONTROL_ERROR_NONE) {
+            app_control_destroy(app_control);
+            notification_free(passwdNoti);
+            return -1;
+        }
+        if (app_control_add_extra_data(app_control, "caller", "DPM") != APP_CONTROL_ERROR_NONE) {
+            app_control_destroy(app_control);
+            notification_free(passwdNoti);
+            return -1;
+        }
+        if (notification_set_launch_option(passwdNoti, NOTIFICATION_LAUNCH_OPTION_APP_CONTROL, (void *)app_control) != NOTIFICATION_ERROR_NONE) {
+            app_control_destroy(app_control);
+            notification_free(passwdNoti);
+            return -1;
+        }
+        if (notification_set_tag(passwdNoti, PASSWORD_NOTI) != NOTIFICATION_ERROR_NONE) {
+            app_control_destroy(app_control);
+            notification_free(passwdNoti);
+            return -1;
+        }
+        app_control_destroy(app_control);
+        if (notification_post(passwdNoti) != NOTIFICATION_ERROR_NONE) {
+            notification_free(passwdNoti);
+            return -1;
+        }
+
+        return 0;
+    } else
+        return -1;
+}
+
+void SetPasswordPolicy(PolicyControlContext &context, const std::string &name, int value)
 {
     context.updatePolicy(name, std::to_string(value), "password", name);
 }
 
-int GetPasswordPolicy(PolicyControlContext& context, const std::string& name)
+int GetPasswordPolicy(PolicyControlContext &context, const std::string &name)
 {
     return std::stoi(context.getPolicy(name));
 }
@@ -172,7 +242,7 @@ int PasswordPolicy::setPasswordPolicyQuality(const int quality)
         return -1;
     }
 
-    if(qualityType == PasswordPolicy::DPM_PASSWORD_QUALITY_SIMPLE_PASSWORD) {
+    if (qualityType == PasswordPolicy::DPM_PASSWORD_QUALITY_SIMPLE_PASSWORD) {
         if (auth_passwd_set_min_length(p_policy, SIMPLE_PASSWORD_LENGTH) != AUTH_PASSWD_API_SUCCESS) {
             auth_passwd_free_policy(p_policy);
             return -1;
@@ -372,7 +442,7 @@ int PasswordPolicy::getPasswordPolicyHistory()
     return GetPasswordPolicy(__context, "password-history");
 }
 
-int PasswordPolicy::setPasswordPolicyPattern(const std::string& pattern)
+int PasswordPolicy::setPasswordPolicyPattern(const std::string &pattern)
 {
     int ret = 0;
     policy_h *p_policy;
@@ -403,7 +473,7 @@ int PasswordPolicy::setPasswordPolicyPattern(const std::string& pattern)
     return ret;
 }
 
-int PasswordPolicy::resetPasswordPolicy(const std::string& passwd)
+int PasswordPolicy::resetPasswordPolicy(const std::string &passwd)
 {
     int ret = 0;
 
@@ -416,7 +486,21 @@ int PasswordPolicy::resetPasswordPolicy(const std::string& passwd)
 
 int PasswordPolicy::enforcePasswordPolicyChange()
 {
-    return 0;
+    int ret = 0;
+    bundle *b = ::bundle_create();
+
+    std::cerr << "enforce Password Policy Change" << std::endl;
+    ::bundle_add_str(b, "id", "password-enforce-change");
+    ret = ::aul_launch_app_for_uid("org.tizen.dpm-syspopup", b, __context.getPeerUid());
+    ::bundle_free(b);
+
+    if (ret < 0) {
+        std::cerr << "Failed to launch Password Application." << std::endl;
+        return -1;
+    } else {
+        SetPasswordPolicy(__context, "password-status", PasswordPolicy::DPM_PASSWORD_STATUS_CHANGE_REQUIRED);
+        return 0;
+    }
 }
 
 int PasswordPolicy::setMaxInactivityTimeDeviceLock(const int value)
@@ -432,7 +516,45 @@ int PasswordPolicy::getMaxInactivityTimeDeviceLock()
 
 int PasswordPolicy::setPasswordPolicyStatus(const int status)
 {
-    return 0;
+    int ret = 0;
+    static notification_h passwdNoti = NULL;
+    int current_status = GetPasswordPolicy(__context, "password-status");
+
+    std::cerr << "current status: " << current_status << ", " << "status: " << status << std::endl;
+    if (status >= PasswordPolicy::DPM_PASSWORD_STATUS_MAX) {
+        ret = -1;
+        return ret;
+    }
+
+    if (status == PasswordPolicy::DPM_PASSWORD_STATUS_MAX_ATTEMPTS_EXCEEDED) {
+        std::cerr << "Max Attempts Exceeded." << std::endl;
+        return ret;
+    }
+
+    if (current_status == PasswordPolicy::DPM_PASSWORD_STATUS_CHANGE_REQUIRED) {
+        passwdNoti = notification_load_by_tag(PASSWORD_NOTI);
+        if (status == PasswordPolicy::DPM_PASSWORD_STATUS_CHANGED) {
+            SetPasswordPolicy(__context, "password-status", PasswordPolicy::DPM_PASSWORD_STATUS_NORMAL);
+	   if (passwdNoti != NULL) {
+                std::cerr << "Delete Notification..." << std::endl;
+                notification_delete(passwdNoti);
+                notification_free(passwdNoti);
+                passwdNoti = NULL;
+            }
+        } else if (status == PasswordPolicy::DPM_PASSWORD_STATUS_NOT_CHANGED) {
+            if (passwdNoti == NULL) {
+                std::cerr << "Display Noti" << std::endl;
+                ret = createNotificationLaunch();
+            }
+        }
+    } else if (current_status ==  PasswordPolicy::DPM_PASSWORD_STATUS_NORMAL) {
+        if (status == PasswordPolicy::DPM_PASSWORD_STATUS_CHANGE_REQUIRED)
+            SetPasswordPolicy(__context, "password-status", status);
+        else
+            ret = -1;
+    }
+
+    return ret;
 }
 
 int PasswordPolicy::deletePasswordPolicyPattern()
@@ -543,7 +665,7 @@ int PasswordPolicy::getMaximumNumericSequenceLength()
     return GetPasswordPolicy(__context, "password-numeric-sequences-length");
 }
 
-int PasswordPolicy::setForbiddenStrings(const std::vector<std::string>& forbiddenStrings)
+int PasswordPolicy::setForbiddenStrings(const std::vector<std::string> &forbiddenStrings)
 {
     int ret = 0;
     policy_h *p_policy;

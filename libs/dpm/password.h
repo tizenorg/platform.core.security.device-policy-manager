@@ -39,7 +39,7 @@ extern "C" {
  * @see         dpm_context_acquire_password_policy()
  * @see         dpm_context_release_password_policy()
  */
-typedef void* dpm_password_policy_h;
+typedef void *dpm_password_policy_h;
 
 /**
  * @brief       Enumeration for dpm password quality type
@@ -53,6 +53,15 @@ typedef enum {
     DPM_PASSWORD_QUALITY_ALPHABETIC      = 0x40,    /**< Containing at least alphabetic (or other symbol) characters */
     DPM_PASSWORD_QUALITY_ALPHANUMERIC    = 0x80,    /**< Containing at least numeric and alphabetic characters */
 } dpm_password_quality_e;
+
+typedef enum {
+    DPM_PASSWORD_STATUS_NORMAL,                                       /**< Password normal status */
+    DPM_PASSWORD_STATUS_CHANGED,                                     /**< Password successfully changed */
+    DPM_PASSWORD_STATUS_NOT_CHANGED,                           /**< Password not changed */
+    DPM_PASSWORD_STATUS_CHANGE_REQUIRED ,                 /**< Password change required */
+    DPM_PASSWORD_STATUS_MAX_ATTEMPTS_EXCEEDED,  /**< Password Max Attempts Exceeded*/
+    DPM_PASSWORD_STATUS_MAX
+} dpm_password_status_e;
 
 /**
  * @brief       Acquires the password policy handle.
@@ -356,7 +365,7 @@ DPM_API int dpm_password_delete_pattern(dpm_password_policy_h handle);
  * @see         dpm_context_acquire_password_policy()
  * @see         dpm_context_release_password_policy()
  */
-DPM_API int dpm_password_get_pattern(dpm_password_policy_h handle, char** pattern);
+DPM_API int dpm_password_get_pattern(dpm_password_policy_h handle, char **pattern);
 
 /**
  * @brief       Sets the maximum number of times a character can occur in
