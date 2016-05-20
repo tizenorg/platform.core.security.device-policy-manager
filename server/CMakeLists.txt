@@ -61,6 +61,7 @@ PKG_CHECK_MODULES(SERVER_DEPS
 				  capi-system-system-settings
 				  capi-network-connection
 				  capi-network-bluetooth
+				  notification
 )
 
 INCLUDE_DIRECTORIES(SYSTEM ${SERVER_DEPS_INCLUDE_DIRS} ${DPM_COMMON} ${DPM_POLICY} ${DPM_SERVER})
