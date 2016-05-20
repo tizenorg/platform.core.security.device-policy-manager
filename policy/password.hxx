@@ -33,6 +33,15 @@ public:
         DPM_PASSWORD_QUALITY_ALPHANUMERIC    = 0x80,    /**< Containing at least numeric and alphabetic characters */
     } PasswordPolicyQuality;
 
+    typedef enum {
+        DPM_PASSWORD_STATUS_NORMAL,                           /**< Password normal status */
+        DPM_PASSWORD_STATUS_CHANGED,                 /**< Password successfully changed */
+        DPM_PASSWORD_STATUS_NOT_CHANGED,             /**< Password not changed */
+        DPM_PASSWORD_STATUS_CHANGE_REQUIRED ,        /**< Password change required */
+        DPM_PASSWORD_STATUS_MAX_ATTEMPTS_EXCEEDED,  /**< Password Max Attempts Exceeded*/
+        DPM_PASSWORD_STATUS_MAX
+    } PasswordPolicyStatus;
+
     PasswordPolicy(PolicyControlContext &ctxt);
     ~PasswordPolicy();
 
@@ -48,8 +57,8 @@ public:
     int getPasswordPolicyExpires();
     int setPasswordPolicyHistory(const int value);
     int getPasswordPolicyHistory();
-    int setPasswordPolicyPattern(const std::string& pattern);
-    int resetPasswordPolicy(const std::string& passwd);
+    int setPasswordPolicyPattern(const std::string &pattern);
+    int resetPasswordPolicy(const std::string &passwd);
     int enforcePasswordPolicyChange();
     int setMaxInactivityTimeDeviceLock(const int value);
     int getMaxInactivityTimeDeviceLock();
@@ -61,11 +70,11 @@ public:
     int getMaximumCharacterOccurrences();
     int setMaximumNumericSequenceLength(const int value);
     int getMaximumNumericSequenceLength();
-    int setForbiddenStrings(const std::vector<std::string>& forbiddenPasswds);
+    int setForbiddenStrings(const std::vector<std::string> &forbiddenPasswds);
     std::vector<std::string> getForbiddenStrings();
 
 private:
-    PolicyControlContext& __context;
+    PolicyControlContext &__context;
 };
 
 } /* namespace DevicePolicyManager */
