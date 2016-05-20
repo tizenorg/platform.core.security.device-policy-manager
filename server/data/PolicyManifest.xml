@@ -16,6 +16,7 @@
 		<policy name="password-recovery">0</policy>
 		<policy name="password-lock-delay">0</policy>
 		<policy name="password-inactivity-timeout">0</policy>
+		<policy name="password-status">0</policy>
 		<policy name="password-change-timeout">0</policy>
 		<policy name="password-maximum-character-occurrences">0</policy>
 		<policy name="password-numeric-sequences-length">0</policy>
