@@ -222,7 +222,7 @@ int dpm_password_get_max_inactivity_time_device_lock(dpm_password_policy_h handl
     return ret;
 }
 
-int dpm_password_set_status(dpm_password_policy_h handle, const int status)
+int dpm_password_set_status(dpm_password_policy_h handle, dpm_password_status_e status)
 {
     int ret = 0;
 
