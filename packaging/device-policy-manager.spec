@@ -22,16 +22,21 @@ BuildRequires: pkgconfig(deviced)
 BuildRequires: pkgconfig(vconf)
 BuildRequires: pkgconfig(vconf-internal-keys)
 BuildRequires: pkgconfig(bluetooth-api)
+BuildRequires: pkgconfig(capi-network-bluetooth)
 BuildRequires: pkgconfig(libsmack)
 BuildRequires: pkgconfig(libtzplatform-config)
-BuildRequires: pkgconfig(auth-fw-admin)
 BuildRequires: pkgconfig(capi-base-common)
 BuildRequires: pkgconfig(capi-system-info)
 BuildRequires: pkgconfig(capi-network-wifi)
 BuildRequires: pkgconfig(capi-network-connection)
 BuildRequires: pkgconfig(capi-network-bluetooth)
-BuildRequires: pkgconfig(capi-location-manager)
 BuildRequires: pkgconfig(capi-system-system-settings)
+BuildRequires: pkgconfig(notification)
+
+%if "%{profile}" != "tv"
+BuildRequires: pkgconfig(capi-location-manager)
+BuildRequires: pkgconfig(auth-fw-admin)
+%endif
 
 %description
 The device-policy-manager package provides a daemon which is responsible for
@@ -45,8 +50,6 @@ managing device policies.
 %dir %{TZ_SYS_DATA}/dpm
 %dir %{TZ_SYS_ETC}/dpm/policy
 %{TZ_SYS_ETC}/dpm/policy/PolicyManifest.xml
-%attr(700,root,root) %dir %{TZ_SYS_ETC}/dpm/zone
-%attr(600,root,root) %config %{TZ_SYS_ETC}/dpm/zone/owner.xml
 %{_unitdir}/device-policy-manager.service
 %{_unitdir}/multi-user.target.wants/device-policy-manager.service
 
@@ -61,8 +64,11 @@ managing device policies.
 	CXXFLAGS="$CXXFLAGS -Wp,-U_FORTIFY_SOURCE"
 %endif
 
+%{!?profile:%define profile "mobile"}
+
 %cmake . -DVERSION=%{version} \
          -DCMAKE_BUILD_TYPE=%{build_type} \
+         -DTIZEN_PROFILE_NAME=%{profile} \
          -DSCRIPT_INSTALL_DIR=%{_scriptdir} \
          -DSYSTEMD_UNIT_INSTALL_DIR=%{_unitdir} \
          -DDATA_INSTALL_DIR=%{TZ_SYS_DATA}/dpm \
@@ -77,7 +83,6 @@ make %{?jobs:-j%jobs}
 
 %install
 %make_install
-mkdir -p %{buildroot}/usr/apps/org.tizen.zone-setup-wizard/data
 mkdir -p %{buildroot}/%{_unitdir}/multi-user.target.wants
 ln -s ../device-policy-manager.service %{buildroot}/%{_unitdir}/multi-user.target.wants/device-policy-manager.service
 
@@ -108,7 +113,6 @@ The libdpm package contains the libraries needed to run DPM client.
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libdpm.so.%{version}
 %{_libdir}/libdpm.so.0
-
 
 ## Devel Package ##############################################################
 %package -n libdpm-devel
@@ -144,7 +148,7 @@ Testcases for device policy manager and device policy client
 %defattr(-,root,root,-)
 %{TZ_SYS_DATA}/dpm/sample-policy.xml
 
-## Tools Package ############################################################
+## Tools Package #############################################################
 %package -n org.tizen.ode
 Summary: Tizen ODE User Interface
 Group: Security/Other
@@ -164,33 +168,7 @@ Tizen ODE User Interface for device policy management
 %{odeapp_home}/bin/*
 %{TZ_SYS_RO_PACKAGES}/org.tizen.ode.xml
 
-## ZONE Setup Wizard Package #################################################
-%package -n org.tizen.zone-setup-wizard
-Summary: Tizen ZONE Setup wizard Interface
-Group: Security/Other
-BuildRequires: pkgconfig(efl-extension)
-BuildRequires: pkgconfig(elementary)
-BuildRequires: pkgconfig(capi-appfw-application)
-BuildRequires: pkgconfig(evas)
-Requires: libdpm = %{version}-%{release}
-
-%description -n org.tizen.zone-setup-wizard
-Tizen ZONE setup wizard interface for zone
-
-%define setup_home %{TZ_SYS_RO_APP}/org.tizen.zone-setup-wizard
-
-mkdir -p %{setup_home}/data
-
-%files -n org.tizen.zone-setup-wizard
-%defattr(-,root,root,-)
-%manifest tools/zone-setup-wizard/org.tizen.zone-setup-wizard.manifest
-%{setup_home}/bin/*
-%{setup_home}/res/*
-%{setup_home}/res/data/ZoneManifest.xml
-%{setup_home}/data
-%{TZ_SYS_RO_PACKAGES}/org.tizen.zone-setup-wizard.xml
-
-## DPM Syspopup Package #####################################################
+## DPM Syspopup Package ######################################################
 %package -n org.tizen.dpm-syspopup
 Summary: Tizen DPM system popup Interface
 Group: Security/Other
@@ -208,7 +186,73 @@ Tizen DPM system popup interface package
 %{TZ_SYS_RO_APP}/org.tizen.dpm-syspopup/res/locale/*
 %{TZ_SYS_RO_PACKAGES}/org.tizen.dpm-syspopup.xml
 
-## PAM Plugin Package #######################################################
+## Begin of mobile feature ###################################################
+%if "%{profile}" == "mobile"
+
+## ZONE Setup Wizard Package #################################################
+%package -n org.tizen.zone-setup-wizard
+Summary: Tizen ZONE Setup wizard Interface
+Group: Security/Other
+BuildRequires: pkgconfig(efl-extension)
+BuildRequires: pkgconfig(elementary)
+BuildRequires: pkgconfig(capi-appfw-application)
+BuildRequires: pkgconfig(evas)
+Requires: libdpm = %{version}-%{release}
+
+%description -n org.tizen.zone-setup-wizard
+Tizen ZONE setup wizard interface for zone
+
+%define setup_home %{TZ_SYS_RO_APP}/org.tizen.zone-setup-wizard
+
+%files -n org.tizen.zone-setup-wizard
+%defattr(-,root,root,-)
+%manifest zone/setup-wizard/org.tizen.zone-setup-wizard.manifest
+%{setup_home}/bin/*
+%{setup_home}/res/*
+%{setup_home}/res/data/ZoneManifest.xml
+%{TZ_SYS_RO_PACKAGES}/org.tizen.zone-setup-wizard.xml
+
+## Zone Client Package ########################################################
+%package -n libzone
+Summary: Tizen Zone Client library
+Group: Development/Libraries
+BuildRequires: pkgconfig(capi-appfw-package-manager)
+BuildRequires: pkgconfig(capi-appfw-app-manager)
+Requires: %{name} = %{version}-%{release}
+Requires(post): /sbin/ldconfig
+Requires(postun): /sbin/ldconfig
+
+%description -n libzone
+The libdpm package contains the libraries needed to control inside of the zone.
+
+%post -n libzone -p /sbin/ldconfig
+
+%postun -n libzone -p /sbin/ldconfig
+
+%files -n libzone
+%manifest device-policy-manager.manifest
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libzone.so.%{version}
+%{_libdir}/libzone.so.0
+
+## Devel Package ##############################################################
+%package -n libzone-devel
+Summary: Libraries and header files for zone client development
+Group: Development/Libraries
+Requires: libzone = %{version}-%{release}
+
+%description -n libzone-devel
+The libzone-devel package includes the libraries and header files necessary for
+developing the zone client program.
+
+%files -n libzone-devel
+%manifest device-policy-manager.manifest
+%defattr(644,root,root,755)
+%{_libdir}/libzone.so
+%{_includedir}/zone
+%{_libdir}/pkgconfig/zone.pc
+
+## PAM Plugin Package ########################################################
 %package -n dpm-pam-zone
 Summary: PAM Plugin for zone policy in device policy manager
 Group: Development/Libraries
@@ -228,17 +272,9 @@ mv /etc/pam.d/systemd-user.keep /etc/pam.d/systemd-user
 %defattr(600,root,root,700)
 %attr(700,root,root) %{_libdir}/security/pam_*.so
 %attr(700,root,root) %{_sbindir}/zone-admin-cli
+%attr(700,root,root) %dir %{TZ_SYS_ETC}/dpm/zone
+%attr(600,root,root) %config %{TZ_SYS_ETC}/dpm/zone/owner.xml
 %config /etc/pam.d/*
 
-## CLI Toolkit Package ##############################################################
-%package -n dpm-cli-toolkit
-Summary: Device Policy Manager command line interface toolkit
-Group: Development/Libraries
-Requires: libdpm = %{version}-%{release}
-
-%description -n dpm-cli-toolkit
-Command line interface toolkit for device policy manager
-
-%files -n dpm-cli-toolkit
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_bindir}/dpm-cli-toolkit
+%endif
+# End of mobile feature
