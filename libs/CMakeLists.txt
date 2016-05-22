@@ -20,44 +20,42 @@ SET(LIB_SOVERSION "0")
 
 SET(PC_FILE "${PROJECT_NAME}.pc")
 
-SET(SOURCES policy-client.cpp
-            administration.cpp
-            application.cpp
-            bluetooth.cpp
-            password.cpp
-            restriction.cpp
-            security.cpp
-            storage.cpp
-			wifi.cpp
-			zone.cpp
-			dpm/client-handle.cpp
-			dpm/administration.cpp
-			dpm/application.cpp
-			dpm/bluetooth.cpp
-			dpm/password.cpp
-			dpm/restriction.cpp
-            dpm/security.cpp
-            dpm/storage.cpp
-			dpm/wifi.cpp
-			dpm/zone.cpp
+SET(FOUNDATION          policy-client.cpp
+                        dpm/client-handle.cpp
 )
 
-SET(CAPI_INCLUDE_FILES  dpm/device-policy-manager.h
+SET(POLICY              administration.cpp
+                        application.cpp
+                        bluetooth.cpp
+                        restriction.cpp
+                        security.cpp
+                        storage.cpp
+                        wifi.cpp
+                        dpm/administration.cpp
+                        dpm/application.cpp
+                        dpm/bluetooth.cpp
+                        dpm/restriction.cpp
+                        dpm/security.cpp
+                        dpm/storage.cpp
+                        dpm/wifi.cpp
+)
+
+SET(CAPI                dpm/device-policy-manager.h
 						dpm/context.h
 						dpm/administration.h
 						dpm/application.h
 						dpm/bluetooth.h
-						dpm/password.h
 						dpm/restriction.h
 						dpm/security.h
 						dpm/storage.h
 						dpm/wifi.h
-						dpm/zone.h
 )
+
+INCLUDE("${TIZEN_PROFILE_NAME}.cmake")
 
 SET (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,noexecstack")
 
-ADD_LIBRARY(${PROJECT_NAME} SHARED ${SOURCES})
+ADD_LIBRARY(${PROJECT_NAME} SHARED ${FOUNDATION} ${POLICY})
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-fvisibility=hidden")
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES SOVERSION ${LIB_SOVERSION})
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES VERSION   ${LIB_VERSION})
@@ -69,4 +67,4 @@ CONFIGURE_FILE(${PC_FILE}.in ${CMAKE_BINARY_DIR}/${PC_FILE} @ONLY)
 
 INSTALL(FILES ${CMAKE_BINARY_DIR}/${PC_FILE} DESTINATION ${LIB_INSTALL_DIR}/pkgconfig)
 INSTALL(TARGETS ${PROJECT_NAME} DESTINATION ${LIB_INSTALL_DIR} COMPONENT RuntimeLibraries)
-INSTALL(FILES ${CAPI_INCLUDE_FILES} DESTINATION ${INCLUDE_INSTALL_DIR}/dpm)
+INSTALL(FILES ${CAPI} DESTINATION ${INCLUDE_INSTALL_DIR}/dpm)
