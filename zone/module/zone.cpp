@@ -21,9 +21,9 @@
 #include <string>
 #include <vector>
 
-#include "../zone-guard.h"
-#include "../zone-builder.h"
-#include "../session.h"
+#include "zone-guard.h"
+#include "zone-builder.h"
+#include "session.h"
 
 #include "exception.h"
 #include "filesystem.h"

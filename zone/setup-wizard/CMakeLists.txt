@@ -4,14 +4,13 @@ PROJECT(org.tizen.zone-setup-wizard C)
 INCLUDE_DIRECTORIES(./include)
 
 FIND_PACKAGE(PkgConfig REQUIRED)
-PKG_CHECK_MODULES(tools_pkgs REQUIRED
-        dlog
-        glib-2.0
-	bundle
-	efl-extension
-	elementary
-	capi-appfw-application
-	evas
+PKG_CHECK_MODULES(tools_pkgs REQUIRED   dlog
+                                        glib-2.0
+                                        bundle
+                                        efl-extension
+                                        elementary
+                                        capi-appfw-application
+                                        evas
 )
 
 INCLUDE_DIRECTORIES(${tools_pkgs_INCLUDE_DIRS} ${DPM_LIBS})

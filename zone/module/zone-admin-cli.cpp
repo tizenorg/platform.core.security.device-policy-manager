@@ -39,7 +39,7 @@
 #include <iostream>
 #include <utility>
 
-#include "../session.h"
+#include "session.h"
 
 #include "error.h"
 #include "exception.h"
