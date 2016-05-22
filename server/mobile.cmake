@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2016 Samsung Electronics Co., Ltd All Rights Reserved
+# Copyright (c) 2015 Samsung Electronics Co., Ltd All Rights Reserved
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,8 +14,11 @@
 # limitations under the License.
 #
 
-SET(ZONE_MODULE		  ${DPM_ZONE}/module)
-SET(ZONE_SETUP_WIZARD ${DPM_ZONE}/setup-wizard)
+SET(POLICY      ${POLICY}
+                password.cpp
+                zone.cpp
+)
 
-ADD_SUBDIRECTORY(${ZONE_MODULE})
-ADD_SUBDIRECTORY(${ZONE_SETUP_WIZARD})
+SET(DEPENDENCY  ${DEPENDENCY}
+                auth-fw-admin
+)

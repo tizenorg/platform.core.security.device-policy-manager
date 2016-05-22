@@ -19,11 +19,8 @@ SET(API_TEST_SOURCES main.c
                      testbench.c
 					 context.c
                      bluetooth.c
-#                     password.c
 					 restriction.c
                      security.c
-#                     storage.c
-                     zone.c
 )
 
 ADD_EXECUTABLE(${API_TEST_TARGET} ${API_TEST_SOURCES})
