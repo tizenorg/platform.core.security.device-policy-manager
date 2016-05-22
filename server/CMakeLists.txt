@@ -16,53 +16,51 @@
 
 SET(TARGET ${PROJECT_NAME})
 
-SET(SOURCES	main.cpp
-			server.cpp
-			app-bundle.cpp
-			syspopup.cpp
-			launchpad.cpp
-			packman.cpp
-			policy.cpp
-			policy-storage.cpp
-			client-manager.cpp
+SET(FOUNDATION		main.cpp
+					server.cpp
+					app-bundle.cpp
+					syspopup.cpp
+					launchpad.cpp
+					packman.cpp
+					policy.cpp
+					policy-storage.cpp
+					client-manager.cpp
 )
 
-SET(POLICIES administration.cpp
-			 application.cpp
-			 bluetooth.cpp
-			 password.cpp
-			 restriction.cpp
-			 security.cpp
-			 storage.cpp
-			 wifi.cpp
-			 zone.cpp
+SET(POLICY			administration.cpp
+					application.cpp
+					bluetooth.cpp
+					restriction.cpp
+					security.cpp
+					storage.cpp
+					wifi.cpp
 )
 
-ADD_EXECUTABLE(${TARGET} ${SOURCES} ${POLICIES} ${INCLUDE_SRCS})
-
-PKG_CHECK_MODULES(SERVER_DEPS
-				  REQUIRED
-				  glib-2.0
-				  gio-2.0
-				  bundle
-				  aul
-				  appsvc
-				  pkgmgr
-				  pkgmgr-info
-				  vconf
-				  syspopup-caller
-				  deviced
-				  libtzplatform-config
-				  bluetooth-api
-				  capi-network-bluetooth
-				  auth-fw-admin
-				  capi-network-wifi
-				  capi-system-info
-				  capi-location-manager
-				  capi-system-system-settings
-				  capi-network-connection
-				  capi-network-bluetooth
+SET(DEPENDENCY		glib-2.0
+					gio-2.0
+					bundle
+					aul
+					appsvc
+					pkgmgr
+					pkgmgr-info
+					vconf
+					syspopup-caller
+					deviced
+					libtzplatform-config
+					bluetooth-api
+					capi-network-wifi
+					capi-system-info
+					capi-location-manager
+					capi-system-system-settings
+					capi-network-connection
+					capi-network-bluetooth
 )
+
+INCLUDE("${TIZEN_PROFILE_NAME}.cmake")
+
+ADD_EXECUTABLE(${TARGET} ${FOUNDATION} ${POLICY})
+
+PKG_CHECK_MODULES(SERVER_DEPS REQUIRED ${DEPENDENCY})
 
 INCLUDE_DIRECTORIES(SYSTEM ${SERVER_DEPS_INCLUDE_DIRS} ${DPM_COMMON} ${DPM_POLICY} ${DPM_SERVER})
 
