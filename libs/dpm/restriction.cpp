@@ -350,3 +350,28 @@ int dpm_restriction_get_bluetooth_desktop_connectivity_state(dpm_restriction_pol
 
     return DPM_ERROR_NONE;
 }
+
+int dpm_restriction_set_bluetooth_pairing_state(dpm_restriction_policy_h handle, int enable)
+{
+	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    BluetoothPolicy bluetooth = client.createPolicyInterface<BluetoothPolicy>();
+    return bluetooth.setPairingState(enable);
+}
+
+int dpm_restriction_get_bluetooth_pairing_state(dpm_restriction_policy_h handle, int *enable)
+{
+	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(enable, DPM_ERROR_INVALID_PARAMETER);
+
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    BluetoothPolicy bluetooth = client.createPolicyInterface<BluetoothPolicy>();
+    int ret = bluetooth.getPairingState();
+    if (ret < 0) {
+        return -1;
+    }
+    *enable = ret;
+
+    return DPM_ERROR_NONE;
+}
