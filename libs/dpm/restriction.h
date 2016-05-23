@@ -553,7 +553,7 @@ DPM_API int dpm_restriction_get_bluetooth_mode_change_state(dpm_restriction_poli
  * @see         dpm_context_release_restriction_policy()
  * @see         dpm_restriction_get_bluetooth_desktop_connectivity_state()
  */
-DPM_API int dpm_restriction_set_bluetooth_desktop_connectivity_state(dpm_restriction_policy_h handle, const int enable);
+DPM_API int dpm_restriction_set_bluetooth_desktop_connectivity_state(dpm_restriction_policy_h handle, int enable);
 
 /**
  * @brief       Checks whether the the Bluetooth desktop connectivity is restricted.
