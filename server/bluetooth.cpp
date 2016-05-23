@@ -62,6 +62,11 @@ void bluetoothAdapterStateChangedCb(int result, bt_adapter_state_e state, void *
         if (ret != BLUETOOTH_DPM_RESULT_SUCCESS) {
             // TODO(seok85.hong): we can notify to admin client with this notification.
         }
+        ret = policy.setPairingState(IsPolicyEnabled(context, "bluetooth-paring"));
+        if (ret != BLUETOOTH_DPM_RESULT_SUCCESS) {
+            // TODO(seok85.hong): we can notify to admin client with this notification.
+        }
+
         ret = policy.setDeviceRestriction(IsPolicyEnabled(context, "bluetooth-device-restriction"));
         if (ret != BLUETOOTH_DPM_RESULT_SUCCESS) {
             // TODO(seok85.hong): we can notify to admin client with this notification.
@@ -85,6 +90,9 @@ BluetoothPolicy::BluetoothPolicy(PolicyControlContext& ctxt) :
     ctxt.registerNonparametricMethod(this, (bool)(BluetoothPolicy::getModeChangeState));
     ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::setDesktopConnectivityState)(bool));
     ctxt.registerNonparametricMethod(this, (bool)(BluetoothPolicy::getDesktopConnectivityState));
+    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::setPairingState)(bool));
+    ctxt.registerNonparametricMethod(this, (bool)(BluetoothPolicy::getPairingState));
+
     // for bluetooth CPIs
     ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::addDeviceToBlacklist)(std::string));
     ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::removeDeviceFromBlacklist)(std::string));
@@ -97,6 +105,7 @@ BluetoothPolicy::BluetoothPolicy(PolicyControlContext& ctxt) :
 
     ctxt.createNotification("bluetooth");
     ctxt.createNotification("bluetooth-desktop-connectivity");
+    ctxt.createNotification("bluetooth-paring");
     ctxt.createNotification("bluetooth-uuid-restriction");
     ctxt.createNotification("bluetooth-device-restriction");
 
@@ -154,6 +163,26 @@ bool BluetoothPolicy::getDesktopConnectivityState()
 {
     return IsPolicyEnabled(context, "bluetooth-desktop-connectivity");
 }
+
+int BluetoothPolicy::setPairingState(const bool enable)
+{
+    int ret = BLUETOOTH_DPM_RESULT_SUCCESS;
+    ret = bluetooth_dpm_set_pairing_state(enable == true ? BLUETOOTH_DPM_ALLOWED : BLUETOOTH_DPM_RESTRICTED);
+    if (ret == BLUETOOTH_DPM_RESULT_ACCESS_DENIED ||
+        ret == BLUETOOTH_DPM_RESULT_FAIL) {
+        return -1;
+    }
+
+    SetPolicyEnabled(context, "bluetooth-paring", enable);
+
+    return 0;
+}
+
+bool BluetoothPolicy::getPairingState()
+{
+    return IsPolicyEnabled(context, "bluetooth-paring");
+}
+
 
 int BluetoothPolicy::addDeviceToBlacklist(const std::string& mac)
 {
