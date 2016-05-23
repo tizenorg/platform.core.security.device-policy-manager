@@ -16,6 +16,11 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <algorithm>
+
+#include <pkgmgr-info.h>
+#include <package-manager.h>
+#include <tzplatform_config.h>
 
 #include "zone.h"
 #include "debug.h"
@@ -32,11 +37,81 @@ using namespace DevicePolicyManager;
 typedef struct zone_package_proxy_s {
     std::unique_ptr<DevicePolicyContext> pContext;
     std::unique_ptr<ZonePackageProxy> pManager;
+    pkgmgr_client* pNativeHandle;
+    zone_package_proxy_event_cb pCallback;
+    void *pCallbackUserData;
 } zone_package_proxy_s;
 
-inline ZonePackageProxy* getManager(zone_package_proxy_h handle)
+static inline zone_package_proxy_s* getInstance(zone_package_proxy_h handle)
 {
-    return reinterpret_cast<zone_package_proxy_s *>(handle)->pManager.get();
+    return reinterpret_cast<zone_package_proxy_s *>(handle);
+}
+
+static inline ZonePackageProxy* getProxy(zone_package_proxy_h handle)
+{
+    return getInstance(handle)->pManager.get();
+}
+
+static int packageEventHandler(uid_t target_uid, int req_id,
+                               const char *pkg_type, const char *pkg_name,
+                               const char *key, const char *val,
+                               const void *pmsg, void *data)
+{
+    static auto event_type = (package_manager_event_type_e)-1;
+    auto event_state = PACKAGE_MANAGER_EVENT_STATE_FAILED;
+    std::string keystr = key, zone_name;
+    auto instance = getInstance(data);
+    int progress = 0;
+
+    if (target_uid == tzplatform_getuid(TZ_SYS_GLOBALAPP_USER))
+        target_uid = getuid();
+
+    try {
+        runtime::User pkgOwner(target_uid);
+        zone_name = pkgOwner.getName();
+    } catch (runtime::Exception &e) {
+        return PACKAGE_MANAGER_ERROR_NONE;
+    }
+
+    std::transform(keystr.begin(), keystr.end(), keystr.begin(), ::tolower);
+
+    if (keystr == "start") {
+        if (val == NULL) {
+            return PACKAGE_MANAGER_ERROR_INVALID_PARAMETER;
+        }
+
+        std::string valstr = val;
+        std::transform(valstr.begin(), valstr.end(), valstr.begin(), ::tolower);
+        if (valstr == "install") {
+            event_type = PACKAGE_MANAGER_EVENT_TYPE_INSTALL;
+        } else if (valstr == "uninstall") {
+            event_type = PACKAGE_MANAGER_EVENT_TYPE_UNINSTALL;
+        } else if (valstr == "update") {
+            event_type = PACKAGE_MANAGER_EVENT_TYPE_UPDATE;
+        } else {
+            return PACKAGE_MANAGER_ERROR_INVALID_PARAMETER;
+        }
+
+        event_state = PACKAGE_MANAGER_EVENT_STATE_STARTED;
+    } else if (keystr == "install_percent" ||
+               keystr == "progress_percent") {
+        event_state = PACKAGE_MANAGER_EVENT_STATE_PROCESSING;
+        progress = std::stoi(val);
+    } else if (keystr == "error") {
+        event_state = PACKAGE_MANAGER_EVENT_STATE_FAILED;
+    } else if (keystr == "end" ||
+               keystr == "ok") {
+        event_state = PACKAGE_MANAGER_EVENT_STATE_COMPLETED;
+        progress = 100;
+    }
+
+    instance->pCallback(zone_name.c_str(), pkg_type, pkg_name,
+                        event_type, event_state, progress,
+                        PACKAGE_MANAGER_ERROR_NONE,
+                        instance->pCallbackUserData);
+
+
+    return PACKAGE_MANAGER_ERROR_NONE;
 }
 
 static package_info_h make_package_info_handle(const ZonePackageProxy::PackageInfo& info)
@@ -100,22 +175,24 @@ static package_info_h make_package_info_handle(const ZonePackageProxy::PackageIn
     return reinterpret_cast<package_info_h>(packageinfo);
 }
 
-int zone_package_proxy_create(zone_package_proxy_h *manager)
+int zone_package_proxy_create(zone_package_proxy_h *handle)
 {
-    RET_ON_FAILURE(manager, ZONE_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(handle, ZONE_ERROR_INVALID_PARAMETER);
 
-    zone_package_proxy_s* handle = new zone_package_proxy_s;
+    zone_package_proxy_s* instance = new zone_package_proxy_s;
 
-    handle->pContext.reset(new(std::nothrow) DevicePolicyContext());
+    instance->pContext.reset(new(std::nothrow) DevicePolicyContext());
 
-    if (handle->pContext->connect() < 0) {
+    if (instance->pContext->connect() < 0) {
         delete handle;
         return ZONE_ERROR_CONNECTION_REFUSED;
     }
 
-    handle->pManager.reset(handle->pContext->createPolicyInterface<ZonePackageProxy>());
+    instance->pManager.reset(instance->pContext->createPolicyInterface<ZonePackageProxy>());
 
-    *manager = reinterpret_cast<zone_package_proxy_h>(handle);
+    instance->pNativeHandle = ::pkgmgr_client_new(PC_LISTENING);
+
+    *handle = reinterpret_cast<zone_package_proxy_h>(instance);
     return ZONE_ERROR_NONE;
 }
 
@@ -123,7 +200,11 @@ int zone_package_proxy_destroy(zone_package_proxy_h handle)
 {
     RET_ON_FAILURE(handle, ZONE_ERROR_INVALID_PARAMETER);
 
-    delete reinterpret_cast<zone_package_proxy_s *>(handle);
+    zone_package_proxy_s* instance = getInstance(handle);
+
+    ::pkgmgr_client_free(instance->pNativeHandle);
+
+    delete instance;
     return ZONE_ERROR_NONE;
 }
 
@@ -134,7 +215,7 @@ int zone_package_proxy_get_package_info(zone_package_proxy_h handle, const char*
     RET_ON_FAILURE(package_id, ZONE_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(package_info, ZONE_ERROR_INVALID_PARAMETER);
 
-    const auto& info = getManager(handle)->getPackageInfo(name, package_id);
+    const auto& info = getProxy(handle)->getPackageInfo(name, package_id);
     package_info_h ret = make_package_info_handle(info);
 
     if (ret == NULL) {
@@ -152,7 +233,7 @@ int zone_package_proxy_foreach_package_info(zone_package_proxy_h handle, const c
     RET_ON_FAILURE(name, ZONE_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(callback, ZONE_ERROR_INVALID_PARAMETER);
 
-    auto manager = getManager(handle);
+    auto manager = getProxy(handle);
     for (const auto& pkgid : manager->getPackageList(name)) {
         package_info_h info_h = make_package_info_handle(manager->getPackageInfo(name, pkgid));
         int ret = callback(info_h, user_data);
@@ -165,13 +246,58 @@ int zone_package_proxy_foreach_package_info(zone_package_proxy_h handle, const c
     return ZONE_ERROR_NONE;
 }
 
+int zone_package_proxy_set_event_status(zone_package_proxy_h handle, int status_type)
+{
+    RET_ON_FAILURE(handle, ZONE_ERROR_INVALID_PARAMETER);
+
+    int ret;
+    ret = pkgmgrinfo_client_set_status_type(getInstance(handle)->pNativeHandle, status_type);
+
+    if (ret != PACKAGE_MANAGER_ERROR_NONE)
+        return ZONE_ERROR_INVALID_PARAMETER;
+
+    return ZONE_ERROR_NONE;
+}
+
+int zone_package_proxy_set_event_cb(zone_package_proxy_h handle, zone_package_proxy_event_cb callback, void *user_data)
+{
+    RET_ON_FAILURE(handle, ZONE_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(callback, ZONE_ERROR_INVALID_PARAMETER);
+
+    auto instance = getInstance(handle);
+
+    instance->pCallback = callback;
+    instance->pCallbackUserData = user_data;
+
+    int ret;
+    ret = pkgmgr_client_listen_status(instance->pNativeHandle, packageEventHandler, handle);
+
+    if (ret != PACKAGE_MANAGER_ERROR_NONE)
+        return ZONE_ERROR_INVALID_PARAMETER;
+
+    return ZONE_ERROR_NONE;
+}
+
+int zone_package_proxy_unset_event_cb(zone_package_proxy_h handle)
+{
+    RET_ON_FAILURE(handle, ZONE_ERROR_INVALID_PARAMETER);
+
+    int ret;
+    ret = pkgmgr_client_remove_listen_status(getInstance(handle)->pNativeHandle);
+
+    if (ret != PACKAGE_MANAGER_ERROR_NONE)
+        return ZONE_ERROR_INVALID_PARAMETER;
+
+    return ZONE_ERROR_NONE;
+}
+
 int zone_package_proxy_install(zone_package_proxy_h handle, const char* name, const char* package_path)
 {
     RET_ON_FAILURE(handle, ZONE_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(name, ZONE_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(package_path, ZONE_ERROR_INVALID_PARAMETER);
 
-    return getManager(handle)->install(name, package_path);
+    return getProxy(handle)->install(name, package_path);
 }
 
 int zone_package_proxy_uninstall(zone_package_proxy_h handle, const char* name, const char* package_id)
@@ -180,5 +306,5 @@ int zone_package_proxy_uninstall(zone_package_proxy_h handle, const char* name, 
     RET_ON_FAILURE(name, ZONE_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(package_id, ZONE_ERROR_INVALID_PARAMETER);
 
-    return getManager(handle)->uninstall(name, package_id);
+    return getProxy(handle)->uninstall(name, package_id);
 }
