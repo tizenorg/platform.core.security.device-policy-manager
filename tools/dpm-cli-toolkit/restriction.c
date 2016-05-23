@@ -690,7 +690,7 @@ int set_bluetooth_desktop_connectivity_handler(int state)
     }
 
     if (dpm_restriction_set_bluetooth_desktop_connectivity_state(policy, state) < 0) {
-        printf("Failed to set mode change state\n");
+        printf("Failed to set desktop connectivity state\n");
         dpm_context_release_restriction_policy(context, policy);
         dpm_context_destroy(context);
         return -1;
@@ -716,7 +716,7 @@ int get_bluetooth_desktop_connectivity_handler(int *state)
     }
 
     if (dpm_restriction_get_bluetooth_desktop_connectivity_state(policy, state) != DPM_ERROR_NONE) {
-        printf("Failed to check mode change state\n");
+        printf("Failed to check desktop connectivity state\n");
         dpm_context_release_restriction_policy(context, policy);
         dpm_context_destroy(context);
         return -1;
