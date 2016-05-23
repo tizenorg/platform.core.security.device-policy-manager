@@ -645,3 +645,21 @@ void bluetooth_desktop_connectivity_policy_handler(int command, int state)
     else
         printf("bluetooth-desktop-connectivity state: %s\n", state_text[p_state]);
 }
+
+void bluetooth_pairing_policy_handler(int command, int state)
+{
+    int ret = 1;
+    int p_state = 1;
+    char state_text[2][10] = {"DISALLOW", "ALLOW"};
+
+    if (command == 'v') {
+        p_state = state;
+        ret = set_bluetooth_pairing_handler(p_state);
+    } else
+        ret = get_bluetooth_pairing_handler(&p_state);
+
+    if (ret < 0)
+        printf("bluetooth-pairing policy operation is failed.\n");
+    else
+        printf("bluetooth-pairing state: %s\n", state_text[p_state]);
+}

@@ -83,6 +83,24 @@ bool BluetoothPolicy::getTetheringState()
     }
 }
 
+int BluetoothPolicy::setPairingState(const bool enable)
+{
+    try {
+        return context->methodCall<int>("BluetoothPolicy::setPairingState", enable);
+    } catch (runtime::Exception &e) {
+        return -1;
+    }
+}
+
+bool BluetoothPolicy::getPairingState()
+{
+    try {
+        return context->methodCall<bool>("BluetoothPolicy::getPairingState");
+    } catch (runtime::Exception &e) {
+        return -1;
+    }
+}
+
 
 // for bluetooth CAPIs
 int BluetoothPolicy::addDeviceToBlacklist(const std::string& mac)
