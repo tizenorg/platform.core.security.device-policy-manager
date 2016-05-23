@@ -217,12 +217,13 @@ Summary: Tizen Zone Client library
 Group: Development/Libraries
 BuildRequires: pkgconfig(capi-appfw-package-manager)
 BuildRequires: pkgconfig(capi-appfw-app-manager)
+BuildRequires: pkgconfig(libtzplatform-config)
 Requires: %{name} = %{version}-%{release}
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 
 %description -n libzone
-The libdpm package contains the libraries needed to control inside of the zone.
+The libzone package contains the libraries needed to control inside of the zone.
 
 %post -n libzone -p /sbin/ldconfig
 

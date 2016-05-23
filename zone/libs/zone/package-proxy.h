@@ -37,7 +37,7 @@ extern "C" {
  */
 
 /**
- * @brief       The zone package manager handle
+ * @brief       The zone package proxy handle
  * @since_tizen 3.0
  * @see         zone_package_proxy_create()
  * @see         zone_package_proxy_destroy()
@@ -45,12 +45,12 @@ extern "C" {
 typedef void* zone_package_proxy_h;
 
 /**
- * @brief       Acquires the zone package manager handle.
- * @details     This API acquires zone package manager handle required to call
+ * @brief       Acquires the zone package proxy handle.
+ * @details     This API acquires zone package proxy handle required to call
  *              the zone package_manager APIs.
  * @since_tizen 3.0
- * @param[in]   handle Device policy manager context handle
- * @return      Zone package manager handle on success, otherwise NULL
+ * @param[in]   handle The zone package proxy handle
+ * @return      Zone package proxy handle on success, otherwise NULL
  * @remark      The specific error code can be obtained by using the
  *              get_last_result() method. Error codes are described in
  *              exception section.
@@ -61,14 +61,14 @@ typedef void* zone_package_proxy_h;
  * @see         zone_package_proxy_destroy()
  * @see         get_last_result()
  */
-ZONE_API int zone_package_proxy_create(zone_package_proxy_h *manager);
+ZONE_API int zone_package_proxy_create(zone_package_proxy_h *handle);
 
 /**
- * @brief       Releases the zone package manager handle.
+ * @brief       Releases the zone package proxy handle.
  * @details     This API must be called if interaction with the zone package
  *              manager handle is no longer required.
  * @since_tizen 3.0
- * @param[in]   handle The zone package manager handle
+ * @param[in]   handle The zone package proxy handle
  * @return      #ZONE_ERROR_NONE on success, otherwise a negative value
  * @retval      #ZONE_ERROR_NONE Successful
  * @retval      #ZONE_ERROR_INVALID_PARAMETER Invalid parameter
@@ -83,7 +83,7 @@ ZONE_API int zone_package_proxy_destroy(zone_package_proxy_h handle);
  * @details     This API gets package information handle required to get
  *              information of the pacakge in the zone.
  * @since_tizen 3.0
- * @param[in]   handle The zone package manager handle
+ * @param[in]   handle The zone package proxy handle
  * @param[in]   name The zone name
  * @param[in]   pakcage_id The package ID
  * @return      Zone package information handle on success, otherwise NULL
@@ -108,7 +108,7 @@ ZONE_API int zone_package_proxy_get_package_info(zone_package_proxy_h handle, co
  *              each package information handle with traversing the installed
  *              package list in the zone.
  * @since_tizen 3.0
- * @param[in]   handle The zone package manager handle
+ * @param[in]   handle The zone package proxy handle
  * @param[in]   name The zone name
  * @param[in]   callback The iteration callback function
  * @param[in]   user_data The user data passed to the callback function
@@ -128,7 +128,7 @@ ZONE_API int zone_package_proxy_foreach_package_info(zone_package_proxy_h handle
  * @details     Administrator can use this API to install the package into the
  *              zone.
  * @since_tizen 3.0
- * @param[in]   handle The zone package manager handle
+ * @param[in]   handle The zone package proxy handle
  * @param[in]   name The zone name
  * @param[in]   package_path The absolute path to the package to be installed
  * @return      #ZONE_ERROR_NONE on success, otherwise a negative value
@@ -154,7 +154,7 @@ ZONE_API int zone_package_proxy_install(zone_package_proxy_h handle, const char*
  * @details     Administrator can use this API to uninstall the package from the
  *              zone.
  * @since_tizen 3.0
- * @param[in]   handle The zone package manager handle
+ * @param[in]   handle The zone package proxy handle
  * @param[in]   name The zone name
  * @param[in]   pakcage_id The pakcage ID
  * @return      #ZONE_ERROR_NONE on success, otherwise a negative value
@@ -174,6 +174,107 @@ ZONE_API int zone_package_proxy_install(zone_package_proxy_h handle, const char*
  * @see         package_manager_request_uninstall()
  */
 ZONE_API int zone_package_proxy_uninstall(zone_package_proxy_h handle, const char* name, const char* pakcage_id);
+
+/**
+ * @brief       Sets the event status that presents the package has been
+ *              installed, uninstalled or updated in the zone.
+ * @details     This API sets the event status of the package for monitoring
+ *              whether the package has been installed, uninstalled or updated.
+ *               event status can be combined multiple status using OR operation.
+ * @since_tizen 3.0
+ * @param[in]   handle The zone package proxy handle
+ * @param[in]   status_type The status of the package
+ * @return      #ZONE_ERROR_NONE on success, otherwise a negative value
+ * @retval      #ZONE_ERROR_NONE Successful
+ * @retval      #ZONE_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #ZONE_ERROR_TIMED_OUT Time out
+ * @pre         The handle must be created by zone_package_proxy_create().
+ * @pre         the zone corresponding to the given name must be
+ *              created before use of this api.
+ * @see         zone_package_proxy_create()
+ * @see         zone_package_proxy_destroy()
+ * @see         zone_package_proxy_uninstall()
+ * @see         zone_package_proxy_set_event_cb()
+ * @see         zone_package_proxy_unset_event_cb()
+ */
+ZONE_API int zone_package_proxy_set_event_status(zone_package_proxy_h handle, int status_type);
+
+/**
+ * @brief       Called when the package in the zone is installed, uninstalled or
+ *              updated, and the progress of the request to the package manager
+ *              changes.
+ * @since_tizen 3.0
+ * @param[in]   zone The name of zone that the package is in
+ * @param[in]   type The type of the package to be installed, uninstalled or
+ *              updated
+ * @param[in]   package The name of the package to be installed, uninstalled or
+ *              updated
+ * @param[in]   event_type The type of the request to the package manager
+ * @param[in]   event_state The current state of the request to the package
+                manager
+ * @param[in]   progress The progress for the request that is being processed by
+ *              the package manager. The range of progress is from @c 0 to
+ *              @c 100.
+ * @param[in]   error The error code when the package manager failed to process
+ *              the request
+ * @param[in]   user_data The user data passed from zone_package_proxy_set_event_cb()
+ *
+ * @see zone_package_proxy_set_event_cb()
+ * @see zone_package_proxy_unset_event_cb()
+ */
+typedef void (*zone_package_proxy_event_cb) (
+                const char *zone,
+                const char *type,
+                const char *package,
+                package_manager_event_type_e event_type,
+                package_manager_event_state_e event_state,
+                int progress,
+                package_manager_error_e error,
+                void *user_data);
+/**
+ * @brief       Registers a callback function for package event.
+ * @details     This API sets a callback function to be invoked when the package
+ *              has been installed, uninstalled or updated.
+ * @since_tizen 3.0
+ * @param[in]   handle the zone package proxy handle
+ * @param[in]   callback The callback function to be registered
+ * @param[in]   user_data The user data to be passed to the callback function
+ * @return      #ZONE_ERROR_NONE on success, otherwise a negative value
+ * @retval      #ZONE_ERROR_NONE Successful
+ * @retval      #ZONE_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #ZONE_ERROR_TIMED_OUT Time out
+ * @pre         the handle must be created by zone_package_proxy_create().
+ * @see         zone_package_proxy_create()
+ * @see         zone_package_proxy_destroy()
+ * @see         zone_package_proxy_uninstall()
+ * @see         zone_package_proxy_set_event_status()
+ * @see         zone_package_proxy_unset_event_cb()
+ * @see         package_manager_event_cb()
+ */
+ZONE_API int zone_package_proxy_set_event_cb(zone_package_proxy_h handle, package_manager_event_cb callback, void *user_data);
+
+/**
+ * @brief       Unregisters the callback function.
+ * @details     This API unsets the callback funtion not to be invoked by
+ *              package event status
+ * @since_tizen 3.0
+ * @param[in]   handle the zone package proxy handle
+ * @param[in]   name the zone name
+ * @return      #ZONE_ERROR_NONE on success, otherwise a negative value
+ * @retval      #ZONE_ERROR_NONE Successful
+ * @retval      #ZONE_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #ZONE_ERROR_TIMED_OUT Time out
+ * @pre         the handle must be created by zone_package_proxy_create().
+ *              created before use of this api.
+ * @see         zone_package_proxy_create()
+ * @see         zone_package_proxy_destroy()
+ * @see         zone_package_proxy_uninstall()
+ * @see         zone_package_proxy_set_event_status()
+ * @see         zone_package_proxy_set_event_cb()
+ * @see         package_manager_event_cb()
+ */
+ZONE_API int zone_package_proxy_unset_event_cb(zone_package_proxy_h handle);
+
 
 /**
  * @}
