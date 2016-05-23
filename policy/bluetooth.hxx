@@ -37,6 +37,8 @@ public:
     bool getModeChangeState();
     int setDesktopConnectivityState(const bool enable);
     bool getDesktopConnectivityState();
+    int setPairingState(const bool enable);
+    bool getPairingState();
 
     // for bluetooth CAPIs
     int addDeviceToBlacklist(const std::string& mac);
