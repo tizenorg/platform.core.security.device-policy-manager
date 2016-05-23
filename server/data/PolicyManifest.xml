@@ -34,7 +34,7 @@
 		<policy name="wifi-ssid-restriction">disabled</policy>
 	</policy-group>
 	<policy-group name="bluetooth">
-		<policy name="bluetooth-paring">allowed</policy>
+		<policy name="bluetooth-pairing">allowed</policy>
 		<policy name="bluetooth-outgoing-call">allowed</policy>
 		<policy name="bluetooth-profile-a2dp">allowed</policy>
 		<policy name="bluetooth-profile-avrcp">allowed</policy>

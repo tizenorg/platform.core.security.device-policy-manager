@@ -39,6 +39,8 @@ public:
     bool getDesktopConnectivityState();
     int setTetheringState(bool enable);
     bool getTetheringState();
+    int setPairingState(const bool enable);
+    bool getPairingState();
 
     // for bluetooth CAPIs
     int addDeviceToBlacklist(const std::string& mac);
