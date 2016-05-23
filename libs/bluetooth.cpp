@@ -50,7 +50,7 @@ bool BluetoothPolicy::getModeChangeState()
 int BluetoothPolicy::setDesktopConnectivityState(const bool enable)
 {
     try {
-        return context->methodCall<bool>("BluetoothPolicy::setDesktopConnectivityState");
+        return context->methodCall<bool>("BluetoothPolicy::setDesktopConnectivityState", enable);
     } catch (runtime::Exception& e) {
         return -1;
     }
