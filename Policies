@@ -14,6 +14,7 @@ their operations in some circumstance.
 | bluetooth                      | allowed / disallowed | dpm_restriction_get_bluetooth_mode_change_state          |
 | bluetooth-tethering            | allowed / disallowed | dpm_restriction_get_bluetooth_tethering_state            |
 | bluetooth-desktop-connectivity | allowed / disallowed | dpm_restriction_get_bluetooth_desktop_connectivity_state |
+| bluetooth-pairing              | allowed / disallowed | dpm_restriction_get_bluetooth_pairing_state              |
 | bluetooth-device-restriction   | allowed / disallowed | dpm_bluetooth_is_device_restricted                       |
 | bluetooth-uuid-restriction     | allowed / disallowed | dpm_bluetooth_is_uuid_restricted                         |
 | usb                            | allowed / disallowed | dpm_restriction_get_usb_state                            |
