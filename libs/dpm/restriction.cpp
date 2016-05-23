@@ -306,7 +306,7 @@ int dpm_restriction_get_bluetooth_mode_change_state(dpm_restriction_policy_h han
     return DPM_ERROR_NONE;
 }
 
-int dpm_restriction_set_bluetooth_desktop_connectivity_state(dpm_restriction_policy_h handle, const int enable)
+int dpm_restriction_set_bluetooth_desktop_connectivity_state(dpm_restriction_policy_h handle, int enable)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
