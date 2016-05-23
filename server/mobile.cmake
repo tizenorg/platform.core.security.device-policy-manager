@@ -22,5 +22,6 @@ SET(POLICY      ${POLICY}
 )
 
 SET(DEPENDENCY  ${DEPENDENCY}
+                capi-location-manager
                 auth-fw-admin
 )

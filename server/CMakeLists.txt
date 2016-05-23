@@ -50,7 +50,6 @@ SET(DEPENDENCY		glib-2.0
 					bluetooth-api
 					capi-network-wifi
 					capi-system-info
-					capi-location-manager
 					capi-system-system-settings
 					capi-network-connection
 					capi-network-bluetooth
