@@ -29,7 +29,7 @@
 #include <dlog.h>
 #include <Elementary.h>
 #include <efl_extension.h>
-#include <dpm/zone.h>
+#include <zone/zone.h>
 
 #ifdef  LOG_TAG
 #undef  LOG_TAG
@@ -46,8 +46,8 @@
 typedef struct {
 	char *zone_name;
 	char *provision_path;
-	dpm_context_h dpm_client;
-	int dpm_zone_signal_cb_id;
+	zone_manager_h zone_manager;
+	int zone_event_cb_id;
 	bool create_done;
 } appdata_s;
 

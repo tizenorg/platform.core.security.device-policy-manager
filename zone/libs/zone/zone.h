@@ -41,6 +41,11 @@ extern "C" {
 #endif
 
 /**
+ * @addtogroup  CAPI_ZONE_ZONE_MODULE
+ * @{
+ */
+
+/**
  * @brief       Enumeration of device policy API errors
  * @since_tizen 3.0
  */
@@ -56,6 +61,108 @@ typedef enum {
     ZONE_ERROR_OUT_OF_MEMORY        = TIZEN_ERROR_OUT_OF_MEMORY         /**< Out of memory */
 } zone_error_type_e;
 
+/**
+ * @brief       The zone manager handle
+ * @details     The zone manager  handle is an abstraction of the
+ *              logical connection between the zone manager and it's client.
+ *              The zone manager handle must be created by using
+ *              zone_manager_create() before attempting to use almost any of
+ *              the zone related APIs, and it should be freed when interaction
+ *              with the zone manager is no longer required.
+ *              To release the handle, use zone_manager_destroy().
+ * @since_tizen 3.0
+ * @see         zone_manager_create()
+ * @see         zone_manager_destroy()
+ */
+typedef void* zone_manager_h;
+
+/**
+ * @brief       Creates the zone manager handle.
+ * @details     This API creates zone manager handle required to
+ *              the zone related APIs.
+ *              This API is also used to verify whether caller is authorized
+ *              or not.
+ * @since_tizen 3.0
+ * @param[out]  handle The zone manager handle
+ * @return      #ZONE_ERROR_NONE on success, otherwise a negative value
+ * @retval      #ZONE_ERROR_NONE Successful
+ * @retval      #ZONE_ERROR_CONNECTION_REFUSED Connection refused
+ * @retval      #ZONE_ERROR_TIMED_OUT Time out
+ * @see         zone_manager_destroy()
+ * @see         get_last_result()
+ */
+ZONE_API int zone_manager_create(zone_manager_h *handle);
+
+/**
+ * @brief       Releases the zone manager handle.
+ * @details     This API must be called if interaction with the zone manager is
+ *              no longer required.
+ * @since_tizen 3.0
+ * @param[in]   handle The zone manager handle
+ * @return      #ZONE_ERROR_NONE on success, otherwise a negative value
+ * @retval      #ZONE_ERROR_NONE Successful
+ * @retval      #ZONE_ERROR_INVALID_PARAMETER Invalid parameter
+ * @pre         The handle must be created by zone_manager_create()
+ * @see         zone_manager_create()
+ */
+ZONE_API int zone_manager_destroy(zone_manager_h handle);
+
+/**
+ * @brief       Called when a zone raises a event.
+ * @since_tizen 3.0
+ * @param[in]   name The zone name
+ * @param[in]   object The object name triggered the event
+ * @param[in]   user_data The user data passed from zone_manager_add_event_cb
+ * @see         zone_manager_add_event_cb()
+ * @see         zone_manager_remove_event_cb()
+ */
+typedef void(*zone_event_cb)(const char* name, const char* object, void *user_data);
+
+/**
+ * @brief       Adds zone event callback.
+ * @details     This API can be used to receive events sent by zone
+ *              The callback specified to this function is automatically called when
+ *              the zone is created or removed.
+ * @since_tizen 3.0
+ * @param[in]   context The zone_manager handle
+ * @param[in]   event The event name to receive
+ * @param[in]   callback The event callback
+ * @param[in]   user_data The user data passed to the callback function
+ * @param[out]  id Signal identifier
+ * @return      #ZONE_ERROR_NONE on success, otherwise a negative value
+ * @retval      #ZONE_ERROR_NONE Successful
+ * @retval      #ZONE_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #ZONE_ERROR_TIMED_OUT Time out
+ * @pre         The handle must be created by zone_manager_create().
+ * @see         zone_manager_create()
+ * @see         zone_manager_destroy()
+ * @see         zone_manager_remove_event_cb()
+ */
+ZONE_API int zone_manager_add_event_cb(zone_manager_h handle,
+                                      const char* event,
+                                      zone_event_cb callback, void* user_data,
+                                      int* id);
+
+/**
+ * @brief       Removes zone event callback.
+ * @details     This API removes zone event callback
+ * @since_tizen 3.0
+ * @param[in]   context The zone manager handle
+ * @param[in]   id Signal identifier
+ * @return      #ZONE_ERROR_NONE on success, otherwise a negative value
+ * @retval      #ZONE_ERROR_NONE Successful
+ * @retval      #ZONE_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #ZONE_ERROR_TIMED_OUT Time out
+ * @pre         The context must be created by zone_manager_create().
+ * @see         zone_manager_create()
+ * @see         zone_manager_destroy()
+ * @see         zone_manager_add_event_cb()
+ */
+ZONE_API int zone_manager_remove_event_cb(zone_manager_h handle, int id);
+
+/**
+ * @}
+ */
 
 #ifdef __cplusplus
 }

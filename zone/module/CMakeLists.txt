@@ -21,11 +21,6 @@ FILE(GLOB ZONE_PAM_SRCS		 zone-builder.cpp
 							 zone.cpp
 )
 
-FILE(GLOB ZONE_CLI_SRCS		 zone-builder.cpp
-							 session.cpp
-							 zone-admin-cli.cpp
-)
-
 SET (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,noexecstack")
 
 SET(ZONE_PAM_NAME "pam_zone")
@@ -53,24 +48,3 @@ TARGET_COMPILE_DEFINITIONS(${ZONE_PAM_NAME} PRIVATE
 INSTALL(TARGETS ${ZONE_PAM_NAME} DESTINATION ${LIB_INSTALL_DIR}/security)
 INSTALL(FILES data/DefaultZoneManifest.xml DESTINATION ${CONF_INSTALL_DIR}/zone RENAME owner.xml)
 INSTALL(FILES pam.d/systemd-user-zone DESTINATION ${PAMD_INSTALL_DIR})
-
-
-
-SET(ZONE_CLI_NAME "zone-admin-cli")
-ADD_EXECUTABLE(${ZONE_CLI_NAME} ${ZONE_CLI_SRCS})
-SET_TARGET_PROPERTIES(${ZONE_CLI_NAME} PROPERTIES PREFIX ""
-    COMPILE_DEFINITIONS PID_FILE_PATH="${RUN_INSTALL_DIR}/zone"
-    COMPILE_FLAGS "-fPIE"
-    LINK_FLAGS "-pie"
-)
-
-PKG_CHECK_MODULES(ZONE_CLI_DEPS  REQUIRED
-                                 glib-2.0
-                                 capi-appfw-package-manager
-                                 capi-appfw-app-manager
-)
-
-INCLUDE_DIRECTORIES(SYSTEM ${ZONE_CLI_DEPS_INCLUDE_DIRS} ${DPM_COMMON} ${DPM_POLICY} ${DPM_LIBS} ${ZONE_LIBS})
-TARGET_LINK_LIBRARIES(${ZONE_CLI_NAME} ${ZONE_CLI_DEPS_LIBRARIES} dpm-common zone)
-
-INSTALL(TARGETS ${ZONE_CLI_NAME} DESTINATION sbin)
