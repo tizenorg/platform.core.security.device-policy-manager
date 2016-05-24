@@ -29,14 +29,9 @@
 
 using namespace DevicePolicyManager;
 
-typedef struct zone_app_proxy_s {
-    std::unique_ptr<DevicePolicyContext> pContext;
-    std::unique_ptr<ZoneAppProxy> pManager;
-} zone_app_proxy_s;
-
 inline ZoneAppProxy* getManager(zone_app_proxy_h handle)
 {
-    return reinterpret_cast<zone_app_proxy_s *>(handle)->pManager.get();
+    return reinterpret_cast<ZoneAppProxy*>(handle);
 }
 
 static app_info_h make_app_info_handle(const ZoneAppProxy::AppInfo& info)
@@ -78,20 +73,13 @@ static app_info_h make_app_info_handle(const ZoneAppProxy::AppInfo& info)
     return reinterpret_cast<app_info_h>(appinfo);
 }
 
-int zone_app_proxy_create(zone_app_proxy_h *manager)
+int zone_app_proxy_create(zone_manager_h manager, zone_app_proxy_h *handle)
 {
     RET_ON_FAILURE(manager, ZONE_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(handle, ZONE_ERROR_INVALID_PARAMETER);
 
-    zone_app_proxy_s* handle = new(std::nothrow) zone_app_proxy_s();
-
-    handle->pContext.reset(new(std::nothrow) DevicePolicyContext());
-    if (handle->pContext->connect() < 0) {
-        delete handle;
-        return ZONE_ERROR_CONNECTION_REFUSED;
-    }
-
-    handle->pManager.reset(handle->pContext->createPolicyInterface<ZoneAppProxy>());
-    *manager = reinterpret_cast<zone_app_proxy_h>(handle);
+    auto& client = GetDevicePolicyContext(manager);
+    *handle = reinterpret_cast<zone_app_proxy_h*>(client.createPolicyInterface<ZoneAppProxy>());
 
     return ZONE_ERROR_NONE;
 }
@@ -100,7 +88,8 @@ int zone_app_proxy_destroy(zone_app_proxy_h handle)
 {
     RET_ON_FAILURE(handle, ZONE_ERROR_INVALID_PARAMETER);
 
-    delete reinterpret_cast<zone_app_proxy_s *>(handle);
+    delete reinterpret_cast<ZoneAppProxy*>(handle);
+
     return ZONE_ERROR_NONE;
 }
 

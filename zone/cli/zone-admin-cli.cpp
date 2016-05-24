@@ -230,12 +230,15 @@ int showPkgInfo(const std::string& name)
 {
     int num = 0;
 
+    zone_manager_h zoneMgr;
     zone_package_proxy_h pkgMgr;
 
-    zone_package_proxy_create(&pkgMgr);
+    zone_manager_create(&zoneMgr);
+    zone_package_proxy_create(zoneMgr, &pkgMgr);
     zone_package_proxy_foreach_package_info(pkgMgr, name.c_str(), PackgeListCallback, &num);
     std::cout << num << " packages are found" << std::endl;
     zone_package_proxy_destroy(pkgMgr);
+    zone_manager_destroy(zoneMgr);
 
     return 0;
 }
@@ -263,7 +266,7 @@ bool ApplicationListCallback(app_info_h info, void *user_data)
     if (checked) {
         std::cout <<" NoDisplay ";
     }
-    std::cout << ")"<<std::endl;
+    std::cout << ")"<< std::endl;
 
     app_info_get_label(info, &val);
     std::cout << "    Label : " << val << std::endl;
@@ -285,12 +288,15 @@ int showAppInfo(const std::string& name)
 {
     int num = 0;
 
+    zone_manager_h zoneMgr;
     zone_app_proxy_h appMgr;
 
-    zone_app_proxy_create(&appMgr);
+    zone_manager_create(&zoneMgr);
+    zone_app_proxy_create(zoneMgr, &appMgr);
     zone_app_proxy_foreach_app_info(appMgr, name.c_str(), ApplicationListCallback, &num);
     std::cout << num << " applications are found" << std::endl;
     zone_app_proxy_destroy(appMgr);
+    zone_manager_destroy(zoneMgr);
 
     return 0;
 }

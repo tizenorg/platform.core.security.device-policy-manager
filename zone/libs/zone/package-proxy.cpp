@@ -35,7 +35,6 @@
 using namespace DevicePolicyManager;
 
 typedef struct zone_package_proxy_s {
-    std::unique_ptr<DevicePolicyContext> pContext;
     std::unique_ptr<ZonePackageProxy> pManager;
     pkgmgr_client* pNativeHandle;
     zone_package_proxy_event_cb pCallback;
@@ -175,20 +174,15 @@ static package_info_h make_package_info_handle(const ZonePackageProxy::PackageIn
     return reinterpret_cast<package_info_h>(packageinfo);
 }
 
-int zone_package_proxy_create(zone_package_proxy_h *handle)
+int zone_package_proxy_create(zone_manager_h manager, zone_package_proxy_h *handle)
 {
+    RET_ON_FAILURE(manager, ZONE_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(handle, ZONE_ERROR_INVALID_PARAMETER);
 
     zone_package_proxy_s* instance = new zone_package_proxy_s;
 
-    instance->pContext.reset(new(std::nothrow) DevicePolicyContext());
-
-    if (instance->pContext->connect() < 0) {
-        delete handle;
-        return ZONE_ERROR_CONNECTION_REFUSED;
-    }
-
-    instance->pManager.reset(instance->pContext->createPolicyInterface<ZonePackageProxy>());
+    instance->pManager.reset(GetDevicePolicyContext(manager).
+                                createPolicyInterface<ZonePackageProxy>());
 
     instance->pNativeHandle = ::pkgmgr_client_new(PC_LISTENING);
 
@@ -205,6 +199,7 @@ int zone_package_proxy_destroy(zone_package_proxy_h handle)
     ::pkgmgr_client_free(instance->pNativeHandle);
 
     delete instance;
+
     return ZONE_ERROR_NONE;
 }
 
