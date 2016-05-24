@@ -16,11 +16,9 @@
  * limitations under the License.
  *
  */
+#include <notification.h>
 #include "zone-setup.h"
 #include "widget.h"
-
-#define WELCOME_INFO_MESSAGE "Welcome<br>Use your applications separately<br>with SZ.<br>The folder will be created on your<br>personal home screen."
-#define SETUP_INFO_MESSAGE "The folder will be created on your<br>presonal home screen."
 
 static void __create_welcome_view(appdata_s *ad);
 static void __create_setup_view(appdata_s *ad);
@@ -35,15 +33,71 @@ typedef struct {
 
 uidata_s ud = {0, };
 
+static int __set_notification(notification_h noti_handle, app_control_h app_control)
+{
+	int ret = 0;
+
+	ret = notification_set_text(noti_handle, NOTIFICATION_TEXT_TYPE_TITLE, IDS_DPM_NOTI_CREATE_ZONE, NULL, NOTIFICATION_VARIABLE_TYPE_NONE);
+	if (ret != NOTIFICATION_ERROR_NONE)
+		return -1;
+
+	ret = notification_set_text(noti_handle, NOTIFICATION_TEXT_TYPE_CONTENT, IDS_DPM_NOTI_BODY_CREATE_ZONE, NULL, NOTIFICATION_VARIABLE_TYPE_NONE);
+	if (ret != NOTIFICATION_ERROR_NONE)
+		return -1;
+
+	ret = notification_set_display_applist(noti_handle, NOTIFICATION_DISPLAY_APP_ALL);
+	if (ret != NOTIFICATION_ERROR_NONE)
+		return -1;
+
+	ret = notification_set_image(noti_handle, NOTIFICATION_IMAGE_TYPE_THUMBNAIL, DPM_SYSPOPUP_ICON_PATH);
+	if (ret != NOTIFICATION_ERROR_NONE)
+		return -1;
+
+	ret = notification_set_launch_option(noti_handle, NOTIFICATION_LAUNCH_OPTION_APP_CONTROL, app_control);
+	if (ret != NOTIFICATION_ERROR_NONE)
+		return -1;
+
+	return ret;
+}
+
+static void __create_notification(app_control_h app_control)
+{
+	notification_h noti_handle = NULL;
+	int ret = 0;
+
+	noti_handle = notification_create(NOTIFICATION_TYPE_NOTI);
+
+	ret = __set_notification(noti_handle, app_control);
+	if (ret != NOTIFICATION_ERROR_NONE) {
+		notification_free(noti_handle);
+		app_control_destroy(app_control);
+		return;
+	}
+
+	notification_post(noti_handle);
+	notification_free(noti_handle);
+	app_control_destroy(app_control);
+
+	return;
+}
+
 static Eina_Bool __naviframe_pop_cb(void *data, Elm_Object_Item *it)
 {
+	app_control_h svc = (app_control_h) data;
+
+	__create_notification(svc);
 	ui_app_exit();
+
 	return EINA_FALSE;
 }
 
 static void __prev_btn_cb(void *data, Evas_Object *obj, void *event_info)
 {
+	app_control_h svc = (app_control_h) data;
+
+	__create_notification(svc);
 	ui_app_exit();
+
 	return;
 }
 
@@ -58,6 +112,19 @@ static void __next_btn_cb(void *data, Evas_Object *obj, void *event_info)
 	return;
 }
 
+static Eina_Bool __home_key_cb(void *data, int type, void *event)
+{
+	app_control_h app_control = (app_control_h) data;
+	Evas_Event_Key_Down *ev = event;
+
+	if (!strcmp(ev->keyname, "XF86Home")) {
+		__create_notification(app_control);
+		ui_app_exit();
+	}
+
+	return EINA_TRUE;
+}
+
 static void __set_two_btn_bottom_layout(Evas_Object *layout, appdata_s *ad, const char *prev_btn_text, const char *next_btn_text)
 {
 	Evas_Object *bottom_layout;
@@ -67,7 +134,7 @@ static void __set_two_btn_bottom_layout(Evas_Object *layout, appdata_s *ad, cons
 
 	prev_btn = _create_button(bottom_layout, prev_btn_text, "bottom");
 	elm_object_part_content_set(bottom_layout, "prev_button", prev_btn);
-	evas_object_smart_callback_add(prev_btn, "clicked", __prev_btn_cb, NULL);
+	evas_object_smart_callback_add(prev_btn, "clicked", __prev_btn_cb, ad->app_control);
 
 	next_btn = _create_button(bottom_layout, next_btn_text, "bottom");
 	elm_object_part_content_set(bottom_layout, "next_button", next_btn);
@@ -118,6 +185,10 @@ void _create_base_window(appdata_s *ad)
 	elm_object_content_set(ud.conform, layout);
 	ud.nf = elm_naviframe_add(layout);
 
+	eext_win_keygrab_set(ud.win, "XF86HOME");
+	ecore_event_handler_add(ECORE_EVENT_KEY_DOWN, __home_key_cb, ad->app_control);
+
+
 	__create_welcome_view(ad);
 
 	elm_object_part_content_set(layout, "elm.swallow.content", ud.nf);
@@ -151,7 +222,7 @@ static void __create_welcome_view(appdata_s *ad)
 
 	nf_it = elm_naviframe_item_push(ud.nf, NULL, NULL, NULL, layout, NULL);
 	elm_naviframe_item_title_enabled_set(nf_it, EINA_FALSE, EINA_TRUE);
-	elm_naviframe_item_pop_cb_set(nf_it, __naviframe_pop_cb, NULL);
+	elm_naviframe_item_pop_cb_set(nf_it, __naviframe_pop_cb, ad->app_control);
 
 	return;
 }

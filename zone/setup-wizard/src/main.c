@@ -40,13 +40,20 @@ static void __app_resume(void *data)
 	return;
 }
 
+static void __free_data(appdata_s *ad)
+{
+	free(ad->zone_name);
+	free(ad->provision_path);
+	dpm_context_destroy(ad->dpm_client);
+	app_control_destroy(ad->app_control);
+}
+
 static void __app_terminate(void *data)
 {
 	appdata_s *ad = (appdata_s *) data;
 
 	dpm_context_remove_signal_cb(ad->dpm_client, ad->dpm_zone_signal_cb_id);
-	dpm_context_destroy(ad->dpm_client);
-	ad->dpm_client = NULL;
+	__free_data(ad);
 	return ;
 }
 
@@ -54,6 +61,7 @@ static void __app_control(app_control_h app_control, void *data)
 {
 	appdata_s *ad = (appdata_s *) data;
 	int id, ret = 0;
+	app_control_h svc = NULL;
 
 	ret = app_control_get_extra_data(app_control, "zone", &ad->zone_name);
 	if (ret != APP_CONTROL_ERROR_NONE) {
@@ -79,6 +87,25 @@ static void __app_control(app_control_h app_control, void *data)
 	}
 
 	ad->dpm_zone_signal_cb_id = id;
+
+	app_control_create(&svc);
+	if (svc == NULL) {
+		dlog_print(DLOG_ERROR, LOG_TAG, "failed to create app control handler");
+		ui_app_exit();
+	}
+
+	app_control_set_app_id(svc, PACKAGE);
+	if (app_control_add_extra_data(svc, "zone", ad->zone_name) != APP_CONTROL_ERROR_NONE) {
+		dlog_print(DLOG_ERROR, LOG_TAG, "failed to add zone name to control handler");
+		ui_app_exit();
+	}
+
+	if (app_control_add_extra_data(svc, "provisionDir", ad->provision_path) != APP_CONTROL_ERROR_NONE) {
+		dlog_print(DLOG_ERROR, LOG_TAG, "failed to add provision path to control handler");
+		ui_app_exit();
+	}
+
+	ad->app_control = svc;
 
 	elm_app_base_scale_set(1.8);
 	_create_base_window(ad);
