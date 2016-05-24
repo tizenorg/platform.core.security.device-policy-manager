@@ -199,7 +199,8 @@ BuildRequires: pkgconfig(efl-extension)
 BuildRequires: pkgconfig(elementary)
 BuildRequires: pkgconfig(capi-appfw-application)
 BuildRequires: pkgconfig(evas)
-Requires: libzone = %{version}-%{release}
+BuildRequires: pkgconfig(notification)
+Requires: libdpm = %{version}-%{release}
 
 %description -n org.tizen.zone-setup-wizard
 Tizen ZONE setup wizard interface for zone
