@@ -40,13 +40,19 @@ static void __app_resume(void *data)
 	return;
 }
 
+static void __free_data(appdata_s *ad)
+{
+	free(ad->zone_name);
+	free(ad->provision_path);
+	dpm_context_destroy(ad->dpm_client);
+}
+
 static void __app_terminate(void *data)
 {
 	appdata_s *ad = (appdata_s *) data;
 
 	dpm_context_remove_signal_cb(ad->dpm_client, ad->dpm_zone_signal_cb_id);
-	dpm_context_destroy(ad->dpm_client);
-	ad->dpm_client = NULL;
+	__free_data(ad);
 	return ;
 }
 
@@ -79,6 +85,11 @@ static void __app_control(app_control_h app_control, void *data)
 	}
 
 	ad->dpm_zone_signal_cb_id = id;
+
+	if (app_control_clone(&ad->app_control, app_control) != APP_CONTROL_ERROR_NONE) {
+		dlog_print(DLOG_ERROR, LOG_TAG, "Failed to clone app control handler");
+		ui_app_exit();
+	}
 
 	elm_app_base_scale_set(1.8);
 	_create_base_window(ad);
