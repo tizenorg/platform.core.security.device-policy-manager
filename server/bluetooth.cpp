@@ -54,11 +54,11 @@ void bluetoothAdapterStateChangedCb(int result, bt_adapter_state_e state, void *
         // TODO(seok85.hong): "re-enforce-policy" : we can notify to admin client with this notification,
         //                    when we should be re-enforced again for the policy that we were failed to set into Bluetooth
         int ret = BLUETOOTH_DPM_RESULT_SUCCESS;
-        ret = policy.setModeChangeState(IsPolicyEnabled(context, "bluetooth"));
+        ret = policy.setModeChangeState(IsPolicyAllowed(context, "bluetooth"));
         if (ret != BLUETOOTH_DPM_RESULT_SUCCESS) {
             // TODO(seok85.hong): we can notify to admin client with this notification.
         }
-        ret = policy.setDesktopConnectivityState(IsPolicyEnabled(context, "bluetooth-desktop-connectivity"));
+        ret = policy.setDesktopConnectivityState(IsPolicyAllowed(context, "bluetooth-desktop-connectivity"));
         if (ret != BLUETOOTH_DPM_RESULT_SUCCESS) {
             // TODO(seok85.hong): we can notify to admin client with this notification.
         }
@@ -126,14 +126,14 @@ int BluetoothPolicy::setModeChangeState(const bool enable)
         return -1;
     }
 
-    SetPolicyEnabled(context, "bluetooth", enable);
+    SetPolicyAllowed(context, "bluetooth", enable);
 
     return 0;
 }
 
 bool BluetoothPolicy::getModeChangeState()
 {
-    return IsPolicyEnabled(context, "bluetooth");
+    return IsPolicyAllowed(context, "bluetooth");
 }
 
 int BluetoothPolicy::setDesktopConnectivityState(const bool enable)
@@ -145,14 +145,14 @@ int BluetoothPolicy::setDesktopConnectivityState(const bool enable)
         return -1;
     }
 
-    SetPolicyEnabled(context, "bluetooth-desktop-connectivity", enable);
+    SetPolicyAllowed(context, "bluetooth-desktop-connectivity", enable);
 
     return 0;
 }
 
 bool BluetoothPolicy::getDesktopConnectivityState()
 {
-    return IsPolicyEnabled(context, "bluetooth-desktop-connectivity");
+    return IsPolicyAllowed(context, "bluetooth-desktop-connectivity");
 }
 
 int BluetoothPolicy::addDeviceToBlacklist(const std::string& mac)
