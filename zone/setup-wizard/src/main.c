@@ -44,9 +44,9 @@ static void __app_terminate(void *data)
 {
 	appdata_s *ad = (appdata_s *) data;
 
-	dpm_context_remove_signal_cb(ad->dpm_client, ad->dpm_zone_signal_cb_id);
-	dpm_context_destroy(ad->dpm_client);
-	ad->dpm_client = NULL;
+	zone_manager_remove_event_cb(ad->zone_manager, ad->zone_event_cb_id);
+	zone_manager_destroy(ad->zone_manager);
+	ad->zone_manager = NULL;
 	return ;
 }
 
@@ -67,18 +67,18 @@ static void __app_control(app_control_h app_control, void *data)
 		ui_app_exit();
 	}
 
-	ad->dpm_client = dpm_context_create();
-	if (ad->dpm_client == NULL) {
-		dlog_print(DLOG_ERROR, LOG_TAG, "failed to get dpm client");
+	ret = zone_manager_create(&ad->zone_manager);
+	if (ret != ZONE_ERROR_NONE) {
+		dlog_print(DLOG_ERROR, LOG_TAG, "failed to get zone manager handle");
 		ui_app_exit();
 	}
 
-	if (dpm_context_add_signal_cb(ad->dpm_client, "ZonePolicy::created", __create_zone_done, ad, &id) != DPM_ERROR_NONE) {
-		dlog_print(DLOG_ERROR, LOG_TAG, "Failed to add zone signal callback");
+	if (zone_manager_add_event_cb(ad->zone_manager, "created", __create_zone_done, ad, &id) != ZONE_ERROR_NONE) {
+		dlog_print(DLOG_ERROR, LOG_TAG, "Failed to add zone event callback");
 		ui_app_exit();
 	}
 
-	ad->dpm_zone_signal_cb_id = id;
+	ad->zone_event_cb_id = id;
 
 	elm_app_base_scale_set(1.8);
 	_create_base_window(ad);
