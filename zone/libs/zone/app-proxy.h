@@ -19,6 +19,7 @@
 
 #include <app_info.h>
 #include <app_manager.h>
+
 #include <zone/zone.h>
 
 /**
@@ -48,19 +49,17 @@ typedef void* zone_app_proxy_h;
  * @details     This API acquires zone application manager handle required to call
  *              the zone application manager APIs.
  * @since_tizen 3.0
- * @param[in]   handle Device policy manager context handle
- * @return      Zone application manager handle on success, otherwise NULL
- * @remark      The specific error code can be obtained by using the
- *              get_last_result() method. Error codes are described in
- *              exception section.
- * @exception   #ZONE_ERROR_NONE No error
- * @exception   #ZONE_ERROR_CONNECTION_REFUSED Connection refused
- * @exception   #ZONE_ERROR_INVALID_PARAMETER Invalid parameter
- * @exception   #ZONE_ERROR_TIMED_OUT Time out
+ * @param[in]   manager The zone manager handle
+ * @param[out]  handle The zone app proxy handle
+ * @return      #ZONE_ERROR_NONE on success, otherwise a negative value
+ * @retval      #ZONE_ERROR_NONE Successful
+ * @retval      #ZONE_ERROR_CONNECTION_REFUSED Connection refused
+ * @retval      #ZONE_ERROR_TIMED_OUT Time out
+ * @see         zone_manager_create()
  * @see         zone_app_proxy_create()
  * @see         get_last_result()
  */
-ZONE_API int zone_app_proxy_create(zone_app_proxy_h* handle);
+ZONE_API int zone_app_proxy_create(zone_manager_h manager, zone_app_proxy_h* handle);
 
 /**
  * @brief       Releases the zone application manager handle

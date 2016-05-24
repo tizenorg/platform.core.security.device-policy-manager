@@ -23,6 +23,7 @@ SET(PC_FILE "${PROJECT_NAME}.pc")
 SET(SOURCES ${DPM_LIBS}/policy-client.cpp
 			package-proxy.cpp
 			app-proxy.cpp
+			zone/zone.cpp
 			zone/package-proxy.cpp
 			zone/app-proxy.cpp
 )
