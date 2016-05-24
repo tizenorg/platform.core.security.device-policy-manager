@@ -4,17 +4,19 @@ PROJECT(org.tizen.zone-setup-wizard C)
 INCLUDE_DIRECTORIES(./include)
 
 FIND_PACKAGE(PkgConfig REQUIRED)
-PKG_CHECK_MODULES(tools_pkgs REQUIRED   dlog
-                                        glib-2.0
-                                        bundle
-                                        efl-extension
-                                        elementary
-                                        capi-appfw-application
-                                        evas
+PKG_CHECK_MODULES(setup_pkgs REQUIRED
+	dlog
+	glib-2.0
+	bundle
+	efl-extension
+	elementary
+	capi-appfw-application
+	evas
+	notification
 )
 
-INCLUDE_DIRECTORIES(${tools_pkgs_INCLUDE_DIRS} ${ZONE_LIBS})
-LINK_DIRECTORIES(${tools_pkgs_LIBRARY_DIRS})
+INCLUDE_DIRECTORIES(${setup_pkgs_INCLUDE_DIRS} ${ZONE_LIBS})
+LINK_DIRECTORIES(${setup_pkgs_LIBRARY_DIRS})
 
 SET(PKG_NAME "${PROJECT_NAME}")
 SET(PKG_SRC src/main.c
@@ -28,7 +30,7 @@ SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pie")
 ADD_EXECUTABLE(${PKG_NAME} ${PKG_SRC})
 INSTALL(TARGETS ${PKG_NAME} DESTINATION ${APP_INSTALL_PREFIX}/${PKG_NAME}/bin)
 
-TARGET_LINK_LIBRARIES(${PKG_NAME} ${tools_pkgs_LIBRARIES} zone)
+TARGET_LINK_LIBRARIES(${PKG_NAME} ${setup_pkgs_LIBRARIES} zone)
 
 #Create edj file
 ADD_CUSTOM_TARGET(org.tizen.zone-setup-wizard.edj
