@@ -182,9 +182,11 @@ Tizen DPM system popup interface package
 
 %files -n org.tizen.dpm-syspopup
 %defattr(-,root,root,-)
+%manifest tools/syspopup/org.tizen.dpm-syspopup.manifest
 %{TZ_SYS_RO_APP}/org.tizen.dpm-syspopup/bin/*
 %{TZ_SYS_RO_APP}/org.tizen.dpm-syspopup/res/locale/*
 %{TZ_SYS_RO_PACKAGES}/org.tizen.dpm-syspopup.xml
+/usr/share/icons/default/small/org.tizen.dpm-syspopup.png
 
 ## Begin of mobile feature ###################################################
 %if "%{profile}" == "mobile"
