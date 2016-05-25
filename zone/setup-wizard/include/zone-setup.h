@@ -31,6 +31,8 @@
 #include <efl_extension.h>
 #include <zone/zone.h>
 
+#include "setup-text.h"
+
 #ifdef  LOG_TAG
 #undef  LOG_TAG
 #endif
@@ -40,28 +42,22 @@
 #define PACKAGE "org.tizen.zone-setup-wizard"
 #endif
 
-#define WELCOME_TEXT_STYLE "DEFAULT='font=Tizen:style=Regular font_size=34 color=#ffffff wrap=mixed align=center'"
-#define SETUP_TEXT_STYLE "DEFAULT='font=Tizen:style=Regular font_size=34 color=#000000 wrap=mixed align=center'"
-
-#define WELCOME_INFO_MESSAGE "Welcome<br>Use your applications separately<br>with SZ.<br>The folder will be created on your<br>personal home screen."
-#define SETUP_INFO_MESSAGE "The folder will be created on your<br>presonal home screen."
-
-#define IDS_DPM_NOTI_CREATE_ZONE "Separated zone creation"
-#define IDS_DPM_NOTI_BODY_CREATE_ZONE "Tap heare to create Separated Zone"
 #define DPM_SYSPOPUP_ICON_PATH "/usr/share/icons/default/small/org.tizen.dpm-syspopup.png"
 
 typedef struct {
+	char *viewtype;
 	char *zone_name;
 	char *provision_path;
 
 	zone_manager_h zone_manager;
 	int zone_event_cb_id;
-	bool create_done;
+	bool request_done;
 
 	app_control_h app_control;
 } appdata_s;
 
 void _create_base_window(appdata_s *data);
 int _send_zone_provision_data(const char *zone_name, const char *target_path);
+int _send_zone_remove_request(void);
 
 #endif /* __ZONE_SETUP_H__ */
