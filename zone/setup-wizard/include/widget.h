@@ -29,7 +29,7 @@ Evas_Object *_create_win(const char *package);
 Evas_Object *_create_conformant(Evas_Object *parent);
 Evas_Object *_create_layout(Evas_Object *parent, char *file, const char *group);
 Evas_Object *_create_button(Evas_Object *parent, const char *text, const char *style);
-Evas_Object *_create_textblock(Evas_Object *parent, const char *text, Evas_Textblock_Style *style);
+Evas_Object *_create_textblock(Evas_Object *parent, const char *text, char *style);
 Evas_Object *_create_progressbar(Evas_Object *parent, const char *style);
 
 #endif /* WIDGET_H_ */

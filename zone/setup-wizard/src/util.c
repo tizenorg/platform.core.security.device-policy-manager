@@ -21,7 +21,7 @@
 #define TARGET_ZONE "workspace"
 #define PROVISION_DATA "/manifest.xml"
 #define PROVISION_COMPLETE "/.completed"
-
+/*
 static char *__get_zone_metadata(void)
 {
 	FILE *fp = NULL;
@@ -144,5 +144,17 @@ int _send_zone_provision_data(const char *zone_name, const char *target_path)
 	}
 
 	fclose(fp);
+	return 0;
+}*/
+
+int _send_zone_create_request(void)
+{
+	/* [TBD] */
+	return 0;
+}
+
+int _send_zone_remove_request(void)
+{
+	/* [TBD] */
 	return 0;
 }

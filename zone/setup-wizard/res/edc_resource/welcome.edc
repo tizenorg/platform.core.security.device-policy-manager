@@ -72,11 +72,19 @@ group { name: "welcome_layout";
 				visible: 0;
 			}
 		}
-		part { name: "content_text";
+		part { name: "message_title";
 			type: SWALLOW;
 			scale: 1;
 			description { state: "default" 0.0;
 				rel1 { relative: 0.0 1.0; to: "top_padding";}
+				rel2 { relative: 1.0 1.0; to: "top_padding"; offset: 0 50;}
+			}
+		}
+		part { name: "message_content";
+			type: SWALLOW;
+			scale: 1;
+			description { state: "default" 0.0;
+				rel1 { relative: 0.0 1.0; to: "message_title"; offset: 0 22;}
 				rel2 { relative: 1.0 1.0; to: "bg";}
 			}
 		}
