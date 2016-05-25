@@ -105,8 +105,13 @@ static void __next_btn_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	appdata_s *ad = (appdata_s *)data;
 
-	if (_send_zone_provision_data(ad->zone_name, ad->provision_path) != 0)
-		ui_app_exit();
+	if (!strcmp(ad->viewtype, "create")) {
+		if (_send_zone_provision_data(ad->zone_name, ad->provision_path) != 0)
+			ui_app_exit();
+	} else if (!strcmp(ad->viewtype, "remove")) {
+		if (_send_zone_remove_request() != 0)
+			ui_app_exit();
+	}
 
 	__create_setup_view(ad);
 	return;
@@ -148,7 +153,7 @@ static Eina_Bool __progressbar_timer_cb(void *data)
 {
 	appdata_s *ad = (appdata_s *) data;
 
-	if (ad->create_done) {
+	if (ad->request_done) {
 		ecore_timer_del(ud.timer);
 		ui_app_exit();
 		return ECORE_CALLBACK_CANCEL;
@@ -165,7 +170,7 @@ void _create_base_window(appdata_s *ad)
 	char *res_path = NULL;
 
 	/* Initialize data */
-	ad->create_done = false;
+	ad->request_done = false;
 
 	/* Get EDJ path */
 	res_path = app_get_resource_path();
@@ -200,23 +205,30 @@ static void __create_welcome_view(appdata_s *ad)
 {
 	Elm_Object_Item *nf_it;
 	Evas_Object *layout, *welcome_layout;
-	Evas_Object *text;
-	Evas_Textblock_Style *text_st;
+	Evas_Object *title = NULL, *content = NULL;
 
 	elm_object_signal_emit(ud.conform, "elm,state,indicator,overlap", "elm");
 
 	layout = _create_layout(ud.nf, ud.edj_path, "base_layout");
 	welcome_layout = _create_layout(layout, ud.edj_path, "welcome_layout");
 
-	text_st = evas_textblock_style_new();
-	evas_textblock_style_set(text_st, WELCOME_TEXT_STYLE);
-	text = _create_textblock(welcome_layout, WELCOME_INFO_MESSAGE, text_st);
-	elm_object_part_content_set(welcome_layout, "content_text", text);
-	evas_textblock_style_free(text_st);
+	if (!strcmp(ad->viewtype, "create")) {
+		title = _create_textblock(welcome_layout, WELCOME_MESSAGE_TITLE, SUB_TITLE_STYLE_B);
+		content = _create_textblock(welcome_layout, WELCOME_MESSAGE_CONTENT, SUB_CONTENT_STYLE_B);
+	} else if (!strcmp(ad->viewtype, "remove")) {
+		title = _create_textblock(welcome_layout, DELETE_MESSAGE_TITLE, SUB_TITLE_STYLE_B);
+		content = _create_textblock(welcome_layout, DELETE_MESSAGE_CONTENT, SUB_CONTENT_STYLE_B);
+	}
+
+	elm_object_part_content_set(welcome_layout, "message_title", title);
+	elm_object_part_content_set(welcome_layout, "message_content", content);
 
 	elm_object_part_content_set(layout, "content_layout", welcome_layout);
 
-	__set_two_btn_bottom_layout(layout, ad, "Cancel", "Set up");
+	if (!strcmp(ad->viewtype, "create"))
+		__set_two_btn_bottom_layout(layout, ad, "Cancel", "Set up");
+	else if (!strcmp(ad->viewtype, "remove"))
+		__set_two_btn_bottom_layout(layout, ad, "Cancel", "Remove");
 
 	nf_it = elm_naviframe_item_push(ud.nf, NULL, NULL, NULL, layout, NULL);
 	elm_naviframe_item_title_enabled_set(nf_it, EINA_FALSE, EINA_TRUE);
@@ -229,21 +241,27 @@ static void __create_setup_view(appdata_s *ad)
 {
 	Elm_Object_Item *nf_it;
 	Evas_Object *setup_layout;
-	Evas_Object *progressbar, *text;
-	Evas_Textblock_Style *text_st;
+	Evas_Object *progressbar;
+	Evas_Object *title = NULL, *content = NULL;
 
 	eext_object_event_callback_del(ud.nf, EEXT_CALLBACK_BACK, eext_naviframe_back_cb);
 
 	setup_layout = _create_layout(ud.nf, ud.edj_path, "setup_layout");
 
+	if (!strcmp(ad->viewtype, "create")) {
+		title = _create_textblock(setup_layout, SETUP_MESSAGE_TITLE, SUB_TITLE_STYLE_W);
+		content = _create_textblock(setup_layout, SETUP_MESSAGE_CONTENT, SUB_CONTENT_STYLE_W);
+	} else if (!strcmp(ad->viewtype, "remove")) {
+		title = _create_textblock(setup_layout, DELETE_ONGOING_TITLE, SUB_TITLE_STYLE_W);
+		content = _create_textblock(setup_layout, DELETE_ONGOING_CONTENT, SUB_CONTENT_STYLE_W);
+	}
+
+	elm_object_part_content_set(setup_layout, "progressbar_msg", title);
+
 	progressbar = _create_progressbar(setup_layout, "pending");
 	elm_object_part_content_set(setup_layout, "progressbar", progressbar);
 
-	text_st = evas_textblock_style_new();
-	evas_textblock_style_set(text_st, SETUP_TEXT_STYLE);
-	text = _create_textblock(setup_layout, SETUP_INFO_MESSAGE, text_st);
-	elm_object_part_content_set(setup_layout, "content_text", text);
-	evas_textblock_style_free(text_st);
+	elm_object_part_content_set(setup_layout, "content_text", content);
 
 	nf_it = elm_naviframe_item_push(ud.nf, NULL, NULL, NULL, setup_layout, NULL);
 	elm_naviframe_item_title_enabled_set(nf_it, EINA_FALSE, EINA_TRUE);
