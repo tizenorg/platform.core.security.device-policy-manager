@@ -19,10 +19,10 @@
 #include "zone-setup.h"
 #include "widget.h"
 
-static void __create_zone_done(const char *from, const char *info, void *user_data)
+static void __zone_request_done(const char *from, const char *info, void *user_data)
 {
 	appdata_s *ad = (appdata_s *) user_data;
-	ad->create_done = true;
+	ad->request_done = true;
 }
 
 static bool __app_create(void *data)
@@ -44,6 +44,7 @@ static void __free_data(appdata_s *ad)
 {
 	free(ad->zone_name);
 	free(ad->provision_path);
+	free(ad->viewtype);
 }
 
 static void __app_terminate(void *data)
@@ -61,10 +62,44 @@ static void __app_terminate(void *data)
 	return ;
 }
 
+static void __set_zone_callback(appdata_s *ad)
+{
+	char *cb_event_list[2] = {"created", "removed"};
+	char *cb_event = NULL;
+
+	if (zone_manager_create(&ad->zone_manager) != ZONE_ERROR_NONE) {
+		dlog_print(DLOG_ERROR, LOG_TAG, "failed to get zone manager handle");
+		ui_app_exit();
+	}
+
+	if (!strcmp(ad->viewtype, "create"))
+		cb_event = cb_event_list[0];
+	else
+		cb_event = cb_event_list[1];
+
+	if (zone_manager_add_event_cb(ad->zone_manager, cb_event, __zone_request_done, ad, &ad->zone_event_cb_id) != ZONE_ERROR_NONE) {
+		dlog_print(DLOG_ERROR, LOG_TAG, "Failed to add zone signal callback");
+		ui_app_exit();
+	}
+
+	return;
+}
+
 static void __app_control(app_control_h app_control, void *data)
 {
 	appdata_s *ad = (appdata_s *) data;
-	int id, ret = 0;
+	int ret = 0;
+
+	ret = app_control_get_extra_data(app_control, "viewtype", &ad->viewtype);
+	if (ret != APP_CONTROL_ERROR_NONE) {
+		dlog_print(DLOG_ERROR, LOG_TAG, "Failed to get viewtype");
+		ui_app_exit();
+	}
+
+	if (strcmp(ad->viewtype, "create") && strcmp(ad->viewtype, "remove")) {
+		dlog_print(DLOG_ERROR, LOG_TAG, "Invalid viewtype");
+		ui_app_exit();
+	}
 
 	ret = app_control_get_extra_data(app_control, "zone", &ad->zone_name);
 	if (ret != APP_CONTROL_ERROR_NONE) {
@@ -78,18 +113,7 @@ static void __app_control(app_control_h app_control, void *data)
 		ui_app_exit();
 	}
 
-	ret = zone_manager_create(&ad->zone_manager);
-	if (ret != ZONE_ERROR_NONE) {
-		dlog_print(DLOG_ERROR, LOG_TAG, "failed to get zone manager handle");
-		ui_app_exit();
-	}
-
-	if (zone_manager_add_event_cb(ad->zone_manager, "created", __create_zone_done, ad, &id) != ZONE_ERROR_NONE) {
-		dlog_print(DLOG_ERROR, LOG_TAG, "Failed to add zone event callback");
-		ui_app_exit();
-	}
-
-	ad->zone_event_cb_id = id;
+	__set_zone_callback(ad);
 
 	if (app_control_clone(&ad->app_control, app_control) != APP_CONTROL_ERROR_NONE) {
 		dlog_print(DLOG_ERROR, LOG_TAG, "Failed to clone app control handler");

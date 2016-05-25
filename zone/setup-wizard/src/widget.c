@@ -80,14 +80,22 @@ Evas_Object *_create_button(Evas_Object *parent, const char *text, const char *s
 	return btn;
 }
 
-Evas_Object *_create_textblock(Evas_Object *parent, const char *text, Evas_Textblock_Style *style)
+Evas_Object *_create_textblock(Evas_Object *parent, const char *text, char *style)
 {
 	Evas_Object *txt = evas_object_textblock_add(parent);
+	Evas_Textblock_Style *text_st = NULL;
 
-	if (style != NULL)
-		evas_object_textblock_style_set(txt, style);
+	if (style != NULL) {
+		text_st = evas_textblock_style_new();
+		evas_textblock_style_set(text_st, style);
+		evas_object_textblock_style_set(txt, text_st);
+	}
+
 	evas_object_textblock_text_markup_set(txt, text);
 	evas_object_show(txt);
+
+	if (text_st != NULL)
+		evas_textblock_style_free(text_st);
 
 	return txt;
 }
