@@ -18,9 +18,7 @@
  */
 #include "zone-setup.h"
 
-#define TARGET_ZONE "workspace"
-#define PROVISION_DATA "/manifest.xml"
-#define PROVISION_COMPLETE "/.completed"
+#define ZONE_METADATA_PATH "data/ZoneManifest.xml"
 
 static char *__get_zone_metadata(void)
 {
@@ -36,7 +34,7 @@ static char *__get_zone_metadata(void)
 		dlog_print(DLOG_ERROR, LOG_TAG, "failed to get resource path");
 		return NULL;
 	}
-	snprintf(metadata_path, PATH_MAX, "%s%s", res_path, "data/ZoneManifest.xml");
+	snprintf(metadata_path, PATH_MAX, "%s%s", res_path, ZONE_METADATA_PATH);
 	free(res_path);
 
 	fp = fopen(metadata_path, "r");
@@ -82,67 +80,24 @@ static char *__get_zone_metadata(void)
 	return metadata;
 }
 
-static void __create_zone_manifest(char *metadata, char *manifest, const char *zone_name)
+int _send_zone_create_request(appdata_s *ad)
 {
-	while (1) {
-		int index = 0;
-		int len = 0;
-		char tmp[PATH_MAX] = "\0";
-		char *found = strstr(metadata, TARGET_ZONE);
-
-		if (!found) {
-			strncpy(manifest, metadata, strlen(metadata)+1);
-			break;
-		}
-
-		index = found - metadata;
-		strncpy(tmp, metadata, index);
-		strncat(tmp, zone_name, strlen(zone_name));
-		len = strlen(found)-strlen(TARGET_ZONE);
-		if (len > 0) {
-			strncat(tmp, metadata+index+strlen(TARGET_ZONE), len);
-		}
-
-		strncpy(manifest, tmp, strlen(tmp)+1);
-		strncpy(metadata, manifest, strlen(manifest)+1);
-	}
-
-	return ;
-}
-
-int _send_zone_provision_data(const char *zone_name, const char *target_path)
-{
-	FILE *fp = NULL;
 	char *metadata = NULL;
-	char manifest[PATH_MAX] = "\0";
-	char data_path[PATH_MAX] = "\0";
 
 	metadata = __get_zone_metadata();
 	if (metadata == NULL) {
-		dlog_print(DLOG_ERROR, LOG_TAG, "failed to get metadata");
+		dlog_print(DLOG_ERROR, LOG_TAG, "Failed to get zone metadata");
 		return -1;
 	}
 
-	__create_zone_manifest(metadata, manifest, zone_name);
-	free(metadata);
+	/* [TBD] */
 
-	snprintf(data_path, strlen(target_path)+strlen(PROVISION_DATA)+1, "%s%s", target_path, PROVISION_DATA);
-	fp = fopen(data_path, "w");
-	if (fp != NULL) {
-		fwrite(manifest, 1, strlen(manifest), fp);
-	} else {
-		dlog_print(DLOG_ERROR, LOG_TAG, "failed to create provisioning file");
-		return -1;
-	}
-	fclose(fp);
+	return 0;
+}
 
-	snprintf(data_path, strlen(target_path)+strlen(PROVISION_COMPLETE)+1, "%s%s", target_path, PROVISION_COMPLETE);
-	fp = fopen(data_path, "w");
-	if (fp == NULL) {
-		dlog_print(DLOG_ERROR, LOG_TAG, "failed to touch completed file");
-		return -1;
-	}
+int _send_zone_remove_request(appdata_s *ad)
+{
+	/* [TBD] */
 
-	fclose(fp);
 	return 0;
 }
