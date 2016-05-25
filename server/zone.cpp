@@ -201,6 +201,62 @@ void maskUserServices(const std::string& pivot, const runtime::User& user)
     }
 }
 
+void prepareIconsForOwner(const runtime::User& owner, const runtime::User& user)
+{
+    ::umask(0022);
+
+    ::tzplatform_set_user(owner.getUid());
+    std::string ownerRealHome(::tzplatform_getenv(TZ_USER_HOME));
+    ::tzplatform_reset_user();
+    ownerRealHome += "/.zone";
+
+    ::tzplatform_set_user(user.getUid());
+    std::string userHome(::tzplatform_getenv(TZ_USER_HOME));
+    ::tzplatform_reset_user();
+
+    std::string userHomeForOwner(ownerRealHome + "/" + user.getName());
+
+    runtime::File ownerRealHomeDir(ownerRealHome);
+    ownerRealHomeDir.makeDirectory(false, 0, 0);
+
+    runtime::File userHomeDirForOwner(userHomeForOwner);
+    userHomeDirForOwner.makeDirectory(false, user.getUid(), user.getGid());
+
+    PackageManager& packageManager = PackageManager::instance();
+    std::vector<std::string> pkgList = packageManager.getPackageList(user.getUid());
+    std::vector<std::string> appList = packageManager.getAppList(user.getUid());
+
+    for (const std::string& pkgid : pkgList) {
+       PackageInfo info(pkgid, user.getUid());
+       std::string icon = info.getIcon();
+       if (icon.compare(0, userHome.size(), userHome) == 0) {
+           std::string iconLink = icon.replace(0, userHome.size(), userHomeForOwner);
+           runtime::File iconLinkFile(iconLink);
+           iconLinkFile.makeBaseDirectory(user.getUid(), user.getGid());
+
+           int ret = ::link(icon.c_str(), iconLink.c_str());
+           if (ret != 0) {
+               throw runtime::Exception("Failed to link icon " + icon);
+           }
+       }
+    }
+
+    for (const std::string& appid : appList) {
+       ApplicationInfo info(appid, user.getUid());
+       std::string icon = info.getIcon();
+       if (icon.compare(0, userHome.size(), userHome) == 0) {
+           std::string iconLink = icon.replace(0, userHome.size(), userHomeForOwner);
+           runtime::File iconLinkFile(iconLink);
+           iconLinkFile.makeBaseDirectory(user.getUid(), user.getGid());
+
+           int ret = ::link(icon.c_str(), iconLink.c_str());
+           if (ret != 0) {
+               throw runtime::Exception("Failed to link icon " + icon);
+           }
+       }
+    }
+}
+
 void setZoneState(uid_t id, int state)
 {
     dbus::Connection& systemDBus = dbus::Connection::getSystem();
@@ -241,7 +297,11 @@ void startZoneProvisioningThread(PolicyControlContext& context, const std::strin
             ::umask(0077);
             manifest->write(ZONE_MANIFEST_DIR + name + ".xml", "UTF-8", true);
 
+            runtime::User owner(context.getPeerUid());
+
             //TODO: write container owner info
+
+            prepareIconsForOwner(owner, user);
 
             //unlock the user
             setZoneState(user.getUid(), 1);
