@@ -39,6 +39,7 @@ PKG_CHECK_MODULES(ZONE_LIBS_DEPS  REQUIRED
                                   glib-2.0
                                   capi-appfw-package-manager
                                   capi-appfw-app-manager
+                                  libtzplatform-config
 )
 
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${SOURCES})
