@@ -180,7 +180,7 @@ int attachToZone(const std::string& name, char* args[])
     return 0;
 }
 
-bool PackgeListCallback(package_info_h info, void *user_data)
+bool packgeListCallback(package_info_h info, void *user_data)
 {
     bool checked;
     char *val;
@@ -231,19 +231,19 @@ int showPkgInfo(const std::string& name)
     int num = 0;
 
     zone_manager_h zoneMgr;
-    zone_package_proxy_h pkgMgr;
+    zone_package_proxy_h pkgProxy;
 
     zone_manager_create(&zoneMgr);
-    zone_package_proxy_create(zoneMgr, &pkgMgr);
-    zone_package_proxy_foreach_package_info(pkgMgr, name.c_str(), PackgeListCallback, &num);
+    zone_package_proxy_create(zoneMgr, &pkgProxy);
+    zone_package_proxy_foreach_package_info(pkgProxy, name.c_str(), packgeListCallback, &num);
     std::cout << num << " packages are found" << std::endl;
-    zone_package_proxy_destroy(pkgMgr);
+    zone_package_proxy_destroy(pkgProxy);
     zone_manager_destroy(zoneMgr);
 
     return 0;
 }
 
-bool ApplicationListCallback(app_info_h info, void *user_data)
+bool applicationListCallback(app_info_h info, void *user_data)
 {
     bool checked;
     char *val;
@@ -293,9 +293,70 @@ int showAppInfo(const std::string& name)
 
     zone_manager_create(&zoneMgr);
     zone_app_proxy_create(zoneMgr, &appMgr);
-    zone_app_proxy_foreach_app_info(appMgr, name.c_str(), ApplicationListCallback, &num);
+    zone_app_proxy_foreach_app_info(appMgr, name.c_str(), applicationListCallback, &num);
     std::cout << num << " applications are found" << std::endl;
     zone_app_proxy_destroy(appMgr);
+    zone_manager_destroy(zoneMgr);
+
+    return 0;
+}
+
+void zoneCallback(const char* name, const char* object, void *user_data)
+{
+    std::cout << "--- Zone event ---" << std::endl;
+    std::cout << "Type : " << (char*)user_data << std::endl;
+    std::cout << "Name : " << name <<std::endl;
+    std::cout << std::endl;
+}
+
+void packageEventCallback(const char *zone, const char *type,
+                          const char *package,
+                          package_manager_event_type_e event_type,
+                          package_manager_event_state_e event_state,
+                          int progress, package_manager_error_e error,
+                          void *user_data)
+{
+    std::cout << "--- Package event ---" << std::endl;
+    std::cout << "Zone : " << zone <<std::endl << std::endl;
+    std::cout << "Pacakge : " << package << std::endl;
+    std::cout << "Pacakge type : " << type << std::endl;
+    std::cout << std::endl;
+}
+
+int monitorEvent()
+{
+    int zoneCallbackId;
+
+    zone_manager_h zoneMgr;
+    zone_package_proxy_h pkgProxy;
+
+    zone_manager_create(&zoneMgr);
+    zone_package_proxy_create(zoneMgr, &pkgProxy);
+
+    zone_manager_add_event_cb(zoneMgr, "created", zoneCallback,
+                                (void*)"created", &zoneCallbackId);
+    zone_manager_add_event_cb(zoneMgr, "removed", zoneCallback,
+                                (void*)"removed", &zoneCallbackId);
+
+    zone_package_proxy_set_event_cb(pkgProxy, packageEventCallback, NULL);
+
+    std::cout << "=== Monitoring start ===" << std::endl;
+
+    int sig;
+    sigset_t signalSet;
+
+    sigemptyset(&signalSet);
+    sigaddset(&signalSet, SIGINT);
+    sigprocmask(SIG_BLOCK, &signalSet, NULL);
+
+    sigwait(&signalSet, &sig);
+    
+    zone_package_proxy_unset_event_cb(pkgProxy);
+    zone_manager_remove_event_cb(zoneMgr, zoneCallbackId);
+
+    std::cout << "===  Monitoring end  ===" << std::endl;
+
+    zone_package_proxy_destroy(pkgProxy);
     zone_manager_destroy(zoneMgr);
 
     return 0;
@@ -308,8 +369,9 @@ int main(int argc, char* argv[])
     struct option options[] = {
         {"attach", required_argument, 0, 'a'},
         {"list", no_argument, 0, 'l'},
-        {"pkginfo", no_argument, 0, 'p'},
-        {"appinfo", no_argument, 0, 'n'},
+        {"pkginfo", required_argument, 0, 'p'},
+        {"appinfo", required_argument, 0, 'n'},
+        {"monitor", no_argument, 0, 'm'},
         {"help", no_argument, 0, 'h'},
         {0, 0, 0, 0}
     };
@@ -319,7 +381,7 @@ int main(int argc, char* argv[])
         return EXIT_SUCCESS;
     }
 
-    while ((opt = getopt_long(argc, argv, "a:p:n:lh", options, &index)) != -1) {
+    while ((opt = getopt_long(argc, argv, "a:p:n:mlh", options, &index)) != -1) {
         switch (opt) {
         case 'a':
             ret = attachToZone(optarg, optind >= argc ? NULL : argv + optind);
@@ -329,6 +391,9 @@ int main(int argc, char* argv[])
             break;
         case 'n':
             ret = showAppInfo(optarg);
+            break;
+        case 'm':
+            ret = monitorEvent();
             break;
         case 'l':
             ret = showZoneInstances();
