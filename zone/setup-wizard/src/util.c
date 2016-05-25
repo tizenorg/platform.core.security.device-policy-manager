@@ -117,6 +117,11 @@ int _send_zone_provision_data(const char *zone_name, const char *target_path)
 	char manifest[PATH_MAX] = "\0";
 	char data_path[PATH_MAX] = "\0";
 
+	/* [TBD] need to be removed */
+	if (target_path == NULL)
+		return 0;
+	/****************************/
+
 	metadata = __get_zone_metadata();
 	if (metadata == NULL) {
 		dlog_print(DLOG_ERROR, LOG_TAG, "failed to get metadata");
@@ -144,5 +149,11 @@ int _send_zone_provision_data(const char *zone_name, const char *target_path)
 	}
 
 	fclose(fp);
+	return 0;
+}
+
+int _send_zone_remove_request(void)
+{
+	/* [TBD] */
 	return 0;
 }
