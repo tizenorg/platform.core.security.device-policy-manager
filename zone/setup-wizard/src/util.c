@@ -81,7 +81,7 @@ static char *__get_zone_metadata(void)
 
 	return metadata;
 }
-
+/*
 static void __create_zone_manifest(char *metadata, char *manifest, const char *zone_name)
 {
 	while (1) {
@@ -144,5 +144,26 @@ int _send_zone_provision_data(const char *zone_name, const char *target_path)
 	}
 
 	fclose(fp);
+	return 0;
+}*/
+
+int _send_zone_create_request(void)
+{
+	char *metadata = NULL;
+
+	metadata = __get_zone_metadata();
+	if (metadata == NULL) {
+		dlog_print(DLOG_ERROR, LOG_TAG, "Failed to get zone metadata");
+		return -1;
+	}
+
+	/* [TBD] */
+
+	return 0;
+}
+
+int _send_zone_remove_request(void)
+{
+	/* [TBD] */
 	return 0;
 }
