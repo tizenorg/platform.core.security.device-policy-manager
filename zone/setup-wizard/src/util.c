@@ -146,3 +146,9 @@ int _send_zone_provision_data(const char *zone_name, const char *target_path)
 	fclose(fp);
 	return 0;
 }
+
+int _send_zone_remove_request(void)
+{
+	/* [TBD] */
+	return 0;
+}

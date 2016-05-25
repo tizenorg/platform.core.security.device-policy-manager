@@ -43,13 +43,11 @@ group { name: "setup_layout";
 			}
 		}
 		part { name: "progressbar_msg";
-			type: TEXT;
+			type: SWALLOW;
 			scale: 1;
 			description { state: "default" 0.0;
-				color: 0 0 0 255;
 				rel1 { relative: 0.0 1.0; to_x: "bg"; to_y: "icon_base"; offset: 22 50;}
 				rel2 { relative: 1.0 1.0; to_x: "bg"; to_y: "icon_base"; offset: -22 150;}
-				text { font: "Tizen:style=Regular"; size: "30"; align: 0.5 0.5; text: "Creating Folder instance...";}
 			}
 		}
 		part { name: "progressbar";
