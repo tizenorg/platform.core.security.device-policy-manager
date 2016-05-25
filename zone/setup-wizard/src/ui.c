@@ -36,12 +36,26 @@ uidata_s ud = {0, };
 static int __set_notification(notification_h noti_handle, app_control_h app_control)
 {
 	int ret = 0;
+	char *mode = NULL;
+	char *noti_text[2][2] = {
+		{NOTI_CREATE_ZONE, NOTI_BODY_CREATE_ZONE},
+		{NOTI_REMOVE_ZONE, NOTI_BODY_REMOVE_ZONE}
+	};
+	char **text = NULL;
 
-	ret = notification_set_text(noti_handle, NOTIFICATION_TEXT_TYPE_TITLE, IDS_DPM_NOTI_CREATE_ZONE, NULL, NOTIFICATION_VARIABLE_TYPE_NONE);
+	if (app_control_get_extra_data(app_control, "mode", &mode) != APP_CONTROL_ERROR_NONE)
+		return -1;
+
+	if (!strcmp(mode, "create"))
+		text = noti_text[0];
+	else
+		text = noti_text[1];
+
+	ret = notification_set_text(noti_handle, NOTIFICATION_TEXT_TYPE_TITLE, text[0], NULL, NOTIFICATION_VARIABLE_TYPE_NONE);
 	if (ret != NOTIFICATION_ERROR_NONE)
 		return -1;
 
-	ret = notification_set_text(noti_handle, NOTIFICATION_TEXT_TYPE_CONTENT, IDS_DPM_NOTI_BODY_CREATE_ZONE, NULL, NOTIFICATION_VARIABLE_TYPE_NONE);
+	ret = notification_set_text(noti_handle, NOTIFICATION_TEXT_TYPE_CONTENT, text[1], NULL, NOTIFICATION_VARIABLE_TYPE_NONE);
 	if (ret != NOTIFICATION_ERROR_NONE)
 		return -1;
 
@@ -105,8 +119,13 @@ static void __next_btn_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	appdata_s *ad = (appdata_s *)data;
 
-	if (_send_zone_provision_data(ad->zone_name, ad->provision_path) != 0)
-		ui_app_exit();
+	if (!strcmp(ad->mode, "create")) {
+		if (_send_zone_create_request() != 0)
+			ui_app_exit();
+	} else if (!strcmp(ad->mode, "remove")) {
+		if (_send_zone_remove_request() != 0)
+			ui_app_exit();
+	}
 
 	__create_setup_view(ad);
 	return;
@@ -148,7 +167,7 @@ static Eina_Bool __progressbar_timer_cb(void *data)
 {
 	appdata_s *ad = (appdata_s *) data;
 
-	if (ad->create_done) {
+	if (ad->request_done) {
 		ecore_timer_del(ud.timer);
 		ui_app_exit();
 		return ECORE_CALLBACK_CANCEL;
@@ -165,7 +184,7 @@ void _create_base_window(appdata_s *ad)
 	char *res_path = NULL;
 
 	/* Initialize data */
-	ad->create_done = false;
+	ad->request_done = false;
 
 	/* Get EDJ path */
 	res_path = app_get_resource_path();
@@ -200,23 +219,33 @@ static void __create_welcome_view(appdata_s *ad)
 {
 	Elm_Object_Item *nf_it;
 	Evas_Object *layout, *welcome_layout;
-	Evas_Object *text;
-	Evas_Textblock_Style *text_st;
+	Evas_Object *title, *content;
+
+	char *welcome_text[2][4] = {
+		{WELCOME_MESSAGE_TITLE, WELCOME_MESSAGE_CONTENT, CANCEL_BUTTON, SETUP_BUTTON},
+		{DELETE_MESSAGE_TITLE, DELETE_MESSAGE_CONTENT, CANCEL_BUTTON, REMOVE_BUTTON}
+	};
+	char **text = NULL;
+
+	if (!strcmp(ad->mode, "create"))
+		text = welcome_text[0];
+	else
+		text = welcome_text[1];
 
 	elm_object_signal_emit(ud.conform, "elm,state,indicator,overlap", "elm");
 
 	layout = _create_layout(ud.nf, ud.edj_path, "base_layout");
 	welcome_layout = _create_layout(layout, ud.edj_path, "welcome_layout");
 
-	text_st = evas_textblock_style_new();
-	evas_textblock_style_set(text_st, WELCOME_TEXT_STYLE);
-	text = _create_textblock(welcome_layout, WELCOME_INFO_MESSAGE, text_st);
-	elm_object_part_content_set(welcome_layout, "content_text", text);
-	evas_textblock_style_free(text_st);
+	title = _create_textblock(welcome_layout, text[0], SUB_TITLE_STYLE_B);
+	content = _create_textblock(welcome_layout, text[1], SUB_CONTENT_STYLE_B);
+
+	elm_object_part_content_set(welcome_layout, "message_title", title);
+	elm_object_part_content_set(welcome_layout, "message_content", content);
 
 	elm_object_part_content_set(layout, "content_layout", welcome_layout);
 
-	__set_two_btn_bottom_layout(layout, ad, "Cancel", "Set up");
+	__set_two_btn_bottom_layout(layout, ad, text[2], text[3]);
 
 	nf_it = elm_naviframe_item_push(ud.nf, NULL, NULL, NULL, layout, NULL);
 	elm_naviframe_item_title_enabled_set(nf_it, EINA_FALSE, EINA_TRUE);
@@ -229,21 +258,33 @@ static void __create_setup_view(appdata_s *ad)
 {
 	Elm_Object_Item *nf_it;
 	Evas_Object *setup_layout;
-	Evas_Object *progressbar, *text;
-	Evas_Textblock_Style *text_st;
+	Evas_Object *progressbar;
+	Evas_Object *title, *content;
+
+	char *setup_text[2][2] = {
+		{SETUP_MESSAGE_TITLE, SETUP_MESSAGE_CONTENT},
+		{DELETE_ONGOING_TITLE, DELETE_ONGOING_CONTENT}
+	};
+	char **text = NULL;
+
+	if (!strcmp(ad->mode, "create"))
+		text = setup_text[0];
+	else
+		text = setup_text[1];
 
 	eext_object_event_callback_del(ud.nf, EEXT_CALLBACK_BACK, eext_naviframe_back_cb);
 
 	setup_layout = _create_layout(ud.nf, ud.edj_path, "setup_layout");
 
+	title = _create_textblock(setup_layout, text[0], SUB_TITLE_STYLE_W);
+	content = _create_textblock(setup_layout, text[1], SUB_CONTENT_STYLE_W);
+
+	elm_object_part_content_set(setup_layout, "progressbar_msg", title);
+
 	progressbar = _create_progressbar(setup_layout, "pending");
 	elm_object_part_content_set(setup_layout, "progressbar", progressbar);
 
-	text_st = evas_textblock_style_new();
-	evas_textblock_style_set(text_st, SETUP_TEXT_STYLE);
-	text = _create_textblock(setup_layout, SETUP_INFO_MESSAGE, text_st);
-	elm_object_part_content_set(setup_layout, "content_text", text);
-	evas_textblock_style_free(text_st);
+	elm_object_part_content_set(setup_layout, "content_text", content);
 
 	nf_it = elm_naviframe_item_push(ud.nf, NULL, NULL, NULL, setup_layout, NULL);
 	elm_naviframe_item_title_enabled_set(nf_it, EINA_FALSE, EINA_TRUE);
