@@ -255,10 +255,11 @@ int PasswordPolicy::setForbiddenStrings(const std::vector<std::string>& forbidde
 
 std::vector<std::string> PasswordPolicy::getForbiddenStrings()
 {
+    std::vector<std::string> error;
     try {
         return __context->methodCall<std::vector<std::string>>("PasswordPolicy::getForbiddenStrings");
     } catch (runtime::Exception& e) {
-        return std::vector<std::string>();
+        return error;
     }
 }
 } /* namespace DevicePolicyManager */
