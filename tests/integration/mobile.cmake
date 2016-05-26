@@ -15,7 +15,6 @@
 #
 
 SET(POLICY      ${POLICY}
-)
-
-SET(CAPI        ${CAPI}
+                bluetooth.cpp
+                ${DPM_LIBS}/bluetooth.cpp
 )

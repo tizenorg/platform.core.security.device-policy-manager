@@ -15,15 +15,18 @@
 #
 SET(API_TEST_TARGET	"dpm-api-tests")
 
-SET(API_TEST_SOURCES main.c
-                     testbench.c
-					 context.c
-                     bluetooth.c
-					 restriction.c
-                     security.c
+SET(FOUNDATION  main.c
+                testbench.c
+				context.c
 )
 
-ADD_EXECUTABLE(${API_TEST_TARGET} ${API_TEST_SOURCES})
+SET(POLICY  restriction.c
+            security.c
+)
+
+INCLUDE("${TIZEN_PROFILE_NAME}.cmake")
+
+ADD_EXECUTABLE(${API_TEST_TARGET} ${FOUNDATION} ${POLICY})
 
 INCLUDE_DIRECTORIES(SYSTEM ${DPM_LIBS} ${DPM_TESTS})
 

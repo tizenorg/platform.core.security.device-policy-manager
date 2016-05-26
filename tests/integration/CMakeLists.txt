@@ -15,27 +15,30 @@
 #
 SET(INTEGRATION_TEST_TARGET	"dpm-integration-tests")
 
-SET(INTEGRATION_TEST_SOURCES main.cpp
-#							 administration.cpp
-#							 application.cpp
-							 bluetooth.cpp
-#							 misc.cpp
-#							 restriction.cpp
-#							 security.cpp
-#							 zone.cpp
-							 ${DPM_LIBS}/policy-client.cpp
-#							 ${DPM_LIBS}/administration.cpp
-#							 ${DPM_LIBS}/application.cpp
-							 ${DPM_LIBS}/bluetooth.cpp
-#							 ${DPM_LIBS}/misc.cpp
-#							 ${DPM_LIBS}/restriction.cpp
-#							 ${DPM_LIBS}/security.cpp
-#							 ${DPM_LIBS}/wifi.cpp
-#							 ${DPM_LIBS}/zone.cpp
-							 ${DPM_TESTBENCH}/testbench.cpp
+SET(FOUNDATION  main.cpp
+				${DPM_LIBS}/policy-client.cpp
+				${DPM_TESTBENCH}/testbench.cpp
 )
 
-ADD_EXECUTABLE(${INTEGRATION_TEST_TARGET} ${INTEGRATION_TEST_SOURCES})
+SET(POLICY
+#				administration.cpp
+#				application.cpp
+#				misc.cpp
+#				restriction.cpp
+#				security.cpp
+#				zone.cpp
+#				${DPM_LIBS}/administration.cpp
+#				${DPM_LIBS}/application.cpp
+#				${DPM_LIBS}/misc.cpp
+#				${DPM_LIBS}/restriction.cpp
+#				${DPM_LIBS}/security.cpp
+#				${DPM_LIBS}/wifi.cpp
+#				${DPM_LIBS}/zone.cpp
+)
+
+INCLUDE("${TIZEN_PROFILE_NAME}.cmake")
+
+ADD_EXECUTABLE(${INTEGRATION_TEST_TARGET} ${FOUNDATION} ${POLICY})
 
 INCLUDE_DIRECTORIES(SYSTEM ${DPM_COMMON} ${DPM_POLICY} ${DPM_LIBS} ${DPM_TESTS})
 

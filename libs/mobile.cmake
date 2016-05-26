@@ -17,11 +17,14 @@
 SET(POLICY      ${POLICY}
                 password.cpp
                 zone.cpp
+                bluetooth.cpp
                 dpm/password.cpp
                 dpm/zone.cpp
+                dpm/bluetooth.cpp
 )
 
 SET(CAPI        ${CAPI}
                 dpm/password.h
                 dpm/zone.h
+                dpm/bluetooth.h
 )

@@ -16,9 +16,12 @@
 
 SET(POLICY      ${POLICY}
                 password.cpp
+                bluetooth.cpp
                 dpm/password.cpp
+                dpm/bluetooth.cpp
 )
 
 SET(CAPI        ${CAPI}
                 dpm/password.h
+                dpm/bluetooth.h
 )

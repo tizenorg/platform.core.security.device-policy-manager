@@ -29,7 +29,6 @@ SET(FOUNDATION		main.cpp
 
 SET(POLICY			administration.cpp
 					application.cpp
-					bluetooth.cpp
 					restriction.cpp
 					security.cpp
 					storage.cpp
@@ -47,12 +46,10 @@ SET(DEPENDENCY		glib-2.0
 					syspopup-caller
 					deviced
 					libtzplatform-config
-					bluetooth-api
 					capi-network-wifi
 					capi-system-info
 					capi-system-system-settings
 					capi-network-connection
-					capi-network-bluetooth
 					notification
 )
 

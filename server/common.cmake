@@ -16,8 +16,11 @@
 
 SET(POLICY      ${POLICY}
                 password.cpp
+                bluetooth.cpp
 )
 
 SET(DEPENDENCY  ${DEPENDENCY}
                 auth-fw-admin
+                bluetooth-api
+                capi-network-bluetooth
 )

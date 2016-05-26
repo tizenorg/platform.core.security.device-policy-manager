@@ -16,6 +16,3 @@
 
 SET(POLICY      ${POLICY}
 )
-
-SET(CAPI        ${CAPI}
-)

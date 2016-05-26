@@ -16,6 +16,7 @@
 
 SET(POLICY      ${POLICY}
                 password.cpp
+                bluetooth.cpp
                 zone.cpp
 				zone/app-proxy.cpp
 				zone/package-proxy.cpp
@@ -24,4 +25,6 @@ SET(POLICY      ${POLICY}
 SET(DEPENDENCY  ${DEPENDENCY}
                 capi-location-manager
                 auth-fw-admin
+                bluetooth-api
+                capi-network-bluetooth
 )

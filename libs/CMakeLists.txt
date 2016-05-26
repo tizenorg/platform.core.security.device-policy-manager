@@ -26,14 +26,12 @@ SET(FOUNDATION          policy-client.cpp
 
 SET(POLICY              administration.cpp
                         application.cpp
-                        bluetooth.cpp
                         restriction.cpp
                         security.cpp
                         storage.cpp
                         wifi.cpp
                         dpm/administration.cpp
                         dpm/application.cpp
-                        dpm/bluetooth.cpp
                         dpm/restriction.cpp
                         dpm/security.cpp
                         dpm/storage.cpp
@@ -44,7 +42,6 @@ SET(CAPI                dpm/device-policy-manager.h
 						dpm/context.h
 						dpm/administration.h
 						dpm/application.h
-						dpm/bluetooth.h
 						dpm/restriction.h
 						dpm/security.h
 						dpm/storage.h
