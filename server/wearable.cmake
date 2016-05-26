@@ -15,9 +15,11 @@
 #
 
 SET(POLICY      ${POLICY}
+                location.cpp
                 password.cpp
 )
 
 SET(DEPENDENCY  ${DEPENDENCY}
+                capi-location-manager
                 auth-fw-admin
 )
