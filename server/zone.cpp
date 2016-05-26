@@ -156,37 +156,6 @@ std::string prepareDirectories(const runtime::User& user)
     return pivot;
 }
 
-void deployPackages(const runtime::User& user)
-{
-    try {
-        //initialize package db
-        execute("/usr/bin/pkg_initdb", "pkg_initdb", std::to_string(user.getUid()));
-
-        PackageManager& packageManager = PackageManager::instance();
-        std::vector<std::string> pkgList = packageManager.getPackageList(user.getUid());
-
-        ::umask(0022);
-
-        ::tzplatform_set_user(user.getUid());
-        for (const std::string& pkgid : pkgList) {
-            std::string appbase = std::string(::tzplatform_getenv(TZ_USER_APP)) + "/" + pkgid;
-            runtime::File dir(appbase);
-            dir.makeDirectory(false, user.getUid(), user.getGid());
-            runtime::Smack::setAccess(dir, APP_SMACKLABEL + pkgid);
-            runtime::Smack::setTransmute(dir, true);
-
-            for (const std::string& subdir : defaultAppDirs) {
-                runtime::File insideDir(appbase + "/" + subdir);
-                insideDir.makeDirectory(false, user.getUid(), user.getGid());
-            }
-        }
-        ::tzplatform_reset_user();
-    } catch (runtime::Exception& e) {
-        ::tzplatform_reset_user();
-        throw runtime::Exception(e.what());
-    }
-}
-
 void maskUserServices(const std::string& pivot, const runtime::User& user)
 {
     runtime::File unitbase(pivot + "/.config/systemd/user");
@@ -229,13 +198,33 @@ void startZoneProvisioningThread(PolicyControlContext& context, const std::strin
 
             std::string pivot = prepareDirectories(user);
             maskUserServices(pivot, user);
-            deployPackages(user);
+
+            //initialize package db
+            execute("/usr/bin/pkg_initdb", "pkg_initdb",
+                    "--uid", std::to_string(user.getUid()));
+
+            //initialize package directory for globalapp
+            execute("/usr/bin/pkgdir-tool", "pkgdir-tool",
+                    "--create", "--allglobalpkgs",
+                    "--user=" + std::to_string(user.getUid()));
 
             //initialize security-manager
             execute("/usr/bin/security-manager-cmd",
                     "security-manager-cmd", "--manage-users=add",
                     "--uid=" + std::to_string(user.getUid()),
                     "--usertype=normal");
+
+            //change group to system_share
+            runtime::Group systemShareGroup("system_share");
+            ::tzplatform_set_user(user.getUid());
+            runtime::File appRootDir(::tzplatform_getenv(TZ_USER_APPROOT));
+            runtime::File dbDir(::tzplatform_getenv(TZ_USER_DB));
+            ::tzplatform_reset_user();
+            appRootDir.chown(user.getUid(), systemShareGroup.getGid());
+            appRootDir.chmod(0750);
+
+            dbDir.chown(user.getUid(), systemShareGroup.getGid());
+            dbDir.chmod(0770);
 
             manifest.reset(xml::Parser::parseFile(watch + "/manifest.xml"));
             ::umask(0077);
