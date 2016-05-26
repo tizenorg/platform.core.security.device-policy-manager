@@ -185,9 +185,7 @@ void _create_base_window(appdata_s *ad)
 	elm_object_content_set(ud.conform, layout);
 	ud.nf = elm_naviframe_add(layout);
 
-	eext_win_keygrab_set(ud.win, "XF86HOME");
 	ecore_event_handler_add(ECORE_EVENT_KEY_DOWN, __home_key_cb, ad->app_control);
-
 
 	__create_welcome_view(ad);
 

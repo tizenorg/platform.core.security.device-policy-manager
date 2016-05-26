@@ -208,7 +208,6 @@ void _create_syspopup(const char *id, char *style, const char *status, app_contr
 			evas_object_smart_callback_add(left_btn, "clicked", __cancel_btn_cb, popup);
 
 			/*add home key callback*/
-			eext_win_keygrab_set(win, "XF86HOME");
 			ecore_event_handler_add(ECORE_EVENT_KEY_DOWN, __home_key_cb, popup);
 		}
 
