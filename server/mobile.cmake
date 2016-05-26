@@ -15,6 +15,7 @@
 #
 
 SET(POLICY      ${POLICY}
+                location.cpp
                 password.cpp
                 zone.cpp
 				zone/app-proxy.cpp
