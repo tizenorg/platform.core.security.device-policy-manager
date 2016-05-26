@@ -20,6 +20,7 @@
 #include "password.h"
 #include "password.hxx"
 
+#include "array.h"
 #include "debug.h"
 #include "policy-client.h"
 
@@ -392,11 +393,7 @@ int dpm_password_get_pattern(dpm_password_policy_h handle, char **pattern)
 
     PasswordPolicy &password = GetPolicyInterface<PasswordPolicy>(handle);
 
-    if (password.getPasswordPolicyPattern().size() > 0) {
-        *pattern = ::strdup(password.getPasswordPolicyPattern().c_str());
-        ret = DPM_ERROR_NONE;
-    } else
-        ret = DPM_ERROR_TIMED_OUT;
+    *pattern = ::strdup(password.getPasswordPolicyPattern().c_str());
 
     return ret;
 }
@@ -462,6 +459,61 @@ int dpm_password_get_maximum_numeric_sequence_length(dpm_password_policy_h handl
     *value = password.getMaximumNumericSequenceLength();
 
     if (*value >= 0)
+        ret = DPM_ERROR_NONE;
+    else
+        ret = DPM_ERROR_NOT_SUPPORTED;
+
+    return ret;
+}
+
+typedef runtime::Array<std::string> dpm_password_iterator;
+
+dpm_password_iterator_h dpm_password_create_iterator(dpm_password_policy_h handle)
+{
+    RET_ON_FAILURE(handle, NULL);
+
+    PasswordPolicy &password = GetPolicyInterface<PasswordPolicy>(handle);
+
+    return reinterpret_cast<dpm_password_iterator_h>(new dpm_password_iterator(password.getForbiddenStrings()));
+}
+
+int dpm_password_iterator_next(dpm_password_iterator_h iter, const char **result)
+{
+    RET_ON_FAILURE(iter, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(result, DPM_ERROR_INVALID_PARAMETER);
+
+    dpm_password_iterator *it = reinterpret_cast<dpm_password_iterator *>(iter);
+
+    if (it->isEnd())
+        *result = NULL;
+    else
+        *result = it->next()->c_str();
+
+    return 0;
+}
+
+int dpm_password_destroy_iterator(dpm_password_iterator_h iter)
+{
+    RET_ON_FAILURE(iter, DPM_ERROR_INVALID_PARAMETER);
+
+    delete reinterpret_cast<dpm_password_iterator *>(iter);
+
+    return 0;
+}
+
+int dpm_password_set_forbidden_strings(dpm_password_policy_h handle, const char *strings[], int length)
+{
+    int iter;
+    int ret = 0;
+    std::vector<std::string> forbiddenStrings;
+
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(strings, DPM_ERROR_INVALID_PARAMETER);
+
+    PasswordPolicy &password = GetPolicyInterface<PasswordPolicy>(handle);
+    for (iter = 0; iter < length; iter++)
+        forbiddenStrings.push_back(strings[iter]);
+    if (password.setForbiddenStrings(forbiddenStrings) == 0)
         ret = DPM_ERROR_NONE;
     else
         ret = DPM_ERROR_NOT_SUPPORTED;

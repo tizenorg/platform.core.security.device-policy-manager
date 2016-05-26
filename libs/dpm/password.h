@@ -581,6 +581,93 @@ DPM_API int dpm_password_set_maximum_numeric_sequence_length(dpm_password_policy
 DPM_API int dpm_password_get_maximum_numeric_sequence_length(dpm_password_policy_h handle, int *value);
 
 /**
+ * @brief       The password forbidden string list iterator handle
+ * @since_tizen 3.0
+ * @see         dpm_password_create_iterator()
+ * @see         dpm_password_iterator_next()
+ * @see         dpm_password_destroy_iterator()
+ */
+typedef void *dpm_password_iterator_h;
+
+/**
+ * @brief       Creates a password forbidden stirng list iterator.
+ * @details     The password forbidden string list iterator can be used to get all forbidden strings.
+ * @since_tizen 3.0
+ * @param[in]   handle The password policy handle
+ * @return      A password forbidden string list iterator on success, otherwise
+ *              null value
+ * @remark      The specific error code can be obtained by using the
+ *              get_last_result() method. Error codes are described in
+ *              exception section.
+ * @exception   #DPM_ERROR_NONE No error
+ * @exception   #DPM_ERROR_OUT_OF_MEMORY Out of memory
+ * @exception   #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @exception   #DPM_ERROR_TIMED_OUT Time out
+ * @pre         The handle must be created by dpm_context_acquire_password_policy().
+ * @see         dpm_context_acquire_password_policy()
+ * @see         dpm_context_release_password_policy()
+ * @see         dpm_password_iterator_next()
+ * @see         dpm_password_destroy_iterator()
+ * @see         get_last_result()
+ */
+DPM_API dpm_password_iterator_h dpm_password_create_iterator(dpm_password_policy_h handle);
+
+/**
+ * @brief       Fetches a password forbidden string and forwards the iterator.
+ * @details     This API returns a password forbidden string indicated by the iterator, and then
+ *              the iterator is moved to the next position. If the iterator reaches
+ *              the end of the list, null value will be returned.
+ * @since_tizen 3.0
+ * @param[in]   iter The iterator to be controlled
+ * @param[out]  forbidden_string The forbidden string got from the iterator
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @pre         The iter must be created by dpm_password_create_iterator().
+ * @see         dpm_passsword_create_iterator()
+ * @see         dpm_password_destroy_iterator()
+ */
+DPM_API int dpm_password_iterator_next(dpm_password_iterator_h iter, const char **forbidden_string);
+
+/**
+ * @brief       Frees the password forbidden string iterator.
+ * @details     This API frees the password forbidden string iterator. This API must be called
+ *              if the iterator no longer used.
+ * @since_tizen 3.0
+ * @param[in]   iter The iterator to be removed
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @pre         The iter must be created by dpm_password_create_iterator()
+ * @see         dpm_password_create_iterator()
+ * @see         dpm_password_iterator_next()
+ */
+DPM_API int dpm_password_destroy_iterator(dpm_password_iterator_h iter);
+
+/**
+ * @brief       Sets strings which are forbidden in the device password.
+ * @details     Called by an admin that is managing the device to set strings that are forbidden to be used in the device password.
+ *                 This specifies any strings which must not be present in the device password such as personal data (variations on the user's name, email address or X400 address), or any other strings.
+ *                 If the parameter list has only one blank string(""), then the stored strings are cleared.
+ * @since_tizen 3.0
+ * @param[in]   handle Password policy handle
+ * @param[in]   strings The forbidden strings
+ * @param[in]   length The length of the strings
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
+ *              the privilege to call this API
+ * @pre         The handle must be created by dpm_context_acquire_password_policy().
+ * @see         dpm_context_acquire_password_policy()
+ * @see         dpm_context_release_password_policy()
+ */
+DPM_API int dpm_password_set_forbidden_strings(dpm_password_policy_h handle, const char *strings[], int length);
+
+/**
  * @}
  */
 
