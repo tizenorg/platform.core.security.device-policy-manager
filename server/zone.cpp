@@ -160,7 +160,8 @@ void deployPackages(const runtime::User& user)
 {
     try {
         //initialize package db
-        execute("/usr/bin/pkg_initdb", "pkg_initdb", std::to_string(user.getUid()));
+        execute("/usr/bin/pkg_initdb", "pkg_initdb",
+                "--uid", std::to_string(user.getUid()));
 
         PackageManager& packageManager = PackageManager::instance();
         std::vector<std::string> pkgList = packageManager.getPackageList(user.getUid());
@@ -236,6 +237,18 @@ void startZoneProvisioningThread(PolicyControlContext& context, const std::strin
                     "security-manager-cmd", "--manage-users=add",
                     "--uid=" + std::to_string(user.getUid()),
                     "--usertype=normal");
+
+            //change group to system_share
+            runtime::Group systemShareGroup("system_share");
+            ::tzplatform_set_user(user.getUid());
+            runtime::File appRootDir(::tzplatform_getenv(TZ_USER_APPROOT));
+            runtime::File dbDir(::tzplatform_getenv(TZ_USER_DB));
+            ::tzplatform_reset_user();
+            appRootDir.chown(user.getUid(), systemShareGroup.getGid());
+            appRootDir.chmod(0750);
+
+            dbDir.chown(user.getUid(), systemShareGroup.getGid());
+            dbDir.chmod(0770);
 
             manifest.reset(xml::Parser::parseFile(watch + "/manifest.xml"));
             ::umask(0077);
