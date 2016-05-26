@@ -118,6 +118,25 @@ DPM_API int dpm_context_release_password_policy(dpm_context_h context, dpm_passw
 DPM_API int dpm_password_set_quality(dpm_password_policy_h handle, dpm_password_quality_e quality);
 
 /**
+ * @brief       Gets password quality.
+ * @details     An administrator can get the password restrictions it is imposing.
+ * @since_tizen 3.0
+ * @param[in]   handle Password policy handle
+ * @param[out]   quality Password quality type
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
+ *              the privilege to call this API
+ * @pre         The handle must be created by dpm_context_acquire_password_policy().
+ * @see         dpm_context_acquire_password_policy()
+ * @see         dpm_context_release_password_policy()
+ */
+DPM_API int dpm_password_get_quality(dpm_password_policy_h handle, dpm_password_quality_e *quality);
+
+
+/**
  * @brief       Sets password minimum length.
  * @details     Sets the minimum allowed password length. After setting this,
  *              the user will not be able to enter a new password that is
@@ -136,6 +155,24 @@ DPM_API int dpm_password_set_quality(dpm_password_policy_h handle, dpm_password_
  * @see         dpm_context_release_password_policy()
  */
 DPM_API int dpm_password_set_minimum_length(dpm_password_policy_h handle, const int value);
+
+/**
+ * @brief       Gets password minimum length.
+ * @details     Gets the minimum allowed password length.
+ * @since_tizen 3.0
+ * @param[in]   handle Password policy handle
+ * @param[out]   value Allowed minimum password length
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
+ *              the privilege to call this API
+ * @pre         The handle must be created by dpm_context_acquire_password_policy().
+ * @see         dpm_context_acquire_password_policy()
+ * @see         dpm_context_release_password_policy()
+ */
+DPM_API int dpm_password_get_minimum_length(dpm_password_policy_h handle, int *value);
 
 /**
  * @brief       Sets minimum complex char in password.
@@ -158,6 +195,26 @@ DPM_API int dpm_password_set_minimum_length(dpm_password_policy_h handle, const 
 DPM_API int dpm_password_set_min_complex_chars(dpm_password_policy_h handle, const int value);
 
 /**
+ * @brief       Gets minimum complex char in password.
+ * @details     Complex characters are all non-alphabetic characters;
+ *              that is, numbers and symbols.
+ * @since_tizen 3.0
+ * @param[in]   handle Password policy handle
+ * @param[out]   value Number of minimum complex char in password.
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
+ *              the privilege to call this API
+ * @pre         The handle must be created by dpm_context_acquire_password_policy().
+ * @see         dpm_context_acquire_password_policy()
+ * @see         dpm_context_release_password_policy()
+ */
+DPM_API int dpm_password_get_min_complex_chars(dpm_password_policy_h handle, int *value);
+
+
+/**
  * @brief       Sets maximum number of failed attempts before device is wiped.
  * @details     If user fails the last attempt, device will be wiped.
  * @since_tizen 3.0
@@ -174,6 +231,24 @@ DPM_API int dpm_password_set_min_complex_chars(dpm_password_policy_h handle, con
  * @see         dpm_context_release_password_policy()
  */
 DPM_API int dpm_password_set_maximum_failed_attempts_for_wipe(dpm_password_policy_h handle, const int value);
+
+/**
+ * @brief       Gets maximum number of failed attempts before device is wiped.
+ * @details     If user fails the last attempt, device will be wiped.
+ * @since_tizen 3.0
+ * @param[in]   handle Password policy handle
+ * @param[out]   value Maximum count for failed passwords.
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
+ *              the privilege to call this API
+ * @pre         The handle must be created by dpm_context_acquire_password_policy().
+ * @see         dpm_context_acquire_password_policy()
+ * @see         dpm_context_release_password_policy()
+ */
+DPM_API int dpm_password_get_maximum_failed_attempts_for_wipe(dpm_password_policy_h handle, int *value);
 
 /**
  * @brief       Sets the number of days password expires.
@@ -195,6 +270,25 @@ DPM_API int dpm_password_set_maximum_failed_attempts_for_wipe(dpm_password_polic
 DPM_API int dpm_password_set_expires(dpm_password_policy_h handle, const int value);
 
 /**
+ * @brief       Gets the number of days password expires.
+ * @details     An administrator can get the password age to force
+ *              the user to enter a new password after every expiration period.
+ * @since_tizen 3.0
+ * @param[in]   handle Password policy handle
+ * @param[out]   value Number of days after which the password expires.
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
+ *              the privilege to call this API
+ * @pre         The handle must be created by dpm_context_acquire_password_policy().
+ * @see         dpm_context_acquire_password_policy()
+ * @see         dpm_context_release_password_policy()
+ */
+DPM_API int dpm_password_get_expires(dpm_password_policy_h handle, int *value);
+
+/**
  * @brief       Sets the number of min password history to avoid previous password.
  * @details     An administrator can configure the number of previous
  *              passwords which cannot be used when entering a new password.
@@ -213,6 +307,27 @@ DPM_API int dpm_password_set_expires(dpm_password_policy_h handle, const int val
  * @see         dpm_context_release_password_policy()
  */
 DPM_API int dpm_password_set_history(dpm_password_policy_h handle, const int value);
+
+/**
+ * @brief       Gets the number of min password history to avoid previous password.
+ * @details     An administrator can get the number of previous
+ *              passwords which cannot be used when entering a new password.
+ * @since_tizen 3.0
+ * @param[in]   handle Password policy handle
+ * @param[out]   value Number of previous passwords which cannot be used when
+ *              settings a new password.
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
+ *              the privilege to call this API
+ * @pre         The handle must be created by dpm_context_acquire_password_policy().
+ * @see         dpm_context_acquire_password_policy()
+ * @see         dpm_context_release_password_policy()
+ */
+DPM_API int dpm_password_get_history(dpm_password_policy_h handle, int *value);
+
 
 /**
  * @brief       Sets the required password pattern.
