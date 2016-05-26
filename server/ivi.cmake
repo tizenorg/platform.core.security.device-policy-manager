@@ -15,9 +15,14 @@
 #
 
 SET(POLICY      ${POLICY}
+                bluetooth.cpp
+                location.cpp
                 password.cpp
 )
 
 SET(DEPENDENCY  ${DEPENDENCY}
+                capi-location-manager
+                capi-network-bluetooth
                 auth-fw-admin
+                bluetooth-api
 )
