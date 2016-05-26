@@ -18,7 +18,7 @@ SET(INTEGRATION_TEST_TARGET	"dpm-integration-tests")
 SET(INTEGRATION_TEST_SOURCES main.cpp
 #							 administration.cpp
 #							 application.cpp
-							 bluetooth.cpp
+#							 bluetooth.cpp
 #							 misc.cpp
 #							 restriction.cpp
 #							 security.cpp
@@ -26,7 +26,7 @@ SET(INTEGRATION_TEST_SOURCES main.cpp
 							 ${DPM_LIBS}/policy-client.cpp
 #							 ${DPM_LIBS}/administration.cpp
 #							 ${DPM_LIBS}/application.cpp
-							 ${DPM_LIBS}/bluetooth.cpp
+#							 ${DPM_LIBS}/bluetooth.cpp
 #							 ${DPM_LIBS}/misc.cpp
 #							 ${DPM_LIBS}/restriction.cpp
 #							 ${DPM_LIBS}/security.cpp

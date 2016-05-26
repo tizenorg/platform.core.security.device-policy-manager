@@ -13,13 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
 SET(POLICY      ${POLICY}
+                bluetooth.cpp
                 location.cpp
                 password.cpp
 )
 
 SET(DEPENDENCY  ${DEPENDENCY}
                 capi-location-manager
+                capi-network-bluetooth
                 auth-fw-admin
+                bluetooth-api
 )
+

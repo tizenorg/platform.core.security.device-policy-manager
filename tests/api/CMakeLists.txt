@@ -18,7 +18,7 @@ SET(API_TEST_TARGET	"dpm-api-tests")
 SET(API_TEST_SOURCES main.c
                      testbench.c
 					 context.c
-                     bluetooth.c
+#                     bluetooth.c
 					 restriction.c
                      security.c
 )

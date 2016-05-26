@@ -19,6 +19,7 @@
 #include <bluetooth-api.h>
 
 #include "bluetooth.hxx"
+#include "restriction.hxx"
 
 #include "policy-helper.h"
 #include "audit/logger.h"
@@ -75,7 +76,34 @@ void bluetoothAdapterStateChangedCb(int result, bt_adapter_state_e state, void *
 
 } // namespace
 
+
+#define CONSTRUCTOR __attribute__ ((constructor))
+
 namespace DevicePolicyManager {
+
+extern RestrictionPolicy restrictionPolicy;
+
+static void CONSTRUCTOR ContributeRestrictionPolicy()
+{
+    PolicyControlContext& context = Server::instance();
+
+    context.registerParametricMethod(&restrictionPolicy, (int)(RestrictionPolicy::setBluetoothTetheringState)(bool));
+    context.registerNonparametricMethod(&restrictionPolicy, (bool)(RestrictionPolicy::getBluetoothTetheringState));
+
+    context.createNotification("bluetooth-tethering");
+}
+
+int RestrictionPolicy::setBluetoothTetheringState(bool enable)
+{
+    SetPolicyAllowed(context, "bluetooth-tethering", enable);
+    return 0;
+}
+
+bool RestrictionPolicy::getBluetoothTetheringState()
+{
+    return IsPolicyAllowed(context, "bluetooth-tethering");
+}
+
 
 BluetoothPolicy::BluetoothPolicy(PolicyControlContext& ctxt) :
     context(ctxt)

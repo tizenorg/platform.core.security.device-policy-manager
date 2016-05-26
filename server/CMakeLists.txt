@@ -29,7 +29,6 @@ SET(FOUNDATION		main.cpp
 
 SET(POLICY			administration.cpp
 					application.cpp
-					bluetooth.cpp
 					restriction.cpp
 					security.cpp
 					storage.cpp
