@@ -55,6 +55,14 @@ Node::NodeList Node::getChildren()
     return nodeList;
 }
 
+Node Node::addNewChild(const std::string& name)
+{
+   xmlNode* nodePtr = xmlNewNode(NULL, xmlStrdup((const xmlChar*)name.c_str()));
+   xmlAddChild(implementation, nodePtr);
+
+   return Node(nodePtr);
+}
+
 std::string Node::getName() const
 {
     return implementation->name ? (const char*)implementation->name : "";
@@ -63,16 +71,6 @@ std::string Node::getName() const
 void Node::setName(const std::string& name)
 {
     xmlNodeSetName(implementation, (const xmlChar*)name.c_str());
-}
-
-void Node::setContent(const std::string& content)
-{
-    if (implementation->type != XML_ELEMENT_NODE) {
-        throw runtime::Exception("Can not set content for this node type");
-    }
-
-    auto child = implementation->xmlChildrenNode;
-    xmlNodeSetContent(child, (xmlChar*)content.c_str());
 }
 
 std::string Node::getContent() const
@@ -87,13 +85,14 @@ std::string Node::getContent() const
     return child->content ? (char*)child->content : "";
 }
 
-void Node::setProp(const std::string& name, const std::string& val)
+void Node::setContent(const std::string& content)
 {
     if (implementation->type != XML_ELEMENT_NODE) {
-        throw runtime::Exception("Can not set properties for this node type");
+        throw runtime::Exception("Can not set content for this node type");
     }
 
-    xmlSetProp(implementation, (xmlChar*)name.c_str(), (xmlChar*)val.c_str());
+    auto child = implementation->xmlChildrenNode;
+    xmlNodeSetContent(child, (xmlChar*)content.c_str());
 }
 
 std::string Node::getProp(const std::string& name) const
@@ -107,6 +106,15 @@ std::string Node::getProp(const std::string& name) const
     result = xmlGetProp(implementation, (xmlChar*)name.c_str());
 
     return result ? (char*)result : "";
+}
+
+void Node::setProp(const std::string& name, const std::string& val)
+{
+    if (implementation->type != XML_ELEMENT_NODE) {
+        throw runtime::Exception("Can not set properties for this node type");
+    }
+
+    xmlSetProp(implementation, (xmlChar*)name.c_str(), (xmlChar*)val.c_str());
 }
 
 bool Node::isBlank() const

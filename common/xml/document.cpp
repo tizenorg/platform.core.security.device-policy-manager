@@ -24,8 +24,7 @@
 
 namespace xml {
 
-Document::Document(const std::string& version) :
-    rootNode(nullptr),
+Document::Document(const std::string& root, const std::string& version) :
     implementation(xmlNewDoc((const xmlChar*)version.c_str()))
 {
     if (implementation == nullptr) {
@@ -33,6 +32,11 @@ Document::Document(const std::string& version) :
     }
 
     implementation->_private = this;
+
+    xmlNode* rootPtr = xmlNewNode(NULL, xmlStrdup((const xmlChar*)root.c_str()));
+    xmlDocSetRootElement(implementation ,rootPtr);
+
+    rootNode = new Node(rootPtr);
 }
 
 Document::Document(xmlDoc* doc)
