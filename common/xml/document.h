@@ -30,7 +30,7 @@ namespace xml {
 
 class Document {
 public:
-    Document(const std::string& version = XML_DEFAULT_VERSION);
+    Document(const std::string& root, const std::string& version = XML_DEFAULT_VERSION);
     Document(xmlDoc* doc);
 
     ~Document();

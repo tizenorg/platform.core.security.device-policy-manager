@@ -40,6 +40,7 @@ public:
     Node& operator=(const Node&) = delete;
 
     NodeList getChildren();
+    Node addNewChild(const std::string& name);
 
     std::string getName() const;
     void setName(const std::string& name);
