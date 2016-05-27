@@ -24,17 +24,12 @@ using namespace DevicePolicyManager;
 
 dpm_bluetooth_policy_h dpm_context_acquire_bluetooth_policy(dpm_context_h handle)
 {
-    RET_ON_FAILURE(handle, NULL);
-
-    DevicePolicyContext &client = GetDevicePolicyContext(handle);
-    return client.createPolicyInterface<BluetoothPolicy>();
+	return handle;
 }
 
 int dpm_context_release_bluetooth_policy(dpm_context_h context, dpm_bluetooth_policy_h handle)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-
-    delete &GetPolicyInterface<BluetoothPolicy>(handle);
     return DPM_ERROR_NONE;
 }
 
@@ -43,7 +38,8 @@ int dpm_bluetooth_add_device_to_blacklist(dpm_bluetooth_policy_h handle, const c
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(mac, DPM_ERROR_INVALID_PARAMETER);
 
-    BluetoothPolicy& bluetooth = GetPolicyInterface<BluetoothPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    BluetoothPolicy bluetooth = client.createPolicyInterface<BluetoothPolicy>();
     return bluetooth.addDeviceToBlacklist(mac);
 }
 
@@ -52,7 +48,8 @@ int dpm_bluetooth_remove_device_from_blacklist(dpm_bluetooth_policy_h handle, co
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(mac, DPM_ERROR_INVALID_PARAMETER);
 
-    BluetoothPolicy& bluetooth = GetPolicyInterface<BluetoothPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    BluetoothPolicy bluetooth = client.createPolicyInterface<BluetoothPolicy>();
     return bluetooth.removeDeviceFromBlacklist(mac);
 }
 
@@ -60,7 +57,8 @@ int dpm_bluetooth_set_device_restriction(dpm_bluetooth_policy_h handle, const in
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    BluetoothPolicy& bluetooth = GetPolicyInterface<BluetoothPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    BluetoothPolicy bluetooth = client.createPolicyInterface<BluetoothPolicy>();
     return bluetooth.setDeviceRestriction(enable);
 }
 
@@ -68,7 +66,8 @@ int dpm_bluetooth_is_device_restricted(dpm_bluetooth_policy_h handle, int *state
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    BluetoothPolicy& bluetooth = GetPolicyInterface<BluetoothPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    BluetoothPolicy bluetooth = client.createPolicyInterface<BluetoothPolicy>();
     int ret = bluetooth.isDeviceRestricted();
     if (ret < 0) {
         return -1;
@@ -82,7 +81,8 @@ int dpm_bluetooth_add_uuid_to_blacklist(dpm_bluetooth_policy_h handle, const cha
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(uuid, DPM_ERROR_INVALID_PARAMETER);
 
-    BluetoothPolicy& bluetooth = GetPolicyInterface<BluetoothPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    BluetoothPolicy bluetooth = client.createPolicyInterface<BluetoothPolicy>();
     return bluetooth.addUuidToBlacklist(uuid);
 }
 
@@ -91,7 +91,8 @@ int dpm_bluetooth_remove_uuid_from_blacklist(dpm_bluetooth_policy_h handle, cons
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(uuid, DPM_ERROR_INVALID_PARAMETER);
 
-    BluetoothPolicy& bluetooth = GetPolicyInterface<BluetoothPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    BluetoothPolicy bluetooth = client.createPolicyInterface<BluetoothPolicy>();
     return bluetooth.removeUuidFromBlacklist(uuid);
 }
 
@@ -99,7 +100,8 @@ int dpm_bluetooth_set_uuid_restriction(dpm_bluetooth_policy_h handle, const int 
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    BluetoothPolicy& bluetooth = GetPolicyInterface<BluetoothPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    BluetoothPolicy bluetooth = client.createPolicyInterface<BluetoothPolicy>();
     return bluetooth.setUuidRestriction(enable);
 }
 
@@ -107,7 +109,8 @@ int dpm_bluetooth_is_uuid_restricted(dpm_bluetooth_policy_h handle, int *state)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    BluetoothPolicy& bluetooth = GetPolicyInterface<BluetoothPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    BluetoothPolicy bluetooth = client.createPolicyInterface<BluetoothPolicy>();
     int ret = bluetooth.isUuidRestricted();
     if (ret < 0) {
         return -1;

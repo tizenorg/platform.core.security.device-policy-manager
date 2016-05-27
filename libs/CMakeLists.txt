@@ -27,6 +27,7 @@ SET(FOUNDATION          policy-client.cpp
 SET(POLICY              administration.cpp
                         application.cpp
                         bluetooth.cpp
+                        location.cpp
                         restriction.cpp
                         security.cpp
                         storage.cpp
