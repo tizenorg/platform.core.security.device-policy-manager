@@ -50,6 +50,7 @@ typedef void* zone_package_proxy_h;
  *              the zone package_manager APIs.
  * @since_tizen 3.0
  * @param[in]   manager The zone manager handle
+ * @param[in]   name The zone name
  * @param[out]  handle The zone package proxy handle
  * @return      #ZONE_ERROR_NONE on success, otherwise a negative value
  * @retval      #ZONE_ERROR_NONE Successful
@@ -59,7 +60,7 @@ typedef void* zone_package_proxy_h;
  * @see         zone_package_proxy_destroy()
  * @see         get_last_result()
  */
-ZONE_API int zone_package_proxy_create(zone_manager_h manager, zone_package_proxy_h *handle);
+ZONE_API int zone_package_proxy_create(zone_manager_h manager, const char* name, zone_package_proxy_h *handle);
 
 /**
  * @brief       Releases the zone package proxy handle.
@@ -82,7 +83,6 @@ ZONE_API int zone_package_proxy_destroy(zone_package_proxy_h handle);
  *              information of the pacakge in the zone.
  * @since_tizen 3.0
  * @param[in]   handle The zone package proxy handle
- * @param[in]   name The zone name
  * @param[in]   pakcage_id The package ID
  * @return      Zone package information handle on success, otherwise NULL
  * @remark      The specific error code can be obtained by using the
@@ -98,7 +98,7 @@ ZONE_API int zone_package_proxy_destroy(zone_package_proxy_h handle);
  * @see         package_manager_destroy()
  * @see         get_last_result()
  */
-ZONE_API int zone_package_proxy_get_package_info(zone_package_proxy_h handle, const char* name, const char* pakcage_id, package_info_h* package_info);
+ZONE_API int zone_package_proxy_get_package_info(zone_package_proxy_h handle, const char* pakcage_id, package_info_h* package_info);
 
 /**
  * @brief       Retrieves all the IDs of the installed package in the zone.
@@ -107,7 +107,6 @@ ZONE_API int zone_package_proxy_get_package_info(zone_package_proxy_h handle, co
  *              package list in the zone.
  * @since_tizen 3.0
  * @param[in]   handle The zone package proxy handle
- * @param[in]   name The zone name
  * @param[in]   callback The iteration callback function
  * @param[in]   user_data The user data passed to the callback function
  * @return      #ZONE_ERROR_NONE on success, otherwise a negative value
@@ -119,7 +118,7 @@ ZONE_API int zone_package_proxy_get_package_info(zone_package_proxy_h handle, co
  * @see         zone_package_proxy_destroy()
  * @see         package_manager_foreach_package_info()
  */
-ZONE_API int zone_package_proxy_foreach_package_info(zone_package_proxy_h handle, const char* name, package_manager_package_info_cb callback, void *user_data);
+ZONE_API int zone_package_proxy_foreach_package_info(zone_package_proxy_h handle, package_manager_package_info_cb callback, void *user_data);
 
 /**
  * @brief       Installs the package located at the given path into the zone.
@@ -145,7 +144,7 @@ ZONE_API int zone_package_proxy_foreach_package_info(zone_package_proxy_h handle
  * @see         zone_package_proxy_uninstall()
  * @see         package_manager_request_install()
  */
-ZONE_API int zone_package_proxy_install(zone_package_proxy_h handle, const char* name, const char* package_path);
+ZONE_API int zone_package_proxy_install(zone_package_proxy_h handle, const char* package_path);
 
 /**
  * @brief       Uinstalls the package with the given ID from the zone.
@@ -171,7 +170,7 @@ ZONE_API int zone_package_proxy_install(zone_package_proxy_h handle, const char*
  * @see         zone_package_proxy_install()
  * @see         package_manager_request_uninstall()
  */
-ZONE_API int zone_package_proxy_uninstall(zone_package_proxy_h handle, const char* name, const char* pakcage_id);
+ZONE_API int zone_package_proxy_uninstall(zone_package_proxy_h handle, const char* pakcage_id);
 
 /**
  * @brief       Sets the event status that presents the package has been
@@ -194,41 +193,10 @@ ZONE_API int zone_package_proxy_uninstall(zone_package_proxy_h handle, const cha
  * @see         zone_package_proxy_uninstall()
  * @see         zone_package_proxy_set_event_cb()
  * @see         zone_package_proxy_unset_event_cb()
+ * @see         package_manager_set_event_status()
  */
 ZONE_API int zone_package_proxy_set_event_status(zone_package_proxy_h handle, int status_type);
 
-/**
- * @brief       Called when the package in the zone is installed, uninstalled or
- *              updated, and the progress of the request to the package manager
- *              changes.
- * @since_tizen 3.0
- * @param[in]   zone The name of zone that the package is in
- * @param[in]   type The type of the package to be installed, uninstalled or
- *              updated
- * @param[in]   package The name of the package to be installed, uninstalled or
- *              updated
- * @param[in]   event_type The type of the request to the package manager
- * @param[in]   event_state The current state of the request to the package
-                manager
- * @param[in]   progress The progress for the request that is being processed by
- *              the package manager. The range of progress is from @c 0 to
- *              @c 100.
- * @param[in]   error The error code when the package manager failed to process
- *              the request
- * @param[in]   user_data The user data passed from zone_package_proxy_set_event_cb()
- *
- * @see zone_package_proxy_set_event_cb()
- * @see zone_package_proxy_unset_event_cb()
- */
-typedef void (*zone_package_proxy_event_cb) (
-                const char *zone,
-                const char *type,
-                const char *package,
-                package_manager_event_type_e event_type,
-                package_manager_event_state_e event_state,
-                int progress,
-                package_manager_error_e error,
-                void *user_data);
 /**
  * @brief       Registers a callback function for package event.
  * @details     This API sets a callback function to be invoked when the package
@@ -248,8 +216,9 @@ typedef void (*zone_package_proxy_event_cb) (
  * @see         zone_package_proxy_set_event_status()
  * @see         zone_package_proxy_unset_event_cb()
  * @see         package_manager_event_cb()
+ * @see         package_manager_set_event_cb()
  */
-ZONE_API int zone_package_proxy_set_event_cb(zone_package_proxy_h handle, zone_package_proxy_event_cb callback, void *user_data);
+ZONE_API int zone_package_proxy_set_event_cb(zone_package_proxy_h handle, package_manager_event_cb callback, void *user_data);
 
 /**
  * @brief       Unregisters the callback function.
@@ -269,7 +238,7 @@ ZONE_API int zone_package_proxy_set_event_cb(zone_package_proxy_h handle, zone_p
  * @see         zone_package_proxy_uninstall()
  * @see         zone_package_proxy_set_event_status()
  * @see         zone_package_proxy_set_event_cb()
- * @see         package_manager_event_cb()
+ * @see         package_manager_unset_event_cb()
  */
 ZONE_API int zone_package_proxy_unset_event_cb(zone_package_proxy_h handle);
 

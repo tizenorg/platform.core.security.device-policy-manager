@@ -50,17 +50,11 @@ public:
 	int setExternalStorageState(int enable);
 	int getExternalStorageState();
 
-	int setLocationState(int enable);
-	int getLocationState();
-
 	int setWifiState(bool enable);
 	bool getWifiState();
 
 	int setWifiHotspotState(bool enable);
 	bool getWifiHotspotState();
-
-	int setBluetoothTetheringState(bool enable);
-	bool getBluetoothTetheringState();
 
 private:
 	PolicyControlContext& context;
