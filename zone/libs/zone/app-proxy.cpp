@@ -29,9 +29,14 @@
 
 using namespace DevicePolicyManager;
 
-inline ZoneAppProxy* getManager(zone_app_proxy_h handle)
+struct zone_app_proxy_s {
+    ZoneAppProxy proxy;
+    std::string zoneName;
+};
+
+static inline zone_app_proxy_s* getInstance(zone_app_proxy_h handle)
 {
-    return reinterpret_cast<ZoneAppProxy*>(handle);
+    return reinterpret_cast<zone_app_proxy_s *>(handle);
 }
 
 static app_info_h make_app_info_handle(const ZoneAppProxy::AppInfo& info)
@@ -73,14 +78,18 @@ static app_info_h make_app_info_handle(const ZoneAppProxy::AppInfo& info)
     return reinterpret_cast<app_info_h>(appinfo);
 }
 
-int zone_app_proxy_create(zone_manager_h manager, zone_app_proxy_h *handle)
+int zone_app_proxy_create(zone_manager_h manager, const char* name, zone_app_proxy_h *handle)
 {
     RET_ON_FAILURE(manager, ZONE_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(name, ZONE_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(handle, ZONE_ERROR_INVALID_PARAMETER);
 
-    auto& client = GetDevicePolicyContext(manager);
-    *handle = reinterpret_cast<zone_app_proxy_h*>(client.createPolicyInterface<ZoneAppProxy>());
+    zone_app_proxy_s* instance = new zone_app_proxy_s {
+        GetDevicePolicyContext(manager).createPolicyInterface<ZoneAppProxy>(),
+        name
+    };
 
+    *handle = reinterpret_cast<zone_app_proxy_h>(instance);
     return ZONE_ERROR_NONE;
 }
 
@@ -93,16 +102,18 @@ int zone_app_proxy_destroy(zone_app_proxy_h handle)
     return ZONE_ERROR_NONE;
 }
 
-int zone_app_proxy_get_app_info(zone_app_proxy_h handle, const char* name, const char* app_id, app_info_h* app_info)
+int zone_app_proxy_get_app_info(zone_app_proxy_h handle, const char* app_id, app_info_h* app_info)
 {
     RET_ON_FAILURE(handle, ZONE_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(name, ZONE_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(app_id, ZONE_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(app_info, ZONE_ERROR_INVALID_PARAMETER);
 
-    const auto info = getManager(handle)->getAppInfo(name, app_id);
-    app_info_h ret = make_app_info_handle(info);
+    auto instance = getInstance(handle);
+    auto& proxy = instance->proxy;
+    const std::string& name = instance->zoneName;
 
+    const auto info = proxy.getAppInfo(name, app_id);
+    app_info_h ret = make_app_info_handle(info);
     if (ret == NULL) {
         return ZONE_ERROR_INVALID_PARAMETER;
     }
@@ -112,17 +123,19 @@ int zone_app_proxy_get_app_info(zone_app_proxy_h handle, const char* name, const
     return ZONE_ERROR_NONE;
 }
 
-int zone_app_proxy_foreach_app_info(zone_app_proxy_h handle, const char* name, app_manager_app_info_cb callback, void *user_data)
+int zone_app_proxy_foreach_app_info(zone_app_proxy_h handle, app_manager_app_info_cb callback, void *user_data)
 {
     RET_ON_FAILURE(handle, ZONE_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(name, ZONE_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(callback, ZONE_ERROR_INVALID_PARAMETER);
 
-    auto manager = getManager(handle);
-    for (const auto& appid : manager->getAppList(name)) {
-        app_info_h info_h = make_app_info_handle(manager->getAppInfo(name, appid));
-        int ret = callback(info_h, user_data);
-        app_info_destroy(info_h);
+    auto instance = getInstance(handle);
+    auto& proxy = instance->proxy;
+    const std::string& name = instance->zoneName;
+
+    for (const auto& appid : proxy.getAppList(name)) {
+        app_info_h info = make_app_info_handle(proxy.getAppInfo(name, appid));
+        int ret = callback(info, user_data);
+        app_info_destroy(info);
         if (!ret) {
             continue;
         }
@@ -131,22 +144,28 @@ int zone_app_proxy_foreach_app_info(zone_app_proxy_h handle, const char* name, a
     return ZONE_ERROR_NONE;
 }
 
-int zone_app_proxy_launch(zone_app_proxy_h handle, const char* name, const char* app_id)
+int zone_app_proxy_launch(zone_app_proxy_h handle, const char* app_id)
 {
     RET_ON_FAILURE(handle, ZONE_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(name, ZONE_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(app_id, ZONE_ERROR_INVALID_PARAMETER);
 
-    return getManager(handle)->launch(name, app_id);
+    auto instance = getInstance(handle);
+    auto& proxy = instance->proxy;
+    const std::string& name = instance->zoneName;
+
+    return proxy.launch(name, app_id);
 }
 
-int zone_app_proxy_is_running(zone_app_proxy_h handle, const char* name, const char* app_id, int *result)
+int zone_app_proxy_is_running(zone_app_proxy_h handle, const char* app_id, int *result)
 {
     RET_ON_FAILURE(handle, ZONE_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(name, ZONE_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(app_id, ZONE_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(result, ZONE_ERROR_INVALID_PARAMETER);
 
-    *result = getManager(handle)->isRunning(name, app_id);
+    auto instance = getInstance(handle);
+    auto& proxy = instance->proxy;
+    const std::string& name = instance->zoneName;
+
+    *result = proxy.isRunning(name, app_id);
     return ZONE_ERROR_NONE;
 }

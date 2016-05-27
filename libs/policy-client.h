@@ -44,9 +44,9 @@ public:
     int unsubscribeSignal(int subscriberId);
 
     template<typename Policy, typename... Args>
-    Policy* createPolicyInterface(Args&&... args) noexcept
+    Policy createPolicyInterface(Args&&... args) noexcept
     {
-        return new Policy(getPolicyControlContext(), std::forward<Args>(args)...);
+        return Policy(getPolicyControlContext(), std::forward<Args>(args)...);
     }
 
 private:
@@ -57,12 +57,6 @@ private:
 
     PolicyControlContext client;
 };
-
-template<typename Policy>
-Policy& GetPolicyInterface(void* handle)
-{
-    return *reinterpret_cast<Policy*>(handle);
-}
 
 DevicePolicyContext& GetDevicePolicyContext(void* handle);
 #endif //__POLICY_CLIENT_H__
