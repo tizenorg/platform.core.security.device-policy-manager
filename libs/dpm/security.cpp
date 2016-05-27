@@ -24,16 +24,11 @@ using namespace DevicePolicyManager;
 
 dpm_security_policy_h dpm_context_acquire_security_policy(dpm_context_h handle)
 {
-    RET_ON_FAILURE(handle, NULL);
-
-    DevicePolicyContext &client = GetDevicePolicyContext(handle);
-    return client.createPolicyInterface<SecurityPolicy>();
+	return handle;
 }
 
 int dpm_context_release_security_policy(dpm_context_h context, dpm_security_policy_h handle)
 {
-    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    delete &GetPolicyInterface<SecurityPolicy>(handle);
     return DPM_ERROR_NONE;
 }
 
@@ -41,7 +36,8 @@ int dpm_security_lockout_device(dpm_security_policy_h handle)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    SecurityPolicy& security = GetPolicyInterface<SecurityPolicy>(handle);
+	DevicePolicyContext &context = GetDevicePolicyContext(handle);
+	SecurityPolicy security = context.createPolicyInterface<SecurityPolicy>();
     return security.lockoutDevice();
 }
 
@@ -49,7 +45,8 @@ int dpm_security_lockout_screen(dpm_security_policy_h handle)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    SecurityPolicy& security = GetPolicyInterface<SecurityPolicy>(handle);
+	DevicePolicyContext &context = GetDevicePolicyContext(handle);
+	SecurityPolicy security = context.createPolicyInterface<SecurityPolicy>();
     return security.lockoutScreen();
 }
 
@@ -57,7 +54,8 @@ int dpm_security_set_internal_storage_encryption(dpm_security_policy_h handle, c
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    SecurityPolicy& security = GetPolicyInterface<SecurityPolicy>(handle);
+	DevicePolicyContext &context = GetDevicePolicyContext(handle);
+	SecurityPolicy security = context.createPolicyInterface<SecurityPolicy>();
     return security.setInternalStorageEncryption(encrypt);
 }
 
@@ -66,7 +64,8 @@ int dpm_security_is_internal_storage_encrypted(dpm_security_policy_h handle, int
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(state, DPM_ERROR_INVALID_PARAMETER);
 
-    SecurityPolicy& security = GetPolicyInterface<SecurityPolicy>(handle);
+	DevicePolicyContext &context = GetDevicePolicyContext(handle);
+	SecurityPolicy security = context.createPolicyInterface<SecurityPolicy>();
     int ret = security.isInternalStorageEncrypted();
     if (ret < 0) {
         return -1;
@@ -79,7 +78,8 @@ int dpm_security_set_external_storage_encryption(dpm_security_policy_h handle, c
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    SecurityPolicy& security = GetPolicyInterface<SecurityPolicy>(handle);
+	DevicePolicyContext &context = GetDevicePolicyContext(handle);
+	SecurityPolicy security = context.createPolicyInterface<SecurityPolicy>();
     return security.setExternalStorageEncryption(encrypt);
 }
 
@@ -88,7 +88,8 @@ int dpm_security_is_external_storage_encrypted(dpm_security_policy_h handle, int
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(state, DPM_ERROR_INVALID_PARAMETER);
 
-    SecurityPolicy& security = GetPolicyInterface<SecurityPolicy>(handle);
+	DevicePolicyContext &context = GetDevicePolicyContext(handle);
+	SecurityPolicy security = context.createPolicyInterface<SecurityPolicy>();
     int ret = security.isExternalStorageEncrypted();
     if (ret < 0) {
         return -1;
