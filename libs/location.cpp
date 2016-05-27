@@ -14,22 +14,14 @@
  *  limitations under the License
  */
 
-#include <location_batch.h>
-
 #include "location.hxx"
-
-#include "policy-helper.h"
 #include "audit/logger.h"
 
 namespace DevicePolicyManager {
 
-LocationPolicy::LocationPolicy(PolicyControlContext& ctxt) :
-    context(ctxt)
+LocationPolicy::LocationPolicy(PolicyControlContext& ctxt)
+	: context(ctxt)
 {
-	context.registerParametricMethod(this, (int)(LocationPolicy::setLocationState)(int));
-	context.registerNonparametricMethod(this, (int)(LocationPolicy::getLocationState));
-
-	context.createNotification("location");
 }
 
 LocationPolicy::~LocationPolicy()
@@ -38,17 +30,20 @@ LocationPolicy::~LocationPolicy()
 
 int LocationPolicy::setLocationState(int enable)
 {
-    if (location_manager_enable_restriction(!enable) != LOCATIONS_ERROR_NONE)
-	return -1;
-
-    SetPolicyAllowed(context, "location", enable);
-    return 0;
+	try {
+		return context->methodCall<int>("LocationPolicy::setLocationState", enable);
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 
 int LocationPolicy::getLocationState()
 {
-    return IsPolicyAllowed(context, "location");
+	try {
+		return context->methodCall<int>("LocationPolicy::getLocationState");
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 
-
-} // namespace DevicePolicyManager
+} //namespace DevicePolicyManager
