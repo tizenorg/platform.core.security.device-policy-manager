@@ -13,6 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License
  */
+#include <algorithm>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/inotify.h>
@@ -272,6 +273,98 @@ void startZoneProvisioningThread(PolicyControlContext& context, const std::strin
     asyncWork.detach();
 }
 
+const std::string convertPathForOwner(const std::string& path, const runtime::User& user, const runtime::User& owner)
+{
+    ::tzplatform_set_user(owner.getUid());
+    std::string ownerHome(::tzplatform_getenv(TZ_USER_HOME));
+    ::tzplatform_reset_user();
+    ownerHome += "/.zone";
+
+    ::tzplatform_set_user(user.getUid());
+    std::string userHome(::tzplatform_getenv(TZ_USER_HOME));
+    ::tzplatform_reset_user();
+
+    std::string userHomeForOwner(ownerHome + "/" + user.getName());
+
+    std::string convertedPath(path);
+
+    if (convertedPath.compare(0, userHome.size(), userHome) == 0) {
+        convertedPath.replace(0, userHome.size(), userHomeForOwner);
+    }
+
+    return convertedPath;
+}
+
+void prepareFileForOwner(const std::string path, const runtime::User& pkgUser, const runtime::User& owner)
+{
+    std::string pathLink = convertPathForOwner(path, pkgUser, owner);
+
+    if (path != pathLink) {
+        runtime::File linkFile(pathLink);
+        linkFile.makeBaseDirectory(pkgUser.getUid(), pkgUser.getGid());
+        if (linkFile.exists()) {
+            linkFile.remove();
+        }
+
+        int ret = ::link(path.c_str(), pathLink.c_str());
+        if (ret != 0) {
+            //TODO: copy the icon instead of linking
+            throw runtime::Exception("Failed to link from " + path +
+                                     " to " + pathLink);
+        }
+    }
+}
+
+int packageEventHandler(uid_t target_uid, int req_id,
+                        const char *pkg_type, const char *pkgid,
+                        const char *key, const char *val,
+                        const void *pmsg, void *data)
+{
+    static std::string type;
+    std::string keystr = key;
+
+    if (target_uid == tzplatform_getuid(TZ_SYS_GLOBALAPP_USER)) {
+        return 0;
+    }
+
+    std::transform(keystr.begin(), keystr.end(), keystr.begin(), ::tolower);
+    if (keystr == "start") {
+        type = val;
+        std::transform(type.begin(), type.end(), type.begin(), ::tolower);
+        return 0;
+    } else if (keystr != "end" && keystr != "ok") {
+        return 0;
+    }
+
+    try {
+        runtime::User owner("owner"), pkgUser(target_uid);
+
+        if (type == "install" || type == "update") {
+            PackageInfo info(pkgid, pkgUser.getUid());
+            std::string icon = info.getIcon();
+            prepareFileForOwner(icon, pkgUser, owner);
+
+            for (const std::string &appid : info.getAppList()) {
+                ApplicationInfo info(appid, pkgUser.getUid());
+                std::string icon = info.getIcon();
+                prepareFileForOwner(icon, pkgUser, owner);
+            }
+        } else {
+            ::tzplatform_set_user(pkgUser.getUid());
+            std::string pkgPath(::tzplatform_getenv(TZ_USER_APP));
+            pkgPath = pkgPath + "/" + pkgid;
+            ::tzplatform_reset_user();
+
+            runtime::File pkgDirForOwner(convertPathForOwner(pkgPath, pkgUser, owner));
+            pkgDirForOwner.remove(true);
+        }
+    } catch (runtime::Exception &e) {
+        ERROR(e.what());
+    }
+
+    return 0;
+}
+
 } // namespace
 
 ZonePolicy::ZonePolicy(PolicyControlContext& ctx)
@@ -286,10 +379,15 @@ ZonePolicy::ZonePolicy(PolicyControlContext& ctx)
 
     context.createNotification("ZonePolicy::created");
     context.createNotification("ZonePolicy::removed");
+
+    PackageManager& packageManager = PackageManager::instance();
+    packageManager.setEventCallback(packageEventHandler, this);
 }
 
 ZonePolicy::~ZonePolicy()
 {
+    PackageManager& packageManager = PackageManager::instance();
+    packageManager.unsetEventCallback();
 }
 
 int ZonePolicy::createZone(const std::string& name, const std::string& setupWizAppid)
