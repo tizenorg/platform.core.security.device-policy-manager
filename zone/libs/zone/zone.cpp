@@ -58,8 +58,8 @@ int zone_manager_add_event_cb(zone_manager_h handle, const char* event, zone_eve
     RET_ON_FAILURE(event, ZONE_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(callback, ZONE_ERROR_INVALID_PARAMETER);
 
-    auto& context = GetDevicePolicyContext(handle);
-    int ret = context.subscribeSignal(std::string("ZonePolicy::") +event,
+    DevicePolicyContext &context = GetDevicePolicyContext(handle);
+    int ret = context.subscribeSignal(std::string("ZonePolicy::") + event,
                                       callback, user_data);
     if (ret < 0)
         return ZONE_ERROR_INVALID_PARAMETER;
@@ -73,7 +73,7 @@ int zone_manager_remove_event_cb(zone_manager_h handle, int callback_id)
     RET_ON_FAILURE(handle, ZONE_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(callback_id >= 0, ZONE_ERROR_INVALID_PARAMETER);
 
-    auto& context = *reinterpret_cast<DevicePolicyContext*>(handle);
+    DevicePolicyContext &context = GetDevicePolicyContext(handle);
     int ret =  context.unsubscribeSignal(callback_id);
     if (ret)
         return ZONE_ERROR_INVALID_PARAMETER;

@@ -74,8 +74,9 @@ static inline void usage(const std::string name)
               << "Options :" << std::endl
               << "   -a, --attach=zone  execute command in the zone" << std::endl
               << "   -p, --pkginfo=zone show all packages in the zone" << std::endl
-              << "   -n, --appinfo=zone show all applications in the zone" << std::endl
-              << "   -m, --monitor      monitor all zone related events" << std::endl
+              << "   -q, --appinfo=zone show all applications in the zone" << std::endl
+              << "   -m, --zone-monitor monitor all zone events" << std::endl
+              << "   -n, --pkg-monitor  monitor all package events in the zone" << std::endl
               << "   -l, --list         show all zone instances" << std::endl
               << "   -h, --help         show this" << std::endl
               << std::endl;
@@ -236,8 +237,8 @@ int showPkgInfo(const std::string& name)
     zone_package_proxy_h pkgProxy;
 
     zone_manager_create(&zoneMgr);
-    zone_package_proxy_create(zoneMgr, &pkgProxy);
-    zone_package_proxy_foreach_package_info(pkgProxy, name.c_str(), packgeListCallback, &num);
+    zone_package_proxy_create(zoneMgr, name.c_str(), &pkgProxy);
+    zone_package_proxy_foreach_package_info(pkgProxy, packgeListCallback, &num);
     std::cout << num << " packages are found" << std::endl;
     zone_package_proxy_destroy(pkgProxy);
     zone_manager_destroy(zoneMgr);
@@ -294,13 +295,20 @@ int showAppInfo(const std::string& name)
     zone_app_proxy_h appMgr;
 
     zone_manager_create(&zoneMgr);
-    zone_app_proxy_create(zoneMgr, &appMgr);
-    zone_app_proxy_foreach_app_info(appMgr, name.c_str(), applicationListCallback, &num);
+    zone_app_proxy_create(zoneMgr, name.c_str(), &appMgr);
+    zone_app_proxy_foreach_app_info(appMgr, applicationListCallback, &num);
     std::cout << num << " applications are found" << std::endl;
     zone_app_proxy_destroy(appMgr);
     zone_manager_destroy(zoneMgr);
 
     return 0;
+}
+
+GMainLoop *gmainloop = NULL;
+
+void monitorSigHandler(int sig)
+{
+    g_main_loop_quit(gmainloop);
 }
 
 void zoneCallback(const char* name, const char* object, void *user_data)
@@ -311,7 +319,36 @@ void zoneCallback(const char* name, const char* object, void *user_data)
     std::cout << std::endl;
 }
 
-void packageEventCallback(const char *zone, const char *type,
+int monitorEvent()
+{
+    int zoneCallbackId[2];
+    zone_manager_h zoneMgr;
+    zone_manager_create(&zoneMgr);
+
+    zone_manager_add_event_cb(zoneMgr, "created", zoneCallback,
+                                (void*)"created", &zoneCallbackId[0]);
+    zone_manager_add_event_cb(zoneMgr, "removed", zoneCallback,
+                                (void*)"removed", &zoneCallbackId[1]);
+
+    std::cout << "=== Monitoring start ===" << std::endl << std::endl;
+
+    signal(SIGINT, monitorSigHandler);
+
+    gmainloop = g_main_loop_new(NULL, FALSE);
+    g_main_loop_run(gmainloop);
+    g_main_loop_unref(gmainloop);
+
+    zone_manager_remove_event_cb(zoneMgr, zoneCallbackId[0]);
+    zone_manager_remove_event_cb(zoneMgr, zoneCallbackId[1]);
+
+    std::cout << "===  Monitoring end  ===" << std::endl;
+
+    zone_manager_destroy(zoneMgr);
+
+    return 0;
+}
+
+void packageEventCallback(const char *type,
                           const char *package,
                           package_manager_event_type_e event_type,
                           package_manager_event_state_e event_state,
@@ -319,7 +356,6 @@ void packageEventCallback(const char *zone, const char *type,
                           void *user_data)
 {
     std::cout << "--- Package event ---" << std::endl;
-    std::cout << "Zone : " << zone <<std::endl;
     std::cout << "Pacakge : " << package << std::endl;
     std::cout << "Pacakge type : " << type << std::endl;
 
@@ -356,27 +392,13 @@ void packageEventCallback(const char *zone, const char *type,
     std::cout << std::endl;
 }
 
-GMainLoop *gmainloop = NULL;
-
-void monitorSigHandler(int sig)
+int monitorPkgEvent(const std::string& name)
 {
-    g_main_loop_quit(gmainloop);
-}
-
-int monitorEvent()
-{
-    int zoneCallbackId;
-
     zone_manager_h zoneMgr;
     zone_package_proxy_h pkgProxy;
 
     zone_manager_create(&zoneMgr);
-    zone_package_proxy_create(zoneMgr, &pkgProxy);
-
-    zone_manager_add_event_cb(zoneMgr, "created", zoneCallback,
-                                (void*)"created", &zoneCallbackId);
-    zone_manager_add_event_cb(zoneMgr, "removed", zoneCallback,
-                                (void*)"removed", &zoneCallbackId);
+    zone_package_proxy_create(zoneMgr, name.c_str(), &pkgProxy);
 
     zone_package_proxy_set_event_cb(pkgProxy, packageEventCallback, NULL);
 
@@ -389,7 +411,6 @@ int monitorEvent()
     g_main_loop_unref(gmainloop);
 
     zone_package_proxy_unset_event_cb(pkgProxy);
-    zone_manager_remove_event_cb(zoneMgr, zoneCallbackId);
 
     std::cout << "===  Monitoring end  ===" << std::endl;
 
@@ -407,8 +428,9 @@ int main(int argc, char* argv[])
         {"attach", required_argument, 0, 'a'},
         {"list", no_argument, 0, 'l'},
         {"pkginfo", required_argument, 0, 'p'},
-        {"appinfo", required_argument, 0, 'n'},
-        {"monitor", no_argument, 0, 'm'},
+        {"appinfo", required_argument, 0, 'q'},
+        {"zone-monitor", no_argument, 0, 'm'},
+        {"pkg-monitor", no_argument, 0, 'n'},
         {"help", no_argument, 0, 'h'},
         {0, 0, 0, 0}
     };
@@ -418,7 +440,7 @@ int main(int argc, char* argv[])
         return EXIT_SUCCESS;
     }
 
-    while ((opt = getopt_long(argc, argv, "a:p:n:mlh", options, &index)) != -1) {
+    while ((opt = getopt_long(argc, argv, "a:p:q:mn:lh", options, &index)) != -1) {
         switch (opt) {
         case 'a':
             ret = attachToZone(optarg, optind >= argc ? NULL : argv + optind);
@@ -426,11 +448,14 @@ int main(int argc, char* argv[])
         case 'p':
             ret = showPkgInfo(optarg);
             break;
-        case 'n':
+        case 'q':
             ret = showAppInfo(optarg);
             break;
         case 'm':
             ret = monitorEvent();
+            break;
+        case 'n':
+            ret = monitorPkgEvent(optarg);
             break;
         case 'l':
             ret = showZoneInstances();

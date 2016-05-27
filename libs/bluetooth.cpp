@@ -139,4 +139,22 @@ bool BluetoothPolicy::isUuidRestricted()
     }
 }
 
+int BluetoothPolicy::setBluetoothTetheringState(bool enable)
+{
+    try {
+        return context->methodCall<int>("BluetoothPolicy::setBluetoothTetheringState", enable);
+    } catch (runtime::Exception& e) {
+        return -1;
+    }
+}
+
+bool BluetoothPolicy::getBluetoothTetheringState()
+{
+    try {
+        return context->methodCall<bool>("BluetoothPolicy::getBluetoothTetheringState");
+    } catch (runtime::Exception &e) {
+        return -1;
+    }
+}
+
 } // namespace DevicePolicyManager

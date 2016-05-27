@@ -24,17 +24,12 @@ using namespace DevicePolicyManager;
 
 dpm_wifi_policy_h dpm_context_acquire_wifi_policy(dpm_context_h handle)
 {
-    RET_ON_FAILURE(handle, NULL);
-
-    DevicePolicyContext &client = GetDevicePolicyContext(handle);
-    return client.createPolicyInterface<WifiPolicy>();
+	return handle;
 }
 
 int dpm_context_release_wifi_policy(dpm_context_h context, dpm_wifi_policy_h handle)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-
-    delete &GetPolicyInterface<WifiPolicy>(handle);
     return DPM_ERROR_NONE;
 }
 
@@ -42,7 +37,8 @@ int dpm_wifi_set_profile_change_restriction(dpm_wifi_policy_h handle, int enable
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    WifiPolicy& wifi = GetPolicyInterface<WifiPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    WifiPolicy wifi = client.createPolicyInterface<WifiPolicy>();
     return wifi.setProfileChangeRestriction(enable);
 }
 
@@ -51,7 +47,8 @@ int dpm_wifi_is_profile_change_restricted(dpm_wifi_policy_h handle, int *enable)
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(enable, DPM_ERROR_INVALID_PARAMETER);
 
-    WifiPolicy& wifi = GetPolicyInterface<WifiPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    WifiPolicy wifi = client.createPolicyInterface<WifiPolicy>();
     *enable = wifi.isProfileChangeRestricted();
 
     return DPM_ERROR_NONE;
@@ -61,7 +58,8 @@ int dpm_wifi_set_network_access_restriction(dpm_wifi_policy_h handle, int enable
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    WifiPolicy& wifi = GetPolicyInterface<WifiPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    WifiPolicy wifi = client.createPolicyInterface<WifiPolicy>();
     return wifi.setNetworkAccessRestriction(enable);
 }
 
@@ -70,7 +68,8 @@ int dpm_wifi_is_network_access_restricted(dpm_wifi_policy_h handle, int *enable)
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(enable, DPM_ERROR_INVALID_PARAMETER);
 
-    WifiPolicy& wifi = GetPolicyInterface<WifiPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    WifiPolicy wifi = client.createPolicyInterface<WifiPolicy>();
     *enable = wifi.isNetworkAccessRestricted();
 
     return DPM_ERROR_NONE;
@@ -81,7 +80,8 @@ int dpm_wifi_add_ssid_to_blocklist(dpm_wifi_policy_h handle, const char* ssid)
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(ssid, DPM_ERROR_INVALID_PARAMETER);
 
-    WifiPolicy& wifi = GetPolicyInterface<WifiPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    WifiPolicy wifi = client.createPolicyInterface<WifiPolicy>();
     return wifi.addSsidToBlocklist(ssid);
 }
 
@@ -90,6 +90,7 @@ int dpm_wifi_remove_ssid_from_blocklist(dpm_wifi_policy_h handle, const char* ss
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(ssid, DPM_ERROR_INVALID_PARAMETER);
 
-    WifiPolicy& wifi = GetPolicyInterface<WifiPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    WifiPolicy wifi = client.createPolicyInterface<WifiPolicy>();
     return wifi.removeSsidFromBlocklist(ssid);
 }
