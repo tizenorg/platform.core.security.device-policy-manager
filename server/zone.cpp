@@ -13,6 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License
  */
+#include <algorithm>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/inotify.h>
@@ -272,6 +273,81 @@ void startZoneProvisioningThread(PolicyControlContext& context, const std::strin
     asyncWork.detach();
 }
 
+int packageEventHandler(uid_t target_uid, int req_id,
+                        const char *pkg_type, const char *pkgid,
+                        const char *key, const char *val,
+                        const void *pmsg, void *data)
+{
+    std::string keystr = key;
+
+    std::transform(keystr.begin(), keystr.end(), keystr.begin(), ::tolower);
+    if (keystr != "end" && keystr != "ok") {
+        return 0;
+    }
+
+    if (target_uid == tzplatform_getuid(TZ_SYS_GLOBALAPP_USER)) {
+        return 0;
+    }
+
+    try {
+        runtime::User zoneOwner("owner"), pkgOwner(target_uid);
+
+        ::tzplatform_set_user(zoneOwner.getUid());
+        std::string zoneOwnerHome(::tzplatform_getenv(TZ_USER_HOME));
+        ::tzplatform_reset_user();
+        zoneOwnerHome += "/.zone";
+
+        ::tzplatform_set_user(pkgOwner.getUid());
+        std::string pkgOwnerHome(::tzplatform_getenv(TZ_USER_HOME));
+        ::tzplatform_reset_user();
+
+        std::string pkgOwnerHomeForZone(zoneOwnerHome + "/" + pkgOwner.getName());
+
+        PackageInfo info(pkgid, pkgOwner.getUid());
+        std::string icon = info.getIcon();
+
+        std::cout << zoneOwnerHome << std::endl;
+        std::cout << pkgOwnerHome << std::endl;
+        std::cout << pkgOwnerHomeForZone << std::endl;
+        std::cout << "PKG" << icon << std::endl;
+
+        if (icon.compare(0, pkgOwnerHome.size(),pkgOwnerHome) == 0) {
+            std::string iconLink = icon.replace(0, pkgOwnerHome.size(),
+                                                pkgOwnerHomeForZone);
+            runtime::File linkFile(iconLink);
+            linkFile.makeBaseDirectory(pkgOwner.getUid(), pkgOwner.getGid());
+            int ret = ::link(icon.c_str(), iconLink.c_str());
+            if (ret != 0) {
+                //TODO: copy the icon instead of linking
+                throw runtime::Exception("Failed to link icon " + icon);
+            }
+        }
+
+        for (const std::string &appid : info.getAppList()) {
+            ApplicationInfo info(appid, pkgOwner.getUid());
+            std::string icon = info.getIcon();
+            std::cout << "APP" << icon << std::endl;
+ 
+            if (icon.compare(0, pkgOwnerHome.size(),pkgOwnerHome) == 0) {
+                std::string iconLink = icon.replace(0, pkgOwnerHome.size(),
+                                                    pkgOwnerHomeForZone);
+                runtime::File linkFile(iconLink);
+                linkFile.makeBaseDirectory(pkgOwner.getUid(), pkgOwner.getGid());
+                int ret = ::link(icon.c_str(), iconLink.c_str());
+                if (ret != 0) {
+                    //TODO: copy the icon instead of linking
+                    throw runtime::Exception("Failed to link icon " + icon);
+                }
+            }
+        }
+    } catch (runtime::Exception &e) {
+        ERROR(e.what());
+    }
+    std::cout << "callback end" << std::endl;
+
+    return 0;
+}
+
 } // namespace
 
 ZonePolicy::ZonePolicy(PolicyControlContext& ctx)
@@ -286,10 +362,15 @@ ZonePolicy::ZonePolicy(PolicyControlContext& ctx)
 
     context.createNotification("ZonePolicy::created");
     context.createNotification("ZonePolicy::removed");
+
+    PackageManager& packageManager = PackageManager::instance();
+    packageManager.setEventCallback(packageEventHandler, this);
 }
 
 ZonePolicy::~ZonePolicy()
 {
+    PackageManager& packageManager = PackageManager::instance();
+    packageManager.unsetEventCallback(); 
 }
 
 int ZonePolicy::createZone(const std::string& name, const std::string& setupWizAppid)

@@ -372,7 +372,7 @@ void File::makeDirectory(bool recursive, uid_t uid, gid_t gid)
     }
 
     if (::mkdir(path.getPathname().c_str(), 0777) == -1) {
-        throw runtime::Exception("mkdir failed in makefirectory: " + path.getPathname());
+        throw runtime::Exception("mkdir failed in makeDirectory: " + path.getPathname());
     }
 
     if ((uid | gid) != 0) {

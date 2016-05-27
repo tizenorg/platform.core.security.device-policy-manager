@@ -80,7 +80,6 @@ private:
 
 class PackageManager {
 public:
-    PackageInfo getPackageInfo(const std::string& pkgid, const uid_t user);
     void activatePackage(const std::string& pkgid, const uid_t user);
     void deactivatePackage(const std::string& pkgid, const uid_t user);
     void installPackage(const std::string& pkgpath, const uid_t user);
@@ -89,6 +88,9 @@ public:
 
     std::vector<std::string> getPackageList(const uid_t user);
     std::vector<std::string> getAppList(const uid_t user);
+
+    void setEventCallback(pkgmgrinfo_handler callback, void* user_data);
+    void unsetEventCallback();
 
     void addPackageToBlacklist(const std::string& pkgid, const uid_t user);
     void removePackageFromBlacklist(const std::string& pkgid, const uid_t user);
@@ -101,7 +103,7 @@ private:
     ~PackageManager();
 
 private:
-    pkgmgr_client *nativeHandle;
+    pkgmgr_client *nativeRequestHandle, *nativeListenHandle;
 };
 
 #endif // __DPM_PACKMAN_H__
