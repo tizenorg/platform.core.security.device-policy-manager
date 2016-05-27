@@ -25,18 +25,14 @@ using namespace DevicePolicyManager;
 
 dpm_zone_policy_h dpm_context_acquire_zone_policy(dpm_context_h handle)
 {
-    RET_ON_FAILURE(handle, NULL);
+	return handle;
 
-    DevicePolicyContext &client = GetDevicePolicyContext(handle);
-    return client.createPolicyInterface<ZonePolicy>();
 }
 
 int dpm_context_release_zone_policy(dpm_context_h context, dpm_zone_policy_h handle)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-
-    delete &GetPolicyInterface<ZonePolicy>(handle);
-    return 0;
+    return DPM_ERROR_NONE;
 }
 
 int dpm_zone_create(dpm_zone_policy_h handle, const char* name, const char* pkgname)
@@ -45,7 +41,8 @@ int dpm_zone_create(dpm_zone_policy_h handle, const char* name, const char* pkgn
     RET_ON_FAILURE(name, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(pkgname, DPM_ERROR_INVALID_PARAMETER);
 
-    ZonePolicy& zone = GetPolicyInterface<ZonePolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    ZonePolicy zone = client.createPolicyInterface<ZonePolicy>();
     return zone.createZone(name, pkgname);
 }
 
@@ -54,7 +51,8 @@ int dpm_zone_destroy(dpm_zone_policy_h handle, const char* name)
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(name, DPM_ERROR_INVALID_PARAMETER);
 
-    ZonePolicy& zone = GetPolicyInterface<ZonePolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    ZonePolicy zone = client.createPolicyInterface<ZonePolicy>();
     return zone.removeZone(name);
 }
 
@@ -64,7 +62,8 @@ dpm_zone_iterator_h dpm_zone_create_iterator(dpm_zone_policy_h handle)
 {
     RET_ON_FAILURE(handle, NULL);
 
-    ZonePolicy& zone = GetPolicyInterface<ZonePolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    ZonePolicy zone = client.createPolicyInterface<ZonePolicy>();
 
     return reinterpret_cast<dpm_zone_iterator_h>(new dpm_zone_iterator(zone.getZoneList()));
 }
@@ -99,7 +98,8 @@ int dpm_zone_foreach_name(dpm_zone_policy_h handle,
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(callback, DPM_ERROR_INVALID_PARAMETER);
 
-    ZonePolicy& zone = GetPolicyInterface<ZonePolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    ZonePolicy zone = client.createPolicyInterface<ZonePolicy>();
     std::vector<std::string> list = zone.getZoneList();
     for (std::vector<std::string>::iterator it = list.begin();
          it != list.end(); it++) {
