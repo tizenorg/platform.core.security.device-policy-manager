@@ -491,7 +491,8 @@ dpm_password_iterator_h dpm_password_create_iterator(dpm_password_policy_h handl
 {
     RET_ON_FAILURE(handle, NULL);
 
-    PasswordPolicy &password = GetPolicyInterface<PasswordPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
 
     return reinterpret_cast<dpm_password_iterator_h>(new dpm_password_iterator(password.getForbiddenStrings()));
 }
@@ -529,7 +530,9 @@ int dpm_password_set_forbidden_strings(dpm_password_policy_h handle, const char 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(strings, DPM_ERROR_INVALID_PARAMETER);
 
-    PasswordPolicy &password = GetPolicyInterface<PasswordPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
+
     for (iter = 0; iter < length; iter++)
         forbiddenStrings.push_back(strings[iter]);
     if (password.setForbiddenStrings(forbiddenStrings) == 0)
