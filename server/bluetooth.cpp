@@ -130,6 +130,10 @@ BluetoothPolicy::BluetoothPolicy(PolicyControlContext& ctxt) :
 
     // Register
     int ret = bt_initialize();
+	if (ret == BT_ERROR_NOT_SUPPORTED) {
+		return;
+	}
+
     if (ret != BT_ERROR_NONE) {
         throw runtime::Exception("failed to initialize the Bluetooth API");
     }
