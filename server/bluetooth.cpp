@@ -77,33 +77,7 @@ void bluetoothAdapterStateChangedCb(int result, bt_adapter_state_e state, void *
 } // namespace
 
 
-#define CONSTRUCTOR __attribute__ ((constructor))
-
 namespace DevicePolicyManager {
-
-extern RestrictionPolicy restrictionPolicy;
-
-static void CONSTRUCTOR ContributeRestrictionPolicy()
-{
-    PolicyControlContext& context = Server::instance();
-
-    context.registerParametricMethod(&restrictionPolicy, (int)(RestrictionPolicy::setBluetoothTetheringState)(bool));
-    context.registerNonparametricMethod(&restrictionPolicy, (bool)(RestrictionPolicy::getBluetoothTetheringState));
-
-    context.createNotification("bluetooth-tethering");
-}
-
-int RestrictionPolicy::setBluetoothTetheringState(bool enable)
-{
-    SetPolicyAllowed(context, "bluetooth-tethering", enable);
-    return 0;
-}
-
-bool RestrictionPolicy::getBluetoothTetheringState()
-{
-    return IsPolicyAllowed(context, "bluetooth-tethering");
-}
-
 
 BluetoothPolicy::BluetoothPolicy(PolicyControlContext& ctxt) :
     context(ctxt)
@@ -122,8 +96,12 @@ BluetoothPolicy::BluetoothPolicy(PolicyControlContext& ctxt) :
     ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::removeUuidFromBlacklist)(std::string));
     ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::setUuidRestriction)(bool));
     ctxt.registerNonparametricMethod(this, (bool)(BluetoothPolicy::isUuidRestricted));
+    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::setBluetoothTetheringState)(bool));
+    ctxt.registerNonparametricMethod(this, (bool)(BluetoothPolicy::getBluetoothTetheringState));
+
 
     ctxt.createNotification("bluetooth");
+    ctxt.createNotification("bluetooth-tethering");
     ctxt.createNotification("bluetooth-desktop-connectivity");
     ctxt.createNotification("bluetooth-uuid-restriction");
     ctxt.createNotification("bluetooth-device-restriction");
@@ -147,6 +125,17 @@ BluetoothPolicy::BluetoothPolicy(PolicyControlContext& ctxt) :
 BluetoothPolicy::~BluetoothPolicy()
 {
     bt_deinitialize();
+}
+
+int BluetoothPolicy::setBluetoothTetheringState(bool enable)
+{
+    SetPolicyAllowed(context, "bluetooth-tethering", enable);
+    return 0;
+}
+
+bool BluetoothPolicy::getBluetoothTetheringState()
+{
+    return IsPolicyAllowed(context, "bluetooth-tethering");
 }
 
 int BluetoothPolicy::setModeChangeState(const bool enable)

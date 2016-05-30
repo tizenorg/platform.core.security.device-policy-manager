@@ -50,6 +50,7 @@ typedef void* zone_app_proxy_h;
  *              the zone application manager APIs.
  * @since_tizen 3.0
  * @param[in]   manager The zone manager handle
+ * @param[in]   name The zone name
  * @param[out]  handle The zone app proxy handle
  * @return      #ZONE_ERROR_NONE on success, otherwise a negative value
  * @retval      #ZONE_ERROR_NONE Successful
@@ -59,7 +60,7 @@ typedef void* zone_app_proxy_h;
  * @see         zone_app_proxy_create()
  * @see         get_last_result()
  */
-ZONE_API int zone_app_proxy_create(zone_manager_h manager, zone_app_proxy_h* handle);
+ZONE_API int zone_app_proxy_create(zone_manager_h manager, const char* name, zone_app_proxy_h* handle);
 
 /**
  * @brief       Releases the zone application manager handle
@@ -83,7 +84,6 @@ ZONE_API int zone_app_proxy_destroy(zone_app_proxy_h handle);
  *              information of the application in the zone
  * @since_tizen 3.0
  * @param[in]   handle The zone application manager handle
- * @param[in]   name The zone name
  * @param[in]   appid The application ID
  * @return      Zone application handle on success, otherwise NULL
  * @remark      The specific error code can be obtained by using the
@@ -98,7 +98,7 @@ ZONE_API int zone_app_proxy_destroy(zone_app_proxy_h handle);
  * @see         application_manager_get_application_info()
  * @see         get_last_result()
  */
-ZONE_API int zone_app_proxy_get_app_info(zone_app_proxy_h handle, const char* name, const char* appid, app_info_h* app_info);
+ZONE_API int zone_app_proxy_get_app_info(zone_app_proxy_h handle, const char* appid, app_info_h* app_info);
 
 /**
  * @brief       Retrieves all the handles of the application in the zone.
@@ -106,7 +106,6 @@ ZONE_API int zone_app_proxy_get_app_info(zone_app_proxy_h handle, const char* na
  *              ID with traversing the installed application list in the zone.
  * @since_tizen 3.0
  * @param[in]   handle The zone application manager handle
- * @param[in]   name The zone name
  * @param[in]   callback The iteration callback function
  * @param[in]   user_data The user data passed to the callback function
  * @return      #ZONE_ERROR_NONE on success, otherwise a negative value
@@ -118,7 +117,7 @@ ZONE_API int zone_app_proxy_get_app_info(zone_app_proxy_h handle, const char* na
  * @see         zone_app_proxy_create()
  * @see         application_manager_foreach_app_info()
  */
-ZONE_API int zone_app_proxy_foreach_app_info(zone_app_proxy_h handle, const char* name, app_manager_app_info_cb callback, void *user_data);
+ZONE_API int zone_app_proxy_foreach_app_info(zone_app_proxy_h handle, app_manager_app_info_cb callback, void *user_data);
 
 /**
  * @brief       Launch the application located at the given path into the zone.
@@ -126,7 +125,6 @@ ZONE_API int zone_app_proxy_foreach_app_info(zone_app_proxy_h handle, const char
  *              zone.
  * @since_tizen 3.0
  * @param[in]   handle The zone application manager handle
- * @param[in]   name The zone name
  * @param[in]   appid The application ID to be launched
  * @return      #ZONE_ERROR_NONE on success, otherwise a negative value
  * @retval      #ZONE_ERROR_NONE Successful
@@ -148,7 +146,7 @@ ZONE_API int zone_app_proxy_foreach_app_info(zone_app_proxy_h handle, const char
  * @see         zone_is_running_app()
  * @see         app_control_send_launch_request()
  */
-ZONE_API int zone_app_proxy_launch(zone_app_proxy_h handle, const char* name, const char* appid);
+ZONE_API int zone_app_proxy_launch(zone_app_proxy_h handle, const char* appid);
 
 /**
  * @brief       Resume the application located at the given path into the zone.
@@ -156,7 +154,6 @@ ZONE_API int zone_app_proxy_launch(zone_app_proxy_h handle, const char* name, co
  *              zone.
  * @since_tizen 3.0
  * @param[in]   handle The zone application manager handle
- * @param[in]   name The zone name
  * @param[in]   appid The application ID to be resumed
  * @return      #ZONE_ERROR_NONE on success, otherwise a negative value
  * @retval      #ZONE_ERROR_NONE Successful
@@ -177,7 +174,7 @@ ZONE_API int zone_app_proxy_launch(zone_app_proxy_h handle, const char* name, co
  * @see         zone_terminate_app()
  * @see         zone_is_running_app()
  */
-ZONE_API int zone_app_proxy_resume(zone_app_proxy_h handle, const char* name, const char* appid);
+ZONE_API int zone_app_proxy_resume(zone_app_proxy_h handle, const char* appid);
 
 /**
  * @brief       Terminate the application located at the given path into the zone.
@@ -185,7 +182,6 @@ ZONE_API int zone_app_proxy_resume(zone_app_proxy_h handle, const char* name, co
  *              the zone.
  * @since_tizen 3.0
  * @param[in]   handle The zone application manager handle
- * @param[in]   name The zone name
  * @param[in]   appid The application ID to be terminated
  * @return      #ZONE_ERROR_NONE on success, otherwise a negative value
  * @retval      #ZONE_ERROR_NONE Successful
@@ -207,7 +203,7 @@ ZONE_API int zone_app_proxy_resume(zone_app_proxy_h handle, const char* name, co
  * @see         zone_is_running_app()
  * @see         app_control_send_terminate_request()
  */
-ZONE_API int zone_app_proxy_terminate(zone_app_proxy_h handle, const char* name, const char* appid);
+ZONE_API int zone_app_proxy_terminate(zone_app_proxy_h handle, const char* appid);
 
 /**
  * @brief       Checks whether the application in the zone is running.
@@ -215,7 +211,6 @@ ZONE_API int zone_app_proxy_terminate(zone_app_proxy_h handle, const char* name,
  *              is running.
  * @since_tizen 3.0
  * @param[in]   handle The zone application manager handle
- * @param[in]   name The zone name
  * @param[in]   appid The application ID
  * @param[out]  result true if the application is running,
  *              otherwise false if the application is not running
@@ -232,7 +227,7 @@ ZONE_API int zone_app_proxy_terminate(zone_app_proxy_h handle, const char* name,
  * @see         zone_launch_app()
  * @see         zone_terminate_app()
  */
-ZONE_API int zone_app_proxy_is_running(zone_app_proxy_h handle, const char* name, const char* appid, int* result);
+ZONE_API int zone_app_proxy_is_running(zone_app_proxy_h handle, const char* appid, int* result);
 
 /**
  * @}

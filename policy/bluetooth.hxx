@@ -49,6 +49,9 @@ public:
     int setUuidRestriction(const bool enable);
     bool isUuidRestricted();
 
+    int setBluetoothTetheringState(bool enable);
+    bool getBluetoothTetheringState();
+
 private:
     PolicyControlContext& context;
 };

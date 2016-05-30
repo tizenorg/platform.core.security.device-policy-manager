@@ -28,18 +28,13 @@ using namespace DevicePolicyManager;
 
 dpm_password_policy_h dpm_context_acquire_password_policy(dpm_context_h handle)
 {
-    RET_ON_FAILURE(handle, NULL);
-
-    DevicePolicyContext &client = GetDevicePolicyContext(handle);
-    return client.createPolicyInterface<PasswordPolicy>();
+	return handle;
 }
 
 int dpm_context_release_password_policy(dpm_context_h context, dpm_password_policy_h handle)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-
-    delete &GetPolicyInterface<PasswordPolicy>(handle);
-    return 0;
+    return DPM_ERROR_NONE;
 }
 
 int dpm_password_set_quality(dpm_password_policy_h handle, dpm_password_quality_e quality)
@@ -48,7 +43,8 @@ int dpm_password_set_quality(dpm_password_policy_h handle, dpm_password_quality_
 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    PasswordPolicy &password = GetPolicyInterface<PasswordPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
 
     if (password.setPasswordPolicyQuality(quality) == 0)
         ret = DPM_ERROR_NONE;
@@ -65,7 +61,8 @@ int dpm_password_get_quality(dpm_password_policy_h handle, dpm_password_quality_
 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    PasswordPolicy &password = GetPolicyInterface<PasswordPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
 
     password_quality = password.getPasswordPolicyQuality();
     switch (password_quality) {
@@ -106,7 +103,8 @@ int dpm_password_set_minimum_length(dpm_password_policy_h handle, const int valu
 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    PasswordPolicy &password = GetPolicyInterface<PasswordPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
 
     if (password.setPasswordPolicyMinimumLength(value) == 0)
         ret = DPM_ERROR_NONE;
@@ -123,7 +121,8 @@ int dpm_password_get_minimum_length(dpm_password_policy_h handle, int *value)
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(value, DPM_ERROR_INVALID_PARAMETER);
 
-    PasswordPolicy &password = GetPolicyInterface<PasswordPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
 
     *value = password.getPasswordPolicyMinimumLength();
     if (*value >= 0)
@@ -140,7 +139,8 @@ int dpm_password_set_min_complex_chars(dpm_password_policy_h handle, const int v
 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    PasswordPolicy &password = GetPolicyInterface<PasswordPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
 
     if (password.setMinPasswordPolicyComplexChars(value) == 0)
         ret = DPM_ERROR_NONE;
@@ -156,7 +156,8 @@ int dpm_password_get_min_complex_chars(dpm_password_policy_h handle, int *value)
 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    PasswordPolicy &password = GetPolicyInterface<PasswordPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
 
     *value = password.getMinPasswordPolicyComplexChars();
     if (*value >= 0)
@@ -173,7 +174,8 @@ int dpm_password_set_maximum_failed_attempts_for_wipe(dpm_password_policy_h hand
 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    PasswordPolicy &password = GetPolicyInterface<PasswordPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
 
     if (password.setMaximumFailedPasswordPolicyForWipe(value) == 0)
         ret = DPM_ERROR_NONE;
@@ -190,7 +192,8 @@ int dpm_password_get_maximum_failed_attempts_for_wipe(dpm_password_policy_h hand
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(value, DPM_ERROR_INVALID_PARAMETER);
 
-    PasswordPolicy &password = GetPolicyInterface<PasswordPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
 
     *value = password.getMaximumFailedPasswordPolicyForWipe();
     if (*value >= 0)
@@ -207,7 +210,8 @@ int dpm_password_set_expires(dpm_password_policy_h handle, const int value)
 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    PasswordPolicy &password = GetPolicyInterface<PasswordPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
 
     if (password.setPasswordPolicyExpires(value) == 0)
         ret = DPM_ERROR_NONE;
@@ -223,7 +227,8 @@ int dpm_password_get_expires(dpm_password_policy_h handle, int *value)
 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    PasswordPolicy &password = GetPolicyInterface<PasswordPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
 
     *value = password.getPasswordPolicyExpires();
     if (*value >= 0)
@@ -240,7 +245,8 @@ int dpm_password_set_history(dpm_password_policy_h handle, const int value)
 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    PasswordPolicy &password = GetPolicyInterface<PasswordPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
 
     if (password.setPasswordPolicyHistory(value) == 0)
         ret = DPM_ERROR_NONE;
@@ -256,7 +262,8 @@ int dpm_password_get_history(dpm_password_policy_h handle, int *value)
 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    PasswordPolicy &password = GetPolicyInterface<PasswordPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
 
     *value = password.getPasswordPolicyHistory();
     if (*value >= 0)
@@ -274,7 +281,8 @@ int dpm_password_set_pattern(dpm_password_policy_h handle, const char *pattern)
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(pattern, DPM_ERROR_INVALID_PARAMETER);
 
-    PasswordPolicy &password = GetPolicyInterface<PasswordPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
 
     if (password.setPasswordPolicyPattern(pattern) == 0)
         ret = DPM_ERROR_NONE;
@@ -291,7 +299,8 @@ int dpm_password_reset(dpm_password_policy_h handle, const char *passwd)
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(passwd, DPM_ERROR_INVALID_PARAMETER);
 
-    PasswordPolicy &password = GetPolicyInterface<PasswordPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
 
     if (password.resetPasswordPolicy(passwd) == 0)
         ret = DPM_ERROR_NONE;
@@ -307,7 +316,8 @@ int dpm_password_enforce_change(dpm_password_policy_h handle)
 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    PasswordPolicy &password = GetPolicyInterface<PasswordPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
 
     if (password.enforcePasswordPolicyChange() == 0)
         ret = DPM_ERROR_NONE;
@@ -323,7 +333,8 @@ int dpm_password_set_max_inactivity_time_device_lock(dpm_password_policy_h handl
 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    PasswordPolicy &password = GetPolicyInterface<PasswordPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
 
     if (password.setMaxInactivityTimeDeviceLock(value) == 0)
         ret = DPM_ERROR_NONE;
@@ -340,7 +351,8 @@ int dpm_password_get_max_inactivity_time_device_lock(dpm_password_policy_h handl
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(value, DPM_ERROR_INVALID_PARAMETER);
 
-    PasswordPolicy &password = GetPolicyInterface<PasswordPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
 
     *value = password.getMaxInactivityTimeDeviceLock();
 
@@ -358,7 +370,8 @@ int dpm_password_set_status(dpm_password_policy_h handle, dpm_password_status_e 
 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    PasswordPolicy &password = GetPolicyInterface<PasswordPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
 
     if (password.setPasswordPolicyStatus(status) == 0)
         ret = DPM_ERROR_NONE;
@@ -374,7 +387,8 @@ int dpm_password_delete_pattern(dpm_password_policy_h handle)
 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    PasswordPolicy &password = GetPolicyInterface<PasswordPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
 
     if (password.deletePasswordPolicyPattern() == 0)
         ret = DPM_ERROR_NONE;
@@ -391,7 +405,8 @@ int dpm_password_get_pattern(dpm_password_policy_h handle, char **pattern)
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(*pattern, DPM_ERROR_INVALID_PARAMETER);
 
-    PasswordPolicy &password = GetPolicyInterface<PasswordPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
 
     *pattern = ::strdup(password.getPasswordPolicyPattern().c_str());
 
@@ -404,7 +419,8 @@ int dpm_password_set_maximum_character_occurrences(dpm_password_policy_h handle,
 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    PasswordPolicy &password = GetPolicyInterface<PasswordPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
 
     if (password.setMaximumCharacterOccurrences(value) == 0)
         ret = DPM_ERROR_NONE;
@@ -421,9 +437,10 @@ int dpm_password_get_maximum_character_occurrences(dpm_password_policy_h handle,
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(value, DPM_ERROR_INVALID_PARAMETER);
 
-    PasswordPolicy &password = GetPolicyInterface<PasswordPolicy>(handle);
-    *value = password.getMaximumCharacterOccurrences();
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
 
+    *value = password.getMaximumCharacterOccurrences();
     if (*value >= 0)
         ret = DPM_ERROR_NONE;
     else
@@ -438,7 +455,8 @@ int dpm_password_set_maximum_numeric_sequence_length(dpm_password_policy_h handl
 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    PasswordPolicy &password = GetPolicyInterface<PasswordPolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
 
     if (password.setMaximumNumericSequenceLength(value) == 0)
         ret = DPM_ERROR_NONE;
@@ -455,9 +473,10 @@ int dpm_password_get_maximum_numeric_sequence_length(dpm_password_policy_h handl
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(value, DPM_ERROR_INVALID_PARAMETER);
 
-    PasswordPolicy &password = GetPolicyInterface<PasswordPolicy>(handle);
-    *value = password.getMaximumNumericSequenceLength();
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
 
+    *value = password.getMaximumNumericSequenceLength();
     if (*value >= 0)
         ret = DPM_ERROR_NONE;
     else

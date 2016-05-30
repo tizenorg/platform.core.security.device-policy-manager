@@ -154,24 +154,6 @@ int RestrictionPolicy::getExternalStorageState()
 	}
 }
 
-int RestrictionPolicy::setLocationState(int enable)
-{
-	try {
-		return context->methodCall<int>("RestrictionPolicy::setLocationState", enable);
-	} catch (runtime::Exception& e) {
-		return -1;
-	}
-}
-
-int RestrictionPolicy::getLocationState()
-{
-	try {
-		return context->methodCall<int>("RestrictionPolicy::getLocationState");
-	} catch (runtime::Exception& e) {
-		return -1;
-	}
-}
-
 int RestrictionPolicy::setWifiState(bool enable)
 {
     try {
@@ -203,24 +185,6 @@ bool RestrictionPolicy::getWifiHotspotState()
 {
     try {
         return context->methodCall<bool>("RestrictionPolicy::getWifiHotspotState");
-    } catch (runtime::Exception &e) {
-        return -1;
-    }
-}
-
-int RestrictionPolicy::setBluetoothTetheringState(bool enable)
-{
-    try {
-        return context->methodCall<int>("RestrictionPolicy::setBluetoothTetheringState", enable);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
-}
-
-bool RestrictionPolicy::getBluetoothTetheringState()
-{
-    try {
-        return context->methodCall<bool>("RestrictionPolicy::getBluetoothTetheringState");
     } catch (runtime::Exception &e) {
         return -1;
     }
