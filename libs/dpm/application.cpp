@@ -142,3 +142,40 @@ int dpm_application_check_package_is_blacklisted(dpm_application_policy_h handle
     *blacklisted = ret;
     return DPM_ERROR_NONE;
 }
+
+int dpm_application_add_privilege_to_blacklist(dpm_application_policy_h handle, int type, const char* privilege)
+{
+	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(privilege, DPM_ERROR_INVALID_PARAMETER);
+
+	DevicePolicyContext& client = GetDevicePolicyContext(handle);
+	ApplicationPolicy application = client.createPolicyInterface<ApplicationPolicy>();
+	return application.addPrivilegeToBlacklist(type, privilege);
+}
+
+int dpm_application_remove_privilege_from_blacklist(dpm_application_policy_h handle, int type, const char* privilege)
+{
+	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(privilege, DPM_ERROR_INVALID_PARAMETER);
+
+	DevicePolicyContext& client = GetDevicePolicyContext(handle);
+	ApplicationPolicy application = client.createPolicyInterface<ApplicationPolicy>();
+	return application.removePrivilegeFromBlacklist(type, privilege);
+}
+
+int dpm_application_check_privilege_is_blacklisted(dpm_application_policy_h handle, int type, const char* privilege, int *blacklisted)
+{
+	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(privilege, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(blacklisted, DPM_ERROR_INVALID_PARAMETER);
+
+	DevicePolicyContext& client = GetDevicePolicyContext(handle);
+	ApplicationPolicy application = client.createPolicyInterface<ApplicationPolicy>();
+	int ret = application.checkPrivilegeIsBlacklisted(type, privilege);
+	if (ret < 0) {
+		return -1;
+	}
+
+	*blacklisted = ret;
+	return DPM_ERROR_NONE;
+}
