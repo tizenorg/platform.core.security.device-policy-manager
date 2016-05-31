@@ -20,7 +20,7 @@
 #include <iostream>
 #include <gio/gio.h>
 
-namespace dbus{
+namespace dbus {
 
 class Error {
 public:

@@ -64,7 +64,7 @@ dpm_zone_iterator_h dpm_zone_create_iterator(dpm_zone_policy_h handle)
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     ZonePolicy zone = client.createPolicyInterface<ZonePolicy>();
 
-    return reinterpret_cast<dpm_zone_iterator_h>(new dpm_zone_iterator(zone.getZoneList()));
+    return reinterpret_cast<dpm_zone_iterator_h>(new dpm_zone_iterator(zone.getZoneList(DPM_ZONE_STATE_ALL)));
 }
 
 int dpm_zone_iterator_next(dpm_zone_iterator_h iter, const char** result)
@@ -79,7 +79,7 @@ int dpm_zone_iterator_next(dpm_zone_iterator_h iter, const char** result)
     else
         *result = it->next()->c_str();
 
-    return 0;
+    return DPM_ERROR_NONE;
 }
 
 int dpm_zone_destroy_iterator(dpm_zone_iterator_h iter)
@@ -88,7 +88,7 @@ int dpm_zone_destroy_iterator(dpm_zone_iterator_h iter)
 
     delete reinterpret_cast<dpm_zone_iterator*>(iter);
 
-    return 0;
+    return DPM_ERROR_NONE;
 }
 
 int dpm_zone_foreach_name(dpm_zone_policy_h handle,
@@ -99,13 +99,13 @@ int dpm_zone_foreach_name(dpm_zone_policy_h handle,
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     ZonePolicy zone = client.createPolicyInterface<ZonePolicy>();
-    std::vector<std::string> list = zone.getZoneList();
+    std::vector<std::string> list = zone.getZoneList(DPM_ZONE_STATE_ALL);
     for (std::vector<std::string>::iterator it = list.begin();
          it != list.end(); it++) {
         callback((*it).c_str(), user_data);
     }
 
-    return 0;
+    return DPM_ERROR_NONE;
 }
 
 int dpm_zone_get_state(dpm_zone_policy_h handle, const char* name, dpm_zone_state_e *state)
@@ -113,9 +113,14 @@ int dpm_zone_get_state(dpm_zone_policy_h handle, const char* name, dpm_zone_stat
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(name, DPM_ERROR_INVALID_PARAMETER);
 
-    //ZonePolicy& zone = GetPolicyInterface<ZonePolicy>(handle);
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    ZonePolicy zone = client.createPolicyInterface<ZonePolicy>();
 
-    /* TODO : should implement */
+    int result = zone.getZoneState(name);
+    if (result <0) {
+        return DPM_ERROR_INVALID_PARAMETER;
+    }
 
-    return DPM_ERROR_INVALID_PARAMETER;
+    *state = (dpm_zone_state_e)result;
+    return DPM_ERROR_NONE;
 }

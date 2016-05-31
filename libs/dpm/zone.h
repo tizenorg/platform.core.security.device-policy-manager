@@ -227,9 +227,9 @@ DPM_API int dpm_zone_foreach_name(dpm_zone_policy_h handle,
  * @since_tizen 3.0
  */
 typedef enum {
-    DPM_ZONE_STATE_DEFINED      = 0x01, /**< ZonePolicy has been defined, but it is not running. */
-    DPM_ZONE_STATE_RUNNING      = 0x02, /**< ZonePolicy has been started. */
-    DPM_ZONE_STATE_LOCKED       = 0x03  /**< ZonePolicy has been defined, but it can not start. */
+    DPM_ZONE_STATE_LOCKED       = 0x01,  /**< Zone has been defined, but it can not start. */
+    DPM_ZONE_STATE_RUNNING      = 0x02, /**< Zone has been started. */
+    DPM_ZONE_STATE_ALL          = 0xff  /**< This presents all of the state  */
 } dpm_zone_state_e;
 
 /**

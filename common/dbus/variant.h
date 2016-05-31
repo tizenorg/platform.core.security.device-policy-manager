@@ -20,7 +20,7 @@
 #include <string>
 #include <gio/gio.h>
 
-namespace dbus{
+namespace dbus {
 
 class Variant {
 public:

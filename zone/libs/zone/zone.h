@@ -161,6 +161,53 @@ ZONE_API int zone_manager_add_event_cb(zone_manager_h handle,
 ZONE_API int zone_manager_remove_event_cb(zone_manager_h handle, int id);
 
 /**
+ * @brief       Creates a new zone.
+ * @details     This API creates a container. All file system objects neeeded
+ *              will be also created. manifest XML passed by parameter will be
+ *              used when the zone is running.
+ * @since_tizen 3.0
+ * @param[in]   handle The zone manager handle
+ * @param[in]   name The zone name to be created
+ * @param[in]   manifest The manifest XML to be used when the zone is runned.
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
+ *              the privilege to call this API
+ * @pre         The handle must be created by zone_manager_create().
+ * @see         zone_manager_create()
+ * @see         zone_manager_destroy()
+ * @see         zone_manager_destroy_zone()
+ * @see         zone_manager_create_zone_iterator()
+ */
+ZONE_API int zone_manager_create_zone(zone_manager_h handle, const char* name, const char* manifest);
+
+/**
+ * @brief       Removes existing zone.
+ * @details     This removes zone. All file system objects created for the zone
+ *              will be also erased.
+ * @since_tizen 3.0
+ * @param[in]   handle The zone manager handle
+ * @param[in]   name The zone name to be removed
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
+ *              the privilege to call this API or the caller is not the owner
+ *              of the zone
+ * @pre         The handle must be created by zone_manager_create().
+ * @pre         The zone corresponding to the given name must be
+ *              created before use of this API.
+ * @see         zone_manager_create()
+ * @see         zone_manager_destroy()
+ * @see         zone_manager_create_zone()
+ * @see         zone_manager_create_zone_iterator()
+ */
+ZONE_API int zone_manager_destroy_zone(zone_manager_h handle, const char* name);
+
+/**
  * @}
  */
 

@@ -19,6 +19,9 @@
 #include "error.h"
 #include "debug.h"
 #include "policy-client.h"
+#include "zone/zone.hxx"
+
+using namespace DevicePolicyManager;
 
 DevicePolicyContext& GetDevicePolicyContext(void* handle)
 {
@@ -59,7 +62,7 @@ int zone_manager_add_event_cb(zone_manager_h handle, const char* event, zone_eve
     RET_ON_FAILURE(callback, ZONE_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &context = GetDevicePolicyContext(handle);
-    int ret = context.subscribeSignal(std::string("ZonePolicy::") + event,
+    int ret = context.subscribeSignal(std::string("ZoneManager::") + event,
                                       callback, user_data);
     if (ret < 0)
         return ZONE_ERROR_INVALID_PARAMETER;
@@ -79,4 +82,25 @@ int zone_manager_remove_event_cb(zone_manager_h handle, int callback_id)
         return ZONE_ERROR_INVALID_PARAMETER;
 
     return ZONE_ERROR_NONE;
+}
+
+int zone_manager_create_zone(zone_manager_h handle, const char* name, const char* manifest)
+{
+    RET_ON_FAILURE(handle, ZONE_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(name, ZONE_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(manifest, ZONE_ERROR_INVALID_PARAMETER);
+
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    ZoneManager zone = client.createPolicyInterface<ZoneManager>();
+    return zone.createZone(name, manifest);
+}
+
+int zone_manager_destroy_zone(zone_manager_h handle, const char* name)
+{
+    RET_ON_FAILURE(handle, ZONE_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(name, ZONE_ERROR_INVALID_PARAMETER);
+
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    ZoneManager zone = client.createPolicyInterface<ZoneManager>();
+    return zone.removeZone(name);
 }

@@ -28,13 +28,13 @@ namespace {
 
 const std::string DBUS_SYSTEM_BUS_ADDRESS = "unix:path=/var/run/dbus/system_bus_socket";
 
-void defaultCallback (GDBusConnection *connection,
-                      const gchar *sender_name,
-                      const gchar *object_path,
-                      const gchar *interface_name,
-                      const gchar *signal_name,
-                      GVariant *parameters,
-                      gpointer user_data) {
+void defaultCallback(GDBusConnection* connection,
+                     const gchar *sender_name,
+                     const gchar *object_path,
+                     const gchar *interface_name,
+                     const gchar *signal_name,
+                     GVariant *parameters,
+                     gpointer user_data) {
     Connection::signalCallback* func = reinterpret_cast<Connection::signalCallback*> (user_data);
     (*func)(Variant(parameters));
     delete func;
@@ -46,9 +46,8 @@ Connection::Connection(const std::string& address) :
      connection(nullptr)
 {
     Error error;
-    const GDBusConnectionFlags flags = static_cast<GDBusConnectionFlags>(
-        G_DBUS_CONNECTION_FLAGS_AUTHENTICATION_CLIENT | G_DBUS_CONNECTION_FLAGS_MESSAGE_BUS_CONNECTION
-    );
+    const GDBusConnectionFlags flags = static_cast<GDBusConnectionFlags>
+        (G_DBUS_CONNECTION_FLAGS_AUTHENTICATION_CLIENT | G_DBUS_CONNECTION_FLAGS_MESSAGE_BUS_CONNECTION);
 
     connection = g_dbus_connection_new_for_address_sync(address.c_str(), flags, NULL, NULL, &error);
     if (error) {
