@@ -90,14 +90,14 @@ int _send_zone_create_request(appdata_s *ad)
 		return -1;
 	}
 
-	/* [TBD] */
+        zone_manager_create_zone(ad->zone_manager, ad->zone_name, metadata);
 
 	return 0;
 }
 
 int _send_zone_remove_request(appdata_s *ad)
 {
-	/* [TBD] */
+        zone_manager_destroy_zone(ad->zone_manager, ad->zone_name);
 
 	return 0;
 }
