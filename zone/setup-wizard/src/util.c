@@ -83,6 +83,7 @@ static char *__get_zone_metadata(void)
 int _send_zone_create_request(appdata_s *ad)
 {
 	char *metadata = NULL;
+        int ret;
 
 	metadata = __get_zone_metadata();
 	if (metadata == NULL) {
@@ -90,14 +91,22 @@ int _send_zone_create_request(appdata_s *ad)
 		return -1;
 	}
 
-	/* [TBD] */
+	ret = zone_manager_create_zone(ad->zone_manager, ad->zone_name, metadata);
+	if (ret != ZONE_ERROR_NONE) {
+		return -1;
+	}
 
 	return 0;
 }
 
 int _send_zone_remove_request(appdata_s *ad)
 {
-	/* [TBD] */
+	int ret;
+
+	ret = zone_manager_destroy_zone(ad->zone_manager, ad->zone_name);
+	if (ret != ZONE_ERROR_NONE) {
+		return -1;
+	}
 
 	return 0;
 }

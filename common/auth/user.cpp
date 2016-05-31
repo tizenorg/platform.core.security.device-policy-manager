@@ -13,8 +13,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License
  */
-
-
 #include <regex>
 #include <memory>
 
@@ -115,7 +113,7 @@ User User::create(const std::string& name, const std::string& group_name,
 
     ::getpwnam_r(name.c_str(), &tmppwd, buf.get(), bufsize, &result);
     if (result != NULL) {
-        return User(name);
+        throw runtime::Exception("User " + name + "already exists");
     }
 
     //prepare passwd structure
