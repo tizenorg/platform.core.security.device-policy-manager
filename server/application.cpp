@@ -19,6 +19,9 @@
 #include <unistd.h>
 #include <signal.h>
 
+#include <privilege_manager.h>
+#include <privilege_info.h>
+
 #include "application.hxx"
 
 #include "policy-helper.h"
@@ -31,15 +34,11 @@ namespace DevicePolicyManager {
 ApplicationPolicy::ApplicationPolicy(PolicyControlContext& ctxt) :
     context(ctxt)
 {
-    context.registerNonparametricMethod(this, (bool)(ApplicationPolicy::getApplicationInstallationMode)());
-    context.registerNonparametricMethod(this, (bool)(ApplicationPolicy::getApplicationUninstallationMode)());
-    context.registerNonparametricMethod(this, (std::vector<std::string>)(ApplicationPolicy::getInstalledPackageList)());
+    context.registerNonparametricMethod(this, (int)(ApplicationPolicy::getApplicationInstallationMode)());
+    context.registerNonparametricMethod(this, (int)(ApplicationPolicy::getApplicationUninstallationMode)());
 
-    context.registerParametricMethod(this, (int)(ApplicationPolicy::setApplicationInstallationMode)(bool));
-    context.registerParametricMethod(this, (int)(ApplicationPolicy::setApplicationUninstallationMode)(bool));
-    context.registerParametricMethod(this, (bool)(ApplicationPolicy::isPackageInstalled)(std::string));
-    context.registerParametricMethod(this, (bool)(ApplicationPolicy::isApplicationInstalled)(std::string));
-    context.registerParametricMethod(this, (bool)(ApplicationPolicy::isApplicationRunning)(std::string));
+    context.registerParametricMethod(this, (int)(ApplicationPolicy::setApplicationInstallationMode)(int));
+    context.registerParametricMethod(this, (int)(ApplicationPolicy::setApplicationUninstallationMode)(int));
     context.registerParametricMethod(this, (int)(ApplicationPolicy::installPackage)(std::string));
     context.registerParametricMethod(this, (int)(ApplicationPolicy::uninstallPackage)(std::string));
     context.registerParametricMethod(this, (int)(ApplicationPolicy::disableApplication)(std::string));
@@ -52,6 +51,9 @@ ApplicationPolicy::ApplicationPolicy(PolicyControlContext& ctxt) :
     context.registerParametricMethod(this, (int)(ApplicationPolicy::addPackageToBlacklist)(std::string));
     context.registerParametricMethod(this, (int)(ApplicationPolicy::removePackageFromBlacklist)(std::string));
     context.registerParametricMethod(this, (int)(ApplicationPolicy::checkPackageIsBlacklisted)(std::string));
+    context.registerParametricMethod(this, (int)(ApplicationPolicy::addPrivilegeToBlacklist)(int, std::string));
+    context.registerParametricMethod(this, (int)(ApplicationPolicy::removePrivilegeFromBlacklist)(int, std::string));
+    context.registerParametricMethod(this, (int)(ApplicationPolicy::checkPrivilegeIsBlacklisted)(int, std::string));
 
     context.createNotification("package-installation-mode");
     context.createNotification("package-uninstallation-mode");
@@ -61,68 +63,28 @@ ApplicationPolicy::~ApplicationPolicy()
 {
 }
 
-int ApplicationPolicy::setApplicationInstallationMode(const bool mode)
+int ApplicationPolicy::setApplicationInstallationMode(int mode)
 {
     SetPolicyAllowed(context, "package-installation-mode", mode);
 
     return 0;
 }
 
-bool ApplicationPolicy::getApplicationInstallationMode()
+int ApplicationPolicy::getApplicationInstallationMode()
 {
     return IsPolicyAllowed(context, "package-installation-mode");
 }
 
-int ApplicationPolicy::setApplicationUninstallationMode(const bool mode)
+int ApplicationPolicy::setApplicationUninstallationMode(int mode)
 {
     SetPolicyAllowed(context, "package-uninstallation-mode", mode);
     return 0;
 }
 
-bool ApplicationPolicy::getApplicationUninstallationMode()
+int ApplicationPolicy::getApplicationUninstallationMode()
 {
     return IsPolicyAllowed(context, "package-uninstallation-mode");
 }
-
-std::vector<std::string> ApplicationPolicy::getInstalledPackageList()
-{
-    try {
-        PackageManager& packman = PackageManager::instance();
-        return packman.getPackageList(context.getPeerUid());
-    } catch (runtime::Exception& e) {
-        ERROR("Failed to retrieve package info installed in the devioce");
-    }
-    return std::vector<std::string>();
-}
-
-bool ApplicationPolicy::isApplicationInstalled(const std::string& appid)
-{
-    try {
-        ApplicationInfo appInfo(appid, context.getPeerUid());
-
-        return true;
-    } catch (runtime::Exception& e) {
-        return false;
-    }
-}
-
-bool ApplicationPolicy::isApplicationRunning(const std::string& appid)
-{
-    Launchpad launchpad(context.getPeerUid());
-    return launchpad.isRunning(appid);
-}
-
-bool ApplicationPolicy::isPackageInstalled(const std::string& pkgid)
-{
-    try {
-        PackageInfo pkgInfo(pkgid);
-
-        return true;
-    } catch (runtime::Exception& e) {
-        return false;
-    }
-}
-
 
 int ApplicationPolicy::installPackage(const std::string& pkgpath)
 {
@@ -225,7 +187,6 @@ int ApplicationPolicy::wipeApplicationData(const std::string& appid)
     return 0;
 }
 
-
 int ApplicationPolicy::addPackageToBlacklist(const std::string& pkgid)
 {
     try {
@@ -261,6 +222,56 @@ int ApplicationPolicy::checkPackageIsBlacklisted(const std::string& pkgid)
         ERROR("Exception on checking package package blacklist: " + pkgid);
         return -1;
     }
+}
+
+int ApplicationPolicy::addPrivilegeToBlacklist(int type, const std::string& privilege)
+{
+    GList* privilegeList = NULL;
+    privilegeList = g_list_append(privilegeList, const_cast<char*>(privilege.c_str()));
+    privilege_manager_package_type_e pkgType = type ? PRVMGR_PACKAGE_TYPE_CORE : PRVMGR_PACKAGE_TYPE_WRT;
+    int ret = privilege_manager_set_black_list(context.getPeerUid(), pkgType, privilegeList);
+    g_list_free(privilegeList);
+    if (ret !=PRVMGR_ERR_NONE) {
+        return -1;
+    }
+
+    return 0;
+}
+
+int ApplicationPolicy::removePrivilegeFromBlacklist(int type, const std::string& privilege)
+{
+    GList* privilegeList = NULL;
+    privilegeList = g_list_append(privilegeList, const_cast<char*>(privilege.c_str()));
+
+    privilege_manager_package_type_e pkgType = type ? PRVMGR_PACKAGE_TYPE_CORE : PRVMGR_PACKAGE_TYPE_WRT;
+    int ret = privilege_manager_unset_black_list(context.getPeerUid(), pkgType, privilegeList);
+    g_list_free(privilegeList);
+    if (ret != PRVMGR_ERR_NONE) {
+        return -1;
+    }
+
+    return 0;
+}
+
+int ApplicationPolicy::checkPrivilegeIsBlacklisted(int type, const std::string& privilege)
+{
+    GList* blacklist = NULL;
+
+    privilege_manager_package_type_e pkgType = type ? PRVMGR_PACKAGE_TYPE_CORE : PRVMGR_PACKAGE_TYPE_WRT;
+    int ret = privilege_info_get_black_list(context.getPeerUid(), pkgType, &blacklist);
+    if (ret != PRVMGR_ERR_NONE) {
+        return -1;
+    }
+
+    for (GList* l = blacklist; l != NULL; l = l->next) {
+        char *name = (char *)l->data;
+        if (privilege == name) {
+            g_list_free(blacklist);
+            return true;
+        }
+    }
+    g_list_free(blacklist);
+    return false;
 }
 
 ApplicationPolicy applicationPolicy(Server::instance());

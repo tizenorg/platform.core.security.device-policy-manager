@@ -24,29 +24,28 @@ namespace DevicePolicyManager {
 
 class ApplicationPolicy {
 public:
+    enum PrivilegeType {
+        PRIVILEGE_TYPE_WRT = 0,
+        PRIVILEGE_TYPE_CORE = 1
+    };
+
     ApplicationPolicy(PolicyControlContext& ctxt);
     ~ApplicationPolicy();
 
-    int setApplicationInstallationMode(const bool mode);
-    bool getApplicationInstallationMode();
+    int setApplicationInstallationMode(int mode);
+    int getApplicationInstallationMode();
 
-    int setApplicationUninstallationMode(const bool mode);
-    bool getApplicationUninstallationMode();
+    int setApplicationUninstallationMode(int mode);
+    int getApplicationUninstallationMode();
 
-    int setApplicationState(const std::string& appid, const int state);
+    int setApplicationState(const std::string& appid, int state);
     int getApplicationState(const std::string& appid);
 
     int disableApplication(const std::string& appid);
     int enableApplication(const std::string& appid);
 
-    std::vector<std::string> getInstalledPackageList();
-
     int installPackage(const std::string& pkgpath);
     int uninstallPackage(const std::string& pkgid);
-
-    bool isApplicationInstalled(const std::string& appid);
-    bool isApplicationRunning(const std::string& appid);
-    bool isPackageInstalled(const std::string& pkgid);
 
     int startApplication(const std::string& appid);
     int stopApplication(const std::string& appid);
@@ -56,6 +55,10 @@ public:
     int addPackageToBlacklist(const std::string& pkgid);
     int removePackageFromBlacklist(const std::string& pkgid);
     int checkPackageIsBlacklisted(const std::string& pkgid);
+
+    int addPrivilegeToBlacklist(int type, const std::string& privilege);
+    int removePrivilegeFromBlacklist(int type, const std::string& privilege);
+    int checkPrivilegeIsBlacklisted(int type, const std::string& privilege);
 
 private:
     PolicyControlContext& context;

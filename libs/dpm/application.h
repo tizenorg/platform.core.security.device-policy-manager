@@ -259,7 +259,7 @@ DPM_API int dpm_application_remove_package_from_blacklist(dpm_application_policy
 /**
  * @brief       Checks whether a package is added to blacklist
  * @details     Administrator can use this API to check whether the package is blacklisted.
- *              Once package is added to blacklist, it is prhibited to install on the device.
+ *              Once package is added to blacklist, it is prohibited to install on the device.
  * @since_tizen 3.0
  * @param[in]   handle The application policy handle
  * @param[in]   pkgid The package name of the application
@@ -274,6 +274,69 @@ DPM_API int dpm_application_remove_package_from_blacklist(dpm_application_policy
  * @see         dpm_application_remove_package_from_blacklist()
  */
 DPM_API int dpm_application_check_package_is_blacklisted(dpm_application_policy_h handle, const char* pkgid, int *blacklisted);
+
+/**
+ * @brief       Adds privilege to blacklist
+ * @details     Administrator can use this API to disallow package installation
+ *              which requires the privilege.
+ * @since_tizen 3.0
+ * @param[in]   handle The application policy handle
+ * @param[in]   type The package type
+ * @param[in]   privilehe The privilege name to be blacklisted
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_TIMEOUT Time out
+ * @retval      #DPM_ERROR_ACCESS_DENIED The application does not have
+ *              the privilege to call this API
+ * @pre         handle must be created by dpm_context_acquire_application_policy()
+ * @see         dpm_context_acquire_application_policy()
+ * @see         dpm_context_release_application_policy()
+ * @see         dpm_application_remove_privilege_from_blacklist()
+ * @see         dpm_application_check_privilege_is_blacklisted()
+ */
+DPM_API int dpm_application_add_privilege_to_blacklist(dpm_application_policy_h handle, int type, const char* privilege);
+
+/**
+ * @brief       Removes privilege from blacklist
+ * @details     Administrator can use this API to remove privilege from blacklist.
+ * @since_tizen 3.0
+ * @param[in]   handle The application policy handle
+ * @param[in]   type The package type
+ * @param[in]   privilege The privilege name which is removed from blacklist
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_TIMEOUT Time out
+ * @retval      #DPM_ERROR_ACCESS_DENIED The application does not have
+ *              the privilege to call this API
+ * @pre         handle must be created by dpm_context_acquire_application_policy()
+ * @see         dpm_context_acquire_application_policy()
+ * @see         dpm_context_release_application_policy()
+ * @see         dpm_application_add_privilege_to_blacklist()
+ * @see         dpm_application_check_privilege_is_blacklisted()
+ */
+DPM_API int dpm_application_remove_privilege_from_blacklist(dpm_application_policy_h handle, int type, const char* privilege);
+
+/**
+ * @brief       Checks whether a privilege is added to blacklist
+ * @details     Administrator can use this API to check whether the privilege is blacklisted.
+ *              Once privilege is added to blacklist, the package which requires the privilege
+ *              is prohibited to install on the device.
+ * @since_tizen 3.0
+ * @param[in]   handle The application policy handle
+ * @param[in]   type The package type
+ * @param[in]   privilege The privilege name
+ * @param[out]  blacklisted TRUE if the package installation is disabled, else FALSE
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_TIMEOUT Time out
+ * @pre         handle must be created by dpm_context_acquire_application_policy()
+ * @see         dpm_context_acquire_application_policy()
+ * @see         dpm_context_release_application_policy()
+ * @see         dpm_application_add_privilege_to_blacklist()
+ * @see         dpm_application_remove_privilege_from_blacklist()
+ */
+DPM_API int dpm_application_check_privilege_is_blacklisted(dpm_application_policy_h handle, int type, const char* privilege, int *blacklisted);
+
 /**
  * @}
  */
