@@ -17,9 +17,10 @@
 #ifndef __DPM_BUNDLE_H__
 #define __DPM_BUNDLE_H__
 
-#include <bundle.h>
-
 #include <string>
+#include <vector>
+
+#include <bundle.h>
 
 #include "exception.h"
 
@@ -27,6 +28,12 @@ class Bundle {
 public:
     Bundle();
     ~Bundle();
+
+    template<typename T>
+    void add(const std::string& key, const std::vector<T>& value)
+    {
+        addArrayInternal(key, value);
+    }
 
     template<typename T>
     void add(const std::string& key, const T& value)
@@ -41,6 +48,7 @@ public:
 
 private:
     void addInternal(const std::string& key, const std::string& value);
+    void addArrayInternal(const std::string& key, const std::vector<std::string>& array);
 
 private:
     bundle* handle;
