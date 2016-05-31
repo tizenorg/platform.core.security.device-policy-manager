@@ -19,6 +19,9 @@
 #include "error.h"
 #include "debug.h"
 #include "policy-client.h"
+#include "zone/zone.hxx"
+
+using namespace DevicePolicyManager;
 
 DevicePolicyContext& GetDevicePolicyContext(void* handle)
 {
@@ -79,4 +82,25 @@ int zone_manager_remove_event_cb(zone_manager_h handle, int callback_id)
         return ZONE_ERROR_INVALID_PARAMETER;
 
     return ZONE_ERROR_NONE;
+}
+
+int zone_manager_create_zone(zone_manager_h handle, const char* name, const char* manifest)
+{
+    RET_ON_FAILURE(handle, ZONE_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(name, ZONE_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(manifest, ZONE_ERROR_INVALID_PARAMETER);
+
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    ZoneManager zone = client.createPolicyInterface<ZoneManager>();
+    return zone.createZone(name, manifest);
+}
+
+int dpm_zone_destroy(zone_manager_h handle, const char* name)
+{
+    RET_ON_FAILURE(handle, ZONE_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(name, ZONE_ERROR_INVALID_PARAMETER);
+
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    ZoneManager zone = client.createPolicyInterface<ZoneManager>();
+    return zone.removeZone(name);
 }
