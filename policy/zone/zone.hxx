@@ -14,25 +14,25 @@
  *  limitations under the License
  */
 
-#ifndef __ZONE_POLICY__
-#define __ZONE_POLICY__
+#ifndef __ZONE_MANAGER__
+#define __ZONE_MANAGER__
 
 #include "data-type.h"
 #include "policy-context.hxx"
 
 namespace DevicePolicyManager {
 
-class ZonePolicy {
+class ZoneManager {
 public:
     enum State {
         Locked      = 0x01,
         Running     = 0x02,
     };
 
-    ZonePolicy(PolicyControlContext& ctxt);
-    ~ZonePolicy();
+    ZoneManager(PolicyControlContext& ctxt);
+    ~ZoneManager();
 
-    int createZone(const std::string& name, const std::string& setupWizardAppid);
+    int createZone(const std::string& name, const std::string& manifest);
     int removeZone(const std::string& name);
     int lockZone(const std::string& name);
     int unlockZone(const std::string& name);
@@ -46,4 +46,4 @@ private:
 };
 
 } // namespace DevicePolicyManager
-#endif // __ZONE_POLICY__
+#endif // __ZONE_MANAGER__
