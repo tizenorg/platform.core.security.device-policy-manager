@@ -21,6 +21,7 @@ SET(LIB_SOVERSION "0")
 SET(PC_FILE "${PROJECT_NAME}.pc")
 
 SET(SOURCES ${DPM_LIBS}/policy-client.cpp
+			zone.cpp
 			package-proxy.cpp
 			app-proxy.cpp
 			zone/zone.cpp
