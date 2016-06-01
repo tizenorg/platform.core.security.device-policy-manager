@@ -26,6 +26,12 @@
     "/org/pulseaudio/StreamManager",  \
     "org.pulseaudio.StreamManager"
 
+#define DEVICED_SYSNOTI_INTERFACE           \
+    "org.tizen.system.deviced",             \
+    "/Org/Tizen/System/DeviceD/SysNoti",    \
+    "org.tizen.system.deviced.SysNoti",     \
+    "control"
+
 namespace DevicePolicyManager {
 
 RestrictionPolicy::RestrictionPolicy(PolicyControlContext& ctxt) :
@@ -141,6 +147,18 @@ bool RestrictionPolicy::getUsbTetheringState()
 
 int RestrictionPolicy::setExternalStorageState(int enable)
 {
+    int ret;
+    std::string pid(std::to_string(::getpid()));
+    std::string state(std::to_string(enable));
+
+    dbus::Connection &systemDBus = dbus::Connection::getSystem();
+    systemDBus.methodcall(DEVICED_SYSNOTI_INTERFACE, -1,
+                          "(i)", "(sisss)", "control",
+                          3, pid.c_str(), "2", state.c_str()).get("(i)", &ret);
+    if (ret != 0) {
+        return -1;
+    }
+
     SetPolicyAllowed(context, "external-storage", enable);
     return 0;
 }
