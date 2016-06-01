@@ -283,7 +283,7 @@ int dpm_restriction_set_bluetooth_tethering_state(dpm_restriction_policy_h handl
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     BluetoothPolicy bluetooth = client.createPolicyInterface<BluetoothPolicy>();
-    return bluetooth.setBluetoothTetheringState(enable);
+    return bluetooth.setTetheringState(enable);
 }
 
 int dpm_restriction_get_bluetooth_tethering_state(dpm_restriction_policy_h handle, int *state)
@@ -293,7 +293,7 @@ int dpm_restriction_get_bluetooth_tethering_state(dpm_restriction_policy_h handl
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     BluetoothPolicy bluetooth = client.createPolicyInterface<BluetoothPolicy>();
-    int ret = bluetooth.getBluetoothTetheringState();
+    int ret = bluetooth.getTetheringState();
     if (ret < 0) {
         return -1;
     }

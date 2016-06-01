@@ -65,6 +65,24 @@ bool BluetoothPolicy::getDesktopConnectivityState()
     }
 }
 
+int BluetoothPolicy::setTetheringState(bool enable)
+{
+    try {
+        return context->methodCall<int>("BluetoothPolicy::setTetheringState", enable);
+    } catch (runtime::Exception& e) {
+        return -1;
+    }
+}
+
+bool BluetoothPolicy::getTetheringState()
+{
+    try {
+        return context->methodCall<bool>("BluetoothPolicy::getTetheringState");
+    } catch (runtime::Exception &e) {
+        return -1;
+    }
+}
+
 
 // for bluetooth CAPIs
 int BluetoothPolicy::addDeviceToBlacklist(const std::string& mac)
@@ -135,24 +153,6 @@ bool BluetoothPolicy::isUuidRestricted()
     try {
         return context->methodCall<bool>("BluetoothPolicy::isUuidRestricted");
     } catch (runtime::Exception& e) {
-        return -1;
-    }
-}
-
-int BluetoothPolicy::setBluetoothTetheringState(bool enable)
-{
-    try {
-        return context->methodCall<int>("BluetoothPolicy::setBluetoothTetheringState", enable);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
-}
-
-bool BluetoothPolicy::getBluetoothTetheringState()
-{
-    try {
-        return context->methodCall<bool>("BluetoothPolicy::getBluetoothTetheringState");
-    } catch (runtime::Exception &e) {
         return -1;
     }
 }
