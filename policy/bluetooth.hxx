@@ -37,6 +37,8 @@ public:
     bool getModeChangeState();
     int setDesktopConnectivityState(const bool enable);
     bool getDesktopConnectivityState();
+    int setTetheringState(bool enable);
+    bool getTetheringState();
 
     // for bluetooth CAPIs
     int addDeviceToBlacklist(const std::string& mac);
@@ -48,9 +50,6 @@ public:
     int removeUuidFromBlacklist(const std::string& uuid);
     int setUuidRestriction(const bool enable);
     bool isUuidRestricted();
-
-    int setBluetoothTetheringState(bool enable);
-    bool getBluetoothTetheringState();
 
 private:
     PolicyControlContext& context;

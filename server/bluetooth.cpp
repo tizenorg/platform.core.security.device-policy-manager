@@ -87,6 +87,8 @@ BluetoothPolicy::BluetoothPolicy(PolicyControlContext& ctxt) :
     ctxt.registerNonparametricMethod(this, (bool)(BluetoothPolicy::getModeChangeState));
     ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::setDesktopConnectivityState)(bool));
     ctxt.registerNonparametricMethod(this, (bool)(BluetoothPolicy::getDesktopConnectivityState));
+    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::setTetheringState)(bool));
+    ctxt.registerNonparametricMethod(this, (bool)(BluetoothPolicy::getTetheringState));
     // for bluetooth CPIs
     ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::addDeviceToBlacklist)(std::string));
     ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::removeDeviceFromBlacklist)(std::string));
@@ -96,9 +98,6 @@ BluetoothPolicy::BluetoothPolicy(PolicyControlContext& ctxt) :
     ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::removeUuidFromBlacklist)(std::string));
     ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::setUuidRestriction)(bool));
     ctxt.registerNonparametricMethod(this, (bool)(BluetoothPolicy::isUuidRestricted));
-    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::setBluetoothTetheringState)(bool));
-    ctxt.registerNonparametricMethod(this, (bool)(BluetoothPolicy::getBluetoothTetheringState));
-
 
     ctxt.createNotification("bluetooth");
     ctxt.createNotification("bluetooth-tethering");
@@ -125,17 +124,6 @@ BluetoothPolicy::BluetoothPolicy(PolicyControlContext& ctxt) :
 BluetoothPolicy::~BluetoothPolicy()
 {
     bt_deinitialize();
-}
-
-int BluetoothPolicy::setBluetoothTetheringState(bool enable)
-{
-    SetPolicyAllowed(context, "bluetooth-tethering", enable);
-    return 0;
-}
-
-bool BluetoothPolicy::getBluetoothTetheringState()
-{
-    return IsPolicyAllowed(context, "bluetooth-tethering");
 }
 
 int BluetoothPolicy::setModeChangeState(const bool enable)
@@ -189,6 +177,18 @@ int BluetoothPolicy::addDeviceToBlacklist(const std::string& mac)
 
     return ret;
 }
+
+int BluetoothPolicy::setTetheringState(bool enable)
+{
+    SetPolicyAllowed(context, "bluetooth-tethering", enable);
+    return 0;
+}
+
+bool BluetoothPolicy::getTetheringState()
+{
+    return IsPolicyAllowed(context, "bluetooth-tethering");
+}
+
 
 int BluetoothPolicy::removeDeviceFromBlacklist(const std::string& mac)
 {
