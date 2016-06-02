@@ -46,6 +46,7 @@ SET(DEPENDENCY		glib-2.0
 					syspopup-caller
 					deviced
 					libtzplatform-config
+					security-privilege-manager
 					bluetooth-api
 					capi-network-wifi
 					capi-system-info
