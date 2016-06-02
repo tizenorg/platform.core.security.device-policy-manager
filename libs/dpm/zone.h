@@ -124,6 +124,37 @@ DPM_API int dpm_zone_create(dpm_zone_policy_h handle, const char* name, const ch
  */
 DPM_API int dpm_zone_destroy(dpm_zone_policy_h handle, const char* name);
 
+/*
+ * @brief       Enumeration for zone state
+ * @since_tizen 3.0
+ */
+typedef enum {
+    DPM_ZONE_STATE_LOCKED       = 0x01,  /**< Zone has been defined, but it can not start. */
+    DPM_ZONE_STATE_RUNNING      = 0x02, /**< Zone has been started. */
+    DPM_ZONE_STATE_ALL          = 0xff  /**< This presents all of the state  */
+} dpm_zone_state_e;
+
+/**
+ * @brief       Gets the zone state.
+ * @details     This API can be used to get the state of the zone. The zone can
+ *              have one of the three states(running, locked).
+ * @since_tizen 3.0
+ * @param[in]   handle The zone policy handle
+ * @param[in]   name The zone name
+ * @param[out]  state The zone state
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_NO_DATA No such zone to get state
+ * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #DPM_ERROR_TIMED_OUT Time out
+ * @pre         The handle must be created by dpm_context_acquire_zone_policy().
+ * @see         dpm_context_acquire_zone_policy()
+ * @see         dpm_context_release_zone_policy()
+ * @see         dpm_zone_create()
+ * @see         dpm_zone_destroy()
+ */
+DPM_API int dpm_zone_get_state(dpm_zone_policy_h handle, const char* name, dpm_zone_state_e *state);
+
 /**
  * @brief       The zone list iterator handle
  * @since_tizen 3.0
@@ -138,6 +169,7 @@ typedef void* dpm_zone_iterator_h;
  * @details     The zone list iterator can be used to get all defined zones.
  * @since_tizen 3.0
  * @param[in]   handle The zone policy handle
+ * @param[in]   state a combination of the zone state to look
  * @return      A zone list iterator on success, otherwise
  *              null value
  * @remark      The specific error code can be obtained by using the
@@ -156,7 +188,7 @@ typedef void* dpm_zone_iterator_h;
  * @see         dpm_zone_destroy_iterator()
  * @see         get_last_result()
  */
-DPM_API dpm_zone_iterator_h dpm_zone_create_iterator(dpm_zone_policy_h handle);
+DPM_API dpm_zone_iterator_h dpm_zone_create_iterator(dpm_zone_policy_h handle, dpm_zone_state_e state);
 
 /**
  * @brief       Fetches a zone name and forwards the iterator.
@@ -207,6 +239,7 @@ typedef void(*dpm_zone_foreach_cb)(const char* name, void *user_data);
  *              with traversing the created zones list.
  * @since_tizen 3.0
  * @param[in]   handle The zone policy handle
+ * @param[in]   state a combination of the zone state to look
  * @param[in]   callback The iteration callback function
  * @param[in]   user_data The user data passed to the callback function
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
@@ -220,38 +253,9 @@ typedef void(*dpm_zone_foreach_cb)(const char* name, void *user_data);
  * @see         dpm_zone_destroy()
  */
 DPM_API int dpm_zone_foreach_name(dpm_zone_policy_h handle,
+                                  dpm_zone_state_e state,
                                   dpm_zone_foreach_cb callback, void* user_data);
 
-/*
- * @brief       Enumeration for zone state
- * @since_tizen 3.0
- */
-typedef enum {
-    DPM_ZONE_STATE_DEFINED      = 0x01, /**< ZonePolicy has been defined, but it is not running. */
-    DPM_ZONE_STATE_RUNNING      = 0x02, /**< ZonePolicy has been started. */
-    DPM_ZONE_STATE_LOCKED       = 0x03  /**< ZonePolicy has been defined, but it can not start. */
-} dpm_zone_state_e;
-
-/**
- * @brief       Gets the zone state.
- * @details     This API can be used to get the state of the zone. The zone can
- *              have one of the three states(defined, running, locked).
- * @since_tizen 3.0
- * @param[in]   handle The zone policy handle
- * @param[in]   name The zone name
- * @param[out]  state The zone state
- * @return      #DPM_ERROR_NONE on success, otherwise a negative value
- * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_NO_DATA No such zone to get state
- * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
- * @retval      #DPM_ERROR_TIMED_OUT Time out
- * @pre         The handle must be created by dpm_context_acquire_zone_policy().
- * @see         dpm_context_acquire_zone_policy()
- * @see         dpm_context_release_zone_policy()
- * @see         dpm_zone_create()
- * @see         dpm_zone_destroy()
- */
-DPM_API int dpm_zone_get_state(dpm_zone_policy_h handle, const char* name, dpm_zone_state_e *state);
 
 /**
  * @}

@@ -18,7 +18,12 @@
 
 #include "error.h"
 #include "debug.h"
+#include "array.h"
+
 #include "policy-client.h"
+#include "zone/zone.hxx"
+
+using namespace DevicePolicyManager;
 
 DevicePolicyContext& GetDevicePolicyContext(void* handle)
 {
@@ -59,7 +64,7 @@ int zone_manager_add_event_cb(zone_manager_h handle, const char* event, zone_eve
     RET_ON_FAILURE(callback, ZONE_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &context = GetDevicePolicyContext(handle);
-    int ret = context.subscribeSignal(std::string("ZonePolicy::") + event,
+    int ret = context.subscribeSignal(std::string("ZoneManager::") + event,
                                       callback, user_data);
     if (ret < 0)
         return ZONE_ERROR_INVALID_PARAMETER;
@@ -77,6 +82,97 @@ int zone_manager_remove_event_cb(zone_manager_h handle, int callback_id)
     int ret =  context.unsubscribeSignal(callback_id);
     if (ret)
         return ZONE_ERROR_INVALID_PARAMETER;
+
+    return ZONE_ERROR_NONE;
+}
+
+int zone_manager_create_zone(zone_manager_h handle, const char* name, const char* manifest)
+{
+    RET_ON_FAILURE(handle, ZONE_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(name, ZONE_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(manifest, ZONE_ERROR_INVALID_PARAMETER);
+
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    ZoneManager zone = client.createPolicyInterface<ZoneManager>();
+    return zone.createZone(name, manifest);
+}
+
+int zone_manager_destroy_zone(zone_manager_h handle, const char* name)
+{
+    RET_ON_FAILURE(handle, ZONE_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(name, ZONE_ERROR_INVALID_PARAMETER);
+
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    ZoneManager zone = client.createPolicyInterface<ZoneManager>();
+    return zone.removeZone(name);
+}
+
+int zone_manager_get_zone_state(zone_manager_h handle, const char* name, zone_state_e *state)
+{
+    RET_ON_FAILURE(handle, ZONE_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(name, ZONE_ERROR_INVALID_PARAMETER);
+
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    ZoneManager zone = client.createPolicyInterface<ZoneManager>();
+
+    int result = zone.getZoneState(name);
+    if (result <0) {
+        return ZONE_ERROR_NO_DATA;
+    }
+
+    *state = (zone_state_e)result;
+    return ZONE_ERROR_NONE;
+}
+
+typedef runtime::Array<std::string> zone_iterator;
+
+zone_iterator_h zone_manager_create_iterator(zone_manager_h handle, zone_state_e state)
+{
+    RET_ON_FAILURE(handle, NULL);
+
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    ZoneManager zone = client.createPolicyInterface<ZoneManager>();
+
+    return reinterpret_cast<zone_iterator_h>(new zone_iterator(zone.getZoneList(state)));
+}
+
+int zone_iterator_next(zone_iterator_h iter, const char** result)
+{
+    RET_ON_FAILURE(iter, ZONE_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(result, ZONE_ERROR_INVALID_PARAMETER);
+
+    zone_iterator* it = reinterpret_cast<zone_iterator*>(iter);
+
+    if (it->isEnd())
+        *result = NULL;
+    else
+        *result = it->next()->c_str();
+
+    return ZONE_ERROR_NONE;
+}
+
+int zone_manager_destroy_iterator(zone_iterator_h iter)
+{
+    RET_ON_FAILURE(iter, ZONE_ERROR_INVALID_PARAMETER);
+
+    delete reinterpret_cast<zone_iterator*>(iter);
+
+    return ZONE_ERROR_NONE;
+}
+
+int zone_manager_foreach_name(zone_manager_h handle, zone_state_e state,
+                          zone_manager_foreach_cb callback, void* user_data)
+{
+    RET_ON_FAILURE(handle, ZONE_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(callback, ZONE_ERROR_INVALID_PARAMETER);
+
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    ZoneManager zone = client.createPolicyInterface<ZoneManager>();
+    std::vector<std::string> list = zone.getZoneList(state);
+    for (std::vector<std::string>::iterator it = list.begin();
+         it != list.end(); it++) {
+        callback((*it).c_str(), user_data);
+    }
 
     return ZONE_ERROR_NONE;
 }

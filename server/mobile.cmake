@@ -19,8 +19,9 @@ SET(POLICY      ${POLICY}
                 location.cpp
                 password.cpp
                 zone.cpp
-				zone/app-proxy.cpp
-				zone/package-proxy.cpp
+                zone/zone.cpp
+                zone/app-proxy.cpp
+                zone/package-proxy.cpp
 )
 
 SET(DEPENDENCY  ${DEPENDENCY}

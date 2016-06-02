@@ -85,7 +85,8 @@ typedef enum {
     DPM_ERROR_NOT_SUPPORTED        = TIZEN_ERROR_NOT_SUPPORTED,        /**< Operation is not supported */
     DPM_ERROR_NO_SUCH_FILE         = TIZEN_ERROR_NO_SUCH_FILE,         /**< No such file or directory */
     DPM_ERROR_FILE_EXISTS          = TIZEN_ERROR_FILE_EXISTS,          /**< File exists */
-    DPM_ERROR_OUT_OF_MEMORY        = TIZEN_ERROR_OUT_OF_MEMORY         /**< Out of memory */
+    DPM_ERROR_OUT_OF_MEMORY        = TIZEN_ERROR_OUT_OF_MEMORY,        /**< Out of memory */
+    DPM_ERROR_NO_DATA              = TIZEN_ERROR_NO_DATA               /**< No Data */
 } dpm_error_type_e;
 
 /**
