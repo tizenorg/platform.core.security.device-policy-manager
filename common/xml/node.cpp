@@ -104,8 +104,13 @@ std::string Node::getProp(const std::string& name) const
     }
 
     result = xmlGetProp(implementation, (xmlChar*)name.c_str());
+    if (result) {
+        std::string retStr((const char*)result);
+        xmlFree(result);
+        return retStr;
+    }
 
-    return result ? (char*)result : "";
+    return "";
 }
 
 void Node::setProp(const std::string& name, const std::string& val)
