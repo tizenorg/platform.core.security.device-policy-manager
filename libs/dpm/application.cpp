@@ -22,18 +22,7 @@
 
 using namespace DevicePolicyManager;
 
-dpm_application_policy_h dpm_context_acquire_application_policy(dpm_context_h handle)
-{
-	return handle;
-}
-
-int dpm_context_release_application_policy(dpm_context_h context, dpm_application_policy_h handle)
-{
-    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    return DPM_ERROR_NONE;
-}
-
-int dpm_application_set_installation_mode(dpm_application_policy_h handle, int mode)
+EXPORT_API int dpm_application_set_installation_mode(device_policy_manager_h handle, int mode)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
@@ -42,7 +31,7 @@ int dpm_application_set_installation_mode(dpm_application_policy_h handle, int m
     return application.setApplicationInstallationMode(mode);
 }
 
-int dpm_application_set_uninstallation_mode(dpm_application_policy_h handle, int mode)
+EXPORT_API int dpm_application_set_uninstallation_mode(device_policy_manager_h handle, int mode)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
@@ -51,7 +40,7 @@ int dpm_application_set_uninstallation_mode(dpm_application_policy_h handle, int
     return application.setApplicationUninstallationMode(mode);
 }
 
-int dpm_application_get_installation_mode(dpm_application_policy_h handle, int *mode)
+EXPORT_API int dpm_application_get_installation_mode(device_policy_manager_h handle, int *mode)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
@@ -65,7 +54,7 @@ int dpm_application_get_installation_mode(dpm_application_policy_h handle, int *
     return DPM_ERROR_NONE;
 }
 
-int dpm_application_get_uninstallation_mode(dpm_application_policy_h handle, int *mode)
+EXPORT_API int dpm_application_get_uninstallation_mode(device_policy_manager_h handle, int *mode)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(mode, DPM_ERROR_INVALID_PARAMETER);
@@ -80,7 +69,7 @@ int dpm_application_get_uninstallation_mode(dpm_application_policy_h handle, int
     return DPM_ERROR_NONE;
 }
 
-int dpm_application_set_package_state(dpm_application_policy_h handle, const char* pkgid, dpm_package_state_e state)
+EXPORT_API int dpm_application_set_package_state(device_policy_manager_h handle, const char* pkgid, dpm_package_state_e state)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(pkgid, DPM_ERROR_INVALID_PARAMETER);
@@ -90,7 +79,7 @@ int dpm_application_set_package_state(dpm_application_policy_h handle, const cha
     return application.setApplicationState(pkgid, state);
 }
 
-int dpm_application_get_package_state(dpm_application_policy_h handle, const char* pkgid, int *state)
+EXPORT_API int dpm_application_get_package_state(device_policy_manager_h handle, const char* pkgid, int *state)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(pkgid, DPM_ERROR_INVALID_PARAMETER);
@@ -106,7 +95,7 @@ int dpm_application_get_package_state(dpm_application_policy_h handle, const cha
     return DPM_ERROR_NONE;
 }
 
-int dpm_application_add_package_to_blacklist(dpm_application_policy_h handle, const char* pkgid)
+EXPORT_API int dpm_application_add_package_to_blacklist(device_policy_manager_h handle, const char* pkgid)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(pkgid, DPM_ERROR_INVALID_PARAMETER);
@@ -116,7 +105,7 @@ int dpm_application_add_package_to_blacklist(dpm_application_policy_h handle, co
     return application.addPackageToBlacklist(pkgid);
 }
 
-int dpm_application_remove_package_from_blacklist(dpm_application_policy_h handle, const char* pkgid)
+EXPORT_API int dpm_application_remove_package_from_blacklist(device_policy_manager_h handle, const char* pkgid)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(pkgid, DPM_ERROR_INVALID_PARAMETER);
@@ -126,7 +115,7 @@ int dpm_application_remove_package_from_blacklist(dpm_application_policy_h handl
     return application.removePackageFromBlacklist(pkgid);
 }
 
-int dpm_application_check_package_is_blacklisted(dpm_application_policy_h handle, const char* pkgid, int *blacklisted)
+EXPORT_API int dpm_application_check_package_is_blacklisted(device_policy_manager_h handle, const char* pkgid, int *blacklisted)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(pkgid, DPM_ERROR_INVALID_PARAMETER);
@@ -143,7 +132,7 @@ int dpm_application_check_package_is_blacklisted(dpm_application_policy_h handle
     return DPM_ERROR_NONE;
 }
 
-int dpm_application_add_privilege_to_blacklist(dpm_application_policy_h handle, int type, const char* privilege)
+EXPORT_API int dpm_application_add_privilege_to_blacklist(device_policy_manager_h handle, int type, const char* privilege)
 {
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 	RET_ON_FAILURE(privilege, DPM_ERROR_INVALID_PARAMETER);
@@ -153,7 +142,7 @@ int dpm_application_add_privilege_to_blacklist(dpm_application_policy_h handle, 
 	return application.addPrivilegeToBlacklist(type, privilege);
 }
 
-int dpm_application_remove_privilege_from_blacklist(dpm_application_policy_h handle, int type, const char* privilege)
+EXPORT_API int dpm_application_remove_privilege_from_blacklist(device_policy_manager_h handle, int type, const char* privilege)
 {
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 	RET_ON_FAILURE(privilege, DPM_ERROR_INVALID_PARAMETER);
@@ -163,7 +152,7 @@ int dpm_application_remove_privilege_from_blacklist(dpm_application_policy_h han
 	return application.removePrivilegeFromBlacklist(type, privilege);
 }
 
-int dpm_application_check_privilege_is_blacklisted(dpm_application_policy_h handle, int type, const char* privilege, int *blacklisted)
+EXPORT_API int dpm_application_check_privilege_is_blacklisted(device_policy_manager_h handle, int type, const char* privilege, int *blacklisted)
 {
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 	RET_ON_FAILURE(privilege, DPM_ERROR_INVALID_PARAMETER);
