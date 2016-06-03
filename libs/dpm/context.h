@@ -17,7 +17,7 @@
 #ifndef __DEVICE_POLICY_CLIENT_H__
 #define __DEVICE_POLICY_CLIENT_H__
 
-#include <tizen.h>
+#include <dpm/device-policy-manager.h>
 
 /**
  * @file context.h
@@ -71,23 +71,6 @@ typedef void (*dpm_policy_changed_cb)(const char* name, const char* state, void 
  * @see         dpm_context_destroy()
  */
 typedef void* dpm_context_h;
-
-/**
- * @brief       Enumeration of device policy API errors
- * @since_tizen 3.0
- */
-typedef enum {
-    DPM_ERROR_NONE                 = TIZEN_ERROR_NONE,                 /**< The operation was successful */
-    DPM_ERROR_INVALID_PARAMETER    = TIZEN_ERROR_INVALID_PARAMETER,    /**< Invalid parameter */
-    DPM_ERROR_CONNECTION_REFUSED   = TIZEN_ERROR_CONNECTION_REFUSED,   /**< Connection refused */
-    DPM_ERROR_TIMED_OUT            = TIZEN_ERROR_TIMED_OUT,            /**< Time out */
-    DPM_ERROR_PERMISSION_DENIED    = TIZEN_ERROR_PERMISSION_DENIED,    /**< Access privilege is not sufficient */
-    DPM_ERROR_NOT_SUPPORTED        = TIZEN_ERROR_NOT_SUPPORTED,        /**< Operation is not supported */
-    DPM_ERROR_NO_SUCH_FILE         = TIZEN_ERROR_NO_SUCH_FILE,         /**< No such file or directory */
-    DPM_ERROR_FILE_EXISTS          = TIZEN_ERROR_FILE_EXISTS,          /**< File exists */
-    DPM_ERROR_OUT_OF_MEMORY        = TIZEN_ERROR_OUT_OF_MEMORY,        /**< Out of memory */
-    DPM_ERROR_NO_DATA              = TIZEN_ERROR_NO_DATA               /**< No Data */
-} dpm_error_type_e;
 
 /**
  * @brief       Creates the device policy context handle.
@@ -219,6 +202,26 @@ DPM_API int dpm_context_remove_signal_cb(dpm_context_h context, int id);
 /**
  * @}
  */
+
+#define DEFINE_POLICY_HANDLE(_n_)                                                          \
+typedef void* dpm_##_n_##_policy_h;                                                      \
+static inline dpm_##_n_##_policy_h dpm_context_acquire_##_n_##_policy(dpm_context_h handle)       \
+{                                                                                          \
+    return handle;                                                                         \
+}                                                                                          \
+                                                                                           \
+static inline int dpm_context_release_##_n_##_policy(dpm_context_h context, dpm_##_n_##_policy_h handle) \
+{                                                                                          \
+    return DPM_ERROR_NONE;                                                                 \
+}
+
+DEFINE_POLICY_HANDLE(password)
+DEFINE_POLICY_HANDLE(application)
+DEFINE_POLICY_HANDLE(wifi)
+DEFINE_POLICY_HANDLE(bluetooth)
+DEFINE_POLICY_HANDLE(security)
+DEFINE_POLICY_HANDLE(restriction)
+DEFINE_POLICY_HANDLE(zone)
 
 #ifdef __cplusplus
 }

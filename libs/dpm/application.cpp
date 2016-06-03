@@ -22,18 +22,7 @@
 
 using namespace DevicePolicyManager;
 
-dpm_application_policy_h dpm_context_acquire_application_policy(dpm_context_h handle)
-{
-	return handle;
-}
-
-int dpm_context_release_application_policy(dpm_context_h context, dpm_application_policy_h handle)
-{
-    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    return DPM_ERROR_NONE;
-}
-
-int dpm_application_set_mode_restriction(dpm_application_policy_h handle, int mode)
+EXPORT_API int dpm_application_set_mode_restriction(device_policy_manager_h handle, int mode)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(mode, DPM_ERROR_INVALID_PARAMETER);
@@ -43,7 +32,7 @@ int dpm_application_set_mode_restriction(dpm_application_policy_h handle, int mo
     return application.setModeRestriction(mode);
 }
 
-int dpm_application_unset_mode_restriction(dpm_application_policy_h handle, int mode)
+EXPORT_API int dpm_application_unset_mode_restriction(device_policy_manager_h handle, int mode)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(mode, DPM_ERROR_INVALID_PARAMETER);
@@ -53,7 +42,7 @@ int dpm_application_unset_mode_restriction(dpm_application_policy_h handle, int 
     return application.unsetModeRestriction(mode);
 }
 
-int dpm_application_get_mode_restriction(dpm_application_policy_h handle, int *mode)
+EXPORT_API int dpm_application_get_mode_restriction(device_policy_manager_h handle, int *mode)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(mode, DPM_ERROR_INVALID_PARAMETER);
@@ -68,7 +57,7 @@ int dpm_application_get_mode_restriction(dpm_application_policy_h handle, int *m
     return DPM_ERROR_NONE;
 }
 
-int dpm_application_set_package_state(dpm_application_policy_h handle, const char* pkgid, dpm_package_state_e state)
+EXPORT_API int dpm_application_set_package_state(device_policy_manager_h handle, const char* pkgid, dpm_package_state_e state)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(pkgid, DPM_ERROR_INVALID_PARAMETER);
@@ -78,7 +67,7 @@ int dpm_application_set_package_state(dpm_application_policy_h handle, const cha
     return application.setApplicationState(pkgid, state);
 }
 
-int dpm_application_get_package_state(dpm_application_policy_h handle, const char* pkgid, int *state)
+EXPORT_API int dpm_application_get_package_state(device_policy_manager_h handle, const char* pkgid, int *state)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(pkgid, DPM_ERROR_INVALID_PARAMETER);
@@ -94,7 +83,7 @@ int dpm_application_get_package_state(dpm_application_policy_h handle, const cha
     return DPM_ERROR_NONE;
 }
 
-int dpm_application_add_privilege_to_blacklist(dpm_application_policy_h handle, int type, const char* privilege)
+EXPORT_API int dpm_application_add_privilege_to_blacklist(device_policy_manager_h handle, int type, const char* privilege)
 {
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 	RET_ON_FAILURE(privilege, DPM_ERROR_INVALID_PARAMETER);
@@ -104,7 +93,7 @@ int dpm_application_add_privilege_to_blacklist(dpm_application_policy_h handle, 
 	return application.addPrivilegeToBlacklist(type, privilege);
 }
 
-int dpm_application_remove_privilege_from_blacklist(dpm_application_policy_h handle, int type, const char* privilege)
+EXPORT_API int dpm_application_remove_privilege_from_blacklist(device_policy_manager_h handle, int type, const char* privilege)
 {
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 	RET_ON_FAILURE(privilege, DPM_ERROR_INVALID_PARAMETER);
@@ -114,11 +103,11 @@ int dpm_application_remove_privilege_from_blacklist(dpm_application_policy_h han
 	return application.removePrivilegeFromBlacklist(type, privilege);
 }
 
-int dpm_application_check_privilege_is_blacklisted(dpm_application_policy_h handle, int type, const char* privilege, int *blacklisted)
+EXPORT_API int dpm_application_check_privilege_is_blacklisted(device_policy_manager_h handle, int type, const char* privilege, int *is_blacklisted)
 {
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 	RET_ON_FAILURE(privilege, DPM_ERROR_INVALID_PARAMETER);
-	RET_ON_FAILURE(blacklisted, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(is_blacklisted, DPM_ERROR_INVALID_PARAMETER);
 
 	DevicePolicyContext& client = GetDevicePolicyContext(handle);
 	ApplicationPolicy application = client.createPolicyInterface<ApplicationPolicy>();
@@ -127,11 +116,11 @@ int dpm_application_check_privilege_is_blacklisted(dpm_application_policy_h hand
 		return -1;
 	}
 
-	*blacklisted = ret;
+	*is_blacklisted = ret;
 	return DPM_ERROR_NONE;
 }
 
-int dpm_application_install_package(dpm_application_policy_h handle, const char* pkgpath)
+EXPORT_API int dpm_application_install_package(device_policy_manager_h handle, const char* pkgpath)
 {
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 	RET_ON_FAILURE(pkgpath, DPM_ERROR_INVALID_PARAMETER);
@@ -141,7 +130,7 @@ int dpm_application_install_package(dpm_application_policy_h handle, const char*
 	return application.installPackage(pkgpath);
 }
 
-int dpm_application_uninstall_package(dpm_application_policy_h handle, const char* pkgid)
+EXPORT_API int dpm_application_uninstall_package(device_policy_manager_h handle, const char* pkgid)
 {
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 	RET_ON_FAILURE(pkgid, DPM_ERROR_INVALID_PARAMETER);
