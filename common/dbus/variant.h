@@ -31,11 +31,29 @@ public:
 
     Variant& operator=(GVariant* var);
     operator bool () const;
+    GVariant* operator & ();
 
     void get(const std::string& format, ...) const;
 private:
     GVariant* variant;
 };
+
+class VariantIterator {
+public:
+    VariantIterator(GVariantIter* it);
+    VariantIterator(VariantIterator&& it);
+    VariantIterator();
+    ~VariantIterator();
+
+    VariantIterator& operator=(GVariantIter* it);
+    operator bool () const;
+    GVariantIter** operator & ();
+
+    bool get(const std::string& format, ...) const;
+private:
+    GVariantIter* iterator;
+};
+
 
 } // namespace dbus
 
