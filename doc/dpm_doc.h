@@ -73,16 +73,16 @@
   * the device policy manager.
   *<br>
   * @ingroup CAPI_SECURITY_DPM_MODULE
-  * @defgroup CAPI_DPM_POLICY_CLIENT_MODULE Policy Client Interface
+  * @defgroup CAPI_DPM_MANAGER_MODULE Policy Manager Interface
   * @brief The policy client provides functions required to access the device policy APIs.
-  * @section CAPI_DPM_POLICY_CLIENT_MODULE_HEADER Required Header
-  *  \#include <dpm/context.h>
-  * @section CAPI_DPM_POLICY_CLIENT_MODULE_OVERVIEW Overview
-  * The Policy Client module provides Device Policy Client handle which keeps track of
+  * @section CAPI_DPM_MANAGER_MODULE_HEADER Required Header
+  *  \#include <dpm/device-policy-manager.h>
+  * @section CAPI_DPM_MANAGER_MODULE_OVERVIEW Overview
+  * The Policy Manager module provides Device Policy Manager handle which keeps track of
   * state between the device policy client and the device policy manager.
-  * The device policy clients must create the handle by using dpm_context_create()
+  * The device policy clients must create the handle by using dpm_manager_create()
   * before attempting to use almost any of the device policy APIs, and the handle should be
-  * freed by using dpm_context_destroy() when interaction with the device policy manager
+  * freed by using dpm_manager_destroy() when interaction with the device policy manager
   * is no longer required.
   *
   * @ingroup CAPI_SECURITY_DPM_MODULE

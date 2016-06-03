@@ -17,7 +17,7 @@
 #ifndef __CAPI_SECURITY_POLICY_H__
 #define __CAPI_SECURITY_POLICY_H__
 
-#include <dpm/context.h>
+#include <dpm/device-policy-manager.h>
 
 /**
  * @file security.h
@@ -35,62 +35,19 @@ extern "C" {
  */
 
 /**
- * @brief       The security policy handle
- * @since_tizen 3.0
- * @see         dpm_context_acquire_security_policy()
- * @see         dpm_context_release_security_policy()
- */
-typedef void* dpm_security_policy_h;
-
-/**
- * @brief       Acquires the security policy handle.
- * @details     This API acquires security policy handle required to enforce
- *              the security policies.
- * @since_tizen 3.0
- * @param[in]   handle Device policy context handle
- * @return      Security policy handle on success, otherwise NULL
- * @remark      The specific error code can be obtained by using the
- *              get_last_result() method. Error codes are described in
- *              exception section.
- * @exception   #DPM_ERROR_NONE No error
- * @exception   #DPM_ERROR_INVALID_PARAMETER Invalid parameter
- * @exception   #DPM_ERROR_TIMED_OUT Time out
- * @see         dpm_context_release_security_policy()
- * @see         get_last_result()
- */
-DPM_API dpm_security_policy_h dpm_context_acquire_security_policy(dpm_context_h handle);
-
-/**
- * @brief       Releases the security policy andle.
- * @details     This API must be called if interaction with the device
- *              policy manager is no longer required.
- * @since_tizen 3.0
- * @param[in]   handle The device policy context
- * @param[in]   handle The Security policy Handle
- * @return      #DPM_ERROR_NONE on success, otherwise a negative value
- * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
- * @retval      #DPM_ERROR_TIMED_OUT Time out
- * @pre         The handle must be created by dpm_context_acquire_security_policy().
- * @see         dpm_context_acquire_security_policy()
- */
-DPM_API int dpm_context_release_security_policy(dpm_context_h context, dpm_security_policy_h handle);
-
-/**
  * @brief       API to immediately lock device screen
  * @details     An administrator can use this API to lock the device screen
  *              immediately
  * @since_tizen 3.0
- * @param[in]   handle Security policy handle
+ * @param[in]   handle Device policy manager handle
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
- * @pre         handle must be created by dpm_context_create()
- * @see         dpm_context_acquire_security_policy()
- * @see         dpm_context_release_security_policy()
+ * @pre         handle must be created by dpm_manager_create().
+ * @see         dpm_manager_create()
  */
-DPM_API int dpm_security_lockout_screen(dpm_security_policy_h handle);
+DPM_API int dpm_security_lockout_screen(device_policy_manager_h handle);
 
 /**
  * @brief       API to encrypt internal storage
@@ -101,7 +58,7 @@ DPM_API int dpm_security_lockout_screen(dpm_security_policy_h handle);
  *              The administrator can set an alphanumeric password by using
  *              dpm_set_password_quality() API
  * @since_tizen 3.0
- * @param[in]   handle Security policy handle
+ * @param[in]   handle Device policy manager handle
  * @param[in]   encrypt TRUE if encryption is required, FALSE if decryption is
  *              required
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
@@ -109,29 +66,27 @@ DPM_API int dpm_security_lockout_screen(dpm_security_policy_h handle);
  * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
- * @pre         handle must be created by dpm_context_create()
- * @see         dpm_context_acquire_security_policy()
- * @see         dpm_context_release_security_policy()
+ * @pre         handle must be created by dpm_manager_create().
+ * @see         dpm_manager_create()
  */
-DPM_API int dpm_security_set_internal_storage_encryption(dpm_security_policy_h handle, const int encrypt);
+DPM_API int dpm_security_set_internal_storage_encryption(device_policy_manager_h handle, const int encrypt);
 
 /**
  * @brief       API to check the state of internal storage encryption
  * @details     An administrator can use this API to check whether internal
  *              storage encryption is enabled.
  * @since_tizen 3.0
- * @param[in]   handle Security policy handle
+ * @param[in]   handle Device policy manager handle
  * @param[out]  state TRUE if internal storage is encrypted or being encrypted,
  *              else false.
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_TIMEOUT Time out
- * @pre         handle must be created by dpm_context_acquire_security_policy()
- * @see         dpm_context_acquire_security_policy()
- * @see         dpm_context_release_security_policy()
+ * @pre         handle must be created by dpm_manager_create().
+ * @see         dpm_manager_create()
  * @see         dpm_security_is_internal_storage_encrypted()
  */
-DPM_API int dpm_security_is_internal_storage_encrypted(dpm_security_policy_h handle);
+DPM_API int dpm_security_is_internal_storage_encrypted(device_policy_manager_h handle);
 
 /**
  * @brief       API to encrypt external storage
@@ -141,36 +96,34 @@ DPM_API int dpm_security_is_internal_storage_encrypted(dpm_security_policy_h han
  *              The administrator can set an alphanumeric password by using
  *              dpm_set_password_quality() API
  * @since_tizen 3.0
- * @param[in]   handle Security policy handle
+ * @param[in]   handle Device policy manager handle
  * @param[in]   encrypt TRUE if encryption is required, FALSE if decryption is
  *              required
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
- * @pre         handle must be created by dpm_context_create()
- * @see         dpm_context_acquire_security_policy()
- * @see         dpm_context_release_security_policy()
+ * @pre         handle must be created by dpm_manager_create().
+ * @see         dpm_manager_create()
  * @see         dpm_security_set_internal_storage_encryption()
  */
-DPM_API int dpm_security_set_external_storage_encryption(dpm_security_policy_h handle, const int encrypt);
+DPM_API int dpm_security_set_external_storage_encryption(device_policy_manager_h handle, const int encrypt);
 
 /**
  * @brief       API to check the state of external storage encryption
  * @details     An administrator can use this API to check whether external
  *              storage encryption is enabled.
  * @since_tizen 3.0
- * @param[in]   handle Security policy handle
+ * @param[in]   handle Device policy manager handle
  * @param[out   TRUE if external storage is encrypted or being encrypted,
  *              else FALSE
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_TIMEOUT Time out
- * @pre         handle must be created by dpm_context_create()
- * @see         dpm_context_acquire_security_policy()
- * @see         dpm_context_release_security_policy()
+ * @pre         handle must be created by dpm_manager_create().
+ * @see         dpm_manager_create()
  */
-DPM_API int dpm_security_is_external_storage_encrypted(dpm_security_policy_h handle, int *state);
+DPM_API int dpm_security_is_external_storage_encrypted(device_policy_manager_h handle, int *state);
 
 /**
  * @}
