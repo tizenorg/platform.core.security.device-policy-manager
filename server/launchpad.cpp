@@ -25,12 +25,28 @@
 #include "error.h"
 #include "exception.h"
 #include "audit/logger.h"
+#include "dbus/variant.h"
+#include "dbus/connection.h"
 
 Launchpad::Launchpad(const uid_t uid) :
     user(uid)
 {
-    if (!user) {
-        user = ::getuid();
+    if (user == 0) {
+        dbus::Connection& systemDBus = dbus::Connection::getSystem();
+        const dbus::Variant& var = systemDBus.methodcall
+                                           ("org.freedesktop.login1",
+                                            "/org/freedesktop/login1",
+                                            "org.freedesktop.login1.Manager",
+                                            "ListSessions",
+                                            -1, "", "");
+        if (var) {
+            dbus::VariantIterator it;
+            var.get("(a(susso))", &it);
+            it.get("(susso)", NULL, &user, NULL, NULL, NULL);
+        }
+    }
+    if (user == 0) {
+        throw runtime::Exception("No logined user for launching app");
     }
 }
 
