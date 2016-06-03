@@ -48,7 +48,6 @@ int createNotificationLaunch(void)
     char sViewtype[][40] = {"SETTING_PW_TYPE_SET_SIMPLE_PASSWORD", "SETTING_PW_TYPE_SET_PASSWORD"};
 
     vconf_get_int(VCONFKEY_SETAPPL_SCREEN_LOCK_TYPE_INT, &lock_type);
-    ERROR("Lock Type: " + std::to_string(lock_type));
     if (lock_type == SETTING_SCREEN_LOCK_TYPE_SIMPLE_PASSWORD)
         view_type = 0;
     else
@@ -64,8 +63,6 @@ int createNotificationLaunch(void)
         notification_free(passwdNoti);
         return -1;
     }
-
-    ERROR("Password Notification");
 
     ret = 0;
     try {
@@ -129,7 +126,7 @@ std::string GetPasswordPolicy(PolicyControlContext &context, const std::string &
     return context.getPolicy(name);
 }
 
-int transformValueFromIntToQualityType(const int quality, PasswordPolicy::PasswordPolicyQuality &changed_quality)
+int transformValueFromIntToQualityType(int quality, PasswordPolicy::PasswordPolicyQuality &changed_quality)
 {
     switch (quality) {
     case PasswordPolicy::DPM_PASSWORD_QUALITY_UNSPECIFIED:
@@ -159,7 +156,7 @@ int transformValueFromIntToQualityType(const int quality, PasswordPolicy::Passwo
     return 0;
 }
 
-int transformQualityFromDPMToAuth(const int dpm_quality, password_quality_type &auth_quality)
+int transformQualityFromDPMToAuth(int dpm_quality, password_quality_type &auth_quality)
 {
     switch (dpm_quality) {
     case PasswordPolicy::DPM_PASSWORD_QUALITY_UNSPECIFIED:
@@ -194,26 +191,27 @@ int transformQualityFromDPMToAuth(const int dpm_quality, password_quality_type &
 PasswordPolicy::PasswordPolicy(PolicyControlContext &ctxt) :
     __context(ctxt)
 {
-    ctxt.registerParametricMethod(this, (int)(PasswordPolicy::setPasswordPolicyQuality)(int));
-    ctxt.registerNonparametricMethod(this, (int)(PasswordPolicy::getPasswordPolicyQuality));
-    ctxt.registerParametricMethod(this, (int)(PasswordPolicy::setPasswordPolicyMinimumLength)(int));
-    ctxt.registerNonparametricMethod(this, (int)(PasswordPolicy::getPasswordPolicyMinimumLength));
-    ctxt.registerParametricMethod(this, (int)(PasswordPolicy::setMinPasswordPolicyComplexChars)(int));
-    ctxt.registerNonparametricMethod(this, (int)(PasswordPolicy::getMinPasswordPolicyComplexChars));
-    ctxt.registerParametricMethod(this, (int)(PasswordPolicy::setMaximumFailedPasswordPolicyForWipe)(int));
-    ctxt.registerNonparametricMethod(this, (int)(PasswordPolicy::getMaximumFailedPasswordPolicyForWipe));
-    ctxt.registerParametricMethod(this, (int)(PasswordPolicy::setPasswordPolicyExpires)(int));
-    ctxt.registerNonparametricMethod(this, (int)(PasswordPolicy::getPasswordPolicyExpires)());
-    ctxt.registerParametricMethod(this, (int)(PasswordPolicy::setPasswordPolicyHistory)(int));
-    ctxt.registerNonparametricMethod(this, (int)(PasswordPolicy::getPasswordPolicyHistory)());
-    ctxt.registerParametricMethod(this, (int)(PasswordPolicy::setPasswordPolicyPattern)(std::string));
-    ctxt.registerParametricMethod(this, (int)(PasswordPolicy::resetPasswordPolicy)(std::string));
-    ctxt.registerNonparametricMethod(this, (int)(PasswordPolicy::enforcePasswordPolicyChange));
-    ctxt.registerParametricMethod(this, (int)(PasswordPolicy::setMaxInactivityTimeDeviceLock)(int));
-    ctxt.registerNonparametricMethod(this, (int)(PasswordPolicy::getMaxInactivityTimeDeviceLock));
-    ctxt.registerParametricMethod(this, (int)(PasswordPolicy::setPasswordPolicyStatus)(int));
-    ctxt.registerNonparametricMethod(this, (int)(PasswordPolicy::deletePasswordPolicyPattern));
-    ctxt.registerNonparametricMethod(this, (std::string)(PasswordPolicy::getPasswordPolicyPattern));
+    ctxt.registerParametricMethod(this, (int)(PasswordPolicy::setQuality)(int));
+    ctxt.registerNonparametricMethod(this, (int)(PasswordPolicy::getQuality));
+    ctxt.registerParametricMethod(this, (int)(PasswordPolicy::setMinimumLength)(int));
+    ctxt.registerNonparametricMethod(this, (int)(PasswordPolicy::getMinimumLength));
+    ctxt.registerParametricMethod(this, (int)(PasswordPolicy::setMinimumComplexCharacters)(int));
+    ctxt.registerNonparametricMethod(this, (int)(PasswordPolicy::getMinimumComplexCharacters));
+    ctxt.registerParametricMethod(this, (int)(PasswordPolicy::setMaximumFailureCount)(int));
+    ctxt.registerNonparametricMethod(this, (int)(PasswordPolicy::getMaximumFailureCount));
+    ctxt.registerParametricMethod(this, (int)(PasswordPolicy::setExpires)(int));
+    ctxt.registerNonparametricMethod(this, (int)(PasswordPolicy::getExpires)());
+    ctxt.registerParametricMethod(this, (int)(PasswordPolicy::setHistorySize)(int));
+    ctxt.registerNonparametricMethod(this, (int)(PasswordPolicy::getHistorySize)());
+    ctxt.registerParametricMethod(this, (int)(PasswordPolicy::setPattern)(std::string));
+    ctxt.registerParametricMethod(this, (int)(PasswordPolicy::reset)(std::string));
+    ctxt.registerNonparametricMethod(this, (int)(PasswordPolicy::enforceChange));
+    ctxt.registerParametricMethod(this, (int)(PasswordPolicy::setMaximumInactivityTimeDeviceLock)(int));
+    ctxt.registerNonparametricMethod(this, (int)(PasswordPolicy::getMaximumInactivityTimeDeviceLock));
+    ctxt.registerParametricMethod(this, (int)(PasswordPolicy::setStatus)(int));
+    ctxt.registerNonparametricMethod(this, (int)(PasswordPolicy::getStatus));
+    ctxt.registerNonparametricMethod(this, (int)(PasswordPolicy::deletePattern));
+    ctxt.registerNonparametricMethod(this, (std::string)(PasswordPolicy::getPattern));
     ctxt.registerParametricMethod(this, (int)(PasswordPolicy::setMaximumCharacterOccurrences)(int));
     ctxt.registerNonparametricMethod(this, (int)(PasswordPolicy::getMaximumCharacterOccurrences));
     ctxt.registerParametricMethod(this, (int)(PasswordPolicy::setMaximumNumericSequenceLength)(int));
@@ -228,7 +226,7 @@ PasswordPolicy::~PasswordPolicy()
 {
 }
 
-int PasswordPolicy::setPasswordPolicyQuality(const int quality)
+int PasswordPolicy::setQuality(int quality)
 {
     policy_h *p_policy;
     password_quality_type auth_quality_type = AUTH_PWD_QUALITY_UNSPECIFIED;
@@ -276,12 +274,12 @@ int PasswordPolicy::setPasswordPolicyQuality(const int quality)
     return 0;
 }
 
-int PasswordPolicy::getPasswordPolicyQuality()
+int PasswordPolicy::getQuality()
 {
     return std::stoi(GetPasswordPolicy(__context, "password-quality"));
 }
 
-int PasswordPolicy::setPasswordPolicyMinimumLength(const int value)
+int PasswordPolicy::setMinimumLength(int value)
 {
     policy_h *p_policy;
 
@@ -309,12 +307,12 @@ int PasswordPolicy::setPasswordPolicyMinimumLength(const int value)
     return SetPasswordPolicy(__context, "password-minimum-length", std::to_string(value));
 }
 
-int PasswordPolicy::getPasswordPolicyMinimumLength()
+int PasswordPolicy::getMinimumLength()
 {
     return std::stoi(GetPasswordPolicy(__context, "password-minimum-length"));
 }
 
-int PasswordPolicy::setMinPasswordPolicyComplexChars(const int value)
+int PasswordPolicy::setMinimumComplexCharacters(int value)
 {
     policy_h *p_policy;
 
@@ -342,12 +340,12 @@ int PasswordPolicy::setMinPasswordPolicyComplexChars(const int value)
     return SetPasswordPolicy(__context, "password-minimum-complexity", std::to_string(value));
 }
 
-int PasswordPolicy::getMinPasswordPolicyComplexChars()
+int PasswordPolicy::getMinimumComplexCharacters()
 {
     return std::stoi(GetPasswordPolicy(__context, "password-minimum-complexity"));
 }
 
-int PasswordPolicy::setMaximumFailedPasswordPolicyForWipe(const int value)
+int PasswordPolicy::setMaximumFailureCount(int value)
 {
     policy_h *p_policy;
 
@@ -375,12 +373,12 @@ int PasswordPolicy::setMaximumFailedPasswordPolicyForWipe(const int value)
     return SetPasswordPolicy(__context, "password-maximum-failure-count", std::to_string(value));
 }
 
-int PasswordPolicy::getMaximumFailedPasswordPolicyForWipe()
+int PasswordPolicy::getMaximumFailureCount()
 {
     return std::stoi(GetPasswordPolicy(__context, "password-maximum-failure-count"));
 }
 
-int PasswordPolicy::setPasswordPolicyExpires(const int value)
+int PasswordPolicy::setExpires(int value)
 {
     policy_h *p_policy;
 
@@ -408,12 +406,12 @@ int PasswordPolicy::setPasswordPolicyExpires(const int value)
     return SetPasswordPolicy(__context, "password-expired", std::to_string(value));
 }
 
-int PasswordPolicy::getPasswordPolicyExpires()
+int PasswordPolicy::getExpires()
 {
     return std::stoi(GetPasswordPolicy(__context, "password-expired"));
 }
 
-int PasswordPolicy::setPasswordPolicyHistory(const int value)
+int PasswordPolicy::setHistorySize(int value)
 {
     policy_h *p_policy;
 
@@ -441,12 +439,12 @@ int PasswordPolicy::setPasswordPolicyHistory(const int value)
     return SetPasswordPolicy(__context, "password-history", std::to_string(value));
 }
 
-int PasswordPolicy::getPasswordPolicyHistory()
+int PasswordPolicy::getHistorySize()
 {
     return std::stoi(GetPasswordPolicy(__context, "password-history"));
 }
 
-int PasswordPolicy::setPasswordPolicyPattern(const std::string &pattern)
+int PasswordPolicy::setPattern(const std::string &pattern)
 {
     policy_h *p_policy;
 
@@ -478,18 +476,16 @@ int PasswordPolicy::setPasswordPolicyPattern(const std::string &pattern)
     return SetPasswordPolicy(__context, "password-pattern", PasswordPattern.c_str());
 }
 
-int PasswordPolicy::resetPasswordPolicy(const std::string &passwd)
+int PasswordPolicy::reset(const std::string &passwd)
 {
-    int ret = 0;
-
     if (auth_passwd_reset_passwd(AUTH_PWD_NORMAL, __context.getPeerUid(), passwd.c_str()) != AUTH_PASSWD_API_SUCCESS) {
         return -1;
     }
 
-    return ret;
+    return 0;
 }
 
-int PasswordPolicy::enforcePasswordPolicyChange()
+int PasswordPolicy::enforceChange()
 {
     int ret = 0;
     int lock_type = 0;
@@ -498,39 +494,37 @@ int PasswordPolicy::enforcePasswordPolicyChange()
     const char *passwd_user_data[6] = {"app-id", "setting-password-efl", "caller", "DPM", "viewtype", "SETTING_PW_TYPE_SET_PASSWORD"};
 
     vconf_get_int(VCONFKEY_SETAPPL_SCREEN_LOCK_TYPE_INT, &lock_type);
-    ERROR("Lock Type: " + std::to_string(lock_type));
-    ERROR("enforce Password Policy Change");
     ::bundle_add_str(b, "id", "password-enforce-change");
-    if (lock_type == SETTING_SCREEN_LOCK_TYPE_SIMPLE_PASSWORD)
+    if (lock_type == SETTING_SCREEN_LOCK_TYPE_SIMPLE_PASSWORD) {
         ::bundle_add_str_array(b, "user-data", simple_user_data, 6);
-    else
+    } else {
         ::bundle_add_str_array(b, "user-data", passwd_user_data, 6);
+    }
     ret = ::aul_launch_app_for_uid("org.tizen.dpm-syspopup", b, __context.getPeerUid());
     ::bundle_free(b);
 
     if (ret < 0) {
         ERROR("Failed to launch Password Application.");
         return -1;
-    } else {
-        return SetPasswordPolicy(__context, "password-status", std::to_string(PasswordPolicy::DPM_PASSWORD_STATUS_CHANGE_REQUIRED));
     }
+
+    return SetPasswordPolicy(__context, "password-status", std::to_string(PasswordPolicy::DPM_PASSWORD_STATUS_CHANGE_REQUIRED));
 }
 
-int PasswordPolicy::setMaxInactivityTimeDeviceLock(const int value)
+int PasswordPolicy::setMaximumInactivityTimeDeviceLock(int value)
 {
     return SetPasswordPolicy(__context, "password-inactivity-timeout", std::to_string(value));
 }
 
-int PasswordPolicy::getMaxInactivityTimeDeviceLock()
+int PasswordPolicy::getMaximumInactivityTimeDeviceLock()
 {
     return std::stoi(GetPasswordPolicy(__context, "password-inactivity-timeout"));
 }
 
-int PasswordPolicy::setPasswordPolicyStatus(const int status)
+int PasswordPolicy::setStatus(int status)
 {
     int current_status = std::stoi(GetPasswordPolicy(__context, "password-status"));
 
-    ERROR("current status: " + std::to_string(current_status) + ", status: " + std::to_string(status));
     if (status >= PasswordPolicy::DPM_PASSWORD_STATUS_MAX) {
         return -1;
     }
@@ -544,7 +538,6 @@ int PasswordPolicy::setPasswordPolicyStatus(const int status)
         if (status == PasswordPolicy::DPM_PASSWORD_STATUS_CHANGED) {
             return SetPasswordPolicy(__context, "password-status", std::to_string(PasswordPolicy::DPM_PASSWORD_STATUS_NORMAL));
         } else if (status == PasswordPolicy::DPM_PASSWORD_STATUS_NOT_CHANGED) {
-            ERROR("Display Noti");
             return createNotificationLaunch();
         }
     } else if (current_status ==  PasswordPolicy::DPM_PASSWORD_STATUS_NORMAL) {
@@ -556,7 +549,12 @@ int PasswordPolicy::setPasswordPolicyStatus(const int status)
     return -1;
 }
 
-int PasswordPolicy::deletePasswordPolicyPattern()
+int PasswordPolicy::getStatus()
+{
+    return std::stoi(GetPasswordPolicy(__context, "password-status"));
+}
+
+int PasswordPolicy::deletePattern()
 {
     policy_h *p_policy;
 
@@ -585,7 +583,7 @@ int PasswordPolicy::deletePasswordPolicyPattern()
     return SetPasswordPolicy(__context, "password-pattern", PASSWORD_EMPTY_STRING);
 }
 
-std::string PasswordPolicy::getPasswordPolicyPattern()
+std::string PasswordPolicy::getPattern()
 {
     PasswordPattern = GetPasswordPolicy(__context, "password-pattern");
     if (PasswordPattern.compare(PASSWORD_EMPTY_STRING) == 0)
@@ -594,7 +592,7 @@ std::string PasswordPolicy::getPasswordPolicyPattern()
     return PasswordPattern;
 }
 
-int PasswordPolicy::setMaximumCharacterOccurrences(const int value)
+int PasswordPolicy::setMaximumCharacterOccurrences(int value)
 {
     policy_h *p_policy;
 
@@ -627,7 +625,7 @@ int PasswordPolicy::getMaximumCharacterOccurrences()
     return std::stoi(GetPasswordPolicy(__context, "password-maximum-character-occurrences"));
 }
 
-int PasswordPolicy::setMaximumNumericSequenceLength(const int value)
+int PasswordPolicy::setMaximumNumericSequenceLength(int value)
 {
     policy_h *p_policy;
 

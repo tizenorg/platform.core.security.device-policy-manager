@@ -22,18 +22,7 @@
 
 using namespace DevicePolicyManager;
 
-dpm_bluetooth_policy_h dpm_context_acquire_bluetooth_policy(dpm_context_h handle)
-{
-	return handle;
-}
-
-int dpm_context_release_bluetooth_policy(dpm_context_h context, dpm_bluetooth_policy_h handle)
-{
-    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    return DPM_ERROR_NONE;
-}
-
-int dpm_bluetooth_add_device_to_blacklist(dpm_bluetooth_policy_h handle, const char* mac)
+EXPORT_API int dpm_bluetooth_add_device_to_blacklist(device_policy_manager_h handle, const char* mac)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(mac, DPM_ERROR_INVALID_PARAMETER);
@@ -43,7 +32,7 @@ int dpm_bluetooth_add_device_to_blacklist(dpm_bluetooth_policy_h handle, const c
     return bluetooth.addDeviceToBlacklist(mac);
 }
 
-int dpm_bluetooth_remove_device_from_blacklist(dpm_bluetooth_policy_h handle, const char* mac)
+EXPORT_API int dpm_bluetooth_remove_device_from_blacklist(device_policy_manager_h handle, const char* mac)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(mac, DPM_ERROR_INVALID_PARAMETER);
@@ -53,7 +42,7 @@ int dpm_bluetooth_remove_device_from_blacklist(dpm_bluetooth_policy_h handle, co
     return bluetooth.removeDeviceFromBlacklist(mac);
 }
 
-int dpm_bluetooth_set_device_restriction(dpm_bluetooth_policy_h handle, const int enable)
+EXPORT_API int dpm_bluetooth_set_device_restriction(device_policy_manager_h handle, int enable)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
@@ -62,7 +51,7 @@ int dpm_bluetooth_set_device_restriction(dpm_bluetooth_policy_h handle, const in
     return bluetooth.setDeviceRestriction(enable);
 }
 
-int dpm_bluetooth_is_device_restricted(dpm_bluetooth_policy_h handle, int *state)
+EXPORT_API int dpm_bluetooth_is_device_restricted(device_policy_manager_h handle, int *state)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
@@ -76,7 +65,7 @@ int dpm_bluetooth_is_device_restricted(dpm_bluetooth_policy_h handle, int *state
     return DPM_ERROR_NONE;
 }
 
-int dpm_bluetooth_add_uuid_to_blacklist(dpm_bluetooth_policy_h handle, const char* uuid)
+EXPORT_API int dpm_bluetooth_add_uuid_to_blacklist(device_policy_manager_h handle, const char* uuid)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(uuid, DPM_ERROR_INVALID_PARAMETER);
@@ -86,7 +75,7 @@ int dpm_bluetooth_add_uuid_to_blacklist(dpm_bluetooth_policy_h handle, const cha
     return bluetooth.addUuidToBlacklist(uuid);
 }
 
-int dpm_bluetooth_remove_uuid_from_blacklist(dpm_bluetooth_policy_h handle, const char* uuid)
+EXPORT_API int dpm_bluetooth_remove_uuid_from_blacklist(device_policy_manager_h handle, const char* uuid)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(uuid, DPM_ERROR_INVALID_PARAMETER);
@@ -96,7 +85,7 @@ int dpm_bluetooth_remove_uuid_from_blacklist(dpm_bluetooth_policy_h handle, cons
     return bluetooth.removeUuidFromBlacklist(uuid);
 }
 
-int dpm_bluetooth_set_uuid_restriction(dpm_bluetooth_policy_h handle, const int enable)
+EXPORT_API int dpm_bluetooth_set_uuid_restriction(device_policy_manager_h handle, int enable)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
@@ -105,7 +94,7 @@ int dpm_bluetooth_set_uuid_restriction(dpm_bluetooth_policy_h handle, const int 
     return bluetooth.setUuidRestriction(enable);
 }
 
-int dpm_bluetooth_is_uuid_restricted(dpm_bluetooth_policy_h handle, int *state)
+EXPORT_API int dpm_bluetooth_is_uuid_restricted(device_policy_manager_h handle, int *state)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
