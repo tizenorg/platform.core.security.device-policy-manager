@@ -23,18 +23,7 @@
 
 using namespace DevicePolicyManager;
 
-dpm_zone_policy_h dpm_context_acquire_zone_policy(dpm_context_h handle)
-{
-	return handle;
-}
-
-int dpm_context_release_zone_policy(dpm_context_h context, dpm_zone_policy_h handle)
-{
-    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    return DPM_ERROR_NONE;
-}
-
-int dpm_zone_create(dpm_zone_policy_h handle, const char* name, const char* pkgname)
+EXPORT_API int dpm_zone_create(device_policy_manager_h handle, const char* name, const char* pkgname)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(name, DPM_ERROR_INVALID_PARAMETER);
@@ -45,7 +34,7 @@ int dpm_zone_create(dpm_zone_policy_h handle, const char* name, const char* pkgn
     return zone.createZone(name, pkgname);
 }
 
-int dpm_zone_destroy(dpm_zone_policy_h handle, const char* name)
+EXPORT_API int dpm_zone_destroy(device_policy_manager_h handle, const char* name)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(name, DPM_ERROR_INVALID_PARAMETER);
@@ -55,7 +44,7 @@ int dpm_zone_destroy(dpm_zone_policy_h handle, const char* name)
     return zone.removeZone(name);
 }
 
-int dpm_zone_get_state(dpm_zone_policy_h handle, const char* name, dpm_zone_state_e *state)
+EXPORT_API int dpm_zone_get_state(device_policy_manager_h handle, const char* name, dpm_zone_state_e *state)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(name, DPM_ERROR_INVALID_PARAMETER);
@@ -72,44 +61,8 @@ int dpm_zone_get_state(dpm_zone_policy_h handle, const char* name, dpm_zone_stat
     return DPM_ERROR_NONE;
 }
 
-typedef runtime::Array<std::string> dpm_zone_iterator;
-
-dpm_zone_iterator_h dpm_zone_create_iterator(dpm_zone_policy_h handle, dpm_zone_state_e state)
-{
-    RET_ON_FAILURE(handle, NULL);
-
-    DevicePolicyContext &client = GetDevicePolicyContext(handle);
-    ZonePolicy zone = client.createPolicyInterface<ZonePolicy>();
-
-    return reinterpret_cast<dpm_zone_iterator_h>(new dpm_zone_iterator(zone.getZoneList(state)));
-}
-
-int dpm_zone_iterator_next(dpm_zone_iterator_h iter, const char** result)
-{
-    RET_ON_FAILURE(iter, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(result, DPM_ERROR_INVALID_PARAMETER);
-
-    dpm_zone_iterator* it = reinterpret_cast<dpm_zone_iterator*>(iter);
-
-    if (it->isEnd())
-        *result = NULL;
-    else
-        *result = it->next()->c_str();
-
-    return DPM_ERROR_NONE;
-}
-
-int dpm_zone_destroy_iterator(dpm_zone_iterator_h iter)
-{
-    RET_ON_FAILURE(iter, DPM_ERROR_INVALID_PARAMETER);
-
-    delete reinterpret_cast<dpm_zone_iterator*>(iter);
-
-    return DPM_ERROR_NONE;
-}
-
-int dpm_zone_foreach_name(dpm_zone_policy_h handle, dpm_zone_state_e state,
-                          dpm_zone_foreach_cb callback, void* user_data)
+EXPORT_API int dpm_zone_foreach_name(device_policy_manager_h handle, dpm_zone_state_e state,
+                                     dpm_zone_foreach_name_cb callback, void* user_data)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(callback, DPM_ERROR_INVALID_PARAMETER);
