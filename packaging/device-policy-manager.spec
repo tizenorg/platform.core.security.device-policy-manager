@@ -216,6 +216,27 @@ Tizen ZONE setup wizard interface for zone
 %{setup_home}/res/data/ZoneManifest.xml
 %{TZ_SYS_RO_PACKAGES}/org.tizen.zone-setup-wizard.xml
 
+## Kaskit package #####################################################
+%package -n org.tizen.kaskit
+Summary: Tizen Krate launcher Interface
+Group: Security/Other
+BuildRequires: pkgconfig(efl-extension)
+BuildRequires: pkgconfig(elementary)
+BuildRequires: pkgconfig(capi-appfw-application)
+BuildRequires: pkgconfig(evas)
+
+%description -n org.tizen.kaskit
+Tizen Krate launcher interface for zone
+
+%define launcher_home %{TZ_SYS_RO_APP}/org.tizen.kaskit
+
+%files -n org.tizen.kaskit
+%defattr(-,root,root,-)
+%manifest zone/kaskit/org.tizen.kaskit.manifest
+%{launcher_home}/bin/*
+%{launcher_home}/res/*
+%{TZ_SYS_RO_PACKAGES}/org.tizen.kaskit.xml
+
 ## Zone Client Package ########################################################
 %package -n libzone
 Summary: Tizen Zone Client library
