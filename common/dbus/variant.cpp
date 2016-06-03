@@ -14,6 +14,7 @@
  *  limitations under the License
  */
 
+#include <iostream>
 #include "dbus/variant.h"
 
 namespace dbus {
@@ -59,6 +60,64 @@ void Variant::get(const std::string& format, ...) const
     va_start(ap, format);
     g_variant_get_va(variant, format.c_str(), NULL, &ap);
     va_end(ap);
+}
+
+
+VariantIterator::VariantIterator(GVariantIter* it) :
+    iterator(it)
+{
+}
+
+VariantIterator::VariantIterator(VariantIterator&& it) :
+    iterator(it.iterator)
+{
+    it.iterator = nullptr;
+}
+
+VariantIterator::VariantIterator() :
+    iterator(nullptr)
+{
+}
+
+VariantIterator::~VariantIterator()
+{
+    if (iterator) {
+        g_variant_iter_free(iterator);
+    }
+}
+
+VariantIterator& VariantIterator::operator=(GVariantIter* it)
+{
+    iterator = it;
+    return *this;
+}
+
+VariantIterator::operator bool () const
+{
+    return iterator != nullptr;
+}
+
+GVariantIter** VariantIterator::operator & ()
+{
+    return &iterator;
+}
+
+bool VariantIterator::get(const std::string& format, ...) const
+{
+    GVariant *var;
+    va_list ap;
+    var = g_variant_iter_next_value(iterator);
+    if (var == NULL) {
+        return false;
+    }
+
+    va_start(ap, format);
+    g_variant_get_va(var, format.c_str(), NULL, &ap);
+    va_end(ap);
+
+    g_variant_unref(var);
+
+    return true;
 }
 
 } // namespace dbus
