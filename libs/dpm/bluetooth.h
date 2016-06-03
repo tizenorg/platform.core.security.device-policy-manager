@@ -17,7 +17,7 @@
 #ifndef __CAPI_BLUETOOTH_POLICY_H__
 #define __CAPI_BLUETOOTH_POLICY_H__
 
-#include <dpm/context.h>
+#include <dpm/device-policy-manager.h>
 
 /**
  * @file bluetooth.h
@@ -35,53 +35,11 @@ extern "C" {
  */
 
 /**
- * @brief       The bluetooth policy handle
- * @since_tizen 3.0
- * @see         dpm_context_acquire_bluetooth_policy()
- * @see         dpm_context_release_bluetooth_policy()
- */
-typedef void* dpm_bluetooth_policy_h;
-
-/**
- * @brief       Acquires the bluetooth policy handle.
- * @details     This API acquires bluetooth policy handle required to call
- *              the bluetooth policy APIs.
- * @since_tizen 3.0
- * @param[in]   handle The device policy context handle
- * @return      Bluetooth policy handle on success, otherwise NULL
- * @remark      The specific error code can be obtained by using the
- *              get_last_result() method. Error codes are described in
- *              exception section.
- * @exception   #DPM_ERROR_NONE No error
- * @exception   #DPM_ERROR_INVALID_PARAMETER Invalid parameter
- * @exception   #DPM_ERROR_TIMED_OUT Time out
- * @see         dpm_context_release_bluetooth_policy()
- * @see         get_last_result()
- */
-DPM_API dpm_bluetooth_policy_h dpm_context_acquire_bluetooth_policy(dpm_context_h handle);
-
-/**
- * @brief       Releases the bluetooth policy handle.
- * @details     This API must be called if interaction with the device
- *              policy manager is no longer required.
- * @since_tizen 3.0
- * @param[in]   handle The device policy context
- * @param[in]   handle The bluetooth policy handle
- * @return      #DPM_ERROR_NONE on success, otherwise a negative value
- * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
- * @retval      #DPM_ERROR_TIMED_OUT Time out
- * @pre         The handle must be created by dpm_context_acquire_bluetooth_policy().
- * @see         dpm_context_acquire_bluetooth_policy()
- */
-DPM_API int dpm_context_release_bluetooth_policy(dpm_context_h context, dpm_bluetooth_policy_h handle);
-
-/**
  * @brief       Adds MAC address to blacklist
  * @details     An administrator can use this API to add new MAC address to
  *              blacklist
  * @since_tizen 3.0
- * @param[in]   handle The bluetooth policy handle
+ * @param[in]   handle The device policy manager handle
  * @param[in]   address The MAC address that should be added
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
@@ -93,14 +51,14 @@ DPM_API int dpm_context_release_bluetooth_policy(dpm_context_h context, dpm_blue
  * @see         dpm_context_release_bluetooth_policy()
  * @see         dpm_bluetooth_remove_device_from_blacklist()
  */
-DPM_API int dpm_bluetooth_add_device_to_blacklist(dpm_bluetooth_policy_h handle, const char* address);
+int dpm_bluetooth_add_device_to_blacklist(device_policy_manager_h handle, const char* address);
 
 /**
  * @brief       Removes MAC address from blacklist
  * @details     An administrator can use this API to remove MAC address from
  *              blacklist
  * @since_tizen 3.0
- * @param[in]   handle The bluetooth policy handle
+ * @param[in]   handle The device policy manager handle
  * @param[in]   address The MAC address that should be removed
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
@@ -112,15 +70,15 @@ DPM_API int dpm_bluetooth_add_device_to_blacklist(dpm_bluetooth_policy_h handle,
  * @see         dpm_context_release_bluetooth_policy()
  * @see         dpm_bluetooth_add_device_to_blacklist()
  */
-DPM_API int dpm_bluetooth_remove_device_from_blacklist(dpm_bluetooth_policy_h handle, const char* address);
+int dpm_bluetooth_remove_device_from_blacklist(device_policy_manager_h handle, const char* address);
 
 /**
  * @brief       Enables or disables device restriction of bluetooth
  * @details     An administrator can use this API to set whether the bluetooth
  *              is allowed or not by device restriction
  * @since_tizen 3.0
- * @param[in]   handle The bluetooth policy handle
- * @param[in]   enable If true, restrict the bluetooth pairing, if false, allow the bluetooth pairing
+ * @param[in]   handle The device policy manager handle
+ * @param[in]   restruct If true, restrict the bluetooth pairing, if false, allow the bluetooth pairing
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_TIMEOUT Time out
@@ -131,7 +89,7 @@ DPM_API int dpm_bluetooth_remove_device_from_blacklist(dpm_bluetooth_policy_h ha
  * @see         dpm_context_release_bluetooth_policy()
  * @see         dpm_bluetooth_is_device_restricted()
  */
-DPM_API int dpm_bluetooth_set_device_restriction(dpm_bluetooth_policy_h handle, const int enable);
+int dpm_bluetooth_set_device_restriction(device_policy_manager_h handle, bool restrict);
 
 /**
  * @brief       Gets the allow status of the bluetooth's device restriction
@@ -139,8 +97,8 @@ DPM_API int dpm_bluetooth_set_device_restriction(dpm_bluetooth_policy_h handle, 
  *              bluetooth. The device restricted bluetooth will be worked by MAC
  *              address blacklist
  * @since_tizen 3.0
- * @param[in]   handle The bluetooth policy handle
- * @param[out]  state true if the bluetooth pairing has been restricted, else false
+ * @param[in]   handle The device policy manager handle
+ * @param[out]  is_restricted true if the bluetooth pairing has been restricted, else false
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_TIMEOUT Time out
@@ -149,13 +107,13 @@ DPM_API int dpm_bluetooth_set_device_restriction(dpm_bluetooth_policy_h handle, 
  * @see         dpm_context_release_bluetooth_policy()
  * @see         dpm_bluetooth_set_device_restriction()
  */
-DPM_API int dpm_bluetooth_is_device_restricted(dpm_bluetooth_policy_h handle, int *state);
+int dpm_bluetooth_is_device_restricted(device_policy_manager_h handle, bool *is_restricted);
 
 /**
  * @brief       Adds UUID to blacklist
  * @details     An administrator can use this API to add new UUID to blacklist
  * @since_tizen 3.0
- * @param[in]   handle The bluetooth policy handle
+ * @param[in]   handle The device policy manager handle
  * @param[in]   uuid The UUID that should be added
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
@@ -167,13 +125,13 @@ DPM_API int dpm_bluetooth_is_device_restricted(dpm_bluetooth_policy_h handle, in
  * @see         dpm_context_release_bluetooth_policy()
  * @see         dpm_bluetooth_remove_uuid_from_blacklist()
  */
-DPM_API int dpm_bluetooth_add_uuid_to_blacklist(dpm_bluetooth_policy_h handle, const char* uuid);
+int dpm_bluetooth_add_uuid_to_blacklist(device_policy_manager_h handle, const char* uuid);
 
 /**
  * @brief       Removes UUID from blacklist
  * @details     An administrator can use this API to remove UUID from blacklist
  * @since_tizen 3.0
- * @param[in]   handle The bluetooth policy handle
+ * @param[in]   handle The device policy manager handle
  * @param[in]   uuid The UUID that should be removed
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
@@ -185,15 +143,15 @@ DPM_API int dpm_bluetooth_add_uuid_to_blacklist(dpm_bluetooth_policy_h handle, c
  * @see         dpm_context_release_bluetooth_policy()
  * @see         dpm_bluetooth_add_uuid_to_blacklist()
  */
-DPM_API int dpm_bluetooth_remove_uuid_from_blacklist(dpm_bluetooth_policy_h handle, const char* uuid);
+int dpm_bluetooth_remove_uuid_from_blacklist(device_policy_manager_h handle, const char* uuid);
 
 /**
  * @brief       Enables or disables UUID restriction of bluetooth
  * @details     An administrator can use this API to set whether the bluetooth
  *              is allowed or not by UUID restriction
  * @since_tizen 3.0
- * @param[in]   handle The bluetooth policy handle
- * @param[in]   enable If true, restrict the bluetooth pairing, if false, allow the bluetooth pairing
+ * @param[in]   handle The device policy manager handle
+ * @param[in]   restrict If true, restrict the bluetooth pairing, if false, allow the bluetooth pairing
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_TIMEOUT Time out
@@ -204,7 +162,7 @@ DPM_API int dpm_bluetooth_remove_uuid_from_blacklist(dpm_bluetooth_policy_h hand
  * @see         dpm_context_release_bluetooth_policy()
  * @see         dpm_bluetooth_is_uuid_restricted()
  */
-DPM_API int dpm_bluetooth_set_uuid_restriction(dpm_bluetooth_policy_h handle, const int enable);
+int dpm_bluetooth_set_uuid_restriction(device_policy_manager_h handle, bool restrict);
 
 /**
  * @brief       Gets the allow status of the bluetooth's UUID restriction
@@ -212,8 +170,8 @@ DPM_API int dpm_bluetooth_set_uuid_restriction(dpm_bluetooth_policy_h handle, co
  *              bluetooth. The UUID restricted bluetooth will be worked by
  *              UUID blacklist
  * @since_tizen 3.0
- * @param[in]   handle The bluetooth policy handle
- * @param[out]  true if the bluetooth pairing has been restricted, else false
+ * @param[in]   handle The device policy manager handle
+ * @param[out]  is_restricted true if the bluetooth pairing has been restricted, else false
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_TIMEOUT Time out
@@ -222,7 +180,7 @@ DPM_API int dpm_bluetooth_set_uuid_restriction(dpm_bluetooth_policy_h handle, co
  * @see         dpm_context_release_bluetooth_policy()
  * @see         dpm_bluetooth_set_uuid_restriction()
  */
-DPM_API int dpm_bluetooth_is_uuid_restricted(dpm_bluetooth_policy_h handle, int *state);
+int dpm_bluetooth_is_uuid_restricted(device_policy_manager_h handle, bool *is_restricted);
 
 /**
  * @}

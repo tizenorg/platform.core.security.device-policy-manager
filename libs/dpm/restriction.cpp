@@ -24,30 +24,19 @@
 
 using namespace DevicePolicyManager;
 
-dpm_restriction_policy_h dpm_context_acquire_restriction_policy(dpm_context_h handle)
-{
-	return handle;
-}
-
-int dpm_context_release_restriction_policy(dpm_context_h context, dpm_restriction_policy_h handle)
-{
-    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    return DPM_ERROR_NONE;
-}
-
-int dpm_restriction_set_camera_state(dpm_restriction_policy_h handle, int enable)
+EXPORT_API int dpm_restriction_set_camera_state(device_policy_manager_h handle, bool restrict)
 {
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
-	return restriction.setCameraState(enable);
+	return restriction.setCameraState(restrict);
 }
 
-int dpm_restriction_get_camera_state(dpm_restriction_policy_h handle, int *state)
+EXPORT_API int dpm_restriction_get_camera_state(device_policy_manager_h handle, bool *is_restricted)
 {
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(state, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(is_restricted, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
@@ -56,20 +45,20 @@ int dpm_restriction_get_camera_state(dpm_restriction_policy_h handle, int *state
         return -1;
     }
 
-    *state = ret;
+    *is_restricted = ret;
     return 0;
 }
 
-int dpm_restriction_set_microphone_state(dpm_restriction_policy_h handle, int enable)
+EXPORT_API int dpm_restriction_set_microphone_state(device_policy_manager_h handle, bool restrict)
 {
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
-    return restriction.setMicrophoneState(enable);
+    return restriction.setMicrophoneState(restrict);
 }
 
-int dpm_restriction_get_microphone_state(dpm_restriction_policy_h handle, int *state)
+EXPORT_API int dpm_restriction_get_microphone_state(device_policy_manager_h handle, bool *is_restricted)
 {
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
@@ -79,23 +68,23 @@ int dpm_restriction_get_microphone_state(dpm_restriction_policy_h handle, int *s
     if (ret < 0) {
         return -1;
     }
-    *state = ret;
+    *is_restricted = ret;
     return 0;
 }
 
-int dpm_restriction_set_location_state(dpm_restriction_policy_h handle, int enable)
+EXPORT_API int dpm_restriction_set_location_state(device_policy_manager_h handle, bool restrict)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     LocationPolicy location = client.createPolicyInterface<LocationPolicy>();
-    return location.setLocationState(enable);
+    return location.setLocationState(restrict);
 }
 
-int dpm_restriction_get_location_state(dpm_restriction_policy_h handle, int *state)
+EXPORT_API int dpm_restriction_get_location_state(device_policy_manager_h handle, bool *is_restricted)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(state, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(is_restricted, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     LocationPolicy location = client.createPolicyInterface<LocationPolicy>();
@@ -104,23 +93,23 @@ int dpm_restriction_get_location_state(dpm_restriction_policy_h handle, int *sta
         return -1;
     }
 
-    *state = ret;
+    *is_restricted = ret;
     return DPM_ERROR_NONE;
 }
 
-int dpm_restriction_set_usb_debugging_state(dpm_restriction_policy_h handle, int enable)
+EXPORT_API int dpm_restriction_set_usb_debugging_state(device_policy_manager_h handle, bool restrict)
 {
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
-	return restriction.setUsbDebuggingState(enable);
+	return restriction.setUsbDebuggingState(restrict);
 }
 
-int dpm_restriction_get_usb_debugging_state(dpm_restriction_policy_h handle, int *state)
+EXPORT_API int dpm_restriction_get_usb_debugging_state(device_policy_manager_h handle, bool *is_restricted)
 {
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-	RET_ON_FAILURE(state, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(is_restricted, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
@@ -128,23 +117,23 @@ int dpm_restriction_get_usb_debugging_state(dpm_restriction_policy_h handle, int
     if (ret < 0) {
         return -1;
     }
-    *state = ret;
+    *is_restricted = ret;
     return DPM_ERROR_NONE;
 }
 
-int dpm_restriction_set_usb_tethering_state(dpm_restriction_policy_h handle, int enable)
+EXPORT_API int dpm_restriction_set_usb_tethering_state(device_policy_manager_h handle, bool restrict)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
-    return restriction.setUsbTetheringState(enable);
+    return restriction.setUsbTetheringState(restrict);
 }
 
-int dpm_restriction_get_usb_tethering_state(dpm_restriction_policy_h handle, int *state)
+EXPORT_API int dpm_restriction_get_usb_tethering_state(device_policy_manager_h handle, bool *is_restricted)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(state, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(is_restricted, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
@@ -152,23 +141,23 @@ int dpm_restriction_get_usb_tethering_state(dpm_restriction_policy_h handle, int
     if (ret < 0) {
         return -1;
     }
-    *state = ret;
+    *is_restricted = ret;
     return DPM_ERROR_NONE;
 }
 
-int dpm_restriction_set_settings_changes_state(dpm_restriction_policy_h handle, int enable)
+EXPORT_API int dpm_restriction_set_settings_changes_state(device_policy_manager_h handle, bool restrict)
 {
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
-	return restriction.setSettingsChangesState(enable);
+	return restriction.setSettingsChangesState(restrict);
 }
 
-int dpm_restriction_get_settings_changes_state(dpm_restriction_policy_h handle, int *state)
+EXPORT_API int dpm_restriction_get_settings_changes_state(device_policy_manager_h handle, bool *is_restricted)
 {
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-	RET_ON_FAILURE(state, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(is_restricted, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
@@ -177,23 +166,23 @@ int dpm_restriction_get_settings_changes_state(dpm_restriction_policy_h handle, 
         return -1;
     }
 
-    *state = ret;
+    *is_restricted = ret;
     return DPM_ERROR_NONE;
 }
 
-int dpm_restriction_set_external_storage_state(dpm_restriction_policy_h handle, int enable)
+EXPORT_API int dpm_restriction_set_external_storage_state(device_policy_manager_h handle, bool restrict)
 {
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
-	return restriction.setExternalStorageState(enable);
+	return restriction.setExternalStorageState(restrict);
 }
 
-int dpm_restriction_get_external_storage_state(dpm_restriction_policy_h handle, int *state)
+EXPORT_API int dpm_restriction_get_external_storage_state(device_policy_manager_h handle, bool *is_restricted)
 {
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-	RET_ON_FAILURE(state, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(is_restricted, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
@@ -201,23 +190,23 @@ int dpm_restriction_get_external_storage_state(dpm_restriction_policy_h handle, 
     if (ret < 0) {
         return 0;
     }
-    *state = ret;
+    *is_restricted = ret;
     return DPM_ERROR_NONE;
 }
 
-int dpm_restriction_set_clipboard_state(dpm_restriction_policy_h handle, int enable)
+EXPORT_API int dpm_restriction_set_clipboard_state(device_policy_manager_h handle, bool restrict)
 {
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
-	return restriction.setClipboardState(enable);
+	return restriction.setClipboardState(restrict);
 }
 
-int dpm_restriction_get_clipboard_state(dpm_restriction_policy_h handle, int *state)
+EXPORT_API int dpm_restriction_get_clipboard_state(device_policy_manager_h handle, bool *is_restricted)
 {
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-	RET_ON_FAILURE(state, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(is_restricted, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
@@ -225,23 +214,23 @@ int dpm_restriction_get_clipboard_state(dpm_restriction_policy_h handle, int *st
     if (ret < 0) {
         return -1;
     }
-    *state = ret;
+    *is_restricted = ret;
     return DPM_ERROR_NONE;
 }
 
-int dpm_restriction_set_wifi_state(dpm_restriction_policy_h handle, int enable)
+EXPORT_API int dpm_restriction_set_wifi_state(device_policy_manager_h handle, bool restrict)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
-    return restriction.setWifiState(enable);
+    return restriction.setWifiState(restrict);
 }
 
-int dpm_restriction_get_wifi_state(dpm_restriction_policy_h handle, int *state)
+EXPORT_API int dpm_restriction_get_wifi_state(device_policy_manager_h handle, bool *is_restricted)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(state, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(is_restricted, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
@@ -249,23 +238,23 @@ int dpm_restriction_get_wifi_state(dpm_restriction_policy_h handle, int *state)
     if (ret < 0) {
         return -1;
     }
-    *state = ret;
+    *is_restricted = ret;
     return DPM_ERROR_NONE;
 }
 
-int dpm_restriction_set_wifi_hotspot_state(dpm_restriction_policy_h handle, int enable)
+EXPORT_API int dpm_restriction_set_wifi_hotspot_state(device_policy_manager_h handle, bool restrict)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
-    return restriction.setWifiHotspotState(enable);
+    return restriction.setWifiHotspotState(restrict);
 }
 
-int dpm_restriction_get_wifi_hotspot_state(dpm_restriction_policy_h handle, int *state)
+EXPORT_API int dpm_restriction_get_wifi_hotspot_state(device_policy_manager_h handle, bool *is_restricted)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(state, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(is_restricted, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
@@ -273,23 +262,23 @@ int dpm_restriction_get_wifi_hotspot_state(dpm_restriction_policy_h handle, int 
     if (ret < 0) {
         return -1;
     }
-    *state = ret;
+    *is_restricted = ret;
     return DPM_ERROR_NONE;
 }
 
-int dpm_restriction_set_bluetooth_tethering_state(dpm_restriction_policy_h handle, int enable)
+EXPORT_API int dpm_restriction_set_bluetooth_tethering_state(device_policy_manager_h handle, bool restrict)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     BluetoothPolicy bluetooth = client.createPolicyInterface<BluetoothPolicy>();
-    return bluetooth.setTetheringState(enable);
+    return bluetooth.setTetheringState(restrict);
 }
 
-int dpm_restriction_get_bluetooth_tethering_state(dpm_restriction_policy_h handle, int *state)
+EXPORT_API int dpm_restriction_get_bluetooth_tethering_state(device_policy_manager_h handle, bool *is_restricted)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(state, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(is_restricted, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     BluetoothPolicy bluetooth = client.createPolicyInterface<BluetoothPolicy>();
@@ -297,23 +286,23 @@ int dpm_restriction_get_bluetooth_tethering_state(dpm_restriction_policy_h handl
     if (ret < 0) {
         return -1;
     }
-    *state = ret;
+    *is_restricted = ret;
     return DPM_ERROR_NONE;
 }
 
-int dpm_restriction_set_bluetooth_mode_change_state(dpm_restriction_policy_h handle, int enable)
+EXPORT_API int dpm_restriction_set_bluetooth_mode_change_state(device_policy_manager_h handle, bool restrict)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     BluetoothPolicy bluetooth = client.createPolicyInterface<BluetoothPolicy>();
-    return bluetooth.setModeChangeState(enable);
+    return bluetooth.setModeChangeState(restrict);
 }
 
-int dpm_restriction_get_bluetooth_mode_change_state(dpm_restriction_policy_h handle, int *enable)
+EXPORT_API int dpm_restriction_get_bluetooth_mode_change_state(device_policy_manager_h handle, bool *is_restricted)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(enable, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(is_restricted, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     BluetoothPolicy bluetooth = client.createPolicyInterface<BluetoothPolicy>();
@@ -321,24 +310,24 @@ int dpm_restriction_get_bluetooth_mode_change_state(dpm_restriction_policy_h han
     if (ret < 0) {
         return -1;
     }
-    *enable = ret;
+    *is_restricted = ret;
 
     return DPM_ERROR_NONE;
 }
 
-int dpm_restriction_set_bluetooth_desktop_connectivity_state(dpm_restriction_policy_h handle, int enable)
+EXPORT_API int dpm_restriction_set_bluetooth_desktop_connectivity_state(device_policy_manager_h handle, bool restrict)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     BluetoothPolicy bluetooth = client.createPolicyInterface<BluetoothPolicy>();
-    return bluetooth.setDesktopConnectivityState(enable);
+    return bluetooth.setDesktopConnectivityState(restrict);
 }
 
-int dpm_restriction_get_bluetooth_desktop_connectivity_state(dpm_restriction_policy_h handle, int *enable)
+EXPORT_API int dpm_restriction_get_bluetooth_desktop_connectivity_state(device_policy_manager_h handle, bool *is_restricted)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(enable, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(is_restricted, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     BluetoothPolicy bluetooth = client.createPolicyInterface<BluetoothPolicy>();
@@ -346,24 +335,24 @@ int dpm_restriction_get_bluetooth_desktop_connectivity_state(dpm_restriction_pol
     if (ret < 0) {
         return -1;
     }
-    *enable = ret;
+    *is_restricted = ret;
 
     return DPM_ERROR_NONE;
 }
 
-int dpm_restriction_set_bluetooth_pairing_state(dpm_restriction_policy_h handle, int enable)
+EXPORT_API int dpm_restriction_set_bluetooth_pairing_state(device_policy_manager_h handle, bool restrict)
 {
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     BluetoothPolicy bluetooth = client.createPolicyInterface<BluetoothPolicy>();
-    return bluetooth.setPairingState(enable);
+    return bluetooth.setPairingState(restrict);
 }
 
-int dpm_restriction_get_bluetooth_pairing_state(dpm_restriction_policy_h handle, int *enable)
+EXPORT_API int dpm_restriction_get_bluetooth_pairing_state(device_policy_manager_h handle, bool *is_restricted)
 {
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(enable, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(is_restricted, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     BluetoothPolicy bluetooth = client.createPolicyInterface<BluetoothPolicy>();
@@ -371,7 +360,7 @@ int dpm_restriction_get_bluetooth_pairing_state(dpm_restriction_policy_h handle,
     if (ret < 0) {
         return -1;
     }
-    *enable = ret;
+    *is_restricted = ret;
 
     return DPM_ERROR_NONE;
 }
