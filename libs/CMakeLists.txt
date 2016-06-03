@@ -37,7 +37,6 @@ SET(POLICY              administration.cpp
                         dpm/bluetooth.cpp
                         dpm/restriction.cpp
                         dpm/security.cpp
-                        dpm/storage.cpp
                         dpm/wifi.cpp
 )
 
@@ -48,7 +47,6 @@ SET(CAPI                dpm/device-policy-manager.h
 						dpm/bluetooth.h
 						dpm/restriction.h
 						dpm/security.h
-						dpm/storage.h
 						dpm/wifi.h
 )
 

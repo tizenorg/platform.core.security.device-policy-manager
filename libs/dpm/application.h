@@ -17,6 +17,7 @@
 #ifndef __CAPI_APPLICATION_POLICY_H__
 #define __CAPI_APPLICATION_POLICY_H__
 
+#include <dpm/device-policy-manager.h>
 #include <dpm/context.h>
 
 /**
@@ -32,48 +33,6 @@ extern "C" {
  * @addtogroup  CAPI_DPM_APPLICATION_POLICY_MODULE
  * @{
  */
-
-/**
- * @brief       The application policy handle
- * @since_tizen 3.0
- * @see         dpm_context_acquire_application_policy()
- * @see         dpm_context_release_application_policy()
- */
-typedef void* dpm_application_policy_h;
-
-/**
- * @brief       Acquires the application policy handle.
- * @details     This API acquires application policy handle required to enforce
- *              the application policies.
- * @since_tizen 3.0
- * @param[in]   handle The device policy context handle
- * @return      Application policy handle on success, otherwise NULL
- * @remark      The specific error code can be obtained by using the
- *              get_last_result() method. Error codes are described in
- *              exception section.
- * @exception   #DPM_ERROR_NONE Successful
- * @exception   #DPM_ERROR_INVALID_PARAMETER Invalid parameter
- * @exception   #DPM_ERROR_TIMED_OUT Time out
- * @see         dpm_context_release_application_policy()
- * @see         get_last_result()
- */
-DPM_API dpm_application_policy_h dpm_context_acquire_application_policy(dpm_context_h handle);
-
-/**
- * @brief       Releases the application policy handle.
- * @details     This API must be called if interaction with the device
- *              policy manager is no longer required.
- * @since_tizen 3.0
- * @param[in]   context The device policy context
- * @param[in]   handle The application policy handle
- * @return      #DPM_ERROR_NONE on success, otherwise a negative value
- * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
- * @retval      #DPM_ERROR_TIMED_OUT Time out
- * @pre         The handle must be created by dpm_context_acquire_application_policy().
- * @see         dpm_context_acquire_application_policy()
- */
-DPM_API int dpm_context_release_application_policy(dpm_context_h context, dpm_application_policy_h handle);
 
 /**
  * @brief       Enumeration for application state
@@ -101,7 +60,7 @@ typedef enum {
  * @details     Administrator can use this api to restrict package installation, uninstallation,
  *              reinstallation or move.
  * @since_tizen 3.0
- * @param[in]   handle The application policy handle
+ * @param[in]   handle The device policy manager handle
  * @param[in]   mode The installation mode to be set, one of DPM_PACKAGE_INSTALLATION_MODE_ALLOW or
  *              DPM_PACKAGE_INSTALLATION_MODE_DISALLOW
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
@@ -110,19 +69,17 @@ typedef enum {
  * @retval      #DPM_ERROR_ACCESS_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_context_acquire_application_policy()
- * @see         dpm_context_acquire_application_policy()
- * @see         dpm_context_release_application_policy()
  * @see         dpm_application_unset_mode_restriction()
  * @see         dpm_application_get_mode_restriction()
  */
-DPM_API int dpm_application_set_mode_restriction(dpm_application_policy_h handle, int mode);
+int dpm_application_set_mode_restriction(device_policy_manager_h handle, int mode);
 
 /**
  * @brief       Allows installation / uninstallation for all packages.
  * @details     If the mode is set to DPM_PACKAGE_INSTALLATION_MODE_DISALLOW,
  *              no application can be installed on the device.
  * @since_tizen 3.0
- * @param[in]   handle The application policy handle
+ * @param[in]   handle The device policy manager handle
  * @param[in]   mode The installation mode to be set, one of DPM_PACKAGE_INSTALLATION_MODE_ALLOW or
  *              DPM_PACKAGE_INSTALLATION_MODE_DISALLOW
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
@@ -131,18 +88,16 @@ DPM_API int dpm_application_set_mode_restriction(dpm_application_policy_h handle
  * @retval      #DPM_ERROR_ACCESS_DENIED The application does not have
  *              the privilege to call this API
  * @pre         handle must be created by dpm_context_acquire_application_policy()
- * @see         dpm_context_acquire_application_policy()
- * @see         dpm_context_release_application_policy()
  * @see         dpm_application_set_mode_restriction()
  * @see         dpm_application_get_mode_restriction()
  */
-DPM_API int dpm_application_unset_mode_restriction(dpm_application_policy_h handle, int mode);
+int dpm_application_unset_mode_restriction(device_policy_manager_h handle, int mode);
 
 /**
  * @brief       Gets the current restriction mode for all packages.
  * @details     The default mode is to allow any package to be installed.
  * @since_tizen 3.0
- * @param[in]   handle The application policy handle
+ * @param[in]   handle The device policy manager handle
  * @param[out]  mode Current mode of operation, which is one of the following:
  *              #DPM_PACKAGE_INSTALLATION_MODE_ALLOW Package installation is allowed
  *              #DPM_PACKAGE_INSTALLATION_MODE_DISALLOW Package installation is not allowed
@@ -150,20 +105,18 @@ DPM_API int dpm_application_unset_mode_restriction(dpm_application_policy_h hand
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_TIMEOUT Time out
  * @pre         handle must be created by dpm_context_acquire_application_policy()
- * @see         dpm_context_acquire_application_policy()
- * @see         dpm_context_release_application_policy()
  * @see         dpm_application_set_mode_restriction()
  * @see         dpm_application_unset_mode_restriction()
  * @see         dpm_application_get_mode_restriction()
  */
-DPM_API int dpm_application_get_mode_restriction(dpm_application_policy_h handle, int *mode);
+int dpm_application_get_mode_restriction(device_policy_manager_h handle, int *mode);
 
 /**
  * @brief       Enables/disables an package without installation/uninstallation.
  * @details     Administrator can silently enable/disable any package without
  *              user interaction.
  * @since_tizen 3.0
- * @param[in]   handle The application policy handle
+ * @param[in]   handle The device policy manager handle
  * @param[in]   pkgid The package name
  * @param[in]   state The package state
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
@@ -176,7 +129,7 @@ DPM_API int dpm_application_get_mode_restriction(dpm_application_policy_h handle
  * @see         dpm_context_release_application_policy()
  * @see         dpm_application_get_package_state()
  */
-DPM_API int dpm_application_set_package_state(dpm_application_policy_h handle, const char* pkgid, dpm_package_state_e state);
+int dpm_application_set_package_state(device_policy_manager_h handle, const char* pkgid, dpm_package_state_e state);
 
 /**
  * @brief       Checks whether a geiven application package is enabled or disabled
@@ -195,7 +148,7 @@ DPM_API int dpm_application_set_package_state(dpm_application_policy_h handle, c
  * @see         dpm_context_release_application_policy()
  * @see         dpm_application_set_package_state()
  */
-DPM_API int dpm_application_get_package_state(dpm_application_policy_h handle, const char* pkgid, int *state);
+int dpm_application_get_package_state(device_policy_manager_h handle, const char* pkgid, int *state);
 
 /**
  * @brief       Adds privilege to blacklist
@@ -216,7 +169,7 @@ DPM_API int dpm_application_get_package_state(dpm_application_policy_h handle, c
  * @see         dpm_application_remove_privilege_from_blacklist()
  * @see         dpm_application_check_privilege_is_blacklisted()
  */
-DPM_API int dpm_application_add_privilege_to_blacklist(dpm_application_policy_h handle, int type, const char* privilege);
+int dpm_application_add_privilege_to_blacklist(device_policy_manager_h handle, int type, const char* privilege);
 
 /**
  * @brief       Removes privilege from blacklist
@@ -236,7 +189,7 @@ DPM_API int dpm_application_add_privilege_to_blacklist(dpm_application_policy_h 
  * @see         dpm_application_add_privilege_to_blacklist()
  * @see         dpm_application_check_privilege_is_blacklisted()
  */
-DPM_API int dpm_application_remove_privilege_from_blacklist(dpm_application_policy_h handle, int type, const char* privilege);
+int dpm_application_remove_privilege_from_blacklist(device_policy_manager_h handle, int type, const char* privilege);
 
 /**
  * @brief       Checks whether a privilege is added to blacklist
@@ -247,7 +200,7 @@ DPM_API int dpm_application_remove_privilege_from_blacklist(dpm_application_poli
  * @param[in]   handle The application policy handle
  * @param[in]   type The package type
  * @param[in]   privilege The privilege name
- * @param[out]  blacklisted TRUE if the package installation is disabled, else FALSE
+ * @param[out]  is_blacklisted TRUE if the package installation is disabled, else FALSE
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_TIMEOUT Time out
@@ -257,10 +210,10 @@ DPM_API int dpm_application_remove_privilege_from_blacklist(dpm_application_poli
  * @see         dpm_application_add_privilege_to_blacklist()
  * @see         dpm_application_remove_privilege_from_blacklist()
  */
-DPM_API int dpm_application_check_privilege_is_blacklisted(dpm_application_policy_h handle, int type, const char* privilege, int *blacklisted);
+int dpm_application_check_privilege_is_blacklisted(device_policy_manager_h handle, int type, const char* privilege, int *is_blacklisted);
 
-DPM_API int dpm_application_install_package(dpm_application_policy_h handle, const char* pkgpath);
-DPM_API int dpm_application_uninstall_package(dpm_application_policy_h handle, const char* pkgid);
+int dpm_application_install_package(device_policy_manager_h handle, const char* pkgpath);
+int dpm_application_uninstall_package(device_policy_manager_h handle, const char* pkgid);
 /**
  * @}
  */

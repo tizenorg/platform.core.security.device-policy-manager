@@ -16,23 +16,14 @@
 
 #include "security.h"
 #include "security.hxx"
+#include "storage.hxx"
 
 #include "debug.h"
 #include "policy-client.h"
 
 using namespace DevicePolicyManager;
 
-dpm_security_policy_h dpm_context_acquire_security_policy(dpm_context_h handle)
-{
-	return handle;
-}
-
-int dpm_context_release_security_policy(dpm_context_h context, dpm_security_policy_h handle)
-{
-    return DPM_ERROR_NONE;
-}
-
-int dpm_security_lockout_device(dpm_security_policy_h handle)
+EXPORT_API int dpm_security_lockout_device(device_policy_manager_h handle)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
@@ -41,7 +32,7 @@ int dpm_security_lockout_device(dpm_security_policy_h handle)
     return security.lockoutDevice();
 }
 
-int dpm_security_lockout_screen(dpm_security_policy_h handle)
+EXPORT_API int dpm_security_lockout_screen(device_policy_manager_h handle)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
@@ -50,7 +41,7 @@ int dpm_security_lockout_screen(dpm_security_policy_h handle)
     return security.lockoutScreen();
 }
 
-int dpm_security_set_internal_storage_encryption(dpm_security_policy_h handle, const int encrypt)
+EXPORT_API int dpm_security_set_internal_storage_encryption(device_policy_manager_h handle, int encrypt)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
@@ -59,10 +50,10 @@ int dpm_security_set_internal_storage_encryption(dpm_security_policy_h handle, c
     return security.setInternalStorageEncryption(encrypt);
 }
 
-int dpm_security_is_internal_storage_encrypted(dpm_security_policy_h handle, int *state)
+EXPORT_API int dpm_security_is_internal_storage_encrypted(device_policy_manager_h handle, int *is_encrypted)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(state, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(is_encrypted, DPM_ERROR_INVALID_PARAMETER);
 
 	DevicePolicyContext &context = GetDevicePolicyContext(handle);
 	SecurityPolicy security = context.createPolicyInterface<SecurityPolicy>();
@@ -70,11 +61,11 @@ int dpm_security_is_internal_storage_encrypted(dpm_security_policy_h handle, int
     if (ret < 0) {
         return -1;
     }
-    *state = ret;
+    *is_encrypted = ret;
     return DPM_ERROR_NONE;
 }
 
-int dpm_security_set_external_storage_encryption(dpm_security_policy_h handle, const int encrypt)
+EXPORT_API int dpm_security_set_external_storage_encryption(device_policy_manager_h handle, int encrypt)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
@@ -83,10 +74,10 @@ int dpm_security_set_external_storage_encryption(dpm_security_policy_h handle, c
     return security.setExternalStorageEncryption(encrypt);
 }
 
-int dpm_security_is_external_storage_encrypted(dpm_security_policy_h handle, int *state)
+EXPORT_API int dpm_security_is_external_storage_encrypted(device_policy_manager_h handle, int *is_encrypted)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(state, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(is_encrypted, DPM_ERROR_INVALID_PARAMETER);
 
 	DevicePolicyContext &context = GetDevicePolicyContext(handle);
 	SecurityPolicy security = context.createPolicyInterface<SecurityPolicy>();
@@ -94,6 +85,15 @@ int dpm_security_is_external_storage_encrypted(dpm_security_policy_h handle, int
     if (ret < 0) {
         return -1;
     }
-    *state = ret;
+    *is_encrypted = ret;
     return DPM_ERROR_NONE;
+}
+
+EXPORT_API int dpm_security_wipe_data(device_policy_manager_h handle, dpm_security_wipe_type_e type)
+{
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    StoragePolicy storage = client.createPolicyInterface<StoragePolicy>();
+    return storage.wipeData(type);
 }
