@@ -17,7 +17,7 @@
 #ifndef __CAPI_STORAGE_POLICY_H__
 #define __CAPI_STORAGE_POLICY_H__
 
-#include <dpm/context.h>
+#include <dpm/device-policy-manager.h>
 
 /**
  * @file storage.h
@@ -43,65 +43,22 @@ typedef enum {
 } dpm_wipe_type_e;
 
 /**
- * @brief       The storage policy handle
- * @since_tizen 3.0
- * @see         dpm_context_acquire_storage_policy()
- * @see         dpm_context_release_storage_policy()
- */
-typedef void* dpm_storage_policy_h;
-
-/**
- * @brief       Acquires the storage policy handle.
- * @details     This API acquires storage policy handle required to enforce
- *              the storage policies.
- * @since_tizen 3.0
- * @param[in]   handle The device policy context handle
- * @return      Storage policy handle on success, otherwise NULL
- * @remark      The specific error code can be obtained by using the
- *              get_last_result() method. Error codes are described in
- *              exception section.
- * @exception   #DPM_ERROR_NONE No error
- * @exception   #DPM_ERROR_INVALID_PARAMETER Invalid parameter
- * @exception   #DPM_ERROR_TIMED_OUT Time out
- * @see         dpm_context_release_storage_policy()
- * @see         get_last_result()
- */
-DPM_API dpm_storage_policy_h dpm_context_acquire_storage_policy(dpm_context_h handle);
-
-/**
- * @brief       Releases the storage policy handle.
- * @details     This API must be called if interaction with the device
- *              policy manager is no longer required.
- * @since_tizen 3.0
- * @param[in]   handle The device policy context
- * @param[in]   handle The storage policy handle
- * @return      #DPM_ERROR_NONE on success, otherwise a negative value
- * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
- * @retval      #DPM_ERROR_TIMED_OUT Time out
- * @pre         The handle must be created by dpm_context_acquire_storage_policy().
- * @see         dpm_context_acquire_storage_policy()
- */
-DPM_API int dpm_context_release_storage_policy(dpm_context_h context, dpm_storage_policy_h handle);
-
-/**
  * @brief       API to selectively wipe external memory, internal memory,
  *              or both.
  * @details     Device Admin can use this API to wipe both SD card data
  *              and application data.
  *              Calling this API may require rebooting the device.
  * @since_tizen 3.0
- * @param[in]   handle Storage policy handle
+ * @param[in]   handle Device policy manager handle
  * @param[in]   type DPM_WIPE_INTERNAL_STORAGE or DPM_WIPE_EXTERNAL_STORAGE
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
- * @pre         handle must be created by dpm_context_acquire_storage_policy()
- * @see         dpm_context_acquire_storage_policy()
- * @see         dpm_context_release_storage_policy()
+ * @pre         handle must be created by dpm_manager_create().
+ * @see         dpm_manager_create()
  */
-DPM_API int dpm_storage_wipe_data(dpm_storage_policy_h handle, const dpm_wipe_type_e type);
+DPM_API int dpm_storage_wipe_data(device_policy_manager_h handle, const dpm_wipe_type_e type);
 
 #ifdef __cplusplus
 }
