@@ -17,7 +17,7 @@
 #ifndef __CAPI_WIFI_POLICY_H__
 #define __CAPI_WIFI_POLICY_H__
 
-#include <dpm/context.h>
+#include <dpm/device-policy-manager.h>
 
 /**
  * @file wifi.h
@@ -34,48 +34,6 @@ extern "C" {
  */
 
 /**
- * @brief       The Wi-Fi policy handle
- * @since_tizen 3.0
- * @see         dpm_context_acquire_wifi_policy()
- * @see         dpm_context_release_wifi_policy()
- */
-typedef void* dpm_wifi_policy_h;
-
-/**
- * @brief       Acquires the Wi-Fi policy handle.
- * @details     This API acquires camera policy handle required to enforce
- *              the Wi-Fi policies.
- * @since_tizen 3.0
- * @param[in]   handle Device policy context Handle
- * @return      Wi-Fi policy handle on success, otherwise NULL
- * @remark      The specific error code can be obtained by using the
- *              get_last_result() method. Error codes are described in
- *              exception section.
- * @exception   #DPM_ERROR_NONE No error
- * @exception   #DPM_ERROR_INVALID_PARAMETER Invalid parameter
- * @exception   #DPM_ERROR_TIMED_OUT Time out
- * @see         dpm_context_release_wifi_policy()
- * @see         get_last_result()
- */
-DPM_API dpm_wifi_policy_h dpm_context_acquire_wifi_policy(dpm_context_h handle);
-
-/**
- * @brief       Releases the Wi-Fi policy handle.
- * @details     This API must be called if interaction with the device
- *              policy manager is no longer required.
- * @since_tizen 3.0
- * @param[in]   handle The device policy context
- * @param[in]   handle The Wi-Fi policy handle
- * @return      #DPM_ERROR_NONE on success, otherwise a negative value
- * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
- * @retval      #DPM_ERROR_TIMED_OUT Time out
- * @pre         The handle must be created by dpm_context_acquire_camera_policy().
- * @see         dpm_context_acquire_wifi_policy()
- */
-DPM_API int dpm_context_release_wifi_policy(dpm_context_h context, dpm_wifi_policy_h handle);
-
-/**
  * @brief       Allows or disallows user to modify some Wi-Fi profiles of network settings.
  * @details     An administrator can use this API to allow or disallow users to modify selected
  *              Wi-Fi profiles like static ip configuration, proxy settings, security type
@@ -85,7 +43,7 @@ DPM_API int dpm_context_release_wifi_policy(dpm_context_h context, dpm_wifi_poli
  *              modify all Wi-fi network profiles normally and also remove it.
  *              Also the apps that uses wifi_ap_set_* APIs follow this restriction.
  * @since_tizen 3.0
- * @param[in]   handle Wi-Fi policy handle
+ * @param[in]   handle Device policy manager handle
  * @param[in]   enable TRUE to enable wifi profile changes, else FALSE
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
@@ -93,12 +51,11 @@ DPM_API int dpm_context_release_wifi_policy(dpm_context_h context, dpm_wifi_poli
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
- * @pre         handle must be created by dpm_context_acquire_wifi_policy()
- * @see         dpm_context_acquire_wifi_policy()
- * @see         dpm_context_release_wifi_policy()
+ * @pre         handle must be created by dpm_manager_create().
+ * @see         dpm_manager_create()
  * @see         dpm_wifi_is_profile_change_restricted()
  */
-DPM_API int dpm_wifi_set_profile_change_restriction(dpm_wifi_policy_h handle, int enable);
+DPM_API int dpm_wifi_set_profile_change_restriction(device_policy_manager_h handle, int enable);
 
 /**
  * @brief       Checks if the user is allowed to modify certain Wi-Fi profiles.
@@ -106,19 +63,18 @@ DPM_API int dpm_wifi_set_profile_change_restriction(dpm_wifi_policy_h handle, in
  *              allowed to modify Wi-Fi profiles. The user is restricted in modifying
  *              Wi-Fi profiles if at least one administrator has set the value to TRUE.
  * @since_tizen 3.0
- * @param[in]   handle Wi-Fi policy handle
+ * @param[in]   handle Device policy manager handle
  * @param[out]  enable TRUE if one or more administrators enabled restriction
  *              FALSE if user can change all Wi-Fi profiles
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_TIMEOUT Time out
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
- * @pre         handle must be created by dpm_context_acquire_wifi_policy()
- * @see         dpm_context_acquire_wifi_policy()
- * @see         dpm_context_release_wifi_policy()
+ * @pre         handle must be created by dpm_manager_create().
+ * @see         dpm_manager_create()
  * @see         dpm_wifi_set_profile_change_restriction()
  */
-DPM_API int dpm_wifi_is_profile_change_restricted(dpm_wifi_policy_h handle, int *enable);
+DPM_API int dpm_wifi_is_profile_change_restricted(device_policy_manager_h handle, int *enable);
 
 /**
  * @brief       Restricts network accessed based on the Wi-Fi network service set
@@ -126,7 +82,7 @@ DPM_API int dpm_wifi_is_profile_change_restricted(dpm_wifi_policy_h handle, int 
  * @details     An administrator can use this API to restrict connecting to the Wi-Fi
  *              network based on the blocked network list.
  * @since_tizen 3.0
- * @param[in]   handle Wi-Fi policy handle
+ * @param[in]   handle Device policy manager handle
  * @param[in]   enable TRUE to enable the Wi-Fi network access restriction,
  *              FALSE to disable the Wi-Fi network access restriction
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
@@ -135,15 +91,14 @@ DPM_API int dpm_wifi_is_profile_change_restricted(dpm_wifi_policy_h handle, int 
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
- * @pre         handle must be created by dpm_context_acquire_wifi_policy()
- * @pre         Blocked network list must be added by dpm_add_wifi_ssid_to_blocklist()
- * @see         dpm_context_acquire_wifi_policy()
- * @see         dpm_context_release_wifi_policy()
+ * @pre         handle must be created by dpm_manager_create().
+ * @pre         Blocked network list must be added by dpm_add_wifi_ssid_to_blocklist().
+ * @see         dpm_manager_create()
  * @see         dpm_is_wifi_network_access_restricted()
  * @see         dpm_wifi_add_ssid_to_blocklist()
  * @see         dpm_wifi_remove_ssid_from_blocklist()
  */
-DPM_API int dpm_wifi_set_network_access_restriction(dpm_wifi_policy_h handle, int enable);
+DPM_API int dpm_wifi_set_network_access_restriction(device_policy_manager_h handle, int enable);
 
 /**
  * @brief       Checks whether the SSID-based Wi-Fi network access restriction is
@@ -151,19 +106,18 @@ DPM_API int dpm_wifi_set_network_access_restriction(dpm_wifi_policy_h handle, in
  * @details     An administrator can use this API to check whether the SSID-based
  *              Wi-Fi network restriction is enabled.
  * @since_tizen 3.0
- * @param[in]   handle Wi-Fi policy handle
+ * @param[in]   handle Device policy manager handle
  * @param[out]  enable TRUE if restriction is activated or
  *              FALSE if restriction is deactivated
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_TIMEOUT Time out
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
- * @pre         handle must be created by dpm_context_acquire_wifi_policy()
- * @see         dpm_context_acquire_wifi_policy()
- * @see         dpm_context_release_wifi_policy()
+ * @pre         handle must be created by dpm_manager_create().
+ * @see         dpm_manager_create()
  * @see         dpm_set_wifi_network_access_restriction()
  */
-DPM_API int dpm_wifi_is_network_access_restricted(dpm_wifi_policy_h handle, int *enable);
+DPM_API int dpm_wifi_is_network_access_restricted(device_policy_manager_h handle, int *enable);
 
 /**
  * @brief       Adds a service set identifier(SSID) to the list of blocked network.
@@ -171,7 +125,7 @@ DPM_API int dpm_wifi_is_network_access_restricted(dpm_wifi_policy_h handle, int 
  *              networks, which prevents the user from connecting to it.
  *              The blocked network still appears in the Access Point list but is disabled.
  * @since_tizen 3.0
- * @param[in]   handle Wi-Fi policy handle
+ * @param[in]   handle Device policy manager handle
  * @param[in]   ssid The SSID to block
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
@@ -180,15 +134,14 @@ DPM_API int dpm_wifi_is_network_access_restricted(dpm_wifi_policy_h handle, int 
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
  * @retval      #DPM_ERROR_OUT_OF_MEMORY Too many SSIDs in blocked network list
- * @pre         handle must be created by dpm_context_acquire_wifi_policy()
+ * @pre         handle must be created by dpm_manager_create().
  * @post        dpm_set_wifi_network_access_restriction() must be called
- *              when SSIDs in the blacklist are needed to get restricted
- * @see         dpm_context_acquire_wifi_policy()
- * @see         dpm_context_release_wifi_policy()
+ *              when SSIDs in the blacklist are needed to get restricted.
+ * @see         dpm_manager_create()
  * @see         dpm_wifi_remove_ssid_from_blocklist()
  * @see         dpm_set_wifi_network_access_restriction()
  */
-DPM_API int dpm_wifi_add_ssid_to_blocklist(dpm_wifi_policy_h handle, const char* ssid);
+DPM_API int dpm_wifi_add_ssid_to_blocklist(device_policy_manager_h handle, const char* ssid);
 
 /**
  * @brief       Removes a service set identifier(SSID) from the list of blocked
@@ -196,7 +149,7 @@ DPM_API int dpm_wifi_add_ssid_to_blocklist(dpm_wifi_policy_h handle, const char*
  * @details     An administrator can use this API to remove an SSID from the list of
  *              blocked networks, which allows the user to connect to it.
  * @since_tizen 3.0
- * @param[in]   handle Wi-Fi policy handle
+ * @param[in]   handle Device policy manager handle
  * @param[in]   ssid The SSID to be removed from the list of blocked networks
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
@@ -204,13 +157,12 @@ DPM_API int dpm_wifi_add_ssid_to_blocklist(dpm_wifi_policy_h handle, const char*
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
- * @pre         handle must be created by dpm_context_acquire_wifi_policy()
- * @see         dpm_context_acquire_wifi_policy()
- * @see         dpm_context_release_wifi_policy()
+ * @pre         handle must be created by dpm_manager_create().
+ * @see         dpm_manager_create()
  * @see         dpm_wifi_add_ssid_to_blocklist()
  * @see         dpm_set_wifi_network_access_restriction()
  */
-DPM_API int dpm_wifi_remove_ssid_from_blocklist(dpm_wifi_policy_h handle, const char* ssid);
+DPM_API int dpm_wifi_remove_ssid_from_blocklist(device_policy_manager_h handle, const char* ssid);
 
 /**
  * @}
