@@ -25,24 +25,14 @@
 
 using namespace DevicePolicyManager;
 
-dpm_admin_policy_h dpm_context_acquire_admin_policy(dpm_context_h handle)
-{
-	return handle;
-}
-
-int dpm_context_release_admin_policy(dpm_admin_policy_h handle)
-{
-    return DPM_ERROR_NONE;
-}
-
-int dpm_admin_register_client(dpm_admin_policy_h handle, const char* name)
+int dpm_admin_register_client(device_policy_manager_h handle, const char* name)
 {
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
 	AdministrationPolicy admin = client.createPolicyInterface<AdministrationPolicy>();
     return admin.registerPolicyClient(name);
 }
 
-int dpm_admin_deregister_client(dpm_admin_policy_h handle, const char* name)
+int dpm_admin_deregister_client(device_policy_manager_h handle, const char* name)
 {
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
 	AdministrationPolicy admin = client.createPolicyInterface<AdministrationPolicy>();

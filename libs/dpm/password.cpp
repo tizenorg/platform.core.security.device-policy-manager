@@ -26,18 +26,7 @@
 
 using namespace DevicePolicyManager;
 
-dpm_password_policy_h dpm_context_acquire_password_policy(dpm_context_h handle)
-{
-	return handle;
-}
-
-int dpm_context_release_password_policy(dpm_context_h context, dpm_password_policy_h handle)
-{
-    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    return DPM_ERROR_NONE;
-}
-
-int dpm_password_set_quality(dpm_password_policy_h handle, dpm_password_quality_e quality)
+int dpm_password_set_quality(device_policy_manager_h handle, dpm_password_quality_e quality)
 {
     int ret = 0;
 
@@ -54,7 +43,7 @@ int dpm_password_set_quality(dpm_password_policy_h handle, dpm_password_quality_
     return ret;
 }
 
-int dpm_password_get_quality(dpm_password_policy_h handle, dpm_password_quality_e *quality)
+int dpm_password_get_quality(device_policy_manager_h handle, dpm_password_quality_e *quality)
 {
     int ret = 0;
     int password_quality = 0;
@@ -97,7 +86,7 @@ int dpm_password_get_quality(dpm_password_policy_h handle, dpm_password_quality_
     return ret;
 }
 
-int dpm_password_set_minimum_length(dpm_password_policy_h handle, const int value)
+int dpm_password_set_minimum_length(device_policy_manager_h handle, int value)
 {
     int ret = 0;
 
@@ -114,7 +103,7 @@ int dpm_password_set_minimum_length(dpm_password_policy_h handle, const int valu
     return ret;
 }
 
-int dpm_password_get_minimum_length(dpm_password_policy_h handle, int *value)
+int dpm_password_get_minimum_length(device_policy_manager_h handle, int *value)
 {
     int ret = 0;
 
@@ -133,7 +122,7 @@ int dpm_password_get_minimum_length(dpm_password_policy_h handle, int *value)
     return ret;
 }
 
-int dpm_password_set_min_complex_chars(dpm_password_policy_h handle, const int value)
+int dpm_password_set_min_complex_chars(device_policy_manager_h handle, int value)
 {
     int ret = 0;
 
@@ -150,7 +139,7 @@ int dpm_password_set_min_complex_chars(dpm_password_policy_h handle, const int v
     return ret;
 }
 
-int dpm_password_get_min_complex_chars(dpm_password_policy_h handle, int *value)
+int dpm_password_get_min_complex_chars(device_policy_manager_h handle, int *value)
 {
     int ret = 0;
 
@@ -168,7 +157,7 @@ int dpm_password_get_min_complex_chars(dpm_password_policy_h handle, int *value)
     return ret;
 }
 
-int dpm_password_set_maximum_failed_attempts_for_wipe(dpm_password_policy_h handle, const int value)
+int dpm_password_set_maximum_failed_attempts_for_wipe(device_policy_manager_h handle, int value)
 {
     int ret = 0;
 
@@ -185,7 +174,7 @@ int dpm_password_set_maximum_failed_attempts_for_wipe(dpm_password_policy_h hand
     return ret;
 }
 
-int dpm_password_get_maximum_failed_attempts_for_wipe(dpm_password_policy_h handle, int *value)
+int dpm_password_get_maximum_failed_attempts_for_wipe(device_policy_manager_h handle, int *value)
 {
     int ret = 0;
 
@@ -204,7 +193,7 @@ int dpm_password_get_maximum_failed_attempts_for_wipe(dpm_password_policy_h hand
     return ret;
 }
 
-int dpm_password_set_expires(dpm_password_policy_h handle, const int value)
+int dpm_password_set_expires(device_policy_manager_h handle, int value)
 {
     int ret = 0;
 
@@ -221,7 +210,7 @@ int dpm_password_set_expires(dpm_password_policy_h handle, const int value)
     return ret;
 }
 
-int dpm_password_get_expires(dpm_password_policy_h handle, int *value)
+int dpm_password_get_expires(device_policy_manager_h handle, int *value)
 {
     int ret = 0;
 
@@ -239,7 +228,7 @@ int dpm_password_get_expires(dpm_password_policy_h handle, int *value)
     return ret;
 }
 
-int dpm_password_set_history(dpm_password_policy_h handle, const int value)
+int dpm_password_set_history(device_policy_manager_h handle, int value)
 {
     int ret = 0;
 
@@ -256,7 +245,7 @@ int dpm_password_set_history(dpm_password_policy_h handle, const int value)
     return ret;
 }
 
-int dpm_password_get_history(dpm_password_policy_h handle, int *value)
+int dpm_password_get_history(device_policy_manager_h handle, int *value)
 {
     int ret = 0;
 
@@ -274,7 +263,7 @@ int dpm_password_get_history(dpm_password_policy_h handle, int *value)
     return ret;
 }
 
-int dpm_password_set_pattern(dpm_password_policy_h handle, const char *pattern)
+int dpm_password_set_pattern(device_policy_manager_h handle, const char *pattern)
 {
     int ret = 0;
 
@@ -292,7 +281,7 @@ int dpm_password_set_pattern(dpm_password_policy_h handle, const char *pattern)
     return ret;
 }
 
-int dpm_password_reset(dpm_password_policy_h handle, const char *passwd)
+int dpm_password_reset(device_policy_manager_h handle, const char *passwd)
 {
     int ret = 0;
 
@@ -310,7 +299,7 @@ int dpm_password_reset(dpm_password_policy_h handle, const char *passwd)
     return ret;
 }
 
-int dpm_password_enforce_change(dpm_password_policy_h handle)
+int dpm_password_enforce_change(device_policy_manager_h handle)
 {
     int ret = 0;
 
@@ -327,7 +316,7 @@ int dpm_password_enforce_change(dpm_password_policy_h handle)
     return ret;
 }
 
-int dpm_password_set_max_inactivity_time_device_lock(dpm_password_policy_h handle, const int value)
+int dpm_password_set_max_inactivity_time_device_lock(device_policy_manager_h handle, int value)
 {
     int ret = 0;
 
@@ -344,7 +333,7 @@ int dpm_password_set_max_inactivity_time_device_lock(dpm_password_policy_h handl
     return ret;
 }
 
-int dpm_password_get_max_inactivity_time_device_lock(dpm_password_policy_h handle, int *value)
+int dpm_password_get_max_inactivity_time_device_lock(device_policy_manager_h handle, int *value)
 {
     int ret = 0;
 
@@ -364,7 +353,7 @@ int dpm_password_get_max_inactivity_time_device_lock(dpm_password_policy_h handl
     return ret;
 }
 
-int dpm_password_set_status(dpm_password_policy_h handle, dpm_password_status_e status)
+int dpm_password_set_status(device_policy_manager_h handle, dpm_password_status_e status)
 {
     int ret = 0;
 
@@ -381,7 +370,7 @@ int dpm_password_set_status(dpm_password_policy_h handle, dpm_password_status_e 
     return ret;
 }
 
-int dpm_password_delete_pattern(dpm_password_policy_h handle)
+int dpm_password_delete_pattern(device_policy_manager_h handle)
 {
     int ret = 0;
 
@@ -398,7 +387,7 @@ int dpm_password_delete_pattern(dpm_password_policy_h handle)
     return ret;
 }
 
-int dpm_password_get_pattern(dpm_password_policy_h handle, char **pattern)
+int dpm_password_get_pattern(device_policy_manager_h handle, char **pattern)
 {
     int ret = 0;
 
@@ -413,7 +402,7 @@ int dpm_password_get_pattern(dpm_password_policy_h handle, char **pattern)
     return ret;
 }
 
-int dpm_password_set_maximum_character_occurrences(dpm_password_policy_h handle, const int value)
+int dpm_password_set_maximum_character_occurrences(device_policy_manager_h handle, int value)
 {
     int ret = 0;
 
@@ -430,7 +419,7 @@ int dpm_password_set_maximum_character_occurrences(dpm_password_policy_h handle,
     return ret;
 }
 
-int dpm_password_get_maximum_character_occurrences(dpm_password_policy_h handle, int *value)
+int dpm_password_get_maximum_character_occurrences(device_policy_manager_h handle, int *value)
 {
     int ret = 0;
 
@@ -449,7 +438,7 @@ int dpm_password_get_maximum_character_occurrences(dpm_password_policy_h handle,
     return ret;
 }
 
-int dpm_password_set_maximum_numeric_sequence_length(dpm_password_policy_h handle, const int value)
+int dpm_password_set_maximum_numeric_sequence_length(device_policy_manager_h handle, int value)
 {
     int ret = 0;
 
@@ -466,7 +455,7 @@ int dpm_password_set_maximum_numeric_sequence_length(dpm_password_policy_h handl
     return ret;
 }
 
-int dpm_password_get_maximum_numeric_sequence_length(dpm_password_policy_h handle, int *value)
+int dpm_password_get_maximum_numeric_sequence_length(device_policy_manager_h handle, int *value)
 {
     int ret = 0;
 
@@ -487,7 +476,7 @@ int dpm_password_get_maximum_numeric_sequence_length(dpm_password_policy_h handl
 
 typedef runtime::Array<std::string> dpm_password_iterator;
 
-dpm_password_iterator_h dpm_password_create_iterator(dpm_password_policy_h handle)
+dpm_password_iterator_h dpm_password_create_iterator(device_policy_manager_h handle)
 {
     RET_ON_FAILURE(handle, NULL);
 
@@ -521,7 +510,7 @@ int dpm_password_destroy_iterator(dpm_password_iterator_h iter)
     return 0;
 }
 
-int dpm_password_set_forbidden_strings(dpm_password_policy_h handle, const char *strings[], int length)
+int dpm_password_set_forbidden_strings(device_policy_manager_h handle, const char *strings[], int length)
 {
     int iter;
     int ret = 0;
