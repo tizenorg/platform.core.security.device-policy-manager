@@ -17,7 +17,7 @@
 #ifndef __CAPI_ZONE_POLICY_H__
 #define __CAPI_ZONE_POLICY_H__
 
-#include <dpm/context.h>
+#include <dpm/device-policy-manager.h>
 
 /**
  * @file zone.h
@@ -34,56 +34,15 @@ extern "C" {
  */
 
 /**
- * @brief       The zone policy handle
- * @since_tizen 3.0
- * @see         dpm_context_acquire_zone_policy()
- * @see         dpm_context_release_zone_policy()
- */
-typedef void* dpm_zone_policy_h;
-
-/**
- * @brief       Acquires the zone policy handle.
- * @details     This API acquires zone policy handle required to call
- *              the zone policy APIs.
- * @since_tizen 3.0
- * @param[in]   handle Device policy context handle
- * @return      Zone policy handle on success, otherwise NULL
- * @remark      The specific error code can be obtained by using the
- *              get_last_result() method. Error codes are described in
- *              exception section.
- * @exception   #DPM_ERROR_NONE No error
- * @exception   #DPM_ERROR_CONNECTION_REFUSED Connection refused
- * @exception   #DPM_ERROR_INVALID_PARAMETER Invalid parameter
- * @exception   #DPM_ERROR_TIMED_OUT Time out
- * @see         dpm_context_release_zone_policy()
- * @see         get_last_result()
- */
-DPM_API dpm_zone_policy_h dpm_context_acquire_zone_policy(dpm_context_h handle);
-
-/**
- * @brief       Releases the zone policy handle.
- * @details     This API must be called if interaction with the device
- *              policy manager is no longer required.
- * @since_tizen 3.0
- * @param[in]   context The device policy context
- * @param[in]   handle The zone policy handle
- * @return      #DPM_ERROR_NONE on success, otherwise a negative value
- * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
- * @retval      #DPM_ERROR_TIMED_OUT Time out
- * @pre         The handle must be created by dpm_context_acquire_zone_policy()
- * @see         dpm_context_acquire_zone_policy()
- */
-DPM_API int dpm_context_release_zone_policy(dpm_context_h context, dpm_zone_policy_h handle);
-
-/**
  * @brief       Creates a new zone.
  * @details     An administrator can use this API to create a container. Once the container
  *              is created, the admin package given to the parameter will be installed inside
  *              the container. Then ownership of the container gets transferred to the admin
  *              package from the client which triggered the container creation process.
  * @since_tizen 3.0
- * @param[in]   handle The zone policy handle
+ * @privlevel   partner
+ * @privilege   %http://tizen.org/privilege/dpm.zone
+ * @param[in]   handle Device policy manager handle
  * @param[in]   name The zone name to be created
  * @param[in]   pkgname Admin package container ownership will be transferred
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
@@ -92,20 +51,21 @@ DPM_API int dpm_context_release_zone_policy(dpm_context_h context, dpm_zone_poli
  * @retval      #DPM_ERROR_TIMED_OUT Time out
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API
- * @pre         The handle must be created by dpm_context_acquire_zone_policy().
- * @see         dpm_context_acquire_zone_policy()
- * @see         dpm_context_release_zone_policy()
+ * @pre         The handle must be created by dpm_manager_create().
+ * @see         dpm_manager_create()
  * @see         dpm_zone_destroy()
  * @see         dpm_zone_create_iterator()
  */
-DPM_API int dpm_zone_create(dpm_zone_policy_h handle, const char* name, const char* pkgname);
+DPM_API int dpm_zone_create(device_policy_manager_h handle, const char* name, const char* pkgname);
 
 /**
  * @brief       Removes existing zone.
  * @details     Administrator can use this API to remove zone. All file system objects
  *              created for the zone will be also erased.
  * @since_tizen 3.0
- * @param[in]   handle The zone policy handle
+ * @privlevel	partner
+ * @privilege	 %http://tizen.org/privilege/dpm.zone
+ * @param[in]   handle Device policy manager handle
  * @param[in]   name The zone name to be removed
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
@@ -114,15 +74,14 @@ DPM_API int dpm_zone_create(dpm_zone_policy_h handle, const char* name, const ch
  * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
  *              the privilege to call this API or the caller is not the owner
  *              of the zone
- * @pre         The handle must be created by dpm_context_acquire_zone_policy().
+ * @pre         The handle must be created by dpm_manager_create().
  * @pre         The zone corresponding to the given name must be
  *              created before use of this API.
- * @see         dpm_context_acquire_zone_policy()
- * @see         dpm_context_release_zone_policy()
+ * @see         dpm_manager_create()
  * @see         dpm_zone_create()
  * @see         dpm_zone_create_iterator()
  */
-DPM_API int dpm_zone_destroy(dpm_zone_policy_h handle, const char* name);
+DPM_API int dpm_zone_destroy(device_policy_manager_h handle, const char* name);
 
 /*
  * @brief       Enumeration for zone state
@@ -139,7 +98,7 @@ typedef enum {
  * @details     This API can be used to get the state of the zone. The zone can
  *              have one of the three states(running, locked).
  * @since_tizen 3.0
- * @param[in]   handle The zone policy handle
+ * @param[in]   handle Device policy manager handle
  * @param[in]   name The zone name
  * @param[out]  state The zone state
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
@@ -147,13 +106,12 @@ typedef enum {
  * @retval      #DPM_ERROR_NO_DATA No such zone to get state
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_TIMED_OUT Time out
- * @pre         The handle must be created by dpm_context_acquire_zone_policy().
- * @see         dpm_context_acquire_zone_policy()
- * @see         dpm_context_release_zone_policy()
+ * @pre         The handle must be created by dpm_manager_create().
+ * @see         dpm_manager_create()
  * @see         dpm_zone_create()
  * @see         dpm_zone_destroy()
  */
-DPM_API int dpm_zone_get_state(dpm_zone_policy_h handle, const char* name, dpm_zone_state_e *state);
+DPM_API int dpm_zone_get_state(device_policy_manager_h handle, const char* name, dpm_zone_state_e *state);
 
 /**
  * @brief       The zone list iterator handle
@@ -168,27 +126,27 @@ typedef void* dpm_zone_iterator_h;
  * @brief       Creates a zone list iterator.
  * @details     The zone list iterator can be used to get all defined zones.
  * @since_tizen 3.0
- * @param[in]   handle The zone policy handle
+ * @param[in]   handle Device policy manager handle
  * @param[in]   state a combination of the zone state to look
  * @return      A zone list iterator on success, otherwise
  *              null value
- * @remark      The specific error code can be obtained by using the
+ * @remarks      The specific error code can be obtained by using the
  *              get_last_result() method. Error codes are described in
  *              exception section.
+ *                         The returned iterator should be released using dpm_zone_destroy_iterator().
  * @exception   #DPM_ERROR_NONE No error
  * @exception   #DPM_ERROR_OUT_OF_MEMORY Out of memory
  * @exception   #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @exception   #DPM_ERROR_TIMED_OUT Time out
- * @pre         The handle must be created by dpm_context_acquire_zone_policy().
- * @see         dpm_context_acquire_zone_policy()
- * @see         dpm_context_release_zone_policy()
+ * @pre         The handle must be created by dpm_manager_create().
+ * @see         dpm_manager_create()
  * @see         dpm_zone_create()
  * @see         dpm_zone_destroy()
  * @see         dpm_zone_iterator_next()
  * @see         dpm_zone_destroy_iterator()
  * @see         get_last_result()
  */
-DPM_API dpm_zone_iterator_h dpm_zone_create_iterator(dpm_zone_policy_h handle, dpm_zone_state_e state);
+DPM_API dpm_zone_iterator_h dpm_zone_create_iterator(device_policy_manager_h handle, dpm_zone_state_e state);
 
 /**
  * @brief       Fetches a zone name and forwards the iterator.
@@ -199,6 +157,7 @@ DPM_API dpm_zone_iterator_h dpm_zone_create_iterator(dpm_zone_policy_h handle, d
  * @param[in]   iter The iterator to be controlled
  * @param[out]  zone_name The zone name got from the iterator
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @remarks    The @a zone_name should not be freed using free().
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval      #DPM_ERROR_TIMED_OUT Time out
@@ -231,14 +190,14 @@ DPM_API int dpm_zone_destroy_iterator(dpm_zone_iterator_h iter);
  * @param[in]   user_data The user data passed from dpm_zone_foreach_name
  * @see         dpm_zone_foreach_name()
  */
-typedef void(*dpm_zone_foreach_cb)(const char* name, void *user_data);
+typedef void(*dpm_zone_foreach_name_cb)(const char* name, void *user_data);
 
 /**
  * @brief       Retrieves all the name of created zones
  * @details     This API calls dpm_zone_foreach_cb() once for each zone name
  *              with traversing the created zones list.
  * @since_tizen 3.0
- * @param[in]   handle The zone policy handle
+ * @param[in]   handle Device policy manager handle
  * @param[in]   state a combination of the zone state to look
  * @param[in]   callback The iteration callback function
  * @param[in]   user_data The user data passed to the callback function
@@ -246,15 +205,14 @@ typedef void(*dpm_zone_foreach_cb)(const char* name, void *user_data);
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_TIMED_OUT Time out
  * @retval      #DPM_ERROR_INVALID_PARAMETER Invalid parameter
- * @pre         The handle must be created by dpm_context_acquire_zone_policy().
- * @see         dpm_context_acquire_zone_policy()
- * @see         dpm_context_release_zone_policy()
+ * @pre         The handle must be created by dpm_manager_create().
+ * @see         dpm_manager_create()
  * @see         dpm_zone_create()
  * @see         dpm_zone_destroy()
  */
-DPM_API int dpm_zone_foreach_name(dpm_zone_policy_h handle,
+DPM_API int dpm_zone_foreach_name(device_policy_manager_h handle,
                                   dpm_zone_state_e state,
-                                  dpm_zone_foreach_cb callback, void* user_data);
+                                  dpm_zone_foreach_name_cb callback, void* user_data);
 
 
 /**

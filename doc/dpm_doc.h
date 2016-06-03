@@ -73,16 +73,16 @@
   * the device policy manager.
   *<br>
   * @ingroup CAPI_SECURITY_DPM_MODULE
-  * @defgroup CAPI_DPM_POLICY_CLIENT_MODULE Policy Client Interface
+  * @defgroup CAPI_DPM_MANAGER_MODULE Policy Manager Interface
   * @brief The policy client provides functions required to access the device policy APIs.
-  * @section CAPI_DPM_POLICY_CLIENT_MODULE_HEADER Required Header
-  *  \#include <dpm/context.h>
-  * @section CAPI_DPM_POLICY_CLIENT_MODULE_OVERVIEW Overview
-  * The Policy Client module provides Device Policy Client handle which keeps track of
+  * @section CAPI_DPM_MANAGER_MODULE_HEADER Required Header
+  *  \#include <dpm/device-policy-manager.h>
+  * @section CAPI_DPM_MANAGER_MODULE_OVERVIEW Overview
+  * The Policy Manager module provides Device Policy Manager handle which keeps track of
   * state between the device policy client and the device policy manager.
-  * The device policy clients must create the handle by using dpm_context_create()
+  * The device policy clients must create the handle by using dpm_manager_create()
   * before attempting to use almost any of the device policy APIs, and the handle should be
-  * freed by using dpm_context_destroy() when interaction with the device policy manager
+  * freed by using dpm_manager_destroy() when interaction with the device policy manager
   * is no longer required.
   *
   * @ingroup CAPI_SECURITY_DPM_MODULE
@@ -93,6 +93,28 @@
   * @section CAPI_DPM_PASSWORD_POLICY_MODULE_OVERVIEW Overview
   * PasswordPolicy policy group provides APIs to control password policies such as
   * password type, password quality and expiration date. Any API which requires privileges
+  * is only available for the registered device policy client which is enrolled to the device
+  * by enrollment process.
+  *
+  * @ingroup CAPI_SECURITY_DPM_MODULE
+  * @defgroup CAPI_DPM_RESTRICTION_POLICY_MODULE RestrictionPolicy policy group
+  * @brief RestrictionPolicy policy group provides APIs to control restriction functionality.
+  * @section CAPI_DPM_RESTRICTION_POLICY_MODULE_HEADER Required Header
+  *  \#include <dpm/restriction.h>
+  * @section CAPI_DPM_RESTRICTION_POLICY_MODULE_OVERVIEW Overview
+  * RestrictionPolicy policy group provides APIs to control  restriction functionality such as
+  * Camera, Microphone, Wifi, bluetooth, USB and so on. Any API which requires privileges
+  * is only available for the registered device policy client which is enrolled to the device
+  * by enrollment process.
+  *
+  * @ingroup CAPI_SECURITY_DPM_MODULE
+  * @defgroup CAPI_DPM_SECURITY_POLICY_MODULE SecurityPolicy policy group
+  * @brief SecurityPolicy policy group provides APIs to control security functionality.
+  * @section CAPI_DPM_SECURITY_POLICY_MODULE_HEADER Required Header
+  *  \#include <dpm/security.h>
+  * @section CAPI_DPM_SECURITY_POLICY_MODULE_OVERVIEW Overview
+  * SecurityPolicy policy group provides APIs to control security functionality such as
+  * device encryption and screen lock. Any API which requires privileges
   * is only available for the registered device policy client which is enrolled to the device
   * by enrollment process.
   *
