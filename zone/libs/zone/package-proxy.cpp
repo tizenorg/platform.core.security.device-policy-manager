@@ -58,16 +58,15 @@ static int packageEventHandler(uid_t target_uid, int req_id,
     std::string keystr = key;
     int progress = 0;
 
-    if (target_uid == tzplatform_getuid(TZ_SYS_GLOBALAPP_USER))
-        target_uid = getuid();
-
-    try {
-        runtime::User pkgOwner(target_uid);
-        if (pkgOwner.getName() == instance->zoneName) {
+    if (target_uid != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER)) {
+        try {
+            runtime::User pkgOwner(target_uid);
+            if (pkgOwner.getName() != instance->zoneName) {
+                return PACKAGE_MANAGER_ERROR_NONE;
+            }
+        } catch (runtime::Exception &e) {
             return PACKAGE_MANAGER_ERROR_NONE;
         }
-    } catch (runtime::Exception &e) {
-        return PACKAGE_MANAGER_ERROR_NONE;
     }
 
     std::transform(keystr.begin(), keystr.end(), keystr.begin(), ::tolower);
