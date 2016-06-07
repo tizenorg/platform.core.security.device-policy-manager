@@ -16,15 +16,117 @@
  * limitations under the License.
  *
  */
+#include <zone/zone.h>
+#include <zone/app-proxy.h>
+#include <zone/package-proxy.h>
+
 #include "kaskit.h"
 #include "widget.h"
 
+static zone_package_proxy_h __zone_pkg;
+static zone_app_proxy_h __zone_app;
+static zone_manager_h __zone_mgr;
+
+static void __pkg_event_cb(const char* type,
+	const char* package,
+	package_manager_event_type_e event_type,
+	package_manager_event_state_e event_state, int progress,
+	package_manager_error_e error, void* user_data)
+{
+	if (event_state == PACKAGE_MANAGER_EVENT_STATE_COMPLETED) {
+        	if (event_type == PACKAGE_MANAGER_EVENT_TYPE_INSTALL) {
+//			__apps_package_manager_install(package);
+	        } else if (event_type == PACKAGE_MANAGER_EVENT_TYPE_UNINSTALL) {
+//			__apps_package_manager_uninstall(package);
+        	}
+	}
+}
+
+static bool __get_app_info_cb(app_info_h app_h, void* user_data)
+{
+	char* app_label, *app_icon, *app_id, *pkg_id;
+	bool nodisplay = false;
+
+	app_info_is_nodisplay(app_h, &nodisplay);
+	if (nodisplay)
+		return true;
+
+	app_info_get_app_id(app_h, &app_id);
+	app_info_get_label(app_h, &app_label);
+	app_info_get_icon(app_h, &app_icon);
+
+	app_info_get_package(app_h, &pkg_id);
+
+	_create_app_icon(pkg_id, app_id, app_label, app_icon);
+
+	return true;
+}
+
+char* __get_current_zone_name() {
+	struct passwd pwd, *result;
+	int bufsize;
+
+	bufsize = sysconf(_SC_GETPW_R_SIZE_MAX);
+	if (bufsize == -1) {
+		bufsize = 16384;
+	}
+
+	char* ret, *buf = malloc(bufsize * sizeof(char));
+
+	getpwuid_r(getuid(), &pwd, buf, bufsize, &result);
+	if (result == NULL) {
+		ret = NULL;
+	} else {
+		ret = strdup(result->pw_name);
+	}
+	free(buf);
+	return ret;
+}
+
+static void __toast_callback_cb(void *data, Evas_Object *obj)
+{
+	ui_app_exit();
+        return;
+}
+
 static bool __app_create(void *data)
 {
-	elm_app_base_scale_set(1.8);
+	zone_iterator_h it;
+	const char* zone_name;
+	char *current_zone_name;
 
-	_create_kaskit_window("Krate");
+	current_zone_name = __get_current_zone_name();
+	zone_manager_create(&__zone_mgr);
+	it = zone_manager_create_zone_iterator(__zone_mgr, ZONE_STATE_RUNNING);
+	while (1) {
+		zone_iterator_next(it, &zone_name);
+		if (zone_name == NULL || strncmp(zone_name, current_zone_name, 16384)) {
+			break;
+		}
 
+	}
+
+	if (zone_name == NULL) {
+		_create_toast("There is no zone", __toast_callback_cb, NULL);
+		return true;
+	}
+
+	_create_kaskit_window(zone_name);
+	
+	ecore_main_loop_iterate();
+
+	zone_app_proxy_create(__zone_mgr, zone_name, &__zone_app);
+	zone_package_proxy_create(__zone_mgr, zone_name, &__zone_pkg);
+
+	zone_package_proxy_set_event_status(__zone_pkg,
+		PACKAGE_MANAGER_STATUS_TYPE_INSTALL |
+		PACKAGE_MANAGER_STATUS_TYPE_UNINSTALL);
+	zone_package_proxy_set_event_cb(__zone_pkg, __pkg_event_cb, NULL);
+
+	zone_app_proxy_foreach_app_info(__zone_app, __get_app_info_cb, NULL);
+
+        zone_iterator_destroy(it);
+	free(current_zone_name);
 	return true;
 }
 
@@ -40,6 +142,9 @@ static void __app_resume(void *data)
 
 static void __app_terminate(void *data)
 {
+	zone_package_proxy_destroy(__zone_pkg);
+	zone_app_proxy_destroy(__zone_app);
+	zone_manager_destroy(__zone_mgr);
 	return;
 }
 

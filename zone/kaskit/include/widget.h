@@ -29,4 +29,7 @@ Evas_Object *_create_win(const char *package);
 Evas_Object *_create_conformant(Evas_Object *parent);
 Evas_Object *_create_layout(Evas_Object *parent, char *file, const char *group);
 
+typedef void (*_toast_cb)(void* data, Evas_Object *obj);
+void _create_toast(char* text, _toast_cb callback, void* user_data);
+
 #endif /* WIDGET_H_ */
