@@ -31,6 +31,12 @@ public:
     WifiPolicy(PolicyControlContext& ctxt);
     ~WifiPolicy(void);
 
+	int setState(bool enable);
+	bool getState();
+
+	int setHotspotState(bool enable);
+	bool getHotspotState();
+
     int setProfileChangeRestriction(bool restrict);
     bool isProfileChangeRestricted(void);
 

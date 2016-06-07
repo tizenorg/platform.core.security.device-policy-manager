@@ -28,6 +28,42 @@ WifiPolicy::~WifiPolicy()
 {
 }
 
+int WifiPolicy::setState(bool enable)
+{
+    try {
+        return context->methodCall<int>("WifiPolicy::setState", enable);
+    } catch (runtime::Exception& e) {
+        return -1;
+    }
+}
+
+bool WifiPolicy::getState()
+{
+    try {
+        return context->methodCall<bool>("WifiPolicy::getState");
+    } catch (runtime::Exception &e) {
+        return -1;
+    }
+}
+
+int WifiPolicy::setHotspotState(bool enable)
+{
+    try {
+        return context->methodCall<int>("WifiPolicy::setHotspotState", enable);
+    } catch (runtime::Exception& e) {
+        return -1;
+    }
+}
+
+bool WifiPolicy::getHotspotState()
+{
+    try {
+        return context->methodCall<bool>("WifiPolicy::getHotspotState");
+    } catch (runtime::Exception &e) {
+        return -1;
+    }
+}
+
 int WifiPolicy::setProfileChangeRestriction(bool enable)
 {
     try {
