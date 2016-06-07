@@ -50,12 +50,6 @@ public:
 	int setExternalStorageState(int enable);
 	int getExternalStorageState();
 
-	int setWifiState(bool enable);
-	bool getWifiState();
-
-	int setWifiHotspotState(bool enable);
-	bool getWifiHotspotState();
-
 private:
 	PolicyControlContext& context;
 };

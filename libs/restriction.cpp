@@ -154,40 +154,4 @@ int RestrictionPolicy::getExternalStorageState()
 	}
 }
 
-int RestrictionPolicy::setWifiState(bool enable)
-{
-    try {
-        return context->methodCall<int>("RestrictionPolicy::setWifiState", enable);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
-}
-
-bool RestrictionPolicy::getWifiState()
-{
-    try {
-        return context->methodCall<bool>("RestrictionPolicy::getWifiState");
-    } catch (runtime::Exception &e) {
-        return -1;
-    }
-}
-
-int RestrictionPolicy::setWifiHotspotState(bool enable)
-{
-    try {
-        return context->methodCall<int>("RestrictionPolicy::setWifiHotspotState", enable);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
-}
-
-bool RestrictionPolicy::getWifiHotspotState()
-{
-    try {
-        return context->methodCall<bool>("RestrictionPolicy::getWifiHotspotState");
-    } catch (runtime::Exception &e) {
-        return -1;
-    }
-}
-
 } //namespace DevicePolicyManager
