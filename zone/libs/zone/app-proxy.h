@@ -32,7 +32,7 @@ extern "C" {
 #endif
 
 /**
- * @addtogroup  CAPI_ZONE_PACKAGE_MODULE
+ * @addtogroup  CAPI_ZONE_APPLICATION_INFO_MODULE
  * @{
  */
 

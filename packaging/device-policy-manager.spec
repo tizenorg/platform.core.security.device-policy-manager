@@ -235,6 +235,7 @@ Tizen Krate launcher interface for zone
 %manifest zone/kaskit/org.tizen.kaskit.manifest
 %{launcher_home}/bin/*
 %{launcher_home}/res/*
+%{launcher_home}/res/images/default_app_icon.png
 %{TZ_SYS_RO_PACKAGES}/org.tizen.kaskit.xml
 
 ## Zone Client Package ########################################################
