@@ -68,11 +68,11 @@ static int __send_launch_request(app_control_h app_control)
 
 static void __ok_btn_cb(void *data, Evas_Object *obj, void *event_info)
 {
-	Evas_Object *popup = (Evas_Object *)evas_object_data_get(obj, "target");
+	Evas_Object *popup = (Evas_Object *) data;
 	evas_object_data_set(popup, "selected", "ok");
 
 	/* call application */
-	app_control_h app_control = (app_control_h) data;
+	app_control_h app_control = (app_control_h)evas_object_data_get(popup, "app-control");
 
 	if (__send_launch_request(app_control) != 0)
 		dlog_print(DLOG_ERROR, LOG_TAG, "failed to send launch request");
@@ -159,11 +159,23 @@ static Eina_Bool __home_key_cb(void *data, int type, void *event)
 	return EINA_TRUE;
 }
 
+static void __create_popup_btn(Evas_Object *popup, char *part, char *btn_text, Evas_Smart_Cb func)
+{
+	Evas_Object *btn = NULL;
+
+	btn = elm_button_add(popup);
+	elm_object_style_set(btn, "popup");
+	elm_object_text_set(btn, __(btn_text));
+	elm_object_part_content_set(popup, part, btn);
+	evas_object_smart_callback_add(btn, "clicked", func, popup);
+
+	return;
+}
+
 void _create_syspopup(const char *id, char *style, const char *status, app_control_h svc)
 {
 	Evas_Object *win = NULL;
 	Evas_Object *popup = NULL;
-	Evas_Object *left_btn = NULL, *right_btn = NULL;
 
 	popup_info_s *info = NULL;
 	int ret = 0;
@@ -188,6 +200,7 @@ void _create_syspopup(const char *id, char *style, const char *status, app_contr
 		info->style = style;
 
 	elm_object_style_set(popup, info->style);
+	eext_object_event_callback_add(popup, EEXT_CALLBACK_BACK, eext_popup_back_cb, win);
 
 	if (!strcmp(info->style, "default")) {
 		elm_object_part_text_set(popup, "title,text", header);
@@ -197,29 +210,18 @@ void _create_syspopup(const char *id, char *style, const char *status, app_contr
 		elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
 
 		evas_object_event_callback_add(popup, EVAS_CALLBACK_DEL, __default_popup_del_cb, info);
+		evas_object_data_set(popup, "app-control", svc);
 
 		if (info->left_btn != NULL) {
-			left_btn = elm_button_add(popup);
-			elm_object_style_set(left_btn, "popup");
-			elm_object_text_set(left_btn, __(info->left_btn));
-			elm_object_part_content_set(popup, "button1", left_btn);
-
-			evas_object_data_set(popup, "app-control", svc);
-			evas_object_smart_callback_add(left_btn, "clicked", __cancel_btn_cb, popup);
-
-			/*add home key callback*/
 			ecore_event_handler_add(ECORE_EVENT_KEY_DOWN, __home_key_cb, popup);
-		}
 
-		if (info->right_btn != NULL) {
-			right_btn = elm_button_add(popup);
+			__create_popup_btn(popup, "button1", info->left_btn, __cancel_btn_cb);
+			__create_popup_btn(popup, "button2", info->right_btn, __ok_btn_cb);
+		} else {
+			__create_popup_btn(popup, "button1", info->right_btn, __ok_btn_cb);
 
-			elm_object_style_set(right_btn, "popup");
-			elm_object_text_set(right_btn, __(info->right_btn));
-			elm_object_part_content_set(popup, "button2", right_btn);
-
-			evas_object_data_set(right_btn, "target", popup);
-			evas_object_smart_callback_add(right_btn, "clicked", __ok_btn_cb, svc);
+			eext_object_event_callback_del(popup, EEXT_CALLBACK_BACK, eext_popup_back_cb);
+			eext_win_keygrab_set(win, "XF86Home");
 		}
 	} else {
 		elm_object_text_set(popup, body);
@@ -230,7 +232,6 @@ void _create_syspopup(const char *id, char *style, const char *status, app_contr
 		evas_object_event_callback_add(popup, EVAS_CALLBACK_DEL, __popup_del_cb, NULL);
 	}
 
-	eext_object_event_callback_add(popup, EEXT_CALLBACK_BACK, eext_popup_back_cb, win);
 	evas_object_show(popup);
 
 	return;
