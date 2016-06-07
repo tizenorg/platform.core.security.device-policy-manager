@@ -29,43 +29,6 @@ ApplicationPolicy::~ApplicationPolicy()
 {
 }
 
-
-int ApplicationPolicy::setApplicationInstallationMode(int mode)
-{
-    try {
-        return context->methodCall<int>("ApplicationPolicy::setApplicationInstallationMode", mode);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
-}
-
-int ApplicationPolicy::getApplicationInstallationMode()
-{
-    try {
-        return context->methodCall<int>("ApplicationPolicy::getApplicationInstallationMode");
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
-}
-
-int ApplicationPolicy::setApplicationUninstallationMode(int mode)
-{
-    try {
-        return context->methodCall<int>("ApplicationPolicy::setApplicationUninstallationMode", mode);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
-}
-
-int ApplicationPolicy::getApplicationUninstallationMode()
-{
-    try {
-        return context->methodCall<int>("ApplicationPolicy::getApplicationUninstallationMode");
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
-}
-
 int ApplicationPolicy::setApplicationState(const std::string& appid, int state)
 {
     try {
@@ -147,28 +110,28 @@ int ApplicationPolicy::wipeApplicationData(const std::string& appid)
     }
 }
 
-int ApplicationPolicy::addPackageToBlacklist(const std::string& pkgid)
+int ApplicationPolicy::setModeRestriction(int mode)
 {
     try {
-        return context->methodCall<int>("ApplicationPolicy::addPackageToBlacklist", pkgid);
+        return context->methodCall<int>("ApplicationPolicy::setModeRestriction", mode);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int ApplicationPolicy::removePackageFromBlacklist(const std::string& pkgid)
+int ApplicationPolicy::unsetModeRestriction(int mode)
 {
     try {
-        return context->methodCall<int>("ApplicationPolicy::removePackageFromBlacklist", pkgid);
+        return context->methodCall<int>("ApplicationPolicy::unsetModeRestriction", mode);
     } catch (runtime::Exception& e) {
         return -1;
     }
 }
 
-int ApplicationPolicy::checkPackageIsBlacklisted(const std::string& pkgid)
+int ApplicationPolicy::getModeRestriction()
 {
     try {
-        return context->methodCall<int>("ApplicationPolicy::checkPackageIsBlacklisted", pkgid);
+        return context->methodCall<int>("ApplicationPolicy::getModeRestriction");
     } catch (runtime::Exception& e) {
         return -1;
     }

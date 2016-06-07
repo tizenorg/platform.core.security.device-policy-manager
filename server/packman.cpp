@@ -389,8 +389,7 @@ void PackageManager::deactivatePackage(const std::string& pkgid, const uid_t use
 void PackageManager::installPackage(const std::string& pkgpath, const uid_t user)
 {
     int ret = ::pkgmgr_client_usr_install(nativeRequestHandle, NULL, NULL, pkgpath.c_str(), NULL, PM_QUIET, PackageEventCallback, nullptr, user);
-    if (ret != PKGMGR_R_OK) {
-        ERROR("Error in pkgmgr_client_install");
+    if (ret < PKGMGR_R_OK) {
         throw runtime::Exception("Package installation failed");
     }
 }
@@ -399,7 +398,7 @@ void PackageManager::uninstallPackage(const std::string& pkgid, const uid_t user
 {
     std::string pkgtype;
 
-    PackageInfo pkgInfo(pkgid);
+    PackageInfo pkgInfo(pkgid, user);
     pkgtype = pkgInfo.getType();
 
     int ret = ::pkgmgr_client_usr_uninstall(nativeRequestHandle, pkgtype.c_str(), pkgid.c_str(), PM_QUIET, PackageEventCallback, nullptr, user);
@@ -442,15 +441,32 @@ std::vector<std::string> PackageManager::getAppList(const uid_t user)
     return appList;
 }
 
-void PackageManager::addPackageToBlacklist(const std::string& pkgid, const uid_t user)
+void PackageManager::setModeRestriction(int mode, uid_t user)
 {
+    if (::pkgmgr_client_usr_set_restriction_mode(nativeRequestHandle,
+                                                 mode,
+                                                 user) != PKGMGR_R_OK) {
+        throw runtime::Exception("Failed to set package restriction mode");
+    }
 }
 
-void PackageManager::removePackageFromBlacklist(const std::string& pkgid, const uid_t user)
+void PackageManager::unsetModeRestriction(int mode, uid_t user)
 {
+    if (::pkgmgr_client_usr_unset_restriction_mode(nativeRequestHandle,
+                                                   mode,
+                                                   user) != PKGMGR_R_OK) {
+        throw runtime::Exception("Failed to unset package mode restriction");
+    }
 }
 
-bool PackageManager::checkPackageIsBlacklisted(const std::string& pkgid, const uid_t user)
+int PackageManager::getModeRestriction(uid_t user)
 {
-    return false;
+    int mode;
+    if (::pkgmgr_client_usr_get_restriction_mode(nativeRequestHandle,
+                                                 &mode,
+                                                 user) != PKGMGR_R_OK) {
+        throw runtime::Exception("Failed to get package restriction mode");
+    }
+
+    return mode;
 }
