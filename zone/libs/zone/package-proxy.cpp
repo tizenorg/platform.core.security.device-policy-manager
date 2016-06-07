@@ -236,7 +236,7 @@ int zone_package_proxy_foreach_package_info(zone_package_proxy_h handle, package
         int ret = callback(info_h, user_data);
         package_info_destroy(info_h);
         if (!ret) {
-            continue;
+            break;;
         }
     }
 

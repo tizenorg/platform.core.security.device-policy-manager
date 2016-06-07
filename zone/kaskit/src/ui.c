@@ -18,69 +18,128 @@
  */
 #include "kaskit.h"
 #include "widget.h"
+#include "conf.h"
 
-typedef struct {
-	Evas_Object *win;
-	Evas_Object *conform;
-	Evas_Object *layout;
-	char *edj_path;
-} uidata_s;
-
-uidata_s ud = {0, };
-
-static Eina_Bool __hardware_key_cb(void *data, int type, void *event)
-{
-	Evas_Event_Key_Down *ev = event;
-
-	if (!strcmp(ev->keyname, "XF86Back")) {
-		ui_app_exit();
-	}
-
-	return EINA_TRUE;
-}
+static uidata_s ud = {0, };
+static int __num_of_apps = 0;
 
 static void __block_clicked_cb(void *data, Evas_Object *obj, const char *emission, const char *source)
 {
 	ui_app_exit();
-	return;
+}
+
+int __icon_down_x, __icon_down_y;
+static void __app_icon_down_cb(void *data, Evas *e, Evas_Object *obj, void *event_info) {
+	Evas_Event_Mouse_Up* ev = event_info;
+
+	__icon_down_x = ev->output.x;
+	__icon_down_y = ev->output.y;
+}
+
+static void __app_icon_up_cb(void *data, Evas *e, Evas_Object *obj, void *event_info)
+{
+	Evas_Event_Mouse_Up* ev = event_info;
+	int distance_x = (ev->output.x - __icon_down_x);
+	int distance_y = (ev->output.y - __icon_down_y);
+        int distance = distance_x * distance_x + distance_y * distance_y;
+
+	if (distance <= ALLOWED_ICON_DRAG_DISTANCE) {
+		_icon_clicked_cb(data);
+	}
+	free(data);
 }
 
 static void __set_kaskit_layout(const char *name)
 {
-	Evas_Object *panel = _create_layout(ud.layout, ud.edj_path, "kaskit_layout");
+	ud.panel = _create_layout(ud.layout, ud.edj_path, "popup_layout");
 
-	elm_object_part_text_set(panel, "kaskit_title", name);
-	elm_object_part_content_set(ud.layout, "kaskit_window", panel);
+	elm_object_part_text_set(ud.panel, "popup_title", name);
+	elm_object_part_content_set(ud.layout, "popup_window", ud.panel);
+
+	ud.scroller = elm_scroller_add(ud.panel);
+	elm_scroller_bounce_set(ud.scroller, EINA_FALSE, EINA_TRUE);
+	elm_scroller_policy_set(ud.scroller, ELM_SCROLLER_POLICY_OFF, ELM_SCROLLER_POLICY_AUTO);
+	elm_object_part_content_set(ud.panel, "popup_content", ud.scroller);
+
+	ud.app_view = elm_table_add(ud.scroller);
+	elm_table_homogeneous_set(ud.app_view, EINA_TRUE);
+	elm_object_content_set(ud.scroller, ud.app_view);
 
 	return;
 }
 
-void _create_kaskit_window(const char *krate_name)
+static char* __get_res_path(const char* file)
 {
 	char *res_path = NULL;
 	char edj_path[PATH_MAX] = "\0";
 
-	/* Get EDJ path */
 	res_path = app_get_resource_path();
 	if (res_path == NULL) {
 		dlog_print(DLOG_ERROR, LOG_TAG, "failed get resource path");
 		ui_app_exit();
 	}
-	snprintf(edj_path, PATH_MAX, "%s%s", res_path, "org.tizen.kaskit.edj");
+	snprintf(edj_path, PATH_MAX, "%s%s", res_path, file);
 
-	ud.edj_path = strdup(edj_path);
 	free(res_path);
 
+	return strdup(edj_path);
+}
+
+void _create_kaskit_window(const char *krate_name)
+{
+	ud.edj_path = __get_res_path(PACKAGE ".edj");
 	ud.win = _create_win(PACKAGE);
 	ud.conform = _create_conformant(ud.win);
 	ud.layout = _create_layout(ud.conform, ud.edj_path, "main_window");
 	elm_object_content_set(ud.conform, ud.layout);
 
-	ecore_event_handler_add(ECORE_EVENT_KEY_DOWN, __hardware_key_cb, NULL);
 	elm_object_signal_callback_add(ud.layout, "bg_clicked", "layout", __block_clicked_cb, NULL);
 
 	__set_kaskit_layout(krate_name);
 
 	evas_object_show(ud.win);
 	return;
+}
+
+void _create_app_icon(char* pkg_id, char* app_id, char* label, char* icon)
+{
+	char string[1024] = {0, };
+	Evas_Object *icon_layout;
+	Evas_Object *icon_image;
+
+	icon_layout = _create_layout(ud.app_view, ud.edj_path, "icon");
+	evas_object_size_hint_weight_set(icon_layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+	evas_object_size_hint_align_set(icon_layout, 0.0, 0.0);
+
+	if (!ecore_file_can_read(icon)) {
+		free(icon);		
+		icon = __get_res_path("images/default_app_icon.png");
+	}
+
+	icon_image = elm_image_add(icon_layout);
+	elm_image_file_set(icon_image, icon, NULL);
+	evas_object_size_hint_min_set(icon_image, ICON_IMG_SIZE, ICON_IMG_SIZE);
+	evas_object_size_hint_max_set(icon_image, ICON_IMG_SIZE, ICON_IMG_SIZE);
+
+        snprintf(string, sizeof(string), "<font_size=%d><color=#%s><shadow_color=#%s>%s</shadow_color></color></font_size>",
+		ICON_TXT_SIZE_NORMAL, ICON_TXT_COLOR, ICON_TXT_SHADOW_COLOR,
+		label);
+	elm_object_part_text_set(icon_layout, "icon_name", string);
+
+	elm_object_part_content_set(icon_layout, "icon_content", icon_image);
+
+	evas_object_event_callback_add(icon_layout, EVAS_CALLBACK_MOUSE_DOWN, __app_icon_down_cb, NULL);
+	evas_object_event_callback_add(icon_layout, EVAS_CALLBACK_MOUSE_UP, __app_icon_up_cb, strdup(app_id));
+
+	elm_table_pack(ud.app_view, icon_layout, __num_of_apps % 3, __num_of_apps / 3, 1, 1);
+	evas_object_size_hint_min_set(ud.app_view, 0, (__num_of_apps / 3 + 1) * ICON_SIZE_H);
+
+	__num_of_apps++;
+
+	evas_object_show(icon_image);
+	evas_object_show(icon_layout);
+}
+
+void _destroy_app_icon(char* pkg_id)
+{
 }

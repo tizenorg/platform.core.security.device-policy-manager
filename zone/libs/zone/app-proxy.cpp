@@ -137,7 +137,7 @@ int zone_app_proxy_foreach_app_info(zone_app_proxy_h handle, app_manager_app_inf
         int ret = callback(info, user_data);
         app_info_destroy(info);
         if (!ret) {
-            continue;
+            break;
         }
     }
 
