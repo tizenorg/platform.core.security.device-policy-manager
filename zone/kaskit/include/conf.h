@@ -17,19 +17,20 @@
  *
  */
 
-#ifndef WIDGET_H_
-#define WIDGET_H_
+#ifndef CONF_H_
+#define CONF_H_
 
-#include <app.h>
-#include <dlog.h>
-#include <Elementary.h>
-#include <efl_extension.h>
+#define RESOLUTION_SCALE_W      1.0
+#define RESOLUTION_SCALE_H      1.0
 
-Evas_Object *_create_win(const char *package);
-Evas_Object *_create_conformant(Evas_Object *parent);
-Evas_Object *_create_layout(Evas_Object *parent, char *file, const char *group);
+#define ICON_IMG_SIZE           ((118) * (RESOLUTION_SCALE_W))
+#define ICON_TXT_SIZE_NORMAL    ((int)((28) * (RESOLUTION_SCALE_H)))
+#define ICON_TXT_COLOR          "000000FF"
+#define ICON_TXT_SHADOW_COLOR   "88888888"
 
-typedef void (*_toast_cb)(void* data, Evas_Object *obj);
-void _create_toast(char* text, _toast_cb callback, void* user_data);
+#define ICON_SIZE_W		((720) * (RESOLUTION_SCALE_W) / 4)
+#define ICON_SIZE_H		((1060) * (RESOLUTION_SCALE_H) / 5)
 
-#endif /* WIDGET_H_ */
+#define ALLOWED_ICON_DRAG_DISTANCE	100
+
+#endif /* CONF_H_ */
