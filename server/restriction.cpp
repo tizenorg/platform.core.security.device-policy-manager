@@ -51,10 +51,6 @@ RestrictionPolicy::RestrictionPolicy(PolicyControlContext& ctxt) :
     context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getUsbTetheringState));
 	context.registerParametricMethod(this, (int)(RestrictionPolicy::setExternalStorageState)(int));
 	context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getExternalStorageState));
-	context.registerParametricMethod(this, (int)(RestrictionPolicy::setWifiState)(bool));
-	context.registerNonparametricMethod(this, (bool)(RestrictionPolicy::getWifiState));
-	context.registerParametricMethod(this, (int)(RestrictionPolicy::setWifiHotspotState)(bool));
-	context.registerNonparametricMethod(this, (bool)(RestrictionPolicy::getWifiHotspotState));
 
 	context.createNotification("camera");
 	context.createNotification("clipboard");
@@ -63,8 +59,6 @@ RestrictionPolicy::RestrictionPolicy(PolicyControlContext& ctxt) :
 	context.createNotification("settings-changes");
 	context.createNotification("usb-debugging");
     context.createNotification("usb-tethering");
-	context.createNotification("wifi");
-	context.createNotification("wifi-hotspot");
 }
 
 RestrictionPolicy::~RestrictionPolicy()
@@ -166,29 +160,6 @@ int RestrictionPolicy::setExternalStorageState(int enable)
 int RestrictionPolicy::getExternalStorageState()
 {
     return IsPolicyAllowed(context, "external-storage");
-}
-
-int RestrictionPolicy::setWifiState(bool enable)
-{
-    SetPolicyAllowed(context, "wifi", enable);
-    return 0;
-}
-
-bool RestrictionPolicy::getWifiState()
-{
-    return IsPolicyAllowed(context, "wifi");
-    return 0;
-}
-
-int RestrictionPolicy::setWifiHotspotState(bool enable)
-{
-    SetPolicyAllowed(context, "wifi-hotspot", enable);
-    return 0;
-}
-
-bool RestrictionPolicy::getWifiHotspotState()
-{
-    return IsPolicyAllowed(context, "wifi-hotspot");
 }
 
 RestrictionPolicy restrictionPolicy(Server::instance());

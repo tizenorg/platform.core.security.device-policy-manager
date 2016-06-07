@@ -18,6 +18,7 @@
 #include "restriction.hxx"
 #include "location.hxx"
 #include "bluetooth.hxx"
+#include "wifi.hxx"
 
 #include "debug.h"
 #include "policy-client.h"
@@ -234,8 +235,8 @@ int dpm_restriction_set_wifi_state(dpm_restriction_policy_h handle, int enable)
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
-    RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
-    return restriction.setWifiState(enable);
+    WifiPolicy wifi = client.createPolicyInterface<WifiPolicy>();
+    return wifi.setState(enable);
 }
 
 int dpm_restriction_get_wifi_state(dpm_restriction_policy_h handle, int *state)
@@ -244,8 +245,8 @@ int dpm_restriction_get_wifi_state(dpm_restriction_policy_h handle, int *state)
     RET_ON_FAILURE(state, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
-    RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
-    int ret = restriction.getWifiState();
+    WifiPolicy wifi = client.createPolicyInterface<WifiPolicy>();
+    int ret = wifi.getState();
     if (ret < 0) {
         return -1;
     }
@@ -258,8 +259,8 @@ int dpm_restriction_set_wifi_hotspot_state(dpm_restriction_policy_h handle, int 
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
-    RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
-    return restriction.setWifiHotspotState(enable);
+    WifiPolicy wifi = client.createPolicyInterface<WifiPolicy>();
+    return  wifi.setHotspotState(enable);
 }
 
 int dpm_restriction_get_wifi_hotspot_state(dpm_restriction_policy_h handle, int *state)
@@ -268,8 +269,8 @@ int dpm_restriction_get_wifi_hotspot_state(dpm_restriction_policy_h handle, int 
     RET_ON_FAILURE(state, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
-    RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
-    int ret = restriction.getWifiHotspotState();
+    WifiPolicy wifi = client.createPolicyInterface<WifiPolicy>();
+    int ret = wifi.getHotspotState();
     if (ret < 0) {
         return -1;
     }

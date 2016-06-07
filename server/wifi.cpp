@@ -31,11 +31,26 @@
 #include "app-bundle.h"
 #include "syspopup.h"
 #include "audit/logger.h"
+#include "dbus/connection.h"
+
+#define NETCONFIG_INTERFACE		\
+	"net.netconfig",			\
+	"/net/netconfig/network",	\
+	"net.netconfig.network"
+
+#define MOBILEAP_INTERFACE		\
+	"org.tizen.MobileapAgent",	\
+	"/MobileapAgent",			\
+	"org.tizen.tethering"
 
 namespace DevicePolicyManager {
 
-static std::unordered_set<std::string> blockSsidList;
-static inline void applyBlocklist(wifi_ap_h ap)
+namespace {
+
+std::atomic<bool> blockEnabled;
+std::unordered_set<std::string> blockSsidList;
+
+inline void applyBlocklist(wifi_ap_h ap)
 {
     char *ssid;
     ::wifi_ap_get_essid(ap, &ssid);
@@ -45,8 +60,8 @@ static inline void applyBlocklist(wifi_ap_h ap)
 
     ::free(ssid);
 }
-static std::atomic<bool> blockEnabled;
-static void connectionStateChanged(wifi_connection_state_e state,
+
+void connectionStateChanged(wifi_connection_state_e state,
                                    wifi_ap_h ap, void *user_data)
 {
     WifiPolicy* policy = reinterpret_cast<WifiPolicy*>(user_data);
@@ -56,13 +71,15 @@ static void connectionStateChanged(wifi_connection_state_e state,
         return;
     }
 
-    if (!policy->isNetworkAccessRestricted())
+    if (!policy->isNetworkAccessRestricted()) {
         return;
+	}
 
     applyBlocklist(ap);
 }
 
-static inline void applyBlocklistToConnectedAP() {
+inline void applyBlocklistToConnectedAP()
+{
     wifi_ap_h ap;
 
     ::wifi_initialize();
@@ -72,9 +89,17 @@ static inline void applyBlocklistToConnectedAP() {
     }
 }
 
+} // namespace
+
 WifiPolicy::WifiPolicy(PolicyControlContext& ctx) :
     context(ctx)
 {
+	context.registerParametricMethod(this, (int)(WifiPolicy::setState)(bool));
+	context.registerNonparametricMethod(this, (bool)(WifiPolicy::getState));
+
+	context.registerParametricMethod(this, (int)(WifiPolicy::setHotspotState)(bool));
+	context.registerNonparametricMethod(this, (bool)(WifiPolicy::getHotspotState));
+
     context.registerParametricMethod(this, (int)(WifiPolicy::setProfileChangeRestriction)(bool));
     context.registerNonparametricMethod(this, (bool)(WifiPolicy::isProfileChangeRestricted));
 
@@ -83,6 +108,8 @@ WifiPolicy::WifiPolicy(PolicyControlContext& ctx) :
     context.registerParametricMethod(this, (int)(WifiPolicy::addSsidToBlocklist)(std::string));
     context.registerParametricMethod(this, (int)(WifiPolicy::removeSsidFromBlocklist)(std::string));
 
+	context.createNotification("wifi");
+	context.createNotification("wifi-hotspot");
     context.createNotification("wifi-profile-change");
     context.createNotification("wifi-ssid-restriction");
 
@@ -95,8 +122,69 @@ WifiPolicy::~WifiPolicy()
     ::wifi_unset_connection_state_changed_cb();
 }
 
+int WifiPolicy::setState(bool enable)
+{
+	try {
+	    dbus::Connection &systemDBus = dbus::Connection::getSystem();
+	    systemDBus.methodcall(NETCONFIG_INTERFACE,
+	                          "DevicePolicySetWifi",
+	                          -1,
+	                          "",
+	                          "(i)",
+	                          enable);
+	} catch (runtime::Exception& e) {
+		ERROR("Failed to chaneg Wi-Fi state");
+		return -1;
+	}
+
+	SetPolicyAllowed(context, "wifi", enable);
+    return 0;
+}
+
+bool WifiPolicy::getState()
+{
+    return IsPolicyAllowed(context, "wifi");
+}
+
+int WifiPolicy::setHotspotState(bool enable)
+{
+	try {
+	    dbus::Connection &systemDBus = dbus::Connection::getSystem();
+	    systemDBus.methodcall(MOBILEAP_INTERFACE,
+	                          "change_policy",
+	                          -1,
+	                          "",
+	                          "(sb)",
+	                          "wifi-hotspot",
+	                          enable);
+	} catch (runtime::Exception& e) {
+		ERROR("Failed to change Wi-Fi hotspot state");
+		return -1;
+	}
+
+    SetPolicyAllowed(context, "wifi-hotspot", enable);
+    return 0;
+}
+
+bool WifiPolicy::getHotspotState()
+{
+    return IsPolicyAllowed(context, "wifi-hotspot");
+}
+
 int WifiPolicy::setProfileChangeRestriction(bool enable)
 {
+	try {
+	    dbus::Connection &systemDBus = dbus::Connection::getSystem();
+	    systemDBus.methodcall(NETCONFIG_INTERFACE,
+	                          "DevicePolicySetWifiProfile",
+	                          -1,
+	                          "",
+	                          "(i)",
+	                          enable);
+	} catch (runtime::Exception& e) {
+		ERROR("Failed to set Wi-Fi profile change restriction");
+	}
+
     SetPolicyAllowed(context, "wifi-profile-change", enable);
     return 0;
 }
@@ -141,13 +229,13 @@ int WifiPolicy::removeSsidFromBlocklist(const std::string& ssid)
 {
     std::unordered_set<std::string>::iterator it = blockSsidList.find(ssid);
 
-    if (it == blockSsidList.end())
+    if (it == blockSsidList.end()) {
         return -1;
+	}
 
     blockSsidList.erase(it);
     return 0;
 }
-
 
 WifiPolicy wifiPolicy(Server::instance());
 
