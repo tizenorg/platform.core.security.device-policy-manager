@@ -39,6 +39,17 @@
 #define PACKAGE "org.tizen.kaskit"
 #endif
 
-void _create_kaskit_window(const char *krate_name);
+typedef struct {
+        Evas_Object* win;
+        Evas_Object* conform;
+        Evas_Object* layout;
+        Evas_Object* panel;
+        Evas_Object* scroller;
+        Evas_Object* box;
+        char* edj_path;
+} uidata_s;
+
+void _create_kaskit_window(const char* krate_name);
+void _create_app_icon(char* pkg_id, char* app_id, char* label, char* icon);
 
 #endif /* __KASKIT_H__ */

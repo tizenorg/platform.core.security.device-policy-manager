@@ -19,7 +19,7 @@ LINK_DIRECTORIES(${launcher_pkgs_LIBRARY_DIRS})
 
 SET(PKG_NAME "${PROJECT_NAME}")
 SET(PKG_SRC src/main.c
-            src/ui.c
+            src/view.c
             src/widget.c)
 
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIE")

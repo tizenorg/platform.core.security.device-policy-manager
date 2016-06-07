@@ -82,8 +82,8 @@ group { name: "kaskit_layout";
 		part { name: "kaskit_content";
 			type: SWALLOW;
 			description { state: "default";
-				rel1 {relative: 0.07 53/569; to: "bg";}
-				rel2 {relative: 0.93 635/569; to: "bg";}
+				rel1 {relative: 0.0 0.0; to_x: "bg"; to_y: "separator"; offset: 22 22;}
+				rel2 {relative: 1.0 1.0; to_x: "bg"; offset: -22 -22;}
 				color: 0 0 0 0;
 			}
 		}
