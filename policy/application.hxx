@@ -29,14 +29,16 @@ public:
         PRIVILEGE_TYPE_CORE = 1
     };
 
+    enum RestrictionMode {
+        RESTRICTION_MODE_ALL = 0x0F,
+        RESTRICTION_MODE_INSTALL = 0x01,
+        RESTRICTION_MODE_UNINSTALL = 0x02,
+        RESTRICTION_MODE_REINSTALL = 0x04,
+        RESTRICTION_MODE_MVOE = 0x08
+    };
+
     ApplicationPolicy(PolicyControlContext& ctxt);
     ~ApplicationPolicy();
-
-    int setApplicationInstallationMode(int mode);
-    int getApplicationInstallationMode();
-
-    int setApplicationUninstallationMode(int mode);
-    int getApplicationUninstallationMode();
 
     int setApplicationState(const std::string& appid, int state);
     int getApplicationState(const std::string& appid);
@@ -52,9 +54,9 @@ public:
 
     int wipeApplicationData(const std::string& appid);
 
-    int addPackageToBlacklist(const std::string& pkgid);
-    int removePackageFromBlacklist(const std::string& pkgid);
-    int checkPackageIsBlacklisted(const std::string& pkgid);
+    int setModeRestriction(int mode);
+    int unsetModeRestriction(int mode);
+    int getModeRestriction();
 
     int addPrivilegeToBlacklist(int type, const std::string& privilege);
     int removePrivilegeFromBlacklist(int type, const std::string& privilege);

@@ -92,9 +92,13 @@ public:
     void setEventCallback(pkgmgrinfo_handler callback, void* user_data);
     void unsetEventCallback();
 
-    void addPackageToBlacklist(const std::string& pkgid, const uid_t user);
-    void removePackageFromBlacklist(const std::string& pkgid, const uid_t user);
-    bool checkPackageIsBlacklisted(const std::string& pkgid, const uid_t user);
+    void setModeRestriction(int mode, uid_t user);
+    void unsetModeRestriction(int mode, uid_t user);
+    int getModeRestriction(uid_t user);
+
+    void setPackageRestriction(const std::string& pkgid, int mode, uid_t user);
+    void unsetPackageRestriction(const std::string& pkgid, int mode, uid_t user);
+    int getPackageRestriction(const std::string& pkgid, uid_t user);
 
     static PackageManager& instance();
 

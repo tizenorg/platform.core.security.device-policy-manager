@@ -34,11 +34,14 @@ namespace DevicePolicyManager {
 ApplicationPolicy::ApplicationPolicy(PolicyControlContext& ctxt) :
     context(ctxt)
 {
-    context.registerNonparametricMethod(this, (int)(ApplicationPolicy::getApplicationInstallationMode)());
-    context.registerNonparametricMethod(this, (int)(ApplicationPolicy::getApplicationUninstallationMode)());
+    context.registerNonparametricMethod(this, (int)(ApplicationPolicy::getModeRestriction)());
+    context.registerParametricMethod(this, (int)(ApplicationPolicy::setModeRestriction)(int));
+    context.registerParametricMethod(this, (int)(ApplicationPolicy::unsetModeRestriction)(int));
 
-    context.registerParametricMethod(this, (int)(ApplicationPolicy::setApplicationInstallationMode)(int));
-    context.registerParametricMethod(this, (int)(ApplicationPolicy::setApplicationUninstallationMode)(int));
+    context.registerParametricMethod(this, (int)(ApplicationPolicy::addPrivilegeToBlacklist)(int, std::string));
+    context.registerParametricMethod(this, (int)(ApplicationPolicy::removePrivilegeFromBlacklist)(int, std::string));
+    context.registerParametricMethod(this, (int)(ApplicationPolicy::checkPrivilegeIsBlacklisted)(int, std::string));
+
     context.registerParametricMethod(this, (int)(ApplicationPolicy::installPackage)(std::string));
     context.registerParametricMethod(this, (int)(ApplicationPolicy::uninstallPackage)(std::string));
     context.registerParametricMethod(this, (int)(ApplicationPolicy::disableApplication)(std::string));
@@ -48,42 +51,10 @@ ApplicationPolicy::ApplicationPolicy(PolicyControlContext& ctxt) :
     context.registerParametricMethod(this, (int)(ApplicationPolicy::startApplication)(std::string));
     context.registerParametricMethod(this, (int)(ApplicationPolicy::stopApplication)(std::string));
     context.registerParametricMethod(this, (int)(ApplicationPolicy::wipeApplicationData)(std::string));
-    context.registerParametricMethod(this, (int)(ApplicationPolicy::addPackageToBlacklist)(std::string));
-    context.registerParametricMethod(this, (int)(ApplicationPolicy::removePackageFromBlacklist)(std::string));
-    context.registerParametricMethod(this, (int)(ApplicationPolicy::checkPackageIsBlacklisted)(std::string));
-    context.registerParametricMethod(this, (int)(ApplicationPolicy::addPrivilegeToBlacklist)(int, std::string));
-    context.registerParametricMethod(this, (int)(ApplicationPolicy::removePrivilegeFromBlacklist)(int, std::string));
-    context.registerParametricMethod(this, (int)(ApplicationPolicy::checkPrivilegeIsBlacklisted)(int, std::string));
-
-    context.createNotification("package-installation-mode");
-    context.createNotification("package-uninstallation-mode");
 }
 
 ApplicationPolicy::~ApplicationPolicy()
 {
-}
-
-int ApplicationPolicy::setApplicationInstallationMode(int mode)
-{
-    SetPolicyAllowed(context, "package-installation-mode", mode);
-
-    return 0;
-}
-
-int ApplicationPolicy::getApplicationInstallationMode()
-{
-    return IsPolicyAllowed(context, "package-installation-mode");
-}
-
-int ApplicationPolicy::setApplicationUninstallationMode(int mode)
-{
-    SetPolicyAllowed(context, "package-uninstallation-mode", mode);
-    return 0;
-}
-
-int ApplicationPolicy::getApplicationUninstallationMode()
-{
-    return IsPolicyAllowed(context, "package-uninstallation-mode");
 }
 
 int ApplicationPolicy::installPackage(const std::string& pkgpath)
@@ -92,7 +63,7 @@ int ApplicationPolicy::installPackage(const std::string& pkgpath)
         PackageManager& packman = PackageManager::instance();
         packman.installPackage(pkgpath, context.getPeerUid());
     } catch (runtime::Exception& e) {
-        ERROR("Exception in Package Id");
+        ERROR("Exception on package installation: " + pkgpath);
         return -1;
     }
 
@@ -105,7 +76,7 @@ int ApplicationPolicy::uninstallPackage(const std::string& pkgid)
         PackageManager& packman = PackageManager::instance();
         packman.uninstallPackage(pkgid, context.getPeerUid());
     } catch (runtime::Exception& e) {
-        ERROR("Exception in Package Id");
+        ERROR("Exception on package uninstallation: " + pkgid);
         return -1;
     }
 
@@ -187,39 +158,39 @@ int ApplicationPolicy::wipeApplicationData(const std::string& appid)
     return 0;
 }
 
-int ApplicationPolicy::addPackageToBlacklist(const std::string& pkgid)
+int ApplicationPolicy::setModeRestriction(int mode)
 {
     try {
         PackageManager& packman = PackageManager::instance();
-        packman.addPackageToBlacklist(pkgid, context.getPeerUid());
+        packman.setModeRestriction(mode, context.getPeerUid());
     } catch (runtime::Exception& e) {
-        ERROR("Exception on adding package to blacklist: " + pkgid);
+        ERROR("Failed to set mode restriction");
         return -1;
     }
 
     return 0;
 }
 
-int ApplicationPolicy::removePackageFromBlacklist(const std::string& pkgid)
+int ApplicationPolicy::unsetModeRestriction(int mode)
 {
     try {
         PackageManager& packman = PackageManager::instance();
-        packman.removePackageFromBlacklist(pkgid, context.getPeerUid());
+        packman.unsetModeRestriction(mode, context.getPeerUid());
     } catch (runtime::Exception& e) {
-        ERROR("Exception on removing package to blacklist: " + pkgid);
+        ERROR("Failed to unset mode restriction");
         return -1;
     }
 
     return 0;
 }
 
-int ApplicationPolicy::checkPackageIsBlacklisted(const std::string& pkgid)
+int ApplicationPolicy::getModeRestriction()
 {
     try {
         PackageManager& packman = PackageManager::instance();
-        return packman.checkPackageIsBlacklisted(pkgid, context.getPeerUid());
+        return packman.getModeRestriction(context.getPeerUid());
     } catch (runtime::Exception& e) {
-        ERROR("Exception on checking package package blacklist: " + pkgid);
+        ERROR("Failed to get mode restriction");
         return -1;
     }
 }
