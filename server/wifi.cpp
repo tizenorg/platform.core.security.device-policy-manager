@@ -31,6 +31,12 @@
 #include "app-bundle.h"
 #include "syspopup.h"
 #include "audit/logger.h"
+#include "dbus/connection.h"
+
+#define NETCONFIG_INTERFACE		\
+	"net.netconfig",			\
+	"/net/netconfig/network",	\
+	"net.netconfig.network"
 
 namespace DevicePolicyManager {
 
@@ -97,6 +103,19 @@ WifiPolicy::~WifiPolicy()
 
 int WifiPolicy::setProfileChangeRestriction(bool enable)
 {
+    int ret;
+
+    dbus::Connection &systemDBus = dbus::Connection::getSystem();
+    systemDBus.methodcall(NETCONFIG_INTERFACE,
+                          "DevicePolicySetWifiProfile",
+                          -1,
+                          "(i)",
+                          "(i)",
+                          enable).get("(i)", &ret);
+    if (ret != 0) {
+        return -1;
+    }
+
     SetPolicyAllowed(context, "wifi-profile-change", enable);
     return 0;
 }

@@ -32,6 +32,16 @@
     "org.tizen.system.deviced.SysNoti",     \
     "control"
 
+#define MOBILEAP_INTERFACE		\
+	"org.tizen.MobileapAgent",	\
+	"/MobileapAgent",			\
+	"org.tizen.tethering"
+
+#define NETCONFIG_INTERFACE		\
+	"net.netconfig",			\
+	"/net/netconfig/network",	\
+	"net.netconfig.network"
+
 namespace DevicePolicyManager {
 
 RestrictionPolicy::RestrictionPolicy(PolicyControlContext& ctxt) :
@@ -170,6 +180,19 @@ int RestrictionPolicy::getExternalStorageState()
 
 int RestrictionPolicy::setWifiState(bool enable)
 {
+    int ret;
+
+    dbus::Connection &systemDBus = dbus::Connection::getSystem();
+    systemDBus.methodcall(NETCONFIG_INTERFACE,
+                          "DevicePolicySetWifi",
+                          -1,
+                          "(i)",
+                          "(i)",
+                          enable).get("(i)", &ret);
+	if (ret != 0) {
+		return -1;
+	}
+
     SetPolicyAllowed(context, "wifi", enable);
     return 0;
 }
@@ -182,6 +205,19 @@ bool RestrictionPolicy::getWifiState()
 
 int RestrictionPolicy::setWifiHotspotState(bool enable)
 {
+    int ret;
+
+    dbus::Connection &systemDBus = dbus::Connection::getSystem();
+    systemDBus.methodcall(MOBILEAP_INTERFACE,
+                          "change_policy",
+                          -1,
+                          "(i)",
+                          "(b)",
+                          enable).get("(i)", &ret);
+    if (ret != 0) {
+        return -1;
+    }
+
     SetPolicyAllowed(context, "wifi-hotspot", enable);
     return 0;
 }
