@@ -34,7 +34,7 @@ popup_info_s popup_list[] = {
 	/* Password Policy */
 	{"password-expires",        true, "IDS_DPM_PASSWORD", "IDS_DPM_BODY_PASSWORD_EXPIRES", "toast", NULL, NULL, NULL, NULL},
 	{"password-reset",          true, "IDS_DPM_PASSWORD", "IDS_DPM_BODY_PASSWORD_RESET", "toast", NULL, NULL, NULL, NULL},
-	{"password-enforce-change", true, "IDS_DPM_PASSWORD", "IDS_DPM_BODY_PASSWORD_ENFORCE_CHANGE", "default", "IDS_DPM_CANCEL", "IDS_DPM_OK", "IDS_DPM_NOTI_PASSWORD_ENFORCE_CHANGE", "IDS_DPM_NOTI_BODY_PASSWORD_ENFORCE_CHANGE"},
+	{"password-enforce-change", true, "IDS_DPM_PASSWORD", "IDS_DPM_BODY_PASSWORD_ENFORCE_CHANGE", "default", NULL, "IDS_DPM_OK", NULL, NULL},
 
 	/* Restriction Policy */
 	{"wifi",                    true, "IDS_DPM_WIFI",              NULL, "toast", NULL, NULL, NULL, NULL},
