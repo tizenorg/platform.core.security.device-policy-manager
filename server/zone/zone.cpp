@@ -18,6 +18,7 @@
 #include <sys/types.h>
 #include <sys/inotify.h>
 
+#include <notification.h>
 #include <tzplatform_config.h>
 
 #include "zone/zone.hxx"
@@ -280,6 +281,111 @@ int packageEventHandler(uid_t target_uid, int req_id,
     return 0;
 }
 
+#define NT_TITLE     NOTIFICATION_TEXT_TYPE_TITLE
+#define NT_CONTENT   NOTIFICATION_TEXT_TYPE_CONTENT
+#define NT_ICON      NOTIFICATION_IMAGE_TYPE_ICON
+#define NT_INDICATOR NOTIFICATION_IMAGE_TYPE_ICON_FOR_INDICATOR
+#define NT_NONE      NOTIFICATION_VARIABLE_TYPE_NONE
+#define NT_EVENT     NOTIFICATION_LY_ONGOING_EVENT
+#define NT_APP       NOTIFICATION_DISPLAY_APP_INDICATOR
+
+#define NT_ICON_PATH "/opt/data/dpm/zone-indicator.png"
+#define NT_TEXT      "Container Mode"
+#define NT_APPINFO   "Zone Application"
+
+#define NT_ERROR_NONE   NOTIFICATION_ERROR_NONE
+
+void zoneProcessCallback(GDBusConnection *connection,
+	                     const gchar *sender, const gchar *objectPath,
+	                     const gchar *interface, const gchar *signalName,
+	                     GVariant *params, gpointer userData)
+{
+    int pid, status;
+
+    notification_h noti = reinterpret_cast<notification_h>(userData);
+
+    g_variant_get (params, "(ii)", &status, &pid);
+
+    if (status != 5) {
+        return;
+    }
+
+    struct stat st;
+    std::string proc("/proc/" + std::to_string(pid));
+    if (::stat(proc.c_str(), &st) != 0) {
+        return;
+    }
+
+    if ((st.st_uid >= ZONE_UID_MIN) && (st.st_uid < ZONE_UID_MAX)) {
+        notification_set_text(noti, NT_CONTENT, NT_APPINFO, NULL, NT_NONE);
+
+        notification_post(noti);
+    }
+}
+
+notification_h createNotification()
+{
+    notification_h noti = notification_create(NOTIFICATION_TYPE_ONGOING);
+    if (noti == NULL) {
+        return NULL;
+    }
+
+    if (notification_set_text(noti, NT_TITLE, NT_TEXT, NULL, NT_NONE) != NT_ERROR_NONE) {
+        notification_free(noti);
+        return NULL;
+    }
+    if (notification_set_image(noti, NT_ICON, NT_ICON_PATH) != NT_ERROR_NONE) {
+        notification_free(noti);
+        return NULL;
+    }
+
+    if (notification_set_image(noti, NT_INDICATOR, NT_ICON_PATH) != NT_ERROR_NONE) {
+        notification_free(noti);
+        return NULL;
+    }
+
+    if (notification_set_layout(noti, NT_EVENT) != NT_ERROR_NONE) {
+        notification_free(noti);
+        return NULL;
+    }
+
+    if (notification_set_display_applist(noti, NT_APP) != NT_ERROR_NONE) {
+        notification_free(noti);
+        return NULL;
+    }
+
+    return noti;
+}
+
+void zoneProcessMonitor()
+{
+    GError *error = NULL;
+    GDBusConnection* connection;
+    connection = g_bus_get_sync(G_BUS_TYPE_SYSTEM, NULL, &error);
+    if (connection == NULL) {
+        ERROR("GBus Connection failed");
+        g_error_free(error);
+        return;
+    }
+
+    notification_h noti = createNotification();
+    if (noti == NULL) {
+        ERROR("Failed to created notification");
+        return;
+    }
+
+    g_dbus_connection_signal_subscribe(connection,
+                                        NULL,
+                                        "org.tizen.resourced.process",
+                                        "ProcStatus",
+                                        "/Org/Tizen/ResourceD/Process",
+                                        NULL,
+                                        G_DBUS_SIGNAL_FLAGS_NONE,
+                                        zoneProcessCallback,
+                                        reinterpret_cast<gpointer>(noti),
+                                        NULL);
+}
+
 } // namespace
 
 ZoneManager::ZoneManager(PolicyControlContext& ctx)
@@ -297,6 +403,8 @@ ZoneManager::ZoneManager(PolicyControlContext& ctx)
 
     PackageManager& packageManager = PackageManager::instance();
     packageManager.setEventCallback(packageEventHandler, this);
+
+    zoneProcessMonitor();
 }
 
 ZoneManager::~ZoneManager()
