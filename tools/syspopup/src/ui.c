@@ -229,7 +229,7 @@ void _create_syspopup(const char *id, char *style, const char *status, app_contr
 			__create_popup_btn(popup, "button1", info->right_btn, __ok_btn_cb);
 
 			eext_object_event_callback_del(popup, EEXT_CALLBACK_BACK, eext_popup_back_cb);
-			eext_win_keygrab_set(win, "XF86Home");
+			/*[TBD] eext_win_keygrab_set(win, "XF86Home");*/
 		}
 	} else {
 		elm_object_text_set(popup, body);
