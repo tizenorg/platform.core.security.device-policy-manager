@@ -21,9 +21,9 @@
 #include "audit/logger.h"
 #include "dbus/connection.h"
 
-#define PULSEAUDIO_LOGIN_INTERFACE \
-    "org.pulseaudio.Server",   \
-    "/org/pulseaudio/StreamManager",  \
+#define PULSEAUDIO_LOGIN_INTERFACE          \
+    "org.pulseaudio.Server",                \
+    "/org/pulseaudio/StreamManager",        \
     "org.pulseaudio.StreamManager"
 
 #define DEVICED_SYSNOTI_INTERFACE           \
@@ -31,6 +31,12 @@
     "/Org/Tizen/System/DeviceD/SysNoti",    \
     "org.tizen.system.deviced.SysNoti",     \
     "control"
+
+#define MOBILEAP_INTERFACE                  \
+    "org.tizen.MobileapAgent",              \
+    "/MobileapAgent",                       \
+    "org.tizen.tethering"
+
 
 namespace DevicePolicyManager {
 
@@ -130,6 +136,20 @@ int RestrictionPolicy::getUsbDebuggingState()
 
 int RestrictionPolicy::setUsbTetheringState(bool enable)
 {
+    try {
+        dbus::Connection &systemDBus = dbus::Connection::getSystem();
+        systemDBus.methodcall(MOBILEAP_INTERFACE,
+                              "change_policy",
+                              -1,
+                              "",
+                              "(sb)",
+                              "usb-tethering",
+                              enable);
+    } catch (runtime::Exception& e) {
+        ERROR("Failed to change USB tethering state");
+        return -1;
+    }
+
     SetPolicyAllowed(context, "usb-tethering", enable);
     return 0;
 }
