@@ -12,6 +12,7 @@ PKG_CHECK_MODULES(dpm_syspopup_pkgs REQUIRED
 	elementary
 	capi-appfw-application
 	capi-system-system-settings
+	capi-ui-efl-util
 	notification
 )
 
