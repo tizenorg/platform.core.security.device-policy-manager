@@ -296,11 +296,13 @@ cp /etc/pam.d/systemd-user-zone /etc/pam.d/systemd-user
 mv /etc/pam.d/systemd-user.keep /etc/pam.d/systemd-user
 
 %files -n dpm-pam-zone
+%manifest device-policy-manager.manifest
 %defattr(600,root,root,700)
 %attr(700,root,root) %{_libdir}/security/pam_*.so
 %attr(700,root,root) %{_sbindir}/zone-admin-cli
 %attr(700,root,root) %dir %{TZ_SYS_ETC}/dpm/zone
 %attr(600,root,root) %config %{TZ_SYS_ETC}/dpm/zone/owner.xml
+%attr(644,root,root) /opt/data/dpm/zone-indicator.png
 %config /etc/pam.d/*
 
 %endif
