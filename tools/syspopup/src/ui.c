@@ -17,6 +17,8 @@
  *
  */
 #include <notification.h>
+#include <efl_util.h>
+
 #include "dpm-syspopup.h"
 
 static void __win_delete_request_cb(void *data, Evas_Object *obj, void *event_info)
@@ -26,7 +28,8 @@ static void __win_delete_request_cb(void *data, Evas_Object *obj, void *event_in
 
 static Evas_Object *__create_win(const char *pkg_name)
 {
-	Evas_Object *win = elm_win_add(NULL, pkg_name, ELM_WIN_DIALOG_BASIC);
+	Evas_Object *win = elm_win_add(NULL, pkg_name, ELM_WIN_NOTIFICATION);
+	efl_util_set_notification_window_level(win, EFL_UTIL_NOTIFICATION_LEVEL_DEFAULT);
 
 	elm_win_title_set(win, pkg_name);
 	elm_win_borderless_set(win, EINA_TRUE);
