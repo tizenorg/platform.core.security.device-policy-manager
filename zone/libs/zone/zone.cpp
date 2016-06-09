@@ -126,7 +126,7 @@ int zone_manager_get_zone_state(zone_manager_h handle, const char* name, zone_st
 
 typedef runtime::Array<std::string> zone_iterator;
 
-zone_iterator_h zone_manager_create_iterator(zone_manager_h handle, zone_state_e state)
+zone_iterator_h zone_manager_create_zone_iterator(zone_manager_h handle, zone_state_e state)
 {
     RET_ON_FAILURE(handle, NULL);
 
@@ -151,7 +151,7 @@ int zone_iterator_next(zone_iterator_h iter, const char** result)
     return ZONE_ERROR_NONE;
 }
 
-int zone_manager_destroy_iterator(zone_iterator_h iter)
+int zone_iterator_destroy(zone_iterator_h iter)
 {
     RET_ON_FAILURE(iter, ZONE_ERROR_INVALID_PARAMETER);
 
