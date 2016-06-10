@@ -21,6 +21,7 @@
 #include "conf.h"
 
 static uidata_s ud = {0, };
+
 static int __num_of_apps = 0;
 
 static void __block_clicked_cb(void *data, Evas_Object *obj, const char *emission, const char *source)
@@ -28,25 +29,9 @@ static void __block_clicked_cb(void *data, Evas_Object *obj, const char *emissio
 	ui_app_exit();
 }
 
-int __icon_down_x, __icon_down_y;
-static void __app_icon_down_cb(void *data, Evas *e, Evas_Object *obj, void *event_info) {
-	Evas_Event_Mouse_Up* ev = event_info;
-
-	__icon_down_x = ev->output.x;
-	__icon_down_y = ev->output.y;
-}
-
-static void __app_icon_up_cb(void *data, Evas *e, Evas_Object *obj, void *event_info)
+static void __app_view_del_cb(void *data, Evas *e, Evas_Object *obj, void *event_info)
 {
-	Evas_Event_Mouse_Up* ev = event_info;
-	int distance_x = (ev->output.x - __icon_down_x);
-	int distance_y = (ev->output.y - __icon_down_y);
-        int distance = distance_x * distance_x + distance_y * distance_y;
-
-	if (distance <= ALLOWED_ICON_DRAG_DISTANCE) {
-		_icon_clicked_cb(data);
-	}
-	free(data);
+	eina_list_free(ud.app_icon_list);
 }
 
 static void __set_kaskit_layout(const char *name)
@@ -64,6 +49,8 @@ static void __set_kaskit_layout(const char *name)
 	ud.app_view = elm_table_add(ud.scroller);
 	elm_table_homogeneous_set(ud.app_view, EINA_TRUE);
 	elm_object_content_set(ud.scroller, ud.app_view);
+
+	evas_object_event_callback_add(ud.app_view, EVAS_CALLBACK_DEL, __app_view_del_cb, NULL);
 
 	return;
 }
@@ -101,9 +88,35 @@ void _create_kaskit_window(const char *krate_name)
 	return;
 }
 
-void _create_app_icon(char* pkg_id, char* app_id, char* label, char* icon)
+int __icon_down_x, __icon_down_y;
+static void __app_icon_down_cb(void *data, Evas *e, Evas_Object *obj, void *event_info) {
+	Evas_Event_Mouse_Up* ev = event_info;
+
+	__icon_down_x = ev->output.x;
+	__icon_down_y = ev->output.y;
+}
+
+static void __app_icon_up_cb(void *data, Evas *e, Evas_Object *obj, void *event_info)
 {
-	char string[1024] = {0, };
+	Evas_Event_Mouse_Up* ev = event_info;
+	int distance_x = (ev->output.x - __icon_down_x);
+	int distance_y = (ev->output.y - __icon_down_y);
+        int distance = distance_x * distance_x + distance_y * distance_y;
+
+	if (distance <= ALLOWED_ICON_DRAG_DISTANCE) {
+		_icon_clicked_cb(data);
+	}
+	free(data);
+}
+
+static void __app_icon_del_cb(void *data, Evas *e, Evas_Object *obj, void *event_info)
+{
+	free(evas_object_data_get(obj, "package"));
+}
+
+void _create_app_icon(const char* pkg_id, const char* app_id, const char* label, const char* icon)
+{
+	char string[1024] = {0, }, *default_icon;
 	Evas_Object *icon_layout;
 	Evas_Object *icon_image;
 
@@ -111,13 +124,14 @@ void _create_app_icon(char* pkg_id, char* app_id, char* label, char* icon)
 	evas_object_size_hint_weight_set(icon_layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	evas_object_size_hint_align_set(icon_layout, 0.0, 0.0);
 
-	if (!ecore_file_can_read(icon)) {
-		free(icon);
-		icon = __get_res_path("images/default_app_icon.png");
-	}
-
 	icon_image = elm_image_add(icon_layout);
-	elm_image_file_set(icon_image, icon, NULL);
+	if (ecore_file_can_read(icon)) {
+		elm_image_file_set(icon_image, icon, NULL);
+	} else {
+		default_icon = __get_res_path("images/default_app_icon.png");
+		elm_image_file_set(icon_image, default_icon, NULL);
+		free(default_icon);
+	}
 	evas_object_size_hint_min_set(icon_image, ICON_IMG_SIZE, ICON_IMG_SIZE);
 	evas_object_size_hint_max_set(icon_image, ICON_IMG_SIZE, ICON_IMG_SIZE);
 
@@ -128,18 +142,44 @@ void _create_app_icon(char* pkg_id, char* app_id, char* label, char* icon)
 
 	elm_object_part_content_set(icon_layout, "icon_content", icon_image);
 
+	evas_object_data_set(icon_layout, "package", strdup(pkg_id));
+
+	evas_object_event_callback_add(icon_layout, EVAS_CALLBACK_DEL, __app_icon_del_cb, NULL);
 	evas_object_event_callback_add(icon_layout, EVAS_CALLBACK_MOUSE_DOWN, __app_icon_down_cb, NULL);
 	evas_object_event_callback_add(icon_layout, EVAS_CALLBACK_MOUSE_UP, __app_icon_up_cb, strdup(app_id));
 
 	elm_table_pack(ud.app_view, icon_layout, __num_of_apps % 3, __num_of_apps / 3, 1, 1);
 	evas_object_size_hint_min_set(ud.app_view, 0, (__num_of_apps / 3 + 1) * ICON_SIZE_H);
 
+	ud.app_icon_list = eina_list_append(ud.app_icon_list, icon_layout);
+
 	__num_of_apps++;
 
 	evas_object_show(icon_image);
 	evas_object_show(icon_layout);
+
 }
 
-void _destroy_app_icon(char* pkg_id)
+void _destroy_app_icon(const char* pkg_id)
 {
+	int index = 0;
+	Eina_List* i, *i_next;
+	Evas_Object* app_icon;
+	char *app_pkg_id;
+
+	EINA_LIST_FOREACH_SAFE(ud.app_icon_list, i, i_next, app_icon) {
+		app_pkg_id = evas_object_data_get(app_icon, "package");
+		if (strncmp(app_pkg_id, pkg_id, PATH_MAX)) {
+			elm_table_pack(ud.app_view, app_icon, index % 3, index / 3, 1, 1);
+			evas_object_size_hint_min_set(ud.app_view, 0, (__num_of_apps / 3 + 1) * ICON_SIZE_H);
+			index++;
+			continue;
+		}
+		elm_table_unpack(ud.app_view, app_icon);
+		evas_object_del(app_icon);
+		evas_object_size_hint_min_set(ud.app_view, 0, (__num_of_apps / 3 + 1) * ICON_SIZE_H);
+		ud.app_icon_list = eina_list_remove_list(ud.app_icon_list, i);
+	}
+	__num_of_apps--;
+	evas_object_size_hint_min_set(ud.app_view, 0, (__num_of_apps / 3 + 1) * ICON_SIZE_H);
 }

@@ -16,8 +16,6 @@
  * limitations under the License.
  *
  */
-#include <pthread.h>
-
 #include <zone/zone.h>
 #include <zone/app-proxy.h>
 #include <zone/package-proxy.h>
@@ -29,53 +27,41 @@ static zone_package_proxy_h __zone_pkg;
 static zone_app_proxy_h __zone_app;
 static zone_manager_h __zone_mgr;
 
-static bool __app_terminated = false;
-
 static bool __get_app_info_cb(app_info_h app_h, void* user_data)
 {
-	char* app_label = NULL, *app_icon = NULL, *app_id, *pkg_id;
+	char* pkg_id, *app_id, *app_label = NULL, *app_icon = NULL;
 	bool nodisplay = false;
-
-        if (__app_terminated)
-		return false;
 
 	app_info_is_nodisplay(app_h, &nodisplay);
 	if (nodisplay)
 		return true;
 
-	app_info_get_app_id(app_h, &app_id);
-	app_info_get_label(app_h, &app_label);
-	app_info_get_icon(app_h, &app_icon);
 	app_info_get_package(app_h, &pkg_id);
 
 	if (user_data == NULL ||  !strncmp(user_data, pkg_id, PATH_MAX)) {
-		_create_app_icon(pkg_id, app_id, app_label, app_icon);
-	}
+		app_info_get_app_id(app_h, &app_id);
+		app_info_get_label(app_h, &app_label);
+		app_info_get_icon(app_h, &app_icon);
 
-	free(app_id);
+		_create_app_icon(pkg_id, app_id, app_label, app_icon);
+		free(app_id);
+		if (app_label != NULL) {
+			free(app_label);
+		}
+		if (app_icon != NULL) {
+			free(app_icon);
+		}
+	}
 	free(pkg_id);
-	if (app_label != NULL) {
-		free(app_label);
-	}
-	if (app_icon != NULL) {
-		free(app_icon);
-	}
 
 	return true;
 }
 
-void* create_app_thread(void* data) {
+static void __create_icon(void *data) {
 	zone_app_proxy_foreach_app_info(__zone_app, __get_app_info_cb, data);
 	if (data != NULL) {
 		free(data);
 	}
-	return NULL;
-}
-
-void* destroy_app_thread(void* data) {
-	_destroy_app_icon(data);
-	free(data);
-	return NULL;
 }
 
 static void __pkg_event_cb(const char* type,
@@ -84,13 +70,11 @@ static void __pkg_event_cb(const char* type,
 	package_manager_event_state_e event_state, int progress,
 	package_manager_error_e error, void* user_data)
 {
-	pthread_t tid;
-
 	if (event_state == PACKAGE_MANAGER_EVENT_STATE_COMPLETED) {
 		if (event_type == PACKAGE_MANAGER_EVENT_TYPE_INSTALL) {
-			pthread_create(&tid, NULL, create_app_thread, strdup(pkg_id));
+			ecore_main_loop_thread_safe_call_async(__create_icon, strdup(pkg_id));
 		} else if (event_type == PACKAGE_MANAGER_EVENT_TYPE_UNINSTALL) {
-			pthread_create(&tid, NULL, destroy_app_thread, strdup(pkg_id));
+			_destroy_app_icon(pkg_id);
 		}
 	}
 }
@@ -121,7 +105,7 @@ static void __toast_callback_cb(void *data, Evas_Object *obj)
 	ui_app_exit();
 }
 
-void _icon_clicked_cb(char *app_id)
+void _icon_clicked_cb(const char *app_id)
 {
 	zone_app_proxy_launch(__zone_app, app_id);
 	ui_app_exit();
@@ -132,7 +116,6 @@ static bool __app_create(void *data)
 	zone_iterator_h it;
 	const char* zone_name;
 	char *current_zone_name;
-	pthread_t tid;
 
 	current_zone_name = __get_current_zone_name();
 	zone_manager_create(&__zone_mgr);
@@ -160,7 +143,7 @@ static bool __app_create(void *data)
 		PACKAGE_MANAGER_STATUS_TYPE_UNINSTALL);
 	zone_package_proxy_set_event_cb(__zone_pkg, __pkg_event_cb, NULL);
 
-	pthread_create(&tid, NULL, create_app_thread, NULL);
+	ecore_main_loop_thread_safe_call_async(__create_icon, NULL);
 
         zone_iterator_destroy(it);
 	free(current_zone_name);
@@ -180,8 +163,6 @@ static void __app_resume(void *data)
 
 static void __app_terminate(void *data)
 {
-	__app_terminated = true;
-
 	zone_package_proxy_destroy(__zone_pkg);
 	zone_app_proxy_destroy(__zone_app);
 	zone_manager_destroy(__zone_mgr);

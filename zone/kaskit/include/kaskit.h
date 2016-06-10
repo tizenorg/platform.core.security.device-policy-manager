@@ -44,16 +44,16 @@ typedef struct {
         Evas_Object* conform;
         Evas_Object* layout;
         Evas_Object* panel;
-        Evas_Object* app_view;
         Evas_Object* scroller;
-        Evas_Object* box;
+        Evas_Object* app_view;
+        Eina_List* app_icon_list;
         char* edj_path;
 } uidata_s;
 
 void _create_kaskit_window(const char* krate_name);
-void _create_app_icon(char* pkg_id, char* app_id, char* label, char* icon);
-void _destroy_app_icon(char* pkg_id);
+void _create_app_icon(const char* pkg_id, const char* app_id, const char* label, const char* icon);
+void _destroy_app_icon(const char* pkg_id);
 
-void _icon_clicked_cb(char *app_id);
+void _icon_clicked_cb(const char *app_id);
 
 #endif /* __KASKIT_H__ */
