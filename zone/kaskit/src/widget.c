@@ -54,8 +54,6 @@ Evas_Object *_create_win(const char *package)
 
 	evas_object_smart_callback_add(win, "delete,request", __win_delete_request_cb, NULL);
 
-	eext_object_event_callback_add(win, EEXT_CALLBACK_BACK, __win_delete_request_cb, NULL);
-
 	return win;
 }
 

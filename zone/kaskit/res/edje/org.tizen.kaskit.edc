@@ -17,6 +17,6 @@
 
 collections {
 	base_scale: 1.8;
-	#include "./edc_resource/launcher.edc"
-	#include "./edc_resource/app_icon.edc"
+	#include "launcher.edc"
+	#include "app_icon.edc"
 }

@@ -27,10 +27,22 @@ static zone_package_proxy_h __zone_pkg;
 static zone_app_proxy_h __zone_app;
 static zone_manager_h __zone_mgr;
 
+static bool __pkg_is_remvable(const char* pkg_id) {
+	bool removable = false;
+
+	package_info_h pkg_h;
+
+	zone_package_proxy_get_package_info(__zone_pkg, pkg_id, &pkg_h);
+	package_info_is_removable_package(pkg_h, &removable);
+	package_info_destroy(pkg_h);
+
+	return removable;
+}
+
 static bool __get_app_info_cb(app_info_h app_h, void* user_data)
 {
 	char* pkg_id, *app_id, *app_label = NULL, *app_icon = NULL;
-	bool nodisplay = false;
+	bool nodisplay = true, removable = false;
 
 	app_info_is_nodisplay(app_h, &nodisplay);
 	if (nodisplay)
@@ -42,8 +54,9 @@ static bool __get_app_info_cb(app_info_h app_h, void* user_data)
 		app_info_get_app_id(app_h, &app_id);
 		app_info_get_label(app_h, &app_label);
 		app_info_get_icon(app_h, &app_icon);
+		removable = __pkg_is_remvable(pkg_id);
 
-		_create_app_icon(pkg_id, app_id, app_label, app_icon);
+		_create_app_icon(pkg_id, app_id, app_label, app_icon, removable);
 		free(app_id);
 		if (app_label != NULL) {
 			free(app_label);
@@ -108,7 +121,11 @@ static void __toast_callback_cb(void *data, Evas_Object *obj)
 void _icon_clicked_cb(const char *app_id)
 {
 	zone_app_proxy_launch(__zone_app, app_id);
-	ui_app_exit();
+}
+
+void _icon_uninstalled_cb(const char *pkg_id)
+{
+	zone_package_proxy_uninstall(__zone_pkg, pkg_id);
 }
 
 static bool __app_create(void *data)

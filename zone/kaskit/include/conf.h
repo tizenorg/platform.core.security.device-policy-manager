@@ -32,5 +32,6 @@
 #define ICON_SIZE_H		((1060) * (RESOLUTION_SCALE_H) / 5)
 
 #define ALLOWED_ICON_DRAG_DISTANCE	100
+#define LONG_PRESS_TIME		0.75
 
 #endif /* CONF_H_ */
