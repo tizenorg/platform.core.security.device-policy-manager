@@ -51,9 +51,10 @@ typedef struct {
 } uidata_s;
 
 void _create_kaskit_window(const char* krate_name);
-void _create_app_icon(const char* pkg_id, const char* app_id, const char* label, const char* icon);
+void _create_app_icon(const char* pkg_id, const char* app_id, const char* label, const char* icon, bool removable);
 void _destroy_app_icon(const char* pkg_id);
 
 void _icon_clicked_cb(const char *app_id);
+void _icon_uninstalled_cb(const char *app_id);
 
 #endif /* __KASKIT_H__ */

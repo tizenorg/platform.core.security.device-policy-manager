@@ -33,9 +33,9 @@ TARGET_LINK_LIBRARIES(${PKG_NAME} ${launcher_pkgs_LIBRARIES} zone)
 #Create edj file
 ADD_CUSTOM_TARGET(org.tizen.kaskit.edj
 	COMMAND edje_cc -no-save -id ${CMAKE_CURRENT_SOURCE_DIR}/res/images
-	${CMAKE_CURRENT_SOURCE_DIR}/res/org.tizen.kaskit.edc
+	${CMAKE_CURRENT_SOURCE_DIR}/res/edje/org.tizen.kaskit.edc
 	${CMAKE_BINARY_DIR}/org.tizen.kaskit.edj
-	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/res/org.tizen.kaskit.edc)
+	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/res/edje/org.tizen.kaskit.edc)
 
 ADD_DEPENDENCIES(${PROJECT_NAME} org.tizen.kaskit.edj)
 INSTALL(FILES ${CMAKE_BINARY_DIR}/org.tizen.kaskit.edj DESTINATION ${APP_INSTALL_PREFIX}/${PKG_NAME}/res)

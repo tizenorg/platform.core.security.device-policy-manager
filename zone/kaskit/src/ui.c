@@ -23,6 +23,7 @@
 static uidata_s ud = {0, };
 
 static int __num_of_apps = 0;
+static bool __is_edit_mode = false;
 
 static void __block_clicked_cb(void *data, Evas_Object *obj, const char *emission, const char *source)
 {
@@ -72,6 +73,55 @@ static char* __get_res_path(const char* file)
 	return strdup(edj_path);
 }
 
+static void __menu_item_edit_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	Evas_Object* icon;
+	Eina_List* i;
+
+	elm_ctxpopup_dismiss(obj);
+
+	EINA_LIST_FOREACH(ud.app_icon_list, i, icon) {
+		if (evas_object_data_get(icon, "removable")) {
+			elm_object_signal_emit(icon, "uninstall_button_show", "source");
+		}
+	}
+
+	__is_edit_mode = true;
+}
+
+static void __show_menu_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	Evas_Object *ctxpopup;
+
+	if (__is_edit_mode)
+		return;
+
+	ctxpopup = elm_ctxpopup_add(obj);
+	elm_ctxpopup_item_append(ctxpopup, "Edit", NULL, __menu_item_edit_cb, NULL);
+	elm_object_style_set(ctxpopup, "more/default");
+	elm_ctxpopup_horizontal_set(ctxpopup, EINA_FALSE);
+	elm_ctxpopup_direction_priority_set(ctxpopup, ELM_CTXPOPUP_DIRECTION_DOWN, ELM_CTXPOPUP_DIRECTION_DOWN, ELM_CTXPOPUP_DIRECTION_DOWN, ELM_CTXPOPUP_DIRECTION_DOWN);
+	eext_object_event_callback_add(ctxpopup, EEXT_CALLBACK_BACK, eext_ctxpopup_back_cb, NULL);
+	eext_object_event_callback_add(ctxpopup, EEXT_CALLBACK_MORE, eext_ctxpopup_back_cb, NULL);
+	evas_object_show(ctxpopup);
+}
+
+static void __back_key_cb(void *data , Evas_Object *obj , void *event_info)
+{
+        Evas_Object* icon;
+        Eina_List* i;
+
+	if (__is_edit_mode) {
+		__is_edit_mode = false;
+
+		EINA_LIST_FOREACH(ud.app_icon_list, i, icon) {
+			elm_object_signal_emit(icon, "uninstall_button_hide", "source");
+		}
+	} else {
+	        ui_app_exit();
+	}
+}
+
 void _create_kaskit_window(const char *krate_name)
 {
 	ud.edj_path = __get_res_path(PACKAGE ".edj");
@@ -81,10 +131,14 @@ void _create_kaskit_window(const char *krate_name)
 	elm_object_content_set(ud.conform, ud.layout);
 
 	elm_object_signal_callback_add(ud.layout, "bg_clicked", "layout", __block_clicked_cb, NULL);
+	eext_object_event_callback_add(ud.win, EEXT_CALLBACK_MORE, __show_menu_cb, NULL);
 
 	__set_kaskit_layout(krate_name);
 
+	eext_object_event_callback_add(ud.win, EEXT_CALLBACK_BACK, __back_key_cb, NULL);
+
 	evas_object_show(ud.win);
+
 	return;
 }
 
@@ -103,18 +157,23 @@ static void __app_icon_up_cb(void *data, Evas *e, Evas_Object *obj, void *event_
 	int distance_y = (ev->output.y - __icon_down_y);
         int distance = distance_x * distance_x + distance_y * distance_y;
 
-	if (distance <= ALLOWED_ICON_DRAG_DISTANCE) {
-		_icon_clicked_cb(data);
+	if (distance <= ALLOWED_ICON_DRAG_DISTANCE && !__is_edit_mode) {
+		_icon_clicked_cb(evas_object_data_get(obj, "id"));
 	}
-	free(data);
 }
 
 static void __app_icon_del_cb(void *data, Evas *e, Evas_Object *obj, void *event_info)
 {
+	free(evas_object_data_get(obj, "id"));
 	free(evas_object_data_get(obj, "package"));
 }
 
-void _create_app_icon(const char* pkg_id, const char* app_id, const char* label, const char* icon)
+static void __app_icon_uninstall_btn_clicked_cb(void *data, Evas_Object *obj, const char *emission, const char *source)
+{
+	_icon_uninstalled_cb(evas_object_data_get(obj, "package"));
+}
+
+void _create_app_icon(const char* pkg_id, const char* app_id, const char* label, const char* icon, bool removable)
 {
 	char string[1024] = {0, }, *default_icon;
 	Evas_Object *icon_layout;
@@ -142,11 +201,15 @@ void _create_app_icon(const char* pkg_id, const char* app_id, const char* label,
 
 	elm_object_part_content_set(icon_layout, "icon_content", icon_image);
 
+	evas_object_data_set(icon_layout, "id", strdup(app_id));
 	evas_object_data_set(icon_layout, "package", strdup(pkg_id));
+	evas_object_data_set(icon_layout, "removable", (const void*)removable);
 
 	evas_object_event_callback_add(icon_layout, EVAS_CALLBACK_DEL, __app_icon_del_cb, NULL);
 	evas_object_event_callback_add(icon_layout, EVAS_CALLBACK_MOUSE_DOWN, __app_icon_down_cb, NULL);
-	evas_object_event_callback_add(icon_layout, EVAS_CALLBACK_MOUSE_UP, __app_icon_up_cb, strdup(app_id));
+	evas_object_event_callback_add(icon_layout, EVAS_CALLBACK_MOUSE_UP, __app_icon_up_cb, NULL);
+
+	elm_object_signal_callback_add(icon_layout, "uninstall_button_clicked", "source", __app_icon_uninstall_btn_clicked_cb, NULL);
 
 	elm_table_pack(ud.app_view, icon_layout, __num_of_apps % 3, __num_of_apps / 3, 1, 1);
 	evas_object_size_hint_min_set(ud.app_view, 0, (__num_of_apps / 3 + 1) * ICON_SIZE_H);
@@ -158,6 +221,9 @@ void _create_app_icon(const char* pkg_id, const char* app_id, const char* label,
 	evas_object_show(icon_image);
 	evas_object_show(icon_layout);
 
+	if (__is_edit_mode && removable) {
+		elm_object_signal_emit(icon_layout, "uninstall_button_show", "source");
+	}
 }
 
 void _destroy_app_icon(const char* pkg_id)
