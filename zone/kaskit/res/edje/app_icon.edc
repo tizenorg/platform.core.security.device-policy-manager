@@ -212,104 +212,64 @@ group { name: "icon";
 			target: "icon_touch";
 			transition: LINEAR 0.1;
 		}
-	/*
-	    program { name: "uninstall_button_show_ani";
-		signal: "uninstall_btn_show_ani";
-		source: SIGNAL_SOURCE;
-		action: STATE_SET "show" 0.0;
-		target: "uninstall_btn";
-		transition: DECELERATE ANIMATION_RESIZE_TIME;
-	    }
-	    program {
-		name: "uninstall_button_show";
-		signal: SIGNAL_UNINSTALL_BUTTON_SHOW;
-		source: SIGNAL_SOURCE;
-		action: STATE_SET "show" 0.0;
-		target: "uninstall_btn";
-	    }
-	    program {
-		name: "uninstall_button_hide_ani";
-		signal: SIGNAL_UNINSTALL_BUTTON_HIDE_ANI;
-		source: SIGNAL_SOURCE;
-		action: STATE_SET "default" 0.0;
-		target: "uninstall_btn";
-		transition: DECELERATE ANIMATION_RESIZE_TIME;
-	    }
-	    program {
-		name: "uninstall_button_hide";
-		signal: SIGNAL_UNINSTALL_BUTTON_HIDE;
-		source: SIGNAL_SOURCE;
-		action: STATE_SET "default" 0.0;
-		target: "uninstall_btn";
-	    }
-	    program {
-		name: "uninstall_button_clicked";
-		signal: "mouse,clicked,1";
-		source: "uninstall_btn";
-		action: SIGNAL_EMIT SIGNAL_UNINSTALL_BUTTON_CLICKED SIGNAL_SOURCE;
-	    }
-	    program {
-		name: "uninstall_button_mouse_down";
-		signal: "mouse,down,1";
-		source: "uninstall_btn";
-		action: STATE_SET "press" 0.0;
-		target: "uninstall_btn";
-		transition: DECELERATE ANIMATION_RESIZE_TIME;
-	    }
-	    program {
-		name: "uninstall_button_mouse_up";
-		signal: "mouse,up,1";
-		source: "uninstall_btn";
-		action: STATE_SET "show" 0.0;
-		target: "uninstall_btn";
-		transition: DECELERATE ANIMATION_RESIZE_TIME;
-	    }
-	    program {
-		name: "icon_badge_show";
-		signal: SIGNAL_BADGE_SHOW;
-		source: SIGNAL_SOURCE;
-		action: STATE_SET "show" 0.0;
-		target: "icon_badge";
-		target: "badge_text";
-	    }
-	    program {
-		name: "icon_badge_hide";
-		signal: SIGNAL_BADGE_HIDE;
-		source: SIGNAL_SOURCE;
-		action: STATE_SET "default" 0.0;
-		target: "icon_badge";
-		target: "badge_text";
-	    }
-	    program {
-		name: "icon_disable";
-		signal: SIGNAL_ICON_DISABLE;
-		source: SIGNAL_SOURCE;
-		action: STATE_SET "disable" 0.0;
-		target: "app_icon_disable";
-		target: "icon_name";
-	    }
-	    program {
-		name: "icon_enable";
-		signal: SIGNAL_ICON_ENABLE;
-		source: SIGNAL_SOURCE;
-		action: STATE_SET "default" 0.0;
-		target: "icon_name";
-		target: "app_icon_disable";
-	    }
-	    program {
-		name: "icon_picked";
-		signal: SIGNAL_ICON_NAME_HIDE;
-		source: SIGNAL_SOURCE;
-		action: STATE_SET "hide" 0.0;
-		target: "icon_name";
-	    }
-	    program {
-		name: "icon_drop";
-		signal: SIGNAL_ICON_NAME_SHOW;
-		source: SIGNAL_SOURCE;
-		action: STATE_SET "default" 0.0;
-		target: "icon_name";
-	    }
-	*/
+		program { name: "uninstall_button_show";
+			signal: "uninstall_button_show";
+			source: "source";
+			action: STATE_SET "show" 0.0;
+			target: "uninstall_btn";
+		}
+		program { name: "uninstall_button_hide";
+			signal: "uninstall_button_hide";
+			source: "source";
+			action: STATE_SET "default" 0.0;
+			target: "uninstall_btn";
+		}
+		program { name: "uninstall_button_clicked";
+			signal: "mouse,clicked,1";
+			source: "uninstall_btn";
+			action: SIGNAL_EMIT "uninstall_button_clicked" "source";
+		}
+		program { name: "uninstall_button_mouse_down";
+			signal: "mouse,down,1";
+			source: "uninstall_btn";
+			action: STATE_SET "press" 0.0;
+			target: "uninstall_btn";
+			transition: DECELERATE 0.4;
+		}
+		program { name: "uninstall_button_mouse_up";
+			signal: "mouse,up,1";
+			source: "uninstall_btn";
+			action: STATE_SET "show" 0.0;
+			target: "uninstall_btn";
+			transition: DECELERATE 0.4;
+		}
+		program { name: "icon_badge_show";
+			signal: "icon_badge_show";
+			source: "source";
+			action: STATE_SET "show" 0.0;
+			target: "icon_badge";
+			target: "badge_text";
+		}
+		program { name: "icon_badge_hide";
+			signal: "icon_badge_hide";
+			source: "source";
+			action: STATE_SET "default" 0.0;
+			target: "icon_badge";
+			target: "badge_text";
+		}
+		program { name: "icon_disable";
+			signal: "icon_disable";
+			source: "source";
+			action: STATE_SET "disable" 0.0;
+			target: "app_icon_disable";
+			target: "icon_name";
+		}
+		program { name: "icon_enable";
+			signal: "icon_enable";
+			source: "source";
+			action: STATE_SET "default" 0.0;
+			target: "icon_name";
+			target: "app_icon_disable";
+		}
 	}
 }
