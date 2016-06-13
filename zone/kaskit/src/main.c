@@ -77,7 +77,7 @@ static void __create_icon(void *data) {
 	}
 }
 
-static void __pkg_event_cb(const char* type,
+void __pkg_event_cb(const char* type,
 	const char* pkg_id,
 	package_manager_event_type_e event_type,
 	package_manager_event_state_e event_state, int progress,
@@ -113,11 +113,6 @@ char* __get_current_zone_name() {
 	return ret;
 }
 
-static void __toast_callback_cb(void *data, Evas_Object *obj)
-{
-	ui_app_exit();
-}
-
 void _icon_clicked_cb(const char *app_id)
 {
 	zone_app_proxy_launch(__zone_app, app_id);
@@ -130,27 +125,32 @@ void _icon_uninstalled_cb(const char *pkg_id)
 
 static bool __app_create(void *data)
 {
-	zone_iterator_h it;
-	const char* zone_name;
-	char *current_zone_name;
-
-	current_zone_name = __get_current_zone_name();
 	zone_manager_create(&__zone_mgr);
-	it = zone_manager_create_zone_iterator(__zone_mgr, ZONE_STATE_RUNNING);
-	while (1) {
-		zone_iterator_next(it, &zone_name);
-		if (zone_name == NULL || strncmp(zone_name, current_zone_name, 16384)) {
-			break;
-		}
 
+	_create_kaskit_window();
+
+	return true;
+}
+
+static void __app_control(app_control_h app_control, void *data)
+{
+	char* zone_uri, *zone_name;
+        int ret = 0;
+
+        ret = app_control_get_uri(app_control, &zone_uri);
+        if (ret != APP_CONTROL_ERROR_NONE) {
+		dlog_print(DLOG_ERROR, LOG_TAG, "No URI");
+                ui_app_exit();
+        }
+
+	if (strncmp(zone_uri, "zone:", sizeof("zone:") - 1) != 0) {
+		dlog_print(DLOG_ERROR, LOG_TAG, "Invalid URI");
+                ui_app_exit();
 	}
 
-	if (zone_name == NULL) {
-		_create_toast("There is no zone", __toast_callback_cb, NULL);
-		return true;
-	}
+	zone_name = zone_uri + sizeof("zone:") - 1;
 
-	_create_kaskit_window(zone_name);
+	_set_kaskit_window_title(zone_name);
 
 	zone_app_proxy_create(__zone_mgr, zone_name, &__zone_app);
 	zone_package_proxy_create(__zone_mgr, zone_name, &__zone_pkg);
@@ -162,10 +162,7 @@ static bool __app_create(void *data)
 
 	ecore_main_loop_thread_safe_call_async(__create_icon, NULL);
 
-        zone_iterator_destroy(it);
-	free(current_zone_name);
-
-	return true;
+	return;
 }
 
 static void __app_pause(void *data)
@@ -183,11 +180,6 @@ static void __app_terminate(void *data)
 	zone_package_proxy_destroy(__zone_pkg);
 	zone_app_proxy_destroy(__zone_app);
 	zone_manager_destroy(__zone_mgr);
-}
-
-static void __app_control(app_control_h app_control, void *data)
-{
-	return;
 }
 
 int main(int argc, char *argv[])

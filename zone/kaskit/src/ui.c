@@ -36,11 +36,10 @@ static void __app_view_del_cb(void *data, Evas *e, Evas_Object *obj, void *event
 	eina_list_free(ud.app_icon_list);
 }
 
-static void __set_kaskit_layout(const char *name)
+static void __set_kaskit_layout()
 {
 	ud.panel = _create_layout(ud.layout, ud.edj_path, "popup_layout");
 
-	elm_object_part_text_set(ud.panel, "popup_title", name);
 	elm_object_part_content_set(ud.layout, "popup_window", ud.panel);
 
 	ud.scroller = elm_scroller_add(ud.panel);
@@ -90,7 +89,7 @@ static void __back_key_cb(void *data , Evas_Object *obj , void *event_info)
 	}
 }
 
-void _create_kaskit_window(const char *krate_name)
+void _create_kaskit_window()
 {
 	ud.edj_path = __get_res_path(PACKAGE ".edj");
 	ud.win = _create_win(PACKAGE);
@@ -101,7 +100,7 @@ void _create_kaskit_window(const char *krate_name)
 
 	elm_object_signal_callback_add(ud.layout, "bg_clicked", "layout", __block_clicked_cb, NULL);
 
-	__set_kaskit_layout(krate_name);
+	__set_kaskit_layout();
 
 	evas_object_show(ud.win);
 
@@ -124,7 +123,12 @@ static Eina_Bool __app_icon_long_press_cb(void *data)
 	return ECORE_CALLBACK_CANCEL;
 }
 
-int __icon_down_x, __icon_down_y;
+void _set_kaskit_window_title(const char *title)
+{
+	elm_object_part_text_set(ud.panel, "popup_title", title);
+}
+
+static int __icon_down_x, __icon_down_y;
 static void __app_icon_down_cb(void *data, Evas *e, Evas_Object *obj, void *event_info) {
 	Evas_Event_Mouse_Up* ev = event_info;
 

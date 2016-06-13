@@ -50,7 +50,8 @@ typedef struct {
         char* edj_path;
 } uidata_s;
 
-void _create_kaskit_window(const char* krate_name);
+void _create_kaskit_window();
+void _set_kaskit_window_title(const char *title);
 void _create_app_icon(const char* pkg_id, const char* app_id, const char* label, const char* icon, bool removable);
 void _destroy_app_icon(const char* pkg_id);
 
