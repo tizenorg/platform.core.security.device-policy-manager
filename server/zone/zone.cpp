@@ -39,6 +39,8 @@
 #define ZONE_UID_MIN       60001
 #define ZONE_UID_MAX       65000
 
+#define ZONE_LAUNCHER_APP  "org.tizen.kaskit"
+
 namespace DevicePolicyManager {
 
 namespace {
@@ -460,6 +462,12 @@ int ZoneManager::createZone(const std::string& name, const std::string& manifest
             setZoneState(user.getUid(), 1);
 
             context.notify("ZoneManager::created", name, std::string());
+
+            // Running launch app
+            try {
+                Launchpad launchpad;
+                launchpad.launch(ZONE_LAUNCHER_APP);
+            } catch (runtime::Exception& e) {}
         } catch (runtime::Exception& e) {
             ERROR(e.what());
             context.notify("ZoneManager::removed", name, std::string());
