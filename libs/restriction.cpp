@@ -154,4 +154,58 @@ int RestrictionPolicy::getExternalStorageState()
 	}
 }
 
+int RestrictionPolicy::setPopImapEmailState(int enable)
+{
+    try {
+        return context->methodCall<int>("RestrictionPolicy::setPopImapEmailState", enable);
+    } catch (runtime::Exception& e) {
+        return -1;
+    }
+}
+
+int RestrictionPolicy::getPopImapEmailState()
+{
+    try {
+        return context->methodCall<int>("RestrictionPolicy::getPopImapEmailState");
+    } catch (runtime::Exception& e) {
+        return -1;
+    }
+}
+
+int RestrictionPolicy::setMessagingState(int enable)
+{
+    try {
+        return context->methodCall<int>("RestrictionPolicy::setMessagingState", enable);
+    } catch (runtime::Exception& e) {
+        return -1;
+    }
+}
+
+int RestrictionPolicy::getMessagingState()
+{
+    try {
+        return context->methodCall<int>("RestrictionPolicy::getMessagingState");
+    } catch (runtime::Exception& e) {
+        return -1;
+    }
+}
+
+int RestrictionPolicy::setBrowserState(int enable)
+{
+    try {
+        return context->methodCall<int>("RestrictionPolicy::setBrowserState", enable);
+    } catch (runtime::Exception& e) {
+        return -1;
+    }
+}
+
+int RestrictionPolicy::getBrowserState()
+{
+    try {
+        return context->methodCall<int>("RestrictionPolicy::getBrowserState");
+    } catch (runtime::Exception& e) {
+        return -1;
+    }
+}
+
 } //namespace DevicePolicyManager

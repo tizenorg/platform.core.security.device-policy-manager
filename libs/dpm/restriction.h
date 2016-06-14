@@ -613,6 +613,107 @@ DPM_API int dpm_restriction_set_bluetooth_pairing_state(dpm_restriction_policy_h
 DPM_API int dpm_restriction_get_bluetooth_pairing_state(dpm_restriction_policy_h handle, int *enable);
 
 /**
+* @brief       Specifies whether the device allows access to POP or IMAP e-mail
+* @details     An administrator can diable the email capability without any user interaction
+* @since_tizen 3.0
+* @param[in]   handle The restriction policy handle
+* @param[in]   enable TRUE to restrict POP or IMAP e-mail, else FALSE
+* @return      #DPM_ERROR_NONE on success, otherwise a negative value
+* @retval      #DPM_ERROR_NONE Successful
+* @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
+* @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
+*              the privilege to call this API
+* @pre         handle must be created by dpm_context_acquire_restriction_policy()
+* @see         dpm_context_acquire_restriction_policy()
+* @see         dpm_context_release_restriction_policy()
+* @see         dpm_restriction_get_popimap_email_state()
+*/
+DPM_API int dpm_restriction_set_popimap_email_state(dpm_restriction_policy_h handle, int enable);
+
+/**
+* @brief       Checks whether the device allows access to POP or IMAP e-mail
+* @details     An administrator can check the email capability without any user interaction
+* @since_tizen 3.0
+* @param[in]   handle The restriction policy handle
+* @param[out]   enable TRUE if the access to POP or IMAP e-mail is disallowed, FALSE if allowed
+* @return      #DPM_ERROR_NONE on success, otherwise a negative value
+* @retval      #DPM_ERROR_NONE Successful
+* @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
+* @pre         handle must be created by dpm_context_acquire_restriction_policy()
+* @see         dpm_context_acquire_restriction_policy()
+* @see         dpm_context_release_restriction_policy()
+* @see         dpm_restriction_set_popimap_email_state()
+*/
+DPM_API int dpm_restriction_get_popimap_email_state(dpm_restriction_policy_h handle, int *state);
+
+/**
+ * @brief       Specifies whether the devce allows the use of SMS or text messaging.
+ * @details     An administrator can disable the text messaging capability without any user interaction
+ * @since_tizen 3.0
+ * @privlevel   partner
+ * @privilege   %http://tizen.org/privilege/dpm.message
+ * @param[in]   handle The restriction policy handle
+ * @param[in]   enable TRUE to restrict the use of SMS or text messaging, else FALSE
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
+ * @retval      #DPM_ERROR_PERMISSION_DENIED The application does not have
+ *              the privilege to call this API
+ * @pre         handle must be created by dpm_context_acquire_restriction_policy()
+ * @see         dpm_context_acquire_restriction_policy()
+ * @see         dpm_context_release_restriction_policy()
+ * @see         dpm_restriction_get_messaging_state()
+ */
+DPM_API int dpm_restriction_set_messaging_state(dpm_restriction_policy_h handle, int enable);
+
+/**
+* @brief       Checks whether the text messaging capability is enabled or not
+* @details     An administrator can check whether text messaging capability is enabled or not.
+* @since_tizen 3.0
+* @param[in]   handle The restriction policy handle
+* @param[out]  enable TRUE if the use of SMS or text messging is disallowed, FALSE if allowed
+* @return      #DPM_ERROR_NONE on success, otherwise a negative value
+* @retval      #DPM_ERROR_NONE Successful
+* @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
+* @pre         handle must be created by dpm_context_acquire_restriction_policy()
+* @see         dpm_context_acquire_restriction_policy()
+* @see         dpm_context_release_restriction_policy()
+* @see         dpm_restriction_set_messaging_state()
+*/
+DPM_API int dpm_restriction_get_messaging_state(dpm_restriction_policy_h handle, int *state);
+
+/**
+ * @brief       Checks whether the device allows access to POP or IMAP e-mail
+ * @details     An administrator can check the email capability without any user interaction
+ * @since_tizen 3.0
+ * @param[in]   handle The restriction policy handle
+ * @param[out]  enable TRUE if the access to POP or IMAP e-mail is disallowed, FALSE if allowed
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
+ * @pre         handle must be created by dpm_context_acquire_restriction_policy()
+ * @see         dpm_context_acquire_restriction_policy()
+ * @see         dpm_context_release_restriction_policy()
+ * @see         dpm_restriction_set_popimap_email_state()
+ */
+DPM_API int dpm_restriction_set_browser_state(dpm_restriction_policy_h handle, int enable);
+
+/**
+ * @brief       Checks whether the web browser capability is enabled or not
+ * @details     An administrator can check whether web browser capability is enabled or not.
+ * @since_tizen 3.0
+ * @param[in]   handle The restriction policy handle
+ * @param[out]  enable TRUE if the use of web browser is enabled, FALSE if allowed
+ * @return      #DPM_ERROR_NONE on success, otherwise a negative value
+ * @retval      #DPM_ERROR_NONE Successful
+ * @retval      #DPM_ERROR_NOT_SUPPORTED Not supported
+ * @pre         handle must be created by dpm_context_acquire_restriction_policy()
+ * @see         dpm_context_acquire_restriction_policy()
+ * @see         dpm_context_release_restriction_policy()
+ * @see         dpm_restriction_set_browser_state()
+ */
+DPM_API int dpm_restriction_get_browser_state(dpm_restriction_policy_h handle, int *state);
+/**
  * @} // end of DPM_RESTRICTION_POLICY
  */
 

@@ -376,3 +376,76 @@ int dpm_restriction_get_bluetooth_pairing_state(dpm_restriction_policy_h handle,
 
     return DPM_ERROR_NONE;
 }
+
+int dpm_restriction_set_popimap_email_state(dpm_restriction_policy_h handle, int enable)
+{
+	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
+	return restriction.setPopImapEmailState(enable);
+}
+
+int dpm_restriction_get_popimap_email_state(dpm_restriction_policy_h handle, int *state)
+{
+	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(state, DPM_ERROR_INVALID_PARAMETER);
+
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
+	int ret = restriction.getPopImapEmailState();
+    if (ret < 0) {
+        return -1;
+    }
+    *state = ret;
+    return DPM_ERROR_NONE;
+}
+
+int dpm_restriction_set_messaging_state(dpm_restriction_policy_h handle, int enable)
+{
+	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
+	return restriction.setMessagingState(enable);
+}
+
+int dpm_restriction_get_messaging_state(dpm_restriction_policy_h handle, int *state)
+{
+	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(state, DPM_ERROR_INVALID_PARAMETER);
+
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
+	int ret = restriction.getMessagingState();
+    if (ret < 0) {
+        return -1;
+    }
+    *state = ret;
+    return DPM_ERROR_NONE;
+}
+
+int dpm_restriction_set_browser_state(dpm_restriction_policy_h handle, int enable)
+{
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
+    return restriction.setBrowserState(enable);
+}
+
+int dpm_restriction_get_browser_state(dpm_restriction_policy_h handle, int *state)
+{
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(state, DPM_ERROR_INVALID_PARAMETER);
+
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
+    int ret = restriction.getBrowserState();
+    if (ret < 0) {
+        return -1;
+    }
+    *state = ret;
+    return DPM_ERROR_NONE;
+}
+

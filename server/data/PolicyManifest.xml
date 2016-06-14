@@ -61,8 +61,8 @@
 		<policy name="microphone">allowed</policy>
 		<policy name="location">allowed</policy>
 		<policy name="external-storage">allowed</policy>
-		<policy name="text-messaging">allowed</policy>
-		<policy name="pop-imap-email">allowed</policy>
+		<policy name="messaging">allowed</policy>
+		<policy name="popimap-email">allowed</policy>
 		<policy name="browser">allowed</policy>
 		<policy name="settings-changes">allowed</policy>
 		<policy name="tethering">allowed</policy>

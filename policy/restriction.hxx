@@ -50,6 +50,15 @@ public:
 	int setExternalStorageState(int enable);
 	int getExternalStorageState();
 
+    int setPopImapEmailState(int enable);
+    int getPopImapEmailState();
+
+    int setMessagingState(int enable);
+    int getMessagingState();
+
+    int setBrowserState(int enable);
+    int getBrowserState();
+
 private:
 	PolicyControlContext& context;
 };

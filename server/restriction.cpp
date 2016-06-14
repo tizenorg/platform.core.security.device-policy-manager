@@ -57,6 +57,12 @@ RestrictionPolicy::RestrictionPolicy(PolicyControlContext& ctxt) :
     context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getUsbTetheringState));
 	context.registerParametricMethod(this, (int)(RestrictionPolicy::setExternalStorageState)(int));
 	context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getExternalStorageState));
+	context.registerParametricMethod(this, (int)(RestrictionPolicy::setPopImapEmailState)(int));
+	context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getPopImapEmailState));
+	context.registerParametricMethod(this, (int)(RestrictionPolicy::setMessagingState)(int));
+	context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getMessagingState));
+	context.registerParametricMethod(this, (int)(RestrictionPolicy::setBrowserState)(int));
+	context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getBrowserState));
 
 	context.createNotification("camera");
 	context.createNotification("clipboard");
@@ -65,6 +71,9 @@ RestrictionPolicy::RestrictionPolicy(PolicyControlContext& ctxt) :
 	context.createNotification("settings-changes");
 	context.createNotification("usb-debugging");
     context.createNotification("usb-tethering");
+    context.createNotification("popimap-email");
+    context.createNotification("messaging");
+    context.createNotification("browser");
 }
 
 RestrictionPolicy::~RestrictionPolicy()
@@ -190,6 +199,36 @@ int RestrictionPolicy::setExternalStorageState(int enable)
 int RestrictionPolicy::getExternalStorageState()
 {
     return IsPolicyAllowed(context, "external-storage");
+}
+
+int RestrictionPolicy::setPopImapEmailState(int enable)
+{
+    return SetPolicyAllowed(context, "popimap-email", enable);
+}
+
+int RestrictionPolicy::getPopImapEmailState()
+{
+    return IsPolicyAllowed(context, "popimap-email");
+}
+
+int RestrictionPolicy::setMessagingState(int enable)
+{
+    return SetPolicyAllowed(context, "messaging", enable);
+}
+
+int RestrictionPolicy::getMessagingState()
+{
+    return IsPolicyAllowed(context, "messaging");
+}
+
+int RestrictionPolicy::setBrowserState(int enable)
+{
+    return SetPolicyAllowed(context, "browser", enable);
+}
+
+int RestrictionPolicy::getBrowserState()
+{
+    return IsPolicyAllowed(context, "browser");
 }
 
 RestrictionPolicy restrictionPolicy(Server::instance());
