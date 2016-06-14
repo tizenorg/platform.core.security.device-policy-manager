@@ -84,13 +84,18 @@ static inline void usage(const std::string name)
 
 int showZoneInstances()
 {
-    runtime::DirectoryIterator iter(runtime::Path("/var/run/zone")), end;
+    try {
+        runtime::DirectoryIterator iter(runtime::Path("/var/run/zone")), end;
 
-    while (iter != end) {
-        const std::string& path = (*iter).getPath();
-        size_t name = path.rfind('/') + 1;
-        std::cout << path.substr(name) << std::endl;
-        ++iter;
+        while (iter != end) {
+            const std::string& path = (*iter).getPath();
+            size_t name = path.rfind('/') + 1;
+            std::cout << path.substr(name) << std::endl;
+            ++iter;
+        }
+    } catch (runtime::Exception& e) {
+        std::cerr << e.what() << std::endl;
+        return -1;
     }
 
     return 0;
@@ -176,7 +181,7 @@ int attachToZone(const std::string& name, char* args[])
         attachNamespaces(getSessionLeader(user));
         launchProcess(user, args);
     } catch (runtime::Exception& e) {
-        std::cerr << e.what()  << std::endl;
+        std::cerr << e.what() << std::endl;
         return -1;
     }
 

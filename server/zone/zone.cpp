@@ -320,7 +320,7 @@ void zoneProcessCallback(GDBusConnection *connection,
 
     notification_h noti = reinterpret_cast<notification_h>(userData);
 
-    g_variant_get (params, "(ii)", &status, &pid);
+    g_variant_get(params, "(ii)", &status, &pid);
 
     if (status != 5) {
         return;
