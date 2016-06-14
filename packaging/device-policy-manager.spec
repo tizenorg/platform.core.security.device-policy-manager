@@ -154,11 +154,19 @@ Testcases for device policy manager and device policy client
 %package -n org.tizen.ode
 Summary: Tizen ODE User Interface
 Group: Security/Other
-BuildRequires: pkgconfig(ui-gadget-1)
-BuildRequires: pkgconfig(efl-extension)
+BuildRequires: pkgconfig(glib-2.0)
 BuildRequires: pkgconfig(elementary)
+BuildRequires: pkgconfig(dlog)
 BuildRequires: pkgconfig(capi-appfw-application)
+BuildRequires: pkgconfig(efl-extension)
+BuildRequires: pkgconfig(libxml-2.0)
+BuildRequires: pkgconfig(capi-system-system-settings)
 BuildRequires: pkgconfig(evas)
+BuildRequires: pkgconfig(dpm)
+BuildRequires: pkgconfig(capi-system-device)
+BuildRequires: pkgconfig(capi-system-runtime-info)
+BuildRequires: pkgconfig(vconf)
+BuildRequires: pkgconfig(capi-appfw-app-control)
 
 %description -n org.tizen.ode
 Tizen ODE User Interface for device policy management
@@ -168,6 +176,7 @@ Tizen ODE User Interface for device policy management
 %files -n org.tizen.ode
 %defattr(-,root,root,-)
 %{odeapp_home}/bin/*
+%{odeapp_home}/res/*
 %{TZ_SYS_RO_PACKAGES}/org.tizen.ode.xml
 
 ## DPM Syspopup Package ######################################################
