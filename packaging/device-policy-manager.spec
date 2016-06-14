@@ -239,6 +239,28 @@ Tizen Krate launcher interface for zone
 %{launcher_home}/res/images/default_app_icon.png
 %{TZ_SYS_RO_PACKAGES}/org.tizen.kaskit.xml
 
+## Keyguard package #####################################################
+%package -n org.tizen.keyguard
+Summary: Tizen Krate keyguard Interface
+Group: Security/Other
+BuildRequires: pkgconfig(efl-extension)
+BuildRequires: pkgconfig(elementary)
+BuildRequires: pkgconfig(capi-appfw-application)
+BuildRequires: pkgconfig(evas)
+BuildRequires: pkgconfig(capi-ui-efl-util)
+
+%description -n org.tizen.keyguard
+Tizen Krate keyguard interface for zone
+
+%define keyguard_home %{TZ_SYS_RO_APP}/org.tizen.keyguard
+
+%files -n org.tizen.keyguard
+%defattr(-,root,root,-)
+%manifest zone/keyguard/org.tizen.keyguard.manifest
+%{keyguard_home}/bin/*
+%{keyguard_home}/res/*
+%{TZ_SYS_RO_PACKAGES}/org.tizen.keyguard.xml
+
 ## Zone Client Package ########################################################
 %package -n libzone
 Summary: Tizen Zone Client library
