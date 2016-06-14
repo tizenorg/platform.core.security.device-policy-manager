@@ -126,9 +126,7 @@ File::File(const std::string& pathname, int flags)
 
 File::~File()
 {
-    if (descriptor != -1) {
-        close();
-    }
+    close();
 }
 
 bool File::exists() const
@@ -270,6 +268,10 @@ void File::open(int flags)
 
 void File::close()
 {
+    if (descriptor == -1) {
+        return;
+    }
+
     while (1) {
         if (::close(descriptor) == -1) {
             if (errno == EINTR) {
