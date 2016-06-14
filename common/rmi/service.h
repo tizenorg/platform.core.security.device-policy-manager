@@ -172,7 +172,7 @@ void Service::notify(const std::string& name, Args&&... args)
 {
     std::lock_guard<std::mutex> lock(notificationLock);
 
-    Notification& slot = notificationRegistry[name];
+    Notification& slot = notificationRegistry.at(name);
     slot.notify(name, std::forward<Args>(args)...);
 }
 

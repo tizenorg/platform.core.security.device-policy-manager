@@ -73,8 +73,7 @@ RestrictionPolicy::~RestrictionPolicy()
 
 int RestrictionPolicy::setCameraState(int enable)
 {
-    SetPolicyAllowed(context, "camera", enable);
-    return 0;
+    return SetPolicyAllowed(context, "camera", enable);
 }
 
 int RestrictionPolicy::getCameraState()
@@ -85,15 +84,25 @@ int RestrictionPolicy::getCameraState()
 int RestrictionPolicy::setMicrophoneState(int enable)
 {
     char *result = NULL;
-    dbus::Connection &systemDBus = dbus::Connection::getSystem();
-    systemDBus.methodcall(PULSEAUDIO_LOGIN_INTERFACE, "UpdateRestriction",
-                          -1, "(s)", "(su)", "block_recording_media", enable).get("(s)", &result);
-    if (strcmp(result, "STREAM_MANAGER_RETURN_OK") == 0) {
-        SetPolicyAllowed(context, "microphone", enable);
-    } else
+    try {
+        dbus::Connection &systemDBus = dbus::Connection::getSystem();
+        systemDBus.methodcall(PULSEAUDIO_LOGIN_INTERFACE,
+                              "UpdateRestriction",
+                              -1,
+                              "(s)",
+                              "(su)",
+                              "block_recording_media",
+                              enable).get("(s)", &result);
+    } catch (runtime::Exception& e) {
+        ERROR("Failed to enforce location policy");
         return -1;
+    }
 
-    return 0;
+    if (strcmp(result, "STREAM_MANAGER_RETURN_OK") == 0) {
+        return SetPolicyAllowed(context, "microphone", enable);
+    }
+
+    return -1;
 }
 
 int RestrictionPolicy::getMicrophoneState()
@@ -103,8 +112,7 @@ int RestrictionPolicy::getMicrophoneState()
 
 int RestrictionPolicy::setClipboardState(int enable)
 {
-    SetPolicyAllowed(context, "clipboard", enable);
-    return 0;
+    return SetPolicyAllowed(context, "clipboard", enable);
 }
 
 int RestrictionPolicy::getClipboardState()
@@ -114,8 +122,7 @@ int RestrictionPolicy::getClipboardState()
 
 int RestrictionPolicy::setSettingsChangesState(int enable)
 {
-    SetPolicyAllowed(context, "settings-changes", enable);
-    return 0;
+    return SetPolicyAllowed(context, "settings-changes", enable);
 }
 
 int RestrictionPolicy::getSettingsChangesState()
@@ -125,8 +132,7 @@ int RestrictionPolicy::getSettingsChangesState()
 
 int RestrictionPolicy::setUsbDebuggingState(int enable)
 {
-    SetPolicyAllowed(context, "usb-debugging", enable);
-    return 0;
+    return SetPolicyAllowed(context, "usb-debugging", enable);
 }
 
 int RestrictionPolicy::getUsbDebuggingState()
@@ -150,8 +156,7 @@ int RestrictionPolicy::setUsbTetheringState(bool enable)
         return -1;
     }
 
-    SetPolicyAllowed(context, "usb-tethering", enable);
-    return 0;
+    return SetPolicyAllowed(context, "usb-tethering", enable);
 }
 
 bool RestrictionPolicy::getUsbTetheringState()
@@ -162,19 +167,24 @@ bool RestrictionPolicy::getUsbTetheringState()
 int RestrictionPolicy::setExternalStorageState(int enable)
 {
     int ret;
-    std::string pid(std::to_string(::getpid()));
-    std::string state(std::to_string(enable));
+    try {
+        std::string pid(std::to_string(::getpid()));
+        std::string state(std::to_string(enable));
 
-    dbus::Connection &systemDBus = dbus::Connection::getSystem();
-    systemDBus.methodcall(DEVICED_SYSNOTI_INTERFACE, -1,
-                          "(i)", "(sisss)", "control",
-                          3, pid.c_str(), "2", state.c_str()).get("(i)", &ret);
-    if (ret != 0) {
+        dbus::Connection &systemDBus = dbus::Connection::getSystem();
+        systemDBus.methodcall(DEVICED_SYSNOTI_INTERFACE,
+                              -1, "(i)", "(sisss)",
+                              "control", 3, pid.c_str(),"2", state.c_str()).get("(i)", &ret);
+    } catch(runtime::Exception& e) {
+        ERROR("Failed to enforce external storage policy");
         return -1;
     }
 
-    SetPolicyAllowed(context, "external-storage", enable);
-    return 0;
+    if (ret == 0) {
+        return SetPolicyAllowed(context, "external-storage", enable);
+    }
+
+    return -1;
 }
 
 int RestrictionPolicy::getExternalStorageState()

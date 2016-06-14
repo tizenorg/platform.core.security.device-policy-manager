@@ -17,48 +17,33 @@
 #ifndef __DPM_POLICY_H__
 #define __DPM_POLICY_H__
 
-#include <memory>
-#include <stdexcept>
 #include <string>
+#include <mutex>
+#include <memory>
 
 #include "xml/document.h"
 #include "xml/node.h"
 
 class Policy {
 public:
-    enum class Status : int {
-        Off,
-        On
-    };
+    Policy() = delete;
+    Policy(xml::Node&& node);
 
-    enum class Retry : int {
-        Default,
-        Low,
-        Medium,
-        High
-    };
+    const std::string getContent() const
+    {
+        return data.getContent();
+    }
 
-    enum class Priority : int {
-        Default,
-        Low,
-        Medium,
-        High
-    };
-
-    Policy(const Policy&) = delete;
-    Policy& operator=(const Policy&) = delete;
-
-    Status getStatus();
-    void setStatus(Status status);
-
-    Priority getPriority();
-    void setPriority(Priority priority);
-
-    Retry getRetry();
-    void setRetry(Retry retry);
+    void setContent(const std::string& content)
+    {
+        updateLock->lock();
+        data.setContent(content);
+        updateLock->unlock();
+    }
 
 private:
     xml::Node data;
+    std::unique_ptr<std::mutex> updateLock;
 };
 
 #endif //__DPM_POLICY_H__

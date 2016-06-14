@@ -14,35 +14,10 @@
  *  limitations under the License
  */
 
-#include <memory>
-#include <stdexcept>
-#include <string>
-
 #include "policy.h"
 
-Policy::Status Policy::getStatus()
+Policy::Policy(xml::Node&& node) :
+    data(std::move(node))
 {
-    return Status::Off;
-}
-
-void Policy::setStatus(Policy::Status status)
-{
-}
-
-Policy::Priority Policy::getPriority()
-{
-    return Priority::Default;
-}
-
-void Policy::setPriority(Policy::Priority priority)
-{
-}
-
-Policy::Retry Policy::getRetry()
-{
-    return Retry::Default;
-}
-
-void Policy::setRetry(Policy::Retry retry)
-{
+    updateLock.reset(new std::mutex());
 }

@@ -14,8 +14,6 @@
  *  limitations under the License
  */
 
-#include <iostream>
-
 #include "node.h"
 
 #include "exception.h"
@@ -25,30 +23,24 @@ namespace xml {
 Node::Node(xmlNode* node) :
     implementation(node)
 {
-    implementation->_private = this;
 }
 
 Node::Node(Node&& node) :
     implementation(node.implementation)
 {
-    implementation->_private = this;
-    node.implementation = nullptr;
 }
 
 Node::~Node()
 {
-    if (implementation != nullptr) {
-        implementation->_private = nullptr;
-    }
 }
 
-Node::NodeList Node::getChildren()
+Node::NodeList Node::getChildren() const
 {
     NodeList nodeList;
 
     auto child = implementation->xmlChildrenNode;
     while (child != nullptr) {
-        nodeList.push_back(Node(child));
+        nodeList.emplace_back(child);
         child = child->next;
     }
 
@@ -75,39 +67,31 @@ void Node::setName(const std::string& name)
 
 std::string Node::getContent() const
 {
-    if (implementation->type != XML_ELEMENT_NODE) {
-        throw runtime::Exception("This node type does not have content");
-    }
-    xmlNode* child = implementation->xmlChildrenNode;
-    if (child == NULL || xmlIsBlankNode(child)) {
+    xmlChar* content = xmlNodeGetContent(implementation);
+    if (content == NULL) {
         return "";
     }
-    return child->content ? (char*)child->content : "";
+    std::string ret((const char*)content);
+    xmlFree(content);
+    return ret;
 }
 
 void Node::setContent(const std::string& content)
 {
-    if (implementation->type != XML_ELEMENT_NODE) {
-        throw runtime::Exception("Can not set content for this node type");
-    }
-
-    auto child = implementation->xmlChildrenNode;
-    xmlNodeSetContent(child, (xmlChar*)content.c_str());
+    xmlNodeSetContent(implementation, (xmlChar*)content.c_str());
 }
 
 std::string Node::getProp(const std::string& name) const
 {
-    xmlChar* result;
-
     if (implementation->type != XML_ELEMENT_NODE) {
         throw runtime::Exception("This node type does not have properties");
     }
 
-    result = xmlGetProp(implementation, (xmlChar*)name.c_str());
-    if (result) {
-        std::string retStr((const char*)result);
-        xmlFree(result);
-        return retStr;
+    xmlChar* prop = xmlGetProp(implementation, (xmlChar*)name.c_str());
+    if (prop) {
+        std::string ret((const char*)prop);
+        xmlFree(prop);
+        return ret;
     }
 
     return "";
