@@ -58,7 +58,7 @@ pid_t getSessionLeader(const runtime::User& user)
 {
     runtime::File file("/var/run/zone/" + user.getName(), O_RDONLY);
     file.lock();
-    pid_t pid;
+    pid_t pid = -1;
     file.read(&pid, sizeof(pid_t));
     file.unlock();
 

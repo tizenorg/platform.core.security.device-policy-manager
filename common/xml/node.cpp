@@ -57,10 +57,13 @@ Node::NodeList Node::getChildren()
 
 Node Node::addNewChild(const std::string& name)
 {
-   xmlNode* nodePtr = xmlNewNode(NULL, xmlStrdup((const xmlChar*)name.c_str()));
-   xmlAddChild(implementation, nodePtr);
+    xmlNode* nodePtr = xmlNewNode(NULL, xmlStrdup((const xmlChar*)name.c_str()));
+    if (nodePtr == nullptr) {
+        throw runtime::Exception("Can not create a new node");
+    }
+    xmlAddChild(implementation, nodePtr);
 
-   return Node(nodePtr);
+    return Node(nodePtr);
 }
 
 std::string Node::getName() const

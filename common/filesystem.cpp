@@ -126,9 +126,7 @@ File::File(const std::string& pathname, int flags)
 
 File::~File()
 {
-    if (descriptor != -1) {
-        close();
-    }
+    close();
 }
 
 bool File::exists() const
