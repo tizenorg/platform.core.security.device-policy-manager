@@ -18,17 +18,14 @@
 #define __DPM_POLICY_STORAGE_H__
 
 #include <memory>
-#include <stdexcept>
 #include <string>
+#include <unordered_map>
 
 #include "policy.h"
 
 #include "xml/parser.h"
 #include "xml/document.h"
 #include "xml/node.h"
-
-typedef xml::Node::NodeList PolicyGroupList;
-typedef xml::Node PolicyData;
 
 class PolicyStorage {
 public:
@@ -38,16 +35,14 @@ public:
     PolicyStorage(const PolicyStorage&) = delete;
     PolicyStorage& operator=(const PolicyStorage&) = delete;
 
-    Policy evaluate(const std::string& expression);
-    PolicyData getPolicyData(const std::string& name);
-
-    PolicyGroupList loadAllPolicies();
+    Policy& getPolicy(const std::string& name);
 
     void flush();
 
 private:
     std::string location;
     std::unique_ptr<xml::Document> data;
+    std::unordered_map<std::string, Policy> policyMap;
 };
 
 #endif //__DPM_POLICY_STORAGE_H__

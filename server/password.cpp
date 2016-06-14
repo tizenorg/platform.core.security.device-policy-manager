@@ -119,9 +119,9 @@ int createNotificationLaunch(void)
     return ret;
 }
 
-void SetPasswordPolicy(PolicyControlContext &context, const std::string &name, const std::string &value)
+int SetPasswordPolicy(PolicyControlContext &context, const std::string &name, const std::string &value)
 {
-    context.updatePolicy(name, value, "password", name);
+    return context.updatePolicy(name, value, "password", name);
 }
 
 std::string GetPasswordPolicy(PolicyControlContext &context, const std::string &name)
@@ -230,7 +230,6 @@ PasswordPolicy::~PasswordPolicy()
 
 int PasswordPolicy::setPasswordPolicyQuality(const int quality)
 {
-    int ret = 0;
     policy_h *p_policy;
     password_quality_type auth_quality_type = AUTH_PWD_QUALITY_UNSPECIFIED;
 
@@ -274,7 +273,7 @@ int PasswordPolicy::setPasswordPolicyQuality(const int quality)
     SetPasswordPolicy(__context, "password-quality", std::to_string(quality));
     SetPasswordPolicy(__context, "password-minimum-length", std::to_string(SIMPLE_PASSWORD_LENGTH));
 
-    return ret;
+    return 0;
 }
 
 int PasswordPolicy::getPasswordPolicyQuality()
@@ -307,9 +306,7 @@ int PasswordPolicy::setPasswordPolicyMinimumLength(const int value)
 
     auth_passwd_free_policy(p_policy);
 
-    SetPasswordPolicy(__context, "password-minimum-length", std::to_string(value));
-
-    return 0;
+    return SetPasswordPolicy(__context, "password-minimum-length", std::to_string(value));
 }
 
 int PasswordPolicy::getPasswordPolicyMinimumLength()
@@ -342,9 +339,7 @@ int PasswordPolicy::setMinPasswordPolicyComplexChars(const int value)
 
     auth_passwd_free_policy(p_policy);
 
-    SetPasswordPolicy(__context, "password-minimum-complexity", std::to_string(value));
-
-    return 0;
+    return SetPasswordPolicy(__context, "password-minimum-complexity", std::to_string(value));
 }
 
 int PasswordPolicy::getMinPasswordPolicyComplexChars()
@@ -377,9 +372,7 @@ int PasswordPolicy::setMaximumFailedPasswordPolicyForWipe(const int value)
 
     auth_passwd_free_policy(p_policy);
 
-    SetPasswordPolicy(__context, "password-maximum-failure-count", std::to_string(value));
-
-    return 0;
+    return SetPasswordPolicy(__context, "password-maximum-failure-count", std::to_string(value));
 }
 
 int PasswordPolicy::getMaximumFailedPasswordPolicyForWipe()
@@ -412,9 +405,7 @@ int PasswordPolicy::setPasswordPolicyExpires(const int value)
 
     auth_passwd_free_policy(p_policy);
 
-    SetPasswordPolicy(__context, "password-expired", std::to_string(value));
-
-    return 0;
+    return SetPasswordPolicy(__context, "password-expired", std::to_string(value));
 }
 
 int PasswordPolicy::getPasswordPolicyExpires()
@@ -447,9 +438,7 @@ int PasswordPolicy::setPasswordPolicyHistory(const int value)
 
     auth_passwd_free_policy(p_policy);
 
-    SetPasswordPolicy(__context, "password-history", std::to_string(value));
-
-    return 0;
+    return SetPasswordPolicy(__context, "password-history", std::to_string(value));
 }
 
 int PasswordPolicy::getPasswordPolicyHistory()
@@ -459,7 +448,6 @@ int PasswordPolicy::getPasswordPolicyHistory()
 
 int PasswordPolicy::setPasswordPolicyPattern(const std::string &pattern)
 {
-    int ret = 0;
     policy_h *p_policy;
 
     if (auth_passwd_new_policy(&p_policy) != AUTH_PASSWD_API_SUCCESS) {
@@ -487,9 +475,7 @@ int PasswordPolicy::setPasswordPolicyPattern(const std::string &pattern)
     if (PasswordPattern.compare("") == 0)
         PasswordPattern = PASSWORD_EMPTY_STRING;
 
-    SetPasswordPolicy(__context, "password-pattern", PasswordPattern.c_str());
-
-    return ret;
+    return SetPasswordPolicy(__context, "password-pattern", PasswordPattern.c_str());
 }
 
 int PasswordPolicy::resetPasswordPolicy(const std::string &passwd)
@@ -526,15 +512,13 @@ int PasswordPolicy::enforcePasswordPolicyChange()
         ERROR("Failed to launch Password Application.");
         return -1;
     } else {
-        SetPasswordPolicy(__context, "password-status", std::to_string(PasswordPolicy::DPM_PASSWORD_STATUS_CHANGE_REQUIRED));
-        return 0;
+        return SetPasswordPolicy(__context, "password-status", std::to_string(PasswordPolicy::DPM_PASSWORD_STATUS_CHANGE_REQUIRED));
     }
 }
 
 int PasswordPolicy::setMaxInactivityTimeDeviceLock(const int value)
 {
-    SetPasswordPolicy(__context, "password-inactivity-timeout", std::to_string(value));
-    return 0;
+    return SetPasswordPolicy(__context, "password-inactivity-timeout", std::to_string(value));
 }
 
 int PasswordPolicy::getMaxInactivityTimeDeviceLock()
@@ -544,40 +528,36 @@ int PasswordPolicy::getMaxInactivityTimeDeviceLock()
 
 int PasswordPolicy::setPasswordPolicyStatus(const int status)
 {
-    int ret = 0;
     int current_status = std::stoi(GetPasswordPolicy(__context, "password-status"));
 
     ERROR("current status: " + std::to_string(current_status) + ", status: " + std::to_string(status));
     if (status >= PasswordPolicy::DPM_PASSWORD_STATUS_MAX) {
-        ret = -1;
-        return ret;
+        return -1;
     }
 
     if (status == PasswordPolicy::DPM_PASSWORD_STATUS_MAX_ATTEMPTS_EXCEEDED) {
         ERROR("Max Attempts Exceeded.");
-        return ret;
+        return -1;
     }
 
     if (current_status == PasswordPolicy::DPM_PASSWORD_STATUS_CHANGE_REQUIRED) {
         if (status == PasswordPolicy::DPM_PASSWORD_STATUS_CHANGED) {
-            SetPasswordPolicy(__context, "password-status", std::to_string(PasswordPolicy::DPM_PASSWORD_STATUS_NORMAL));
+            return SetPasswordPolicy(__context, "password-status", std::to_string(PasswordPolicy::DPM_PASSWORD_STATUS_NORMAL));
         } else if (status == PasswordPolicy::DPM_PASSWORD_STATUS_NOT_CHANGED) {
             ERROR("Display Noti");
-            ret = createNotificationLaunch();
+            return createNotificationLaunch();
         }
     } else if (current_status ==  PasswordPolicy::DPM_PASSWORD_STATUS_NORMAL) {
-        if (status == PasswordPolicy::DPM_PASSWORD_STATUS_CHANGE_REQUIRED)
-            SetPasswordPolicy(__context, "password-status", std::to_string(status));
-        else
-            ret = -1;
+        if (status == PasswordPolicy::DPM_PASSWORD_STATUS_CHANGE_REQUIRED) {
+            return SetPasswordPolicy(__context, "password-status", std::to_string(status));
+        }
     }
 
-    return ret;
+    return -1;
 }
 
 int PasswordPolicy::deletePasswordPolicyPattern()
 {
-    int ret = 0;
     policy_h *p_policy;
 
     if (auth_passwd_new_policy(&p_policy) != AUTH_PASSWD_API_SUCCESS) {
@@ -602,9 +582,7 @@ int PasswordPolicy::deletePasswordPolicyPattern()
     auth_passwd_free_policy(p_policy);
 
     PasswordPattern.clear();
-    SetPasswordPolicy(__context, "password-pattern", PASSWORD_EMPTY_STRING);
-
-    return ret;
+    return SetPasswordPolicy(__context, "password-pattern", PASSWORD_EMPTY_STRING);
 }
 
 std::string PasswordPolicy::getPasswordPolicyPattern()
@@ -618,7 +596,6 @@ std::string PasswordPolicy::getPasswordPolicyPattern()
 
 int PasswordPolicy::setMaximumCharacterOccurrences(const int value)
 {
-    int ret = 0;
     policy_h *p_policy;
 
     if (auth_passwd_new_policy(&p_policy) != AUTH_PASSWD_API_SUCCESS) {
@@ -642,9 +619,7 @@ int PasswordPolicy::setMaximumCharacterOccurrences(const int value)
 
     auth_passwd_free_policy(p_policy);
 
-    SetPasswordPolicy(__context, "password-maximum-character-occurrences", std::to_string(value));
-
-    return ret;
+    return SetPasswordPolicy(__context, "password-maximum-character-occurrences", std::to_string(value));
 }
 
 int PasswordPolicy::getMaximumCharacterOccurrences()
@@ -654,7 +629,6 @@ int PasswordPolicy::getMaximumCharacterOccurrences()
 
 int PasswordPolicy::setMaximumNumericSequenceLength(const int value)
 {
-    int ret = 0;
     policy_h *p_policy;
 
     if (auth_passwd_new_policy(&p_policy) != AUTH_PASSWD_API_SUCCESS) {
@@ -678,9 +652,7 @@ int PasswordPolicy::setMaximumNumericSequenceLength(const int value)
 
     auth_passwd_free_policy(p_policy);
 
-    SetPasswordPolicy(__context, "password-numeric-sequences-length", std::to_string(value));
-
-    return ret;
+    return SetPasswordPolicy(__context, "password-numeric-sequences-length", std::to_string(value));
 }
 
 int PasswordPolicy::getMaximumNumericSequenceLength()
@@ -690,7 +662,6 @@ int PasswordPolicy::getMaximumNumericSequenceLength()
 
 int PasswordPolicy::setForbiddenStrings(const std::vector<std::string> &forbiddenStrings)
 {
-    int ret = 0;
     unsigned int count = 0;
     policy_h *p_policy;
     std::string xmlForbiddenStrings;
@@ -725,11 +696,11 @@ int PasswordPolicy::setForbiddenStrings(const std::vector<std::string> &forbidde
             xmlForbiddenStrings += PASSWORD_EMPTY_STRING;
     }
 
-    if (xmlForbiddenStrings.compare("") == 0)
+    if (xmlForbiddenStrings.compare("") == 0) {
         xmlForbiddenStrings = PASSWORD_EMPTY_STRING;
-    SetPasswordPolicy(__context, "password-forbidden-strings", xmlForbiddenStrings.c_str());
+    }
 
-    return ret;
+    return SetPasswordPolicy(__context, "password-forbidden-strings", xmlForbiddenStrings.c_str());
 }
 
 std::vector<std::string> PasswordPolicy::getForbiddenStrings()

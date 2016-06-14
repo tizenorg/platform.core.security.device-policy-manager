@@ -57,25 +57,33 @@ int Server::unregisterNotificationSubscriber(const std::string& name, int id)
     return service->unsubscribeNotification(name, id);
 }
 
-void Server::updatePolicy(const std::string& name, const std::string& value, const std::string& event, const std::string& info)
+int Server::updatePolicy(const std::string& name, const std::string& value,
+                         const std::string& event, const std::string& info)
 {
-    PolicyData data = policyStorage->getPolicyData(name);
-    std::string old = data.getContent();
-    data.setContent(value);
-    if (old != value) {
-        service->notify(event, info);
-        policyStorage->flush();
+    try {
+        Policy& policy = policyStorage->getPolicy(name);
+        std::string old = policy.getContent();
+        policy.setContent(value);
+        if (old != value) {
+            service->notify(event, info);
+            policyStorage->flush();
+        }
+    } catch (runtime::Exception& e) {
+        ERROR("Exception on access to policy: " + name);
+        return -1;
     }
+
+    return 0;
 }
 
-void Server::updatePolicy(const std::string& name, const std::string& value)
+int Server::updatePolicy(const std::string& name, const std::string& value)
 {
-    updatePolicy(name, value, name, value);
+    return updatePolicy(name, value, name, value);
 }
 
 std::string Server::getPolicy(const std::string& name) const
 {
-    return policyStorage->getPolicyData(name).getContent();
+    return policyStorage->getPolicy(name).getContent();
 }
 
 Server& Server::instance()

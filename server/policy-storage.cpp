@@ -18,13 +18,11 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include <memory>
-#include <stdexcept>
-#include <string>
-
 #include "policy-storage.h"
+
 #include "error.h"
 #include "exception.h"
+#include "audit/logger.h"
 
 namespace {
 
@@ -48,27 +46,26 @@ PolicyStorage::PolicyStorage(const std::string& path, bool create) :
         }
     }
 
-
     data = std::unique_ptr<xml::Document>(xml::Parser::parseFile(source));
+    xml::Node::NodeList nodes = data->evaluate("/manifest/policy-group/policy");
+    xml::Node::NodeList::iterator it = nodes.begin();
+    while (it != nodes.end()) {
+        policyMap.emplace(it->getProp("name"), std::move(*it));
+        ++it;
+    }
 }
 
 PolicyStorage::~PolicyStorage()
 {
 }
 
-PolicyGroupList PolicyStorage::loadAllPolicies()
+Policy& PolicyStorage::getPolicy(const std::string& name)
 {
-    return data->evaluate("/manifest/policy-group/policy");
-}
-
-PolicyData PolicyStorage::getPolicyData(const std::string& name)
-{
-    PolicyGroupList policyList = data->evaluate("/manifest/policy-group/policy[@name='" + name + "']");
-    if (policyList.empty()) {
-        throw runtime::Exception("Invalid parameter");
+    if (policyMap.count(name) == 0) {
+        throw runtime::Exception("Failed to find policy");
     }
 
-    return std::move(policyList[0]);
+    return policyMap.at(name);
 }
 
 void PolicyStorage::flush()

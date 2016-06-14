@@ -63,9 +63,9 @@ public:
         service->createNotification(name);
     }
 
-    void updatePolicy(const std::string& name, const std::string& value);
-    void updatePolicy(const std::string& name, const std::string& value,
-                      const std::string& event, const std::string& info);
+    int updatePolicy(const std::string& name, const std::string& value);
+    int updatePolicy(const std::string& name, const std::string& value,
+                     const std::string& event, const std::string& info);
     std::string getPolicy(const std::string& name) const;
 
     FileDescriptor registerNotificationSubscriber(const std::string& name);

@@ -120,13 +120,11 @@ BluetoothPolicy::BluetoothPolicy(PolicyControlContext& ctxt) :
     ctxt.createNotification("bluetooth-device-restriction");
 
     if (::bt_initialize() != BT_ERROR_NONE) {
-        ERROR("Failed to initialize the Bluetooth");
         return;
     }
 
     if (bt_adapter_set_state_changed_cb(bluetoothAdapterStateChangedCallback,
                                         new BluetoothPolicyContext(this, &ctxt)) != BT_ERROR_NONE) {
-        ERROR("Failed to register a bluetooth adaptor callback");
         return;
     }
 }
@@ -143,8 +141,7 @@ int BluetoothPolicy::setModeChangeState(const bool enable)
         return -1;
     }
 
-    SetPolicyAllowed(context, "bluetooth", enable);
-    return 0;
+    return SetPolicyAllowed(context, "bluetooth", enable);
 }
 
 bool BluetoothPolicy::getModeChangeState()
@@ -159,8 +156,7 @@ int BluetoothPolicy::setDesktopConnectivityState(const bool enable)
         return -1;
     }
 
-    SetPolicyAllowed(context, "bluetooth-desktop-connectivity", enable);
-    return 0;
+    return SetPolicyAllowed(context, "bluetooth-desktop-connectivity", enable);
 }
 
 bool BluetoothPolicy::getDesktopConnectivityState()
@@ -175,8 +171,7 @@ int BluetoothPolicy::setPairingState(const bool enable)
         return -1;
     }
 
-    SetPolicyAllowed(context, "bluetooth-pairing", enable);
-    return 0;
+    return SetPolicyAllowed(context, "bluetooth-pairing", enable);
 }
 
 bool BluetoothPolicy::getPairingState()
@@ -211,8 +206,7 @@ int BluetoothPolicy::setTetheringState(bool enable)
         return -1;
     }
 
-    SetPolicyAllowed(context, "bluetooth-tethering", enable);
-    return 0;
+    return SetPolicyAllowed(context, "bluetooth-tethering", enable);
 }
 
 bool BluetoothPolicy::getTetheringState()
@@ -238,9 +232,7 @@ int BluetoothPolicy::setDeviceRestriction(const bool enable)
         return -1;
     }
 
-    SetPolicyEnabled(context, "bluetooth-device-restriction", enable);
-
-    return 0;
+    return SetPolicyEnabled(context, "bluetooth-device-restriction", enable);
 }
 
 bool BluetoothPolicy::isDeviceRestricted()
@@ -275,9 +267,7 @@ int BluetoothPolicy::setUuidRestriction(const bool enable)
         return -1;
     }
 
-    SetPolicyEnabled(context, "bluetooth-uuid-restriction", enable);
-
-    return 0;
+    return SetPolicyEnabled(context, "bluetooth-uuid-restriction", enable);
 }
 
 bool BluetoothPolicy::isUuidRestricted()

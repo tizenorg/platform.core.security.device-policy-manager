@@ -31,14 +31,14 @@ inline bool IsPolicyEnabled(PolicyControlContext& context, const std::string& na
 	return context.getPolicy(name) == "enabled" ? true : false;
 }
 
-inline void SetPolicyAllowed(PolicyControlContext& context, const std::string& name, bool allow)
+inline int SetPolicyAllowed(PolicyControlContext& context, const std::string& name, bool allow)
 {
-	context.updatePolicy(name, allow ? "allowed" : "disallowed");
+	return context.updatePolicy(name, allow ? "allowed" : "disallowed");
 }
 
-inline void SetPolicyEnabled(PolicyControlContext& context, const std::string& name, bool enable)
+inline int SetPolicyEnabled(PolicyControlContext& context, const std::string& name, bool enable)
 {
-	context.updatePolicy(name, enable ? "enabled" : "disabled");
+	return context.updatePolicy(name, enable ? "enabled" : "disabled");
 }
 
 #endif //! __DPM_POLICY_STORAGE_ADAPTOR_H__
