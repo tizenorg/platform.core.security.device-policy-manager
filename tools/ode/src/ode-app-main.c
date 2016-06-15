@@ -28,26 +28,20 @@ static void update_next_button_status(appdata_s* ad)
 
 	if (ad->view_type == ENCRYPT_DEVICE) {
 		if (ad->device_info.battery_status && ad->device_info.charger_status && ad->device_info.locktype_status) {
-			/* available next button */
 			elm_object_disabled_set(ad->device_info.next_button, EINA_FALSE);
 		} else {
-			/* disabled next button */
 			elm_object_disabled_set(ad->device_info.next_button, EINA_TRUE);
 		}
 	} else if (ad->view_type == DECRYPT_DEVICE) {
 		if (ad->device_info.battery_status && ad->device_info.charger_status) {
-			/* available next button */
 			elm_object_disabled_set(ad->device_info.next_button, EINA_FALSE);
 		} else {
-			/* disabled next button */
 			elm_object_disabled_set(ad->device_info.next_button, EINA_TRUE);
 		}
 	} else if (ad->view_type == ENCRYPT_SD_CARD) {
 		if (ad->device_info.sdcard_status) {
-			/* available next button */
 			elm_object_disabled_set(ad->device_info.next_button, EINA_FALSE);
 		} else {
-			/* disabled next button */
 			elm_object_disabled_set(ad->device_info.next_button, EINA_TRUE);
 		}
 	}
