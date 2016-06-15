@@ -69,7 +69,7 @@ typedef enum {
 	DECRYPT_SD_CARD,
 } dpm_encryption_viewtype;
 
-typedef struct odedata {
+typedef struct appdata {
 	Evas_Object *win;
 	Evas_Object *conform;
 	Evas_Object *nf;
@@ -82,8 +82,6 @@ typedef struct odedata {
 	char *edj_path;
 	int view_type;
 } appdata_s;
-
-appdata_s global_ad;
 
 #define MSG_TEXT_STYLE "DEFAULT='font=Tizen:style=Regular font_size=30 color=#000000 wrap=mixed align=left'"
 #define NEEDED_BATTERY_PERCENT 80

@@ -64,7 +64,7 @@ int SecurityPolicy::powerOffDevice()
     }
 }
 
-int SecurityPolicy::setInternalStorageEncryption(const bool encrypt)
+int SecurityPolicy::setInternalStorageEncryption(bool encrypt)
 {
     try {
         return context->methodCall<int>("SecurityPolicy::setInternalStorageEncryption", encrypt);
@@ -73,16 +73,16 @@ int SecurityPolicy::setInternalStorageEncryption(const bool encrypt)
     }
 }
 
-bool SecurityPolicy::isInternalStorageEncrypted()
+int SecurityPolicy::isInternalStorageEncrypted()
 {
     try {
-        return context->methodCall<bool>("SecurityPolicy::isInternalStorageEncrypted");
+        return context->methodCall<int>("SecurityPolicy::isInternalStorageEncrypted");
     } catch (runtime::Exception& e) {
-        return false;
+        return -1;
     }
 }
 
-int SecurityPolicy::setExternalStorageEncryption(const bool encrypt)
+int SecurityPolicy::setExternalStorageEncryption(bool encrypt)
 {
     try {
         return context->methodCall<int>("SecurityPolicy::setExternalStorageEncryption", encrypt);
@@ -91,12 +91,12 @@ int SecurityPolicy::setExternalStorageEncryption(const bool encrypt)
     }
 }
 
-bool SecurityPolicy::isExternalStorageEncrypted()
+int SecurityPolicy::isExternalStorageEncrypted()
 {
     try {
-        return context->methodCall<bool>("SecurityPolicy::isExternalStorageEncrypted");
+        return context->methodCall<int>("SecurityPolicy::isExternalStorageEncrypted");
     } catch (runtime::Exception& e) {
-        return false;
+        return -1;
     }
 }
 

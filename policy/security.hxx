@@ -37,10 +37,10 @@ public:
     int wipeData(const int id);
     int reboot();
     int powerOffDevice();
-    int setInternalStorageEncryption(const bool encrypt);
-    bool isInternalStorageEncrypted();
-    int setExternalStorageEncryption(const bool encrypt);
-    bool isExternalStorageEncrypted();
+    int setInternalStorageEncryption(bool encrypt);
+    int isInternalStorageEncrypted();
+    int setExternalStorageEncryption(bool encrypt);
+    int isExternalStorageEncrypted();
     std::vector<std::string> getFileNamesOnDevice(const std::string& path);
     std::vector<std::string> getFileNamesWithAttributes(const std::string& path);
 
