@@ -6,6 +6,7 @@ images {
 	image: "btn_delete_press.png" COMP;
 	image: "icon_badge_container.png" COMP;
 	image: "folder_appicon_bg.png" COMP;
+	image: "sub_badge.png" COMP;
 }
 
 styles {
@@ -164,6 +165,29 @@ group { name: "icon";
 			}
 		} //"badge_text"
 
+		part { name: "icon_sub_badge";
+			type: IMAGE;
+			scale: 0;
+			description {
+				state: "default" 0.0;
+				rel1{relative: 0.6 0.6; to: "icon_content";}
+				rel2{relative: 1.1 1.1; to: "icon_content";}
+				color: 255 255 255 255;
+				visible: 1;
+				aspect: 1.0 1.0;
+				aspect_preference: BOTH;
+				image
+				{
+					normal: "sub_badge.png";
+				}
+			}
+			description {
+				state: "hide" 0.0;
+				inherit: "default" 0.0;
+				visible: 0;
+			}
+		} //"icon_sub_badge"
+
 		part { name: "uninstall_btn";
 			type: IMAGE;
 			scale: 0;
@@ -211,6 +235,18 @@ group { name: "icon";
 			action: STATE_SET "default" 0.0;
 			target: "icon_touch";
 			transition: LINEAR 0.1;
+		}
+		program { name: "icon_sub_badge_show";
+			signal: "icon_sub_badge_show";
+			source: "source";
+			action: STATE_SET "default" 0.0;
+			target: "icon_sub_badge";
+		}
+		program { name: "icon_sub_badge_hide";
+			signal: "icon_sub_badge_hide";
+			source: "source";
+			action: STATE_SET "hide" 0.0;
+			target: "icon_sub_badge";
 		}
 		program { name: "uninstall_button_show";
 			signal: "uninstall_button_show";

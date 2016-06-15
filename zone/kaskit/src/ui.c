@@ -83,6 +83,7 @@ static void __back_key_cb(void *data , Evas_Object *obj , void *event_info)
 
 		EINA_LIST_FOREACH(ud.app_icon_list, i, icon) {
 			elm_object_signal_emit(icon, "uninstall_button_hide", "source");
+			elm_object_signal_emit(icon, "icon_sub_badge_show", "source");
 		}
 	} else {
 	        ui_app_exit();
@@ -116,6 +117,7 @@ static Eina_Bool __app_icon_long_press_cb(void *data)
 		if (evas_object_data_get(icon, "removable")) {
 			elm_object_signal_emit(icon, "uninstall_button_show", "source");
 		}
+		elm_object_signal_emit(icon, "icon_sub_badge_hide", "source");
 	}
 
 	__is_edit_mode = true;
