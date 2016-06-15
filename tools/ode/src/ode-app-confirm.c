@@ -37,6 +37,8 @@ static void _confirm_btn_clicked_cb(void* data, Evas_Object* obj, void* event_in
 		dlog_print(DLOG_DEBUG, LOG_TAG, "decrypt sd card confrim");
 		break;
 	}
+
+	ui_app_exit();
 }
 
 static void set_confirm_next_btn_layout(Evas_Object* layout, appdata_s* ad, const char* btn_text)

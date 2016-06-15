@@ -114,7 +114,7 @@ int SecurityPolicy::setInternalStorageEncryption(const bool encrypt)
 {
     try {
         Bundle bundle;
-        bundle.add("viewtype", encrypt ? "encryption" : "decryption");
+        bundle.add("viewtype", encrypt ? "ENCRYPT_DEVICE" : "DECRYPT_DEVICE");
 
         Launchpad launchpad(context.getPeerUid());
         launchpad.launch(APPID_DEVICE_ENCRYPTION, bundle);
@@ -154,14 +154,12 @@ int SecurityPolicy::setExternalStorageEncryption(const bool encrypt)
 
     try {
         Bundle bundle;
-        bundle.add("_SYSPOPUP_CONTENT_", encrypt ? "odeencrypt" : "odedecrypt");
+        bundle.add("viewtype", encrypt ? "ENCRYPT_SD_CARD" : "DECRYPT_SD_CARD");
 
-        Syspopup syspopup("mmc-syspopup");
-        if (syspopup.launch(bundle) < 0) {
-            ERROR("Failed to launch mmc-syspopup");
-            return -1;
-        }
+        Launchpad launchpad(context.getPeerUid());
+        launchpad.launch(APPID_DEVICE_ENCRYPTION, bundle);
     } catch (runtime::Exception& e) {
+        ERROR("Failed to start sd card encryption");
         return -1;
     }
 

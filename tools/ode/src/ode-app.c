@@ -83,12 +83,6 @@ static int create_base_gui(appdata_s* ad)
 	ad->win = elm_win_util_standard_add(PACKAGE, PACKAGE);
 	elm_win_conformant_set(ad->win, EINA_TRUE);
 	elm_win_autodel_set(ad->win, EINA_TRUE);
-
-	if (elm_win_wm_rotation_supported_get(ad->win)) {
-		int rots[4] = { 0, 90, 180, 270 };
-		elm_win_wm_rotation_available_rotations_set(ad->win, (const int *)(&rots), 4);
-	}
-
 	evas_object_smart_callback_add(ad->win, "delete,request", win_delete_request_cb, NULL);
 
 	/* Conformant */
@@ -118,7 +112,7 @@ static bool app_create(void* data)
 static void app_control(app_control_h app_control, void* data)
 {
 	/* Handle the launch request. */
-	appdata_s* ad = &global_ad;
+	appdata_s* ad = (appdata_s*)data;
 	int ret;
 	char *viewtype = NULL;
 
@@ -215,6 +209,7 @@ static void ui_app_low_memory(app_event_info_h event_info, void* user_data)
 
 int main(int argc, char* argv[])
 {
+	appdata_s ad = {0, };
 	int ret = 0;
 
 	ui_app_lifecycle_callback_s event_callback = { 0, };
@@ -226,14 +221,14 @@ int main(int argc, char* argv[])
 	event_callback.resume = app_resume;
 	event_callback.app_control = app_control;
 
-	ui_app_add_event_handler(&handlers[APP_EVENT_LOW_BATTERY], APP_EVENT_LOW_BATTERY, ui_app_low_battery, &global_ad);
-	ui_app_add_event_handler(&handlers[APP_EVENT_LOW_MEMORY], APP_EVENT_LOW_MEMORY, ui_app_low_memory, &global_ad);
-	ui_app_add_event_handler(&handlers[APP_EVENT_DEVICE_ORIENTATION_CHANGED], APP_EVENT_DEVICE_ORIENTATION_CHANGED, ui_app_orient_changed, &global_ad);
-	ui_app_add_event_handler(&handlers[APP_EVENT_LANGUAGE_CHANGED], APP_EVENT_LANGUAGE_CHANGED, ui_app_lang_changed, &global_ad);
-	ui_app_add_event_handler(&handlers[APP_EVENT_REGION_FORMAT_CHANGED], APP_EVENT_REGION_FORMAT_CHANGED, ui_app_region_changed, &global_ad);
+	ui_app_add_event_handler(&handlers[APP_EVENT_LOW_BATTERY], APP_EVENT_LOW_BATTERY, ui_app_low_battery, &ad);
+	ui_app_add_event_handler(&handlers[APP_EVENT_LOW_MEMORY], APP_EVENT_LOW_MEMORY, ui_app_low_memory, &ad);
+	ui_app_add_event_handler(&handlers[APP_EVENT_DEVICE_ORIENTATION_CHANGED], APP_EVENT_DEVICE_ORIENTATION_CHANGED, ui_app_orient_changed, &ad);
+	ui_app_add_event_handler(&handlers[APP_EVENT_LANGUAGE_CHANGED], APP_EVENT_LANGUAGE_CHANGED, ui_app_lang_changed, &ad);
+	ui_app_add_event_handler(&handlers[APP_EVENT_REGION_FORMAT_CHANGED], APP_EVENT_REGION_FORMAT_CHANGED, ui_app_region_changed, &ad);
 	ui_app_remove_event_handler(handlers[APP_EVENT_LOW_MEMORY]);
 
-	ret = ui_app_main(argc, argv, &event_callback, &global_ad);
+	ret = ui_app_main(argc, argv, &event_callback, &ad);
 	if (ret != APP_ERROR_NONE)
 		dlog_print(DLOG_ERROR, LOG_TAG, "ui_app_main is failed. err = %d", ret);
 	return ret;
