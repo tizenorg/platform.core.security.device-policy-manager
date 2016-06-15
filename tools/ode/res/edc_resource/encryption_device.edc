@@ -221,8 +221,8 @@ group { name: "sdcard_pw_button_layout";
 
 group { name: "Encrypt_device_layout";
 	images {
-		image: "../images/icon.png" COMP;
-		image: "../images/warning.png" COMP;
+		image: "../images/icon_encrypt_check.png" COMP;
+		image: "../images/icon_encrypt_bar.png" COMP;
 	}
 	parts {
 		part { name: "base";
@@ -271,7 +271,7 @@ group { name: "Encrypt_device_layout";
 			scale: 1;
 			description { state: "default" 0.0;
 				rel1 { relative: 0.0 1.0; to: "top_padding"; }
-				rel2 { relative: 0.0 1.0; to: "top_padding"; offset: 100 100;}
+				rel2 { relative: 0.0 1.0; to: "top_padding"; offset: 100 100; }
 			}
 		}
 		part { name: "battery_icon";
@@ -282,11 +282,13 @@ group { name: "Encrypt_device_layout";
 				rel2 { relative: 1.0 1.0; to: "battery_icon_base"; }
 				align: 0.5 0.5;
 				max: 95 95;
-				image.normal: "../images/icon.png";
+				image.normal: "../images/icon_encrypt_check.png";
+				color: 153 153 153 255;
 			}
 			description { state: "default_warning" 0.0;
 				inherit: "default" 0.0;
-				image.normal: "../images/warning.png";
+				image.normal: "../images/icon_encrypt_bar.png";
+				color: 0 0 0 255;
 			}
 			description { state: "default_hidden" 0.0;
 				inherit: "default" 0.0;
@@ -301,7 +303,7 @@ group { name: "Encrypt_device_layout";
 			type: SWALLOW;
 			scale: 1;
 			description { state: "default" 0.0;
-				rel1 { relative: 1.0 0.3; to: "battery_icon_base"; offset: 15 0;}
+				rel1 { relative: 1.0 0.3; to: "battery_icon_base"; }
 				rel2 { relative: 1.0 1.0; to_x: "top_padding"; to_y: "battery_icon_base";}
 				align: 0.0 0.5;
 			}
@@ -310,8 +312,8 @@ group { name: "Encrypt_device_layout";
 			type: SPACER;
 			scale: 1;
 			description { state: "default" 0.0;
-				rel1 { relative: 0.0 1.0; to: "battery_icon_base"; offset: 0 15; }
-				rel2 { relative: 1.0 1.0; to: "battery_icon_base"; offset: 0 115; }
+				rel1 { relative: 0.0 1.0; to: "battery_icon_base"; }
+				rel2 { relative: 1.0 1.0; to: "battery_icon_base"; offset: 0 100; }
 			}
 		}
 		part { name: "charge_icon";
@@ -322,11 +324,13 @@ group { name: "Encrypt_device_layout";
 				rel2 { relative: 1.0 1.0; to: "charge_icon_base"; }
 				align: 0.5 0.5;
 				max: 95 95;
-				image.normal: "../images/icon.png";
+				image.normal: "../images/icon_encrypt_check.png";
+				color: 153 153 153 255;
 			}
 			description { state: "default_warning" 0.0;
 				inherit: "default" 0.0;
-				image.normal: "../images/warning.png";
+				image.normal: "../images/icon_encrypt_bar.png";
+				color: 0 0 0 255;
 			}
 			description { state: "default_hidden" 0.0;
 				inherit: "default" 0.0;
@@ -341,7 +345,7 @@ group { name: "Encrypt_device_layout";
 			type: SWALLOW;
 			scale: 1;
 			description { state: "default" 0.0;
-				rel1 { relative: 1.0 0.3; to: "charge_icon_base"; offset: 15 0;}
+				rel1 { relative: 1.0 0.3; to: "charge_icon_base"; }
 				rel2 { relative: 1.0 1.0; to_x: "top_padding"; to_y: "charge_icon_base";}
 			}
 		}
@@ -349,8 +353,8 @@ group { name: "Encrypt_device_layout";
 			type: SPACER;
 			scale: 1;
 			description { state: "default" 0.0;
-				rel1 { relative: 0.0 1.0; to: "charge_icon_base"; offset: 0 15; }
-				rel2 { relative: 1.0 1.0; to: "charge_icon_base"; offset: 0 115; }
+				rel1 { relative: 0.0 1.0; to: "charge_icon_base"; }
+				rel2 { relative: 1.0 1.0; to: "charge_icon_base"; offset: 0 100; }
 			}
 		}
 		part { name: "locktype_icon";
@@ -361,11 +365,13 @@ group { name: "Encrypt_device_layout";
 				rel2 { relative: 1.0 1.0; to: "locktype_icon_base"; }
 				align: 0.5 0.5;
 				max: 95 95;
-				image.normal: "../images/icon.png";
+				image.normal: "../images/icon_encrypt_check.png";
+				color: 153 153 153 255;
 			}
 			description { state: "default_warning" 0.0;
 				inherit: "default" 0.0;
-				image.normal: "../images/warning.png";
+				image.normal: "../images/icon_encrypt_bar.png";
+				color: 0 0 0 255;
 			}
 			description { state: "default_hidden" 0.0;
 				inherit: "default" 0.0;
@@ -380,7 +386,7 @@ group { name: "Encrypt_device_layout";
 			type: SWALLOW;
 			scale: 1;
 			description { state: "default" 0.0;
-				rel1 { relative: 1.0 0.0; to: "locktype_icon_base"; offset: 15 0;}
+				rel1 { relative: 1.0 0.2; to: "locktype_icon_base"; }
 				rel2 { relative: 1.0 1.0; to_x: "top_padding"; to_y: "locktype_icon_base";}
 				align: 0.0 0.5;
 			}
@@ -472,8 +478,8 @@ group { name: "Encrypt_device_layout";
 
 group { name: "Decrypt_device_layout";
 	images {
-		image: "../images/icon.png" COMP;
-		image: "../images/warning.png" COMP;
+		image: "../images/icon_encrypt_check.png" COMP;
+		image: "../images/icon_encrypt_bar.png" COMP;
 	}
 	parts {
 		part { name: "base";
@@ -533,11 +539,13 @@ group { name: "Decrypt_device_layout";
 				rel2 { relative: 1.0 1.0; to: "battery_icon_base"; }
 				align: 0.5 0.5;
 				max: 95 95;
-				image.normal: "../images/icon.png";
+				image.normal: "../images/icon_encrypt_check.png";
+				color: 153 153 153 255;
 			}
 			description { state: "default_warning" 0.0;
 				inherit: "default" 0.0;
-				image.normal: "../images/warning.png";
+				image.normal: "../images/icon_encrypt_bar.png";
+				color: 0 0 0 255;
 			}
 			description { state: "default_hidden" 0.0;
 				inherit: "default" 0.0;
@@ -552,7 +560,7 @@ group { name: "Decrypt_device_layout";
 			type: SWALLOW;
 			scale: 1;
 			description { state: "default" 0.0;
-				rel1 { relative: 1.0 0.3; to: "battery_icon_base"; offset: 15 0;}
+				rel1 { relative: 1.0 0.3; to: "battery_icon_base"; }
 				rel2 { relative: 1.0 1.0; to_x: "top_padding"; to_y: "battery_icon_base";}
 				align: 0.0 1.0;
 			}
@@ -561,8 +569,8 @@ group { name: "Decrypt_device_layout";
 			type: SPACER;
 			scale: 1;
 			description { state: "default" 0.0;
-				rel1 { relative: 0.0 1.0; to: "battery_icon_base"; offset: 0 15; }
-				rel2 { relative: 1.0 1.0; to: "battery_icon_base"; offset: 0 115; }
+				rel1 { relative: 0.0 1.0; to: "battery_icon_base"; }
+				rel2 { relative: 1.0 1.0; to: "battery_icon_base"; offset: 0 100; }
 			}
 		}
 		part { name: "charge_icon";
@@ -573,11 +581,13 @@ group { name: "Decrypt_device_layout";
 				rel2 { relative: 1.0 1.0; to: "charge_icon_base"; }
 				align: 0.5 0.5;
 				max: 95 95;
-				image.normal: "../images/icon.png";
+				image.normal: "../images/icon_encrypt_check.png";
+				color: 153 153 153 255;
 			}
 			description { state: "default_warning" 0.0;
 				inherit: "default" 0.0;
-				image.normal: "../images/warning.png";
+				image.normal: "../images/icon_encrypt_bar.png";
+				color: 0 0 0 255;
 			}
 			description { state: "default_hidden" 0.0;
 				inherit: "default" 0.0;
@@ -592,7 +602,7 @@ group { name: "Decrypt_device_layout";
 			type: SWALLOW;
 			scale: 1;
 			description { state: "default" 0.0;
-				rel1 { relative: 1.0 0.3; to: "charge_icon_base"; offset: 15 0;}
+				rel1 { relative: 1.0 0.3; to: "charge_icon_base"; }
 				rel2 { relative: 1.0 1.0; to_x: "top_padding"; to_y: "charge_icon_base"; }
 				align: 0.0 1.0;
 			}
@@ -652,8 +662,8 @@ group { name: "Decrypt_device_layout";
 
 group { name: "Encrypt_sd_card_layout";
 	images {
-		image: "../images/icon.png" COMP;
-		image: "../images/warning.png" COMP;
+		image: "../images/icon_encrypt_check.png" COMP;
+		image: "../images/icon_encrypt_bar.png" COMP;
 	}
 	parts {
 		part { name: "base";
@@ -721,11 +731,13 @@ group { name: "Encrypt_sd_card_layout";
 				rel2 { relative: 1.0 1.0; to: "sd_card_icon_base"; }
 				align: 0.5 0.5;
 				max: 95 95;
-				image.normal: "../images/icon.png";
+				image.normal: "../images/icon_encrypt_check.png";
+				color: 153 153 153 255;
 			}
 			description { state: "default_warning" 0.0;
 				inherit: "default" 0.0;
-				image.normal: "../images/warning.png";
+				image.normal: "../images/icon_encrypt_bar.png";
+				color: 0 0 0 255;
 			}
 			description { state: "default_hidden" 0.0;
 				inherit: "default" 0.0;
@@ -740,7 +752,7 @@ group { name: "Encrypt_sd_card_layout";
 			type: SWALLOW;
 			scale: 1;
 			description { state: "default" 0.0;
-				rel1 { relative: 1.0 0.3; to: "sd_card_icon_base"; offset: 15 0; }
+				rel1 { relative: 1.0 0.3; to: "sd_card_icon_base";  }
 				rel2 { relative: 1.0 1.0; to_x: "top_padding"; to_y: "sd_card_icon_base"; }
 				align: 0.0 0.5;
 			}
@@ -749,8 +761,8 @@ group { name: "Encrypt_sd_card_layout";
 			type: SPACER;
 			scale: 1;
 			description { state: "default" 0.0;
-				rel1 { relative: 0.0 1.0; to: "sd_card_icon_base"; offset: 0 15; }
-				rel2 { relative: 1.0 1.0; to: "sd_card_icon_base"; offset: 0 115; }
+				rel1 { relative: 0.0 1.0; to: "sd_card_icon_base"; }
+				rel2 { relative: 1.0 1.0; to: "sd_card_icon_base"; offset: 0 100; }
 			}
 		}
 		part { name: "sd_card_pw_icon";
@@ -761,12 +773,14 @@ group { name: "Encrypt_sd_card_layout";
 				rel2 { relative: 1.0 1.0; to: "sd_card_pw_icon_base"; }
 				align: 0.5 0.5;
 				max: 95 95;
-				image.normal: "../images/icon.png";
+				image.normal: "../images/icon_encrypt_check.png";
+				color: 153 153 153 255;
 				visible: 0;
 			}
 			description { state: "default_warning" 0.0;
 				inherit: "default" 0.0;
-				image.normal: "../images/warning.png";
+				image.normal: "../images/icon_encrypt_bar.png";
+				color: 0 0 0 255;
 			}
 			description { state: "default_hidden" 0.0;
 				inherit: "default" 0.0;
@@ -781,7 +795,7 @@ group { name: "Encrypt_sd_card_layout";
 			type: SWALLOW;
 			scale: 1;
 			description { state: "default" 0.0;
-				rel1 { relative: 1.0 0.3; to: "sd_card_pw_icon_base"; offset: 15 0; }
+				rel1 { relative: 1.0 0.3; to: "sd_card_pw_icon_base"; }
 				rel2 { relative: 1.0 1.0; to_x: "top_padding"; to_y: "sd_card_pw_icon_base"; }
 				align: 0.0 0.5;
 			}
@@ -850,8 +864,8 @@ group { name: "Encrypt_sd_card_layout";
 
 group { name: "Decrypt_sd_card_layout";
 	images {
-		image: "../images/icon.png" COMP;
-		image: "../images/warning.png" COMP;
+		image: "../images/icon_encrypt_check.png" COMP;
+		image: "../images/icon_encrypt_bar.png" COMP;
 	}
 	parts {
 		part { name: "base";

@@ -53,8 +53,8 @@ SecurityPolicy::SecurityPolicy(PolicyControlContext& ctxt) :
     ctxt.registerNonparametricMethod(this, (int)(SecurityPolicy::lockoutScreen));
     ctxt.registerNonparametricMethod(this, (int)(SecurityPolicy::reboot));
     ctxt.registerNonparametricMethod(this, (int)(SecurityPolicy::powerOffDevice));
-    ctxt.registerNonparametricMethod(this, (bool)(SecurityPolicy::isInternalStorageEncrypted));
-    ctxt.registerNonparametricMethod(this, (bool)(SecurityPolicy::isExternalStorageEncrypted));
+    ctxt.registerNonparametricMethod(this, (int)(SecurityPolicy::isInternalStorageEncrypted));
+    ctxt.registerNonparametricMethod(this, (int)(SecurityPolicy::isExternalStorageEncrypted));
     ctxt.registerParametricMethod(this, (int)(SecurityPolicy::setInternalStorageEncryption)(bool));
     ctxt.registerParametricMethod(this, (int)(SecurityPolicy::setExternalStorageEncryption)(bool));
     ctxt.registerParametricMethod(this, (std::vector<std::string>)(SecurityPolicy::getFileNamesOnDevice)(std::string));
@@ -110,11 +110,18 @@ int SecurityPolicy::powerOffDevice()
     return ret;
 }
 
-int SecurityPolicy::setInternalStorageEncryption(const bool encrypt)
+int SecurityPolicy::setInternalStorageEncryption(bool encrypt)
 {
+    std::string policy = context.getPolicy("internal-storage-encryption");
+    if ((encrypt == true) && (policy == "encrypted")) {
+        return 0;
+    } else if ((encrypt == false) && (policy == "decrypted")) {
+        return 0;
+    }
+
     try {
         Bundle bundle;
-        bundle.add("viewtype", encrypt ? "encryption" : "decryption");
+        bundle.add("viewtype", encrypt ? "ENCRYPT_DEVICE" : "DECRYPT_DEVICE");
 
         Launchpad launchpad(context.getPeerUid());
         launchpad.launch(APPID_DEVICE_ENCRYPTION, bundle);
@@ -126,50 +133,46 @@ int SecurityPolicy::setInternalStorageEncryption(const bool encrypt)
     return 0;
 }
 
-bool SecurityPolicy::isInternalStorageEncrypted()
+int SecurityPolicy::isInternalStorageEncrypted()
 {
-    INFO("Not implemented yet");
+    std::string policy = context.getPolicy("internal-storage-encryption");
+    if (policy == "encrypted") {
+        return true;
+    }
+
     return false;
 }
 
-int SecurityPolicy::setExternalStorageEncryption(const bool encrypt)
+int SecurityPolicy::setExternalStorageEncryption(bool encrypt)
 {
-    int status;
-
-    if (::vconf_get_int(VCONFKEY_SYSMAN_MMC_STATUS, &status) != 0) {
-        ERROR("Failed to read VCONFKEY_SYSMAN_MMC_STATUS");
-        return -1;
-    }
-
-    if (status != VCONFKEY_SYSMAN_MMC_MOUNTED) {
-        WARN("MMC was not mounted");
-        return -1;
-    }
-
-    int wasEncrypted;
-    if (::vconf_get_bool(VCONFKEY_SETAPPL_MMC_ENCRYPTION_STATUS_BOOL, &wasEncrypted) != 0) {
-        ERROR("Failed to read VCONFKEY_SETAPPL_MMC_ENCRYPTION_STATUS_BOOL");
-        return -1;
+    std::string policy = context.getPolicy("external-storage-encryption");
+    if ((encrypt == true) && (policy == "encrypted")) {
+        return 0;
+    } else if ((encrypt == false) && (policy == "decrypted")) {
+        return 0;
     }
 
     try {
         Bundle bundle;
-        bundle.add("_SYSPOPUP_CONTENT_", encrypt ? "odeencrypt" : "odedecrypt");
+        bundle.add("viewtype", encrypt ? "ENCRYPT_SD_CARD" : "DECRYPT_SD_CARD");
 
-        Syspopup syspopup("mmc-syspopup");
-        if (syspopup.launch(bundle) < 0) {
-            ERROR("Failed to launch mmc-syspopup");
-            return -1;
-        }
+        Launchpad launchpad(context.getPeerUid());
+        launchpad.launch(APPID_DEVICE_ENCRYPTION, bundle);
     } catch (runtime::Exception& e) {
+        ERROR("Failed to start sd card encryption");
         return -1;
     }
 
     return 0;
 }
 
-bool SecurityPolicy::isExternalStorageEncrypted()
+int SecurityPolicy::isExternalStorageEncrypted()
 {
+    std::string policy = context.getPolicy("external-storage-encryption");
+    if (policy == "encrypted") {
+        return true;
+    }
+
     return false;
 }
 

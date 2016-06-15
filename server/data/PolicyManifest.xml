@@ -23,11 +23,9 @@
 		<policy name="password-forbidden-strings">\n</policy>
 	</policy-group>
 	<policy-group name="security">
-		<policy name="internal-storage-encryption">allowed</policy>
-		<policy name="external-storage-encryption">allowed</policy>
+		<policy name="internal-storage-encryption"></policy>
+		<policy name="external-storage-encryption"></policy>
 		<policy name="internet-sharing">allowed</policy>
-		<policy name="require-device-encryption">allowed</policy>
-		<policy name="require-sdcard-encryption">allowed</policy>
 	</policy-group>
 	<policy-group name="wifi">
 		<policy name="wifi-profile-change">allowed</policy>
