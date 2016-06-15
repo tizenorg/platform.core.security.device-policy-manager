@@ -65,7 +65,10 @@ int Server::updatePolicy(const std::string& name, const std::string& value,
         std::string old = policy.getContent();
         policy.setContent(value);
         if (old != value) {
-            service->notify(event, info);
+            if (event != "") {
+                service->notify(event, info);
+            }
+
             policyStorage->flush();
         }
     } catch (runtime::Exception& e) {
