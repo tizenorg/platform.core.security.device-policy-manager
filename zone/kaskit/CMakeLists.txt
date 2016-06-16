@@ -12,6 +12,7 @@ PKG_CHECK_MODULES(launcher_pkgs REQUIRED
 	elementary
 	capi-appfw-application
 	evas
+	shortcut
 )
 
 INCLUDE_DIRECTORIES(${launcher_pkgs_INCLUDE_DIRS} ${ZONE_LIBS})

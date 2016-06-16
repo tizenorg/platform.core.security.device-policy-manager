@@ -233,6 +233,7 @@ BuildRequires: pkgconfig(efl-extension)
 BuildRequires: pkgconfig(elementary)
 BuildRequires: pkgconfig(capi-appfw-application)
 BuildRequires: pkgconfig(evas)
+BuildRequires: pkgconfig(shortcut)
 
 %description -n org.tizen.kaskit
 Tizen Krate launcher interface for zone

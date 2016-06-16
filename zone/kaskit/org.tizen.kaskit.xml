@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest xmlns="http://tizen.org/ns/packages" api-version="3.0" package="org.tizen.kaskit" version="1.0.0">
     <profile name="mobile"/>
+    <privileges>
+        <privilege>http://tizen.org/privilege/shortcut</privilege>
+    </privileges>
     <ui-application appid="org.tizen.kaskit" exec="/usr/apps/org.tizen.kaskit/bin/org.tizen.kaskit" multiple="false" nodisplay="true" taskmanage="true" type="capp">
         <label>Kaskit</label>
     </ui-application>
