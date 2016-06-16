@@ -33,11 +33,8 @@ int PackageEventCallback(uid_t uid, int id, const char* type, const char* name,
 
 int AppListCallback(pkgmgrinfo_appinfo_h handle, void *data)
 {
-    char* appid = nullptr;
-
-    ::pkgmgrinfo_appinfo_get_appid(handle, &appid);
-    std::vector<std::string>* appList = static_cast<std::vector<std::string>*>(data);
-    appList->push_back(appid);
+    std::vector<ApplicationInfo>* appList = static_cast<std::vector<ApplicationInfo>*>(data);
+    appList->push_back(ApplicationInfo(handle));
 
     return 0;
 }
@@ -72,9 +69,9 @@ PackageInfo::~PackageInfo()
     ::pkgmgrinfo_pkginfo_destroy_pkginfo(handle);
 }
 
-std::vector<std::string> PackageInfo::getAppList() const
+std::vector<ApplicationInfo> PackageInfo::getAppList() const
 {
-    std::vector<std::string> appList;
+    std::vector<ApplicationInfo> appList;
 
     if (::pkgmgrinfo_appinfo_get_usr_list(handle, PMINFO_ALL_APP, AppListCallback, &appList, user) != PMINFO_R_OK) {
         ERROR("Error in pkgmgrinfo_appinfo_get_usr_list");
@@ -213,111 +210,106 @@ bool PackageInfo::isPreload() const
     return ret;
 }
 
-ApplicationInfo::ApplicationInfo(const std::string& aid, uid_t uid) :
-    user(uid), appid(aid), handle(nullptr)
+ApplicationInfo::ApplicationInfo(const std::string& aid, uid_t uid)
 {
-    if (user == 0) {
-        user = getuid();
-    }
+    pkgmgrinfo_appinfo_h handle;
 
-    if (::pkgmgrinfo_appinfo_get_usr_appinfo(appid.c_str(), user, &handle) != PMINFO_R_OK) {
+    if (::pkgmgrinfo_appinfo_get_usr_appinfo(aid.c_str(), uid, &handle) != PMINFO_R_OK) {
         throw runtime::Exception("Invalid App Id");
     }
-}
 
-ApplicationInfo::~ApplicationInfo()
-{
+    load(handle);
+
     ::pkgmgrinfo_appinfo_destroy_appinfo(handle);
 }
 
-std::string ApplicationInfo::getPackageId() const
+ApplicationInfo::ApplicationInfo(pkgmgrinfo_appinfo_h handle)
 {
-    char *pkgid;
-    if (::pkgmgrinfo_appinfo_get_pkgid(handle, &pkgid) != PMINFO_R_OK) {
-        throw runtime::Exception("Unexpected operation");
-    }
-
-    return pkgid;
+    load(handle);
 }
 
-std::string ApplicationInfo::getPackageType() const
+
+ApplicationInfo::~ApplicationInfo()
 {
-    char *type;
-    if (::pkgmgrinfo_appinfo_get_pkgtype(handle, &type) != PMINFO_R_OK) {
-        throw runtime::Exception("Unexpected operation");
+}
+
+void ApplicationInfo::load(pkgmgrinfo_appinfo_h handle) {
+    pkgmgrinfo_app_component comp;
+    char* str;
+    int ret;
+
+    ret = ::pkgmgrinfo_appinfo_get_appid(handle, &str);
+    if (ret == PMINFO_R_OK) {
+        id = str;
     }
 
+    ret = ::pkgmgrinfo_appinfo_get_pkgid(handle, &str);
+    if (ret == PMINFO_R_OK) {
+        package = str;
+    }
+
+    ret = ::pkgmgrinfo_appinfo_get_apptype(handle, &str);
+    if (ret == PMINFO_R_OK) {
+        type = str;
+    }
+
+    ret = ::pkgmgrinfo_appinfo_get_icon(handle, &str);
+    if (ret == PMINFO_R_OK) {
+        icon = str;
+    }
+
+    ret = ::pkgmgrinfo_appinfo_get_label(handle, &str);
+    if (ret == PMINFO_R_OK) {
+        label = str;
+    }
+
+    ret = ::pkgmgrinfo_appinfo_get_component(handle, &comp);
+    if (ret == PMINFO_R_OK) {
+        componentType = static_cast<int>(comp);
+    }
+
+    ::pkgmgrinfo_appinfo_is_nodisplay(handle, &noDisplayed);
+    ::pkgmgrinfo_appinfo_is_taskmanage(handle, &taskManaged);
+}
+
+const std::string& ApplicationInfo::getId() const
+{
+    return id;
+}
+
+const std::string& ApplicationInfo::getPackage() const
+{
+    return package;
+}
+
+const std::string& ApplicationInfo::getType() const
+{
     return type;
 }
 
-std::string ApplicationInfo::getPackageName() const
+const std::string& ApplicationInfo::getIcon() const
 {
-    char *name;
-    if (::pkgmgrinfo_appinfo_get_pkgname(handle, &name) != PMINFO_R_OK) {
-        throw runtime::Exception("Unexpected operation");
-    }
-
-    return name;
-}
-
-std::string ApplicationInfo::getType() const
-{
-    char *type;
-    if (::pkgmgrinfo_appinfo_get_apptype(handle, &type) != PMINFO_R_OK) {
-        throw runtime::Exception("Unexpected operation");
-    }
-
-    return type;
-}
-
-std::string ApplicationInfo::getIcon() const
-{
-    char *icon;
-    if (::pkgmgrinfo_appinfo_get_icon(handle, &icon) != PMINFO_R_OK) {
-        throw runtime::Exception("Unexpected operation");
-    }
-
     return icon;
 }
 
-std::string ApplicationInfo::getLabel() const
+const std::string& ApplicationInfo::getLabel() const
 {
-    char *label;
-    if (::pkgmgrinfo_appinfo_get_label(handle, &label) != PMINFO_R_OK) {
-        throw runtime::Exception("Unexpected operation");
-    }
-
     return label;
 }
 
 int ApplicationInfo::getComponentType() const
 {
-    pkgmgrinfo_app_component ret;
-    if (::pkgmgrinfo_appinfo_get_component(handle, &ret) != PMINFO_R_OK) {
-        throw runtime::Exception("Invalid operation");
-    }
-
-    return static_cast<int>(ret);
+    return componentType;
 }
 
 bool ApplicationInfo::isNoDisplayed() const
 {
-    bool ret;
-    if (::pkgmgrinfo_appinfo_is_nodisplay(handle, &ret) != PMINFO_R_OK) {
-        throw runtime::Exception("Invalid operation");
-    }
-
-    return ret;
+    return noDisplayed;
 }
 
 bool ApplicationInfo::isTaskManaged() const
 {
-    bool ret;
-    if (::pkgmgrinfo_appinfo_is_taskmanage(handle, &ret) != PMINFO_R_OK) {
-        throw runtime::Exception("Invalid operation");
-    }
-
-    return ret;
+    return taskManaged;
 }
 
 PackageManager::PackageManager() :
@@ -430,9 +422,9 @@ std::vector<std::string> PackageManager::getPackageList(const uid_t user)
     return packageList;
 }
 
-std::vector<std::string> PackageManager::getAppList(const uid_t user)
+std::vector<ApplicationInfo> PackageManager::getAppList(const uid_t user)
 {
-    std::vector<std::string> appList;
+    std::vector<ApplicationInfo> appList;
 
     if (::pkgmgrinfo_appinfo_get_usr_installed_list(AppListCallback, user, &appList) != PMINFO_R_OK) {
         ERROR("Error in pkgmgrinfo_appinfo_get_installed_list");
