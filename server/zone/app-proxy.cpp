@@ -13,6 +13,8 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License
  */
+#include <unordered_map>
+
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <system_settings.h>
@@ -27,11 +29,28 @@
 
 namespace DevicePolicyManager {
 
+namespace {
+
+struct IteratorData{
+    std::string zone;
+    std::vector<ApplicationInfo> list;
+    std::vector<ApplicationInfo>::iterator iterator;
+};
+
+std::unordered_map<int, IteratorData> iteratorMap;
+int newIteratorId = 0;
+
+} // namespace
+
 ZoneAppProxy::ZoneAppProxy(PolicyControlContext& ctx)
     : context(ctx)
 {
     context.registerParametricMethod(this, (ZoneAppProxy::AppInfo)(ZoneAppProxy::getAppInfo)(std::string, std::string));
-    context.registerParametricMethod(this, (std::vector<std::string>)(ZoneAppProxy::getAppList)(std::string));
+
+    context.registerParametricMethod(this, (int)(ZoneAppProxy::createIterator)(std::string));
+    context.registerParametricMethod(this, (ZoneAppProxy::AppInfo)(ZoneAppProxy::getIteratorValue)(int));
+    context.registerParametricMethod(this, (bool)(ZoneAppProxy::nextIterator)(int));
+    context.registerParametricMethod(this, (int)(ZoneAppProxy::destroyIterator)(int));
 
     context.registerParametricMethod(this, (int)(ZoneAppProxy::launch)(std::string, std::string));
     context.registerParametricMethod(this, (int)(ZoneAppProxy::resume)(std::string, std::string));
@@ -45,24 +64,24 @@ ZoneAppProxy::~ZoneAppProxy()
 
 ZoneAppProxy::AppInfo ZoneAppProxy::getAppInfo(const std::string& name, const std::string& appid)
 {
-    ZoneAppProxy::AppInfo appInfo;
-    char* locale;
-
-    system_settings_get_value_string(SYSTEM_SETTINGS_KEY_LOCALE_LANGUAGE, &locale);
-    if (locale == NULL) {
-        locale = strdup("No locale");
-    }
-
-    appInfo.zone = name;
-    appInfo.id = appid;
-    appInfo.locale = locale;
-
-    free(locale);
+    AppInfo appInfo;
 
     try {
         runtime::User user(name);
+        char* locale;
+
+        system_settings_get_value_string(SYSTEM_SETTINGS_KEY_LOCALE_LANGUAGE, &locale);
+        if (locale == NULL) {
+            appInfo.locale = "No locale";
+        } else {
+            appInfo.locale = locale;
+            free(locale);
+        }
+
+        appInfo.zone = name;
+        appInfo.id = appid;
         ApplicationInfo appinfo(appid, user.getUid());
-        appInfo.package = appinfo.getPackageId();
+        appInfo.package = appinfo.getPackage();
 
         appInfo.type = appinfo.getType();
         appInfo.icon = appinfo.getIcon();
@@ -79,16 +98,83 @@ ZoneAppProxy::AppInfo ZoneAppProxy::getAppInfo(const std::string& name, const st
     return appInfo;
 }
 
-std::vector<std::string> ZoneAppProxy::getAppList(const std::string& name)
+int ZoneAppProxy::createIterator(const std::string& name)
 {
+    int iteratorId = -1;
     try {
-        runtime::User user(name);
         PackageManager& packman = PackageManager::instance();
-        return packman.getAppList(user.getUid());
+        runtime::User user(name);
+        IteratorData data;
+
+        iteratorId = newIteratorId;
+
+        data.zone = name;
+        data.list = packman.getAppList(user.getUid());
+        data.iterator = data.list.begin();
+        
+        iteratorMap.insert(std::make_pair(iteratorId, data));
+
+        if (++newIteratorId < 0) {
+            newIteratorId = 0;
+        }
     } catch (runtime::Exception& e) {
         ERROR("Failed to retrieve package info installed in the zone");
     }
-    return std::vector<std::string>();
+    return iteratorId;
+}
+
+ZoneAppProxy::AppInfo ZoneAppProxy::getIteratorValue(int iterator)
+{
+    AppInfo appInfo;
+
+    auto it = iteratorMap.find(iterator);
+    if (it != iteratorMap.end()) {
+        char* locale;
+
+        system_settings_get_value_string(SYSTEM_SETTINGS_KEY_LOCALE_LANGUAGE, &locale);
+        if (locale == NULL) {
+            appInfo.locale = "No locale";
+        } else {
+            appInfo.locale = locale;
+            free(locale);
+        }
+
+        appInfo.zone = it->second.zone;
+        const ApplicationInfo& appinfo = *it->second.iterator;
+        appInfo.id = appinfo.getId();
+        appInfo.package = appinfo.getPackage();
+
+        appInfo.type = appinfo.getType();
+        appInfo.icon = appinfo.getIcon();
+        appInfo.label = appinfo.getLabel();
+
+        appInfo.componentType = appinfo.getComponentType();
+
+        appInfo.isNoDisplayed = appinfo.isNoDisplayed();
+        appInfo.isTaskManaged = appinfo.isTaskManaged();
+   }
+
+    return appInfo;
+}
+
+bool ZoneAppProxy::nextIterator(int iterator) {
+    auto it = iteratorMap.find(iterator);
+    if (it != iteratorMap.end()) {
+        if (it->second.iterator != it->second.list.end()) {
+            it->second.iterator++;
+            return true;
+        } 
+    }
+    return false;
+}
+
+int ZoneAppProxy::destroyIterator(int iterator) {
+    auto it = iteratorMap.find(iterator);
+    if (it != iteratorMap.end()) {
+        iteratorMap.erase(iterator);
+        return 0;
+    }
+    return -1;
 }
 
 int ZoneAppProxy::launch(const std::string& name, const std::string& appid)
