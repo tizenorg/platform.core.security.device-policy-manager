@@ -258,13 +258,12 @@ int packageEventHandler(uid_t target_uid, int req_id,
         runtime::User owner("owner"), pkgUser(target_uid);
 
         if (type == "install" || type == "update") {
-            PackageInfo info(pkgid, pkgUser.getUid());
-            std::string icon = info.getIcon();
+            PackageInfo pkg(pkgid, pkgUser.getUid());
+            std::string icon = pkg.getIcon();
             prepareFileForOwner(icon, pkgUser, owner);
 
-            for (const std::string &appid : info.getAppList()) {
-                ApplicationInfo info(appid, pkgUser.getUid());
-                std::string icon = info.getIcon();
+            for (const ApplicationInfo& app : pkg.getAppList()) {
+                std::string icon = app.getIcon();
                 prepareFileForOwner(icon, pkgUser, owner);
             }
         } else {

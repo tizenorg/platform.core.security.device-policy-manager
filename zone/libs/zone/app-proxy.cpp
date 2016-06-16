@@ -132,14 +132,16 @@ int zone_app_proxy_foreach_app_info(zone_app_proxy_h handle, app_manager_app_inf
     auto& proxy = instance->proxy;
     const std::string& name = instance->zoneName;
 
-    for (const auto& appid : proxy.getAppList(name)) {
-        app_info_h info = make_app_info_handle(proxy.getAppInfo(name, appid));
+    int iter = proxy.createIterator(name);
+    do {
+        app_info_h info = make_app_info_handle(proxy.getIteratorValue(iter));
         int ret = callback(info, user_data);
         app_info_destroy(info);
         if (!ret) {
             break;
         }
-    }
+    } while (proxy.nextIterator(iter));
+    proxy.destroyIterator(iter);
 
     return ZONE_ERROR_NONE;
 }

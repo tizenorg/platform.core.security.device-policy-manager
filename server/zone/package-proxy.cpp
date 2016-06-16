@@ -76,8 +76,6 @@ ZonePackageProxy::PackageInfo ZonePackageProxy::getPackageInfo(const std::string
         package.isSystem = pkginfo.isSystem();
         package.isRemovable = pkginfo.isRemovable();
         package.isPreload = pkginfo.isPreload();
-
-        package.applicationList = pkginfo.getAppList();
     } catch (runtime::Exception& e) {
         ERROR("Failed to retrieve package info installed in the zone");
     }
