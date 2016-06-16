@@ -52,7 +52,11 @@ public:
     };
 
     AppInfo getAppInfo(const std::string& name, const std::string& appid);
-    std::vector<std::string> getAppList(const std::string& name);
+
+    int createIterator(const std::string& name);
+    AppInfo getIteratorValue(int iterator);
+    bool nextIterator(int iterator);
+    int destroyIterator(int iterator);
 
     int launch(const std::string& name, const std::string& appid);
     int resume(const std::string& name, const std::string& appid);

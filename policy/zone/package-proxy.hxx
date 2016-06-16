@@ -52,13 +52,11 @@ public:
         bool isSystem;
         bool isRemovable;
         bool isPreload;
-        std::vector<std::string> applicationList;
 
         REFLECTABLE
         (
             zone, id, locale, type, icon, label, description, author,
-            version, apiVersion, mainAppId, isSystem, isRemovable, isPreload,
-            applicationList
+            version, apiVersion, mainAppId, isSystem, isRemovable, isPreload
         );
     };
 
