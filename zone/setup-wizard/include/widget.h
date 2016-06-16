@@ -31,5 +31,6 @@ Evas_Object *_create_layout(Evas_Object *parent, char *file, const char *group);
 Evas_Object *_create_button(Evas_Object *parent, const char *text, const char *style);
 Evas_Object *_create_textblock(Evas_Object *parent, const char *text, char *style);
 Evas_Object *_create_progressbar(Evas_Object *parent, const char *style);
+Elm_Genlist_Item_Class *_create_genlist_item_class(char *style, Elm_Genlist_Item_Text_Get_Cb text_func, Elm_Genlist_Item_Content_Get_Cb content_func);
 
 #endif /* WIDGET_H_ */

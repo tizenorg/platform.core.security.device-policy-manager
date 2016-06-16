@@ -74,3 +74,25 @@ group { name: "two_button_layout";
 		}
 	}
 }
+
+group { name: "one_button_layout";
+	parts {
+		part { name: "base";
+			type: RECT;
+			scale: 1;
+			description { state: "default" 0.0;
+				color: 255 255 255 255;
+				rel1 { relative: 0.0 0.0;}
+				rel2 { relative: 1.0 1.0;}
+			}
+		}
+		part { name: "button";
+			type: SWALLOW;
+			scale: 1;
+			description { state: "default" 0.0;
+				rel1 { relative: 0.0 0.0; to: "base"; offset: 22 22;}
+				rel2 { relative: 1.0 1.0; to: "base"; offset: -22 -22;}
+			}
+		}
+	}
+}

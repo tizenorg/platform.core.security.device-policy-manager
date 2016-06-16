@@ -22,6 +22,7 @@
 
 static void __create_welcome_view(appdata_s *ad);
 static void __create_setup_view(appdata_s *ad);
+static void __create_security_view(appdata_s *ad);
 
 typedef struct {
 	Evas_Object *win;
@@ -29,6 +30,8 @@ typedef struct {
 	Evas_Object *nf;
 	Evas_Object *timer;
 	char *edj_path;
+	Evas_Object *radio_main;
+	int state_index;
 } uidata_s;
 
 uidata_s ud = {0, };
@@ -131,6 +134,11 @@ static void __next_btn_cb(void *data, Evas_Object *obj, void *event_info)
 	return;
 }
 
+static void __security_btn_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	ui_app_exit();
+}
+
 static Eina_Bool __home_key_cb(void *data, int type, void *event)
 {
 	app_control_h app_control = (app_control_h) data;
@@ -163,13 +171,31 @@ static void __set_two_btn_bottom_layout(Evas_Object *layout, appdata_s *ad, cons
 	return;
 }
 
+static void __set_one_btn_bottom_layout(Evas_Object *layout, appdata_s *ad, const char *btn_text)
+{
+	Evas_Object *bottom_layout;
+	Evas_Object *btn;
+
+	bottom_layout = _create_layout(layout, ud.edj_path, "one_button_layout");
+	btn = _create_button(bottom_layout, btn_text, "bottom");
+	evas_object_smart_callback_add(btn, "clicked", __security_btn_cb, NULL);
+
+	elm_object_part_content_set(bottom_layout, "button", btn);
+	elm_object_part_content_set(layout, "bottom_layout", bottom_layout);
+
+	return;
+}
+
 static Eina_Bool __progressbar_timer_cb(void *data)
 {
 	appdata_s *ad = (appdata_s *) data;
 
 	if (ad->request_done) {
 		ecore_timer_del(ud.timer);
-		ui_app_exit();
+		if (!strcmp(ad->mode, "create"))
+			__create_security_view(ad);
+		else
+			ui_app_exit();
 		return ECORE_CALLBACK_CANCEL;
 	}
 
@@ -185,6 +211,7 @@ void _create_base_window(appdata_s *ad)
 
 	/* Initialize data */
 	ad->request_done = false;
+	ud.state_index = 0;
 
 	/* Get EDJ path */
 	res_path = app_get_resource_path();
@@ -288,10 +315,148 @@ static void __create_setup_view(appdata_s *ad)
 
 	nf_it = elm_naviframe_item_push(ud.nf, NULL, NULL, NULL, setup_layout, NULL);
 	elm_naviframe_item_title_enabled_set(nf_it, EINA_FALSE, EINA_TRUE);
-	elm_naviframe_item_pop_cb_set(nf_it, __naviframe_pop_cb, NULL);
 
 	/* set progressbar timer callback */
 	ud.timer = ecore_timer_add(0.1, __progressbar_timer_cb, ad);
 
+	return;
+}
+
+static char *__security_multiline_text_get(void *data, Evas_Object *obj, const char *part)
+{
+	char text[PATH_MAX] = "\0";
+
+	if (!strcmp(part, "elm.text.multiline")) {
+		snprintf(text, PATH_MAX, "Select a Krate unlock method and a timeout option.");
+		return strdup(text);
+	}
+
+	return NULL;
+}
+
+static char *__security_group_text_get(void *data, Evas_Object *obj, const char *part)
+{
+	char *text[] = {"Unlock method", "Security options"};
+	int index = (int)data;
+
+	if (!strcmp(part, "elm.text"))
+		return strdup(text[index]);
+
+	return NULL;
+}
+
+static char *__security_double_label_text_get(void *data, Evas_Object *obj, const char *part)
+{
+	char text[PATH_MAX] = "\0";
+	int timeout = 10; /*[TBD] get value of timeout */
+
+	if (!strcmp(part, "elm.text"))
+		snprintf(text, PATH_MAX, "Security Timeout");
+	else if (!strcmp(part, "elm.text.sub"))
+		snprintf(text, PATH_MAX, "After %d minuates of inactivity", timeout);
+
+	return strdup(text);
+}
+
+static char *__security_radio_text_get(void *data, Evas_Object *obj, const char *part)
+{
+	char *radio_text[] = {"Password", "PIN"};
+	int index = (int)data;
+
+	if (!strcmp(part, "elm.text"))
+		return strdup(radio_text[index]);
+
+	return NULL;
+}
+
+static Evas_Object *__security_radio_content_get(void *data, Evas_Object *obj, const char *part)
+{
+	Evas_Object *radio;
+	int index = (int)data;
+
+	if (!strcmp(part, "elm.swallow.icon")) {
+		radio = elm_radio_add(obj);
+		elm_radio_state_value_set(radio, index);
+		elm_radio_group_add(radio, ud.radio_main);
+
+		if (index == ud.state_index)
+			elm_radio_value_set(radio, ud.state_index);
+
+		evas_object_propagate_events_set(radio, EINA_FALSE);
+		evas_object_repeat_events_set(radio, EINA_TRUE);
+
+		return radio;
+	}
+
+	return NULL;
+}
+
+static void __security_locktype_select_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	int index = (int)data;
+
+	elm_genlist_item_selected_set((Elm_Object_Item *)event_info, EINA_FALSE);
+	elm_radio_value_set(ud.radio_main, index);
+	ud.state_index = index;
+}
+
+static void __create_security_view(appdata_s *ad)
+{
+	Evas_Object *genlist;
+	Elm_Object_Item *nf_it, *gl_item;
+	Elm_Genlist_Item_Class *_itc;
+	int i, index = 0;
+	Evas_Object *layout;
+
+	elm_object_signal_emit(ud.conform, "elm,state,indicator,nooverlap", "elm");
+
+	layout = _create_layout(ud.nf, ud.edj_path, "base_layout");
+
+	/* genlist -> content_layout part */
+	genlist = elm_genlist_add(layout);
+	elm_object_style_set(genlist, "solid/default");
+
+	_itc = _create_genlist_item_class("multiline", __security_multiline_text_get, NULL);
+	gl_item = elm_genlist_item_append(genlist, _itc, NULL, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
+	elm_genlist_item_select_mode_set(gl_item, ELM_OBJECT_SELECT_MODE_DISPLAY_ONLY);
+	elm_genlist_item_class_free(_itc);
+
+	_itc =  _create_genlist_item_class("group_index", __security_group_text_get, NULL);
+	gl_item = elm_genlist_item_append(genlist, _itc, (void *)index++, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
+	elm_genlist_item_select_mode_set(gl_item, ELM_OBJECT_SELECT_MODE_DISPLAY_ONLY);
+	elm_genlist_item_class_free(_itc);
+
+	ud.radio_main = elm_radio_add(genlist);
+	elm_radio_state_value_set(ud.radio_main, 0);
+	elm_radio_value_set(ud.radio_main, 0);
+
+	_itc = _create_genlist_item_class("one_icon", __security_radio_text_get, __security_radio_content_get);
+	for (i = 0; i < 2; i++) {
+		gl_item = elm_genlist_item_append(genlist, _itc, (void *)i, NULL, ELM_GENLIST_ITEM_NONE, __security_locktype_select_cb, (void *)i);
+		if (i == 1) {
+			elm_object_item_disabled_set(gl_item, EINA_TRUE); /* [TBD] enable simple password */
+		}
+	}
+
+	/* Timeout list group*/
+	_itc = _create_genlist_item_class("group_index", __security_group_text_get, NULL);
+	gl_item = elm_genlist_item_append(genlist, _itc, (void *)index, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
+	elm_genlist_item_select_mode_set(gl_item, ELM_OBJECT_SELECT_MODE_DISPLAY_ONLY);
+	elm_genlist_item_class_free(_itc);
+
+	_itc = _create_genlist_item_class("double_label", __security_double_label_text_get, NULL);
+	gl_item = elm_genlist_item_append(genlist, _itc, (void *)index, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
+	elm_object_item_disabled_set(gl_item, EINA_TRUE); /* [TBD] enable timeout options */
+	elm_genlist_item_class_free(_itc);
+
+	elm_genlist_mode_set(genlist, ELM_LIST_COMPRESS);
+	elm_layout_content_set(layout, "content_layout", genlist);
+
+	/* two_btn? -> bottom_layout */
+	__set_one_btn_bottom_layout(layout, ad, "Done");
+
+	nf_it = elm_naviframe_item_push(ud.nf, "Krate Security", NULL, NULL, layout, NULL);
+	elm_naviframe_item_title_enabled_set(nf_it, EINA_TRUE, EINA_TRUE);
+	elm_naviframe_item_pop_cb_set(nf_it, __naviframe_pop_cb, NULL);
 	return;
 }
