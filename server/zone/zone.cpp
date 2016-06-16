@@ -142,17 +142,16 @@ inline void deployPackages(const runtime::User& user)
         execute("/usr/bin/pkg_initdb", "pkg_initdb",
                 "--uid", std::to_string(user.getUid()));
 
-        PackageManager& packageManager = PackageManager::instance();
-        std::vector<std::string> pkgList = packageManager.getPackageList(user.getUid());
+        PackageManager& pkgMgr = PackageManager::instance();
 
         ::umask(0022);
 
         ::tzplatform_set_user(user.getUid());
-        for (const std::string& pkgid : pkgList) {
-            std::string appbase = std::string(::tzplatform_getenv(TZ_USER_APP)) + "/" + pkgid;
+        for (const PackageInfo& pkg : pkgMgr.getPackageList(user.getUid())) {
+            std::string appbase = std::string(::tzplatform_getenv(TZ_USER_APP)) + "/" + pkg.getId();
             runtime::File dir(appbase);
             dir.makeDirectory(false, user.getUid(), user.getGid());
-            runtime::Smack::setAccess(dir, APP_SMACKLABEL + pkgid);
+            runtime::Smack::setAccess(dir, APP_SMACKLABEL + pkg.getId());
             runtime::Smack::setTransmute(dir, true);
 
             for (const std::string& subdir : defaultAppDirs) {
@@ -255,16 +254,16 @@ int packageEventHandler(uid_t target_uid, int req_id,
     }
 
     try {
+        PackageManager& pkgMgr = PackageManager::instance();
         runtime::User owner("owner"), pkgUser(target_uid);
 
         if (type == "install" || type == "update") {
-            PackageInfo info(pkgid, pkgUser.getUid());
-            std::string icon = info.getIcon();
+            PackageInfo pkg(pkgid, pkgUser.getUid());
+            std::string icon = pkg.getIcon();
             prepareFileForOwner(icon, pkgUser, owner);
 
-            for (const std::string &appid : info.getAppList()) {
-                ApplicationInfo info(appid, pkgUser.getUid());
-                std::string icon = info.getIcon();
+            for (const ApplicationInfo& app : pkgMgr.getAppList(pkgUser.getUid(), pkgid)) {
+                std::string icon = app.getIcon();
                 prepareFileForOwner(icon, pkgUser, owner);
             }
         } else {

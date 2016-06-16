@@ -52,18 +52,20 @@ public:
         bool isSystem;
         bool isRemovable;
         bool isPreload;
-        std::vector<std::string> applicationList;
 
         REFLECTABLE
         (
             zone, id, locale, type, icon, label, description, author,
-            version, apiVersion, mainAppId, isSystem, isRemovable, isPreload,
-            applicationList
+            version, apiVersion, mainAppId, isSystem, isRemovable, isPreload
         );
     };
 
     PackageInfo getPackageInfo(const std::string& name, const std::string& pkgid);
-    std::vector<std::string> getPackageList(const std::string& name);
+
+    int createIterator(const std::string& name);
+    PackageInfo getIteratorValue(int iterator);
+    bool nextIterator(int iterator);
+    int destroyIterator(int iterator);
 
     //package manager request
     int install(const std::string& name, const std::string& pkgpath);
