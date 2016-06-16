@@ -115,3 +115,31 @@ Evas_Object *_create_progressbar(Evas_Object *parent, const char *style)
 
 	return progressbar;
 }
+
+Elm_Genlist_Item_Class *_create_genlist_item_class(char *style, Elm_Gen_Item_Text_Get_Cb text_func, Elm_Gen_Item_Content_Get_Cb content_func)
+{
+	Elm_Genlist_Item_Class *itc;
+
+	itc = elm_genlist_item_class_new();
+	itc->item_style = style;
+	itc->func.text_get = text_func;
+	itc->func.content_get = content_func;
+
+	return itc;
+}
+
+Elm_Object_Item *_append_genlist_item(Evas_Object *genlist, Elm_Genlist_Item_Class *itc, Elm_Object_Select_Mode select_mode, int data)
+{
+	Elm_Object_Item *gl_item;
+	int index = 0;
+
+	if (data > 0)
+		index = data;
+
+	gl_item = elm_genlist_item_append(genlist, itc, (void *)index, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
+
+	elm_genlist_item_select_mode_set(gl_item, select_mode);
+	elm_genlist_item_class_free(itc);
+
+	return gl_item;
+}
