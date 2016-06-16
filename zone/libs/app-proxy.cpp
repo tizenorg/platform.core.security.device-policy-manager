@@ -32,15 +32,39 @@ ZoneAppProxy::AppInfo ZoneAppProxy::getAppInfo(const std::string& name, const st
     try {
         return context->methodCall<ZoneAppProxy::AppInfo>("ZoneAppProxy::getAppInfo", name, appid);
     } catch (runtime::Exception& e) {}
-    return ZoneAppProxy::AppInfo();;
+    return ZoneAppProxy::AppInfo();
 }
 
-std::vector<std::string> ZoneAppProxy::getAppList(const std::string& zone)
+int ZoneAppProxy::createIterator(const std::string& zone)
 {
     try {
-        return context->methodCall<std::vector<std::string>>("ZoneAppProxy::getAppList", zone);
+        return context->methodCall<int>("ZoneAppProxy::createIterator", zone);
     } catch (runtime::Exception& e) {}
-    return std::vector<std::string>();;
+    return -1;
+}
+
+ZoneAppProxy::AppInfo ZoneAppProxy::getIteratorValue(int iterator)
+{
+    try {
+        return context->methodCall<ZoneAppProxy::AppInfo>("ZoneAppProxy::getIteratorValue", iterator);
+    } catch (runtime::Exception& e) {}
+    return ZoneAppProxy::AppInfo();
+}
+
+bool ZoneAppProxy::nextIterator(int iterator)
+{
+    try {
+        return context->methodCall<bool>("ZoneAppProxy::nextIterator", iterator);
+    } catch (runtime::Exception& e) {}
+    return false;
+}
+
+int ZoneAppProxy::destroyIterator(int iterator)
+{
+    try {
+        return context->methodCall<int>("ZoneAppProxy::destroyIterator", iterator);
+    } catch (runtime::Exception& e) {}
+    return -1;
 }
 
 int ZoneAppProxy::launch(const std::string& name, const std::string& appid)

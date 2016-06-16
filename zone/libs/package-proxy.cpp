@@ -34,12 +34,36 @@ ZonePackageProxy::PackageInfo ZonePackageProxy::getPackageInfo(const std::string
     return ZonePackageProxy::PackageInfo();
 }
 
-std::vector<std::string> ZonePackageProxy::getPackageList(const std::string& zone)
+int ZonePackageProxy::createIterator(const std::string& zone)
 {
     try {
-        return context->methodCall<std::vector<std::string>>("ZonePackageProxy::getPackageList", zone);
+        return context->methodCall<int>("ZonePackageProxy::createIterator", zone);
     } catch (runtime::Exception& e) {}
-    return std::vector<std::string>();;
+    return -1;
+}
+
+ZonePackageProxy::PackageInfo ZonePackageProxy::getIteratorValue(int iterator)
+{
+    try {
+        return context->methodCall<ZonePackageProxy::PackageInfo>("ZonePackageProxy::getIteratorValue", iterator);
+    } catch (runtime::Exception& e) {}
+    return ZonePackageProxy::PackageInfo();
+}
+
+bool ZonePackageProxy::nextIterator(int iterator)
+{
+    try {
+        return context->methodCall<bool>("ZonePackageProxy::nextIterator", iterator);
+    } catch (runtime::Exception& e) {}
+    return false;
+}
+
+int ZonePackageProxy::destroyIterator(int iterator)
+{
+    try {
+        return context->methodCall<int>("ZonePackageProxy::destroyIterator", iterator);
+    } catch (runtime::Exception& e) {}
+    return -1;
 }
 
 int ZonePackageProxy::install(const std::string& name, const std::string& pkgid)
