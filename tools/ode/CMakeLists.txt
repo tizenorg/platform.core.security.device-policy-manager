@@ -12,7 +12,6 @@ PKG_CHECK_MODULES(tools_pkgs REQUIRED
 		libxml-2.0
 		capi-system-system-settings
 		evas
-		dpm
 		capi-system-device
 		capi-system-runtime-info
 		vconf
