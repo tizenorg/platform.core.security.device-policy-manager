@@ -26,11 +26,29 @@
 
 namespace DevicePolicyManager {
 
+namespace {
+
+struct IteratorData{
+    std::string zone;
+    std::string locale;
+    std::vector<PackageInfo> list;
+    unsigned int current;
+};
+
+std::unordered_map<int, IteratorData> iteratorMap;
+int newIteratorId = 0;
+
+} // namespace
+
 ZonePackageProxy::ZonePackageProxy(PolicyControlContext& ctx)
     : context(ctx)
 {
     context.registerParametricMethod(this, (ZonePackageProxy::PackageInfo)(ZonePackageProxy::getPackageInfo)(std::string, std::string));
-    context.registerParametricMethod(this, (std::vector<std::string>)(ZonePackageProxy::getPackageList)(std::string));
+
+    context.registerParametricMethod(this, (int)(ZonePackageProxy::createIterator)(std::string));
+    context.registerParametricMethod(this, (ZonePackageProxy::PackageInfo)(ZonePackageProxy::getIteratorValue)(int));
+    context.registerParametricMethod(this, (bool)(ZonePackageProxy::nextIterator)(int));
+    context.registerParametricMethod(this, (int)(ZonePackageProxy::destroyIterator)(int));
 
     context.registerParametricMethod(this, (int)(ZonePackageProxy::install)(std::string, std::string));
     context.registerParametricMethod(this, (int)(ZonePackageProxy::uninstall)(std::string, std::string));
@@ -42,42 +60,36 @@ ZonePackageProxy::~ZonePackageProxy()
 
 ZonePackageProxy::PackageInfo ZonePackageProxy::getPackageInfo(const std::string& name, const std::string& pkgid)
 {
-    ZonePackageProxy::PackageInfo package;
-    char* locale = NULL;
-
-    system_settings_get_value_string(SYSTEM_SETTINGS_KEY_LOCALE_LANGUAGE, &locale);
-    if (locale == NULL) {
-        locale = strdup("No locale");
-    }
-
-    package.zone = name;
-    package.id = pkgid;
-    package.locale = locale;
-
-    free(locale);
+    PackageInfo package;
 
     try {
         runtime::User user(name);
         ::PackageInfo pkginfo(pkgid, user.getUid());
+        char* locale = NULL;
 
+        system_settings_get_value_string(SYSTEM_SETTINGS_KEY_LOCALE_LANGUAGE, &locale);
+        if (locale == NULL) {
+            package.locale = "No locale";
+        } else {
+            package.locale = locale;
+            free(locale);
+        }
+
+        package.zone = name;
+        package.id = pkgid;
         package.type = pkginfo.getType();
         package.icon = pkginfo.getIcon();
         package.label = pkginfo.getLabel();
         package.description = pkginfo.getDescription();
-
         package.author.name = pkginfo.getAuthorName();
         package.author.email = pkginfo.getAuthorEmail();
         package.author.href = pkginfo.getAuthorHref();
-
         package.version = pkginfo.getVersion();
         package.apiVersion = pkginfo.getApiVersion();
         package.mainAppId = pkginfo.getMainAppId();
-
         package.isSystem = pkginfo.isSystem();
         package.isRemovable = pkginfo.isRemovable();
         package.isPreload = pkginfo.isPreload();
-
-        package.applicationList = pkginfo.getAppList();
     } catch (runtime::Exception& e) {
         ERROR("Failed to retrieve package info installed in the zone");
     }
@@ -85,18 +97,93 @@ ZonePackageProxy::PackageInfo ZonePackageProxy::getPackageInfo(const std::string
     return package;
 }
 
-std::vector<std::string> ZonePackageProxy::getPackageList(const std::string& name)
+int ZonePackageProxy::createIterator(const std::string& name)
 {
+    int iteratorId = -1;
     try {
-        runtime::User user(name);
         PackageManager& packman = PackageManager::instance();
-        return packman.getPackageList(user.getUid());
+        runtime::User user(name);
+        IteratorData data;
+        char* locale;
+
+        iteratorId = newIteratorId;
+
+        data.zone = name;
+        data.list = packman.getPackageList(user.getUid());
+        data.current = 0;
+
+        system_settings_get_value_string(SYSTEM_SETTINGS_KEY_LOCALE_LANGUAGE, &locale);
+        if (locale == NULL) {
+            data.locale = "No locale";
+        } else {
+            data.locale = locale;
+            free(locale);
+        }
+
+        iteratorMap.insert(std::make_pair(iteratorId, data));
+
+        if (++newIteratorId < 0) {
+            newIteratorId = 0;
+        }
     } catch (runtime::Exception& e) {
         ERROR("Failed to retrieve package info installed in the zone");
     }
-    return std::vector<std::string>();
+    return iteratorId;
 }
 
+
+ZonePackageProxy::PackageInfo ZonePackageProxy::getIteratorValue(int iterator)
+{
+    PackageInfo package;
+
+    auto it = iteratorMap.find(iterator);
+    if (it == iteratorMap.end()) {
+        return package;
+    }
+    if (it->second.current >= it->second.list.size()) {
+        return package;
+    }
+
+    const ::PackageInfo& pkginfo = it->second.list.at(it->second.current);
+
+    package.zone = it->second.zone;
+    package.locale = it->second.locale;;
+    package.id = pkginfo.getId();
+    package.type = pkginfo.getType();
+    package.icon = pkginfo.getIcon();
+    package.label = pkginfo.getLabel();
+    package.description = pkginfo.getDescription();
+    package.author.name = pkginfo.getAuthorName();
+    package.author.email = pkginfo.getAuthorEmail();
+    package.author.href = pkginfo.getAuthorHref();
+    package.version = pkginfo.getVersion();
+    package.apiVersion = pkginfo.getApiVersion();
+    package.mainAppId = pkginfo.getMainAppId();
+    package.isSystem = pkginfo.isSystem();
+    package.isRemovable = pkginfo.isRemovable();
+    package.isPreload = pkginfo.isPreload();
+
+    return package;
+}
+
+bool ZonePackageProxy::nextIterator(int iterator) {
+    auto it = iteratorMap.find(iterator);
+    if (it != iteratorMap.end()) {
+        if (++it->second.current < it->second.list.size()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+int ZonePackageProxy::destroyIterator(int iterator) {
+    auto it = iteratorMap.find(iterator);
+    if (it != iteratorMap.end()) {
+        iteratorMap.erase(it);
+        return 0;
+    }
+    return -1;
+}
 
 int ZonePackageProxy::install(const std::string& name, const std::string& pkgpath)
 {

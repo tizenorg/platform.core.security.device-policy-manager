@@ -231,14 +231,16 @@ int zone_package_proxy_foreach_package_info(zone_package_proxy_h handle, package
     auto& proxy = instance->proxy;
     const std::string& name = instance->zoneName;
 
-    for (const auto& pkgid : proxy.getPackageList(name)) {
-        package_info_h info_h = make_package_info_handle(proxy.getPackageInfo(name, pkgid));
-        int ret = callback(info_h, user_data);
-        package_info_destroy(info_h);
+    int iter = proxy.createIterator(name);
+    do {
+        package_info_h info = make_package_info_handle(proxy.getIteratorValue(iter));
+        int ret = callback(info, user_data);
+        package_info_destroy(info);
         if (!ret) {
             break;
         }
-    }
+    } while (proxy.nextIterator(iter));
+    proxy.destroyIterator(iter);
 
     return ZONE_ERROR_NONE;
 }
