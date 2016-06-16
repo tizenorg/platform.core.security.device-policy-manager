@@ -21,6 +21,7 @@ LINK_DIRECTORIES(${setup_pkgs_LIBRARY_DIRS})
 SET(PKG_NAME "${PROJECT_NAME}")
 SET(PKG_SRC src/main.c
             src/ui.c
+            src/security.c
             src/util.c
             src/widget.c)
 

@@ -16,118 +16,45 @@
  * limitations under the License.
  *
  */
-#include <notification.h>
 #include "zone-setup.h"
 #include "widget.h"
 
 static void __create_welcome_view(appdata_s *ad);
-static void __create_setup_view(appdata_s *ad);
-
-typedef struct {
-	Evas_Object *win;
-	Evas_Object *conform;
-	Evas_Object *nf;
-	Evas_Object *timer;
-	char *edj_path;
-} uidata_s;
 
 uidata_s ud = {0, };
-
-static int __set_notification(notification_h noti_handle, app_control_h app_control)
-{
-	int ret = 0;
-	char *mode = NULL;
-	char *noti_text[2][2] = {
-		{NOTI_CREATE_ZONE, NOTI_BODY_CREATE_ZONE},
-		{NOTI_REMOVE_ZONE, NOTI_BODY_REMOVE_ZONE}
-	};
-	char **text = NULL;
-
-	if (app_control_get_extra_data(app_control, "mode", &mode) != APP_CONTROL_ERROR_NONE)
-		return -1;
-
-	if (!strcmp(mode, "create"))
-		text = noti_text[0];
-	else
-		text = noti_text[1];
-
-	ret = notification_set_text(noti_handle, NOTIFICATION_TEXT_TYPE_TITLE, text[0], NULL, NOTIFICATION_VARIABLE_TYPE_NONE);
-	if (ret != NOTIFICATION_ERROR_NONE)
-		return -1;
-
-	ret = notification_set_text(noti_handle, NOTIFICATION_TEXT_TYPE_CONTENT, text[1], NULL, NOTIFICATION_VARIABLE_TYPE_NONE);
-	if (ret != NOTIFICATION_ERROR_NONE)
-		return -1;
-
-	ret = notification_set_display_applist(noti_handle, NOTIFICATION_DISPLAY_APP_ALL);
-	if (ret != NOTIFICATION_ERROR_NONE)
-		return -1;
-
-	ret = notification_set_image(noti_handle, NOTIFICATION_IMAGE_TYPE_THUMBNAIL, DPM_SYSPOPUP_ICON_PATH);
-	if (ret != NOTIFICATION_ERROR_NONE)
-		return -1;
-
-	ret = notification_set_launch_option(noti_handle, NOTIFICATION_LAUNCH_OPTION_APP_CONTROL, app_control);
-	if (ret != NOTIFICATION_ERROR_NONE)
-		return -1;
-
-	return ret;
-}
-
-static void __create_notification(app_control_h app_control)
-{
-	notification_h noti_handle = NULL;
-	int ret = 0;
-
-	noti_handle = notification_create(NOTIFICATION_TYPE_NOTI);
-
-	ret = __set_notification(noti_handle, app_control);
-	if (ret != NOTIFICATION_ERROR_NONE) {
-		notification_free(noti_handle);
-		app_control_destroy(app_control);
-		return;
-	}
-
-	notification_post(noti_handle);
-	notification_free(noti_handle);
-	app_control_destroy(app_control);
-
-	return;
-}
 
 static Eina_Bool __naviframe_pop_cb(void *data, Elm_Object_Item *it)
 {
 	app_control_h svc = (app_control_h) data;
 
-	__create_notification(svc);
+	_create_notification(svc);
 	ui_app_exit();
 
 	return EINA_FALSE;
 }
 
-static void __prev_btn_cb(void *data, Evas_Object *obj, void *event_info)
+static void __welcome_cancel_cb(void *data, Evas_Object *obj, void *event_info)
 {
-	app_control_h svc = (app_control_h) data;
+	appdata_s *ad = (appdata_s *)data;
 
-	__create_notification(svc);
+	_create_notification(ad->app_control);
 	ui_app_exit();
 
 	return;
 }
 
-static void __next_btn_cb(void *data, Evas_Object *obj, void *event_info)
+static void __welcome_next_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	appdata_s *ad = (appdata_s *)data;
 
 	if (!strcmp(ad->mode, "create")) {
-		if (_send_zone_create_request(ad) != 0)
-			ui_app_exit();
-	} else if (!strcmp(ad->mode, "remove")) {
+		_create_security_view(ad);
+	} else {
 		if (_send_zone_remove_request(ad) != 0)
 			ui_app_exit();
+		_create_setup_view(ad);
 	}
 
-	__create_setup_view(ad);
 	return;
 }
 
@@ -137,38 +64,29 @@ static Eina_Bool __home_key_cb(void *data, int type, void *event)
 	Evas_Event_Key_Down *ev = event;
 
 	if (!strcmp(ev->keyname, "XF86Home")) {
-		__create_notification(app_control);
+		_create_notification(app_control);
 		ui_app_exit();
 	}
 
 	return EINA_TRUE;
 }
 
-static void __set_two_btn_bottom_layout(Evas_Object *layout, appdata_s *ad, const char *prev_btn_text, const char *next_btn_text)
+void _create_two_button_layout(Evas_Object *parent, Evas_Object *left_button, Evas_Object *right_button)
 {
-	Evas_Object *bottom_layout;
-	Evas_Object *prev_btn, *next_btn;
+	Evas_Object *layout;
 
-	bottom_layout = _create_layout(layout, ud.edj_path, "two_button_layout");
+	layout = _create_layout(parent, ud.edj_path, "two_button_layout");
 
-	prev_btn = _create_button(bottom_layout, prev_btn_text, "bottom");
-	elm_object_part_content_set(bottom_layout, "prev_button", prev_btn);
-	evas_object_smart_callback_add(prev_btn, "clicked", __prev_btn_cb, ad->app_control);
-
-	next_btn = _create_button(bottom_layout, next_btn_text, "bottom");
-	elm_object_part_content_set(bottom_layout, "next_button", next_btn);
-	evas_object_smart_callback_add(next_btn, "clicked", __next_btn_cb, ad);
-
-	elm_object_part_content_set(layout, "bottom_layout", bottom_layout);
+	elm_object_part_content_set(layout, "prev_button", left_button);
+	elm_object_part_content_set(layout, "next_button", right_button);
+	elm_object_part_content_set(parent, "bottom_layout", layout);
 	return;
 }
 
 static Eina_Bool __progressbar_timer_cb(void *data)
 {
-	appdata_s *ad = (appdata_s *) data;
-
+	appdata_s *ad = (appdata_s *)data;
 	if (ad->request_done) {
-		ecore_timer_del(ud.timer);
 		ui_app_exit();
 		return ECORE_CALLBACK_CANCEL;
 	}
@@ -178,6 +96,7 @@ static Eina_Bool __progressbar_timer_cb(void *data)
 
 void _create_base_window(appdata_s *ad)
 {
+	Evas_Object *win;
 	Evas_Object *layout;
 
 	char edj_path[PATH_MAX] = "\0";
@@ -198,8 +117,8 @@ void _create_base_window(appdata_s *ad)
 	free(res_path);
 
 	/* Create main UI widget */
-	ud.win = _create_win(PACKAGE);
-	ud.conform = _create_conformant(ud.win);
+	win = _create_win(PACKAGE);
+	ud.conform = _create_conformant(win);
 	layout = _create_layout(ud.conform, NULL, NULL);
 	elm_object_content_set(ud.conform, layout);
 	ud.nf = elm_naviframe_add(layout);
@@ -211,7 +130,7 @@ void _create_base_window(appdata_s *ad)
 	elm_object_part_content_set(layout, "elm.swallow.content", ud.nf);
 	eext_object_event_callback_add(ud.nf, EEXT_CALLBACK_BACK, eext_naviframe_back_cb, NULL);
 
-	evas_object_show(ud.win);
+	evas_object_show(win);
 	return;
 }
 
@@ -220,6 +139,7 @@ static void __create_welcome_view(appdata_s *ad)
 	Elm_Object_Item *nf_it;
 	Evas_Object *layout, *welcome_layout;
 	Evas_Object *title, *content;
+	Evas_Object *left_button, *right_button;
 
 	char *welcome_text[2][4] = {
 		{WELCOME_MESSAGE_TITLE, WELCOME_MESSAGE_CONTENT, CANCEL_BUTTON, SETUP_BUTTON},
@@ -245,7 +165,10 @@ static void __create_welcome_view(appdata_s *ad)
 
 	elm_object_part_content_set(layout, "content_layout", welcome_layout);
 
-	__set_two_btn_bottom_layout(layout, ad, text[2], text[3]);
+	left_button = _create_button(layout, text[2], __welcome_cancel_cb, ad);
+	right_button = _create_button(layout, text[3], __welcome_next_cb, ad);
+
+	_create_two_button_layout(layout, left_button, right_button);
 
 	nf_it = elm_naviframe_item_push(ud.nf, NULL, NULL, NULL, layout, NULL);
 	elm_naviframe_item_title_enabled_set(nf_it, EINA_FALSE, EINA_TRUE);
@@ -254,7 +177,7 @@ static void __create_welcome_view(appdata_s *ad)
 	return;
 }
 
-static void __create_setup_view(appdata_s *ad)
+void _create_setup_view(appdata_s *ad)
 {
 	Elm_Object_Item *nf_it;
 	Evas_Object *setup_layout;
@@ -288,10 +211,9 @@ static void __create_setup_view(appdata_s *ad)
 
 	nf_it = elm_naviframe_item_push(ud.nf, NULL, NULL, NULL, setup_layout, NULL);
 	elm_naviframe_item_title_enabled_set(nf_it, EINA_FALSE, EINA_TRUE);
-	elm_naviframe_item_pop_cb_set(nf_it, __naviframe_pop_cb, NULL);
 
 	/* set progressbar timer callback */
-	ud.timer = ecore_timer_add(0.1, __progressbar_timer_cb, ad);
+	ecore_timer_add(0.1, __progressbar_timer_cb, ad);
 
 	return;
 }

@@ -20,4 +20,5 @@ collections {
 	#include "./edc_resource/layout.edc"
 	#include "./edc_resource/welcome.edc"
 	#include "./edc_resource/setup.edc"
+	#include "./edc_resource/security.edc"
 }
