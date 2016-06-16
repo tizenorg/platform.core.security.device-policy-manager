@@ -283,20 +283,6 @@ int packageEventHandler(uid_t target_uid, int req_id,
     return 0;
 }
 
-#define LAUNCH_BY_APP   0x0
-#define LAUNCH_BY_URI   0x1
-
-void addShortcutToHome(const std::string& appid, const std::string& name, const std::string& icon) {
-    dbus::Connection& systemDBus = dbus::Connection::getSystem();
-    systemDBus.methodcall("org.tizen.data_provider_service",
-                          "/org/tizen/data_provider_service",
-                          "org.tizen.data_provider_shortcut_service",
-                          "add_shortcut",
-                          -1, "", "(ississi)",
-                          getpid(), appid.c_str(), name.c_str(),
-                          LAUNCH_BY_URI, ("zone:" + name).c_str(), icon.c_str(), 1);
-}
-
 #define NT_TITLE     NOTIFICATION_TEXT_TYPE_TITLE
 #define NT_CONTENT   NOTIFICATION_TEXT_TYPE_CONTENT
 #define NT_ICON      NOTIFICATION_IMAGE_TYPE_ICON
@@ -479,13 +465,11 @@ int ZoneManager::createZone(const std::string& name, const std::string& manifest
 
             // Running launch app and add a shorcut
            try {
-	        Bundle bundle;
-        	bundle.add("__APP_SVC_URI__", "zone:" + name);
+                Bundle bundle;
+                bundle.add("__APP_SVC_URI__", "zone://setup/" + name);
 
                 Launchpad launchpad;
                 launchpad.launch(ZONE_LAUNCHER_APP, bundle);
-
-                addShortcutToHome(ZONE_LAUNCHER_APP, name, "");
             } catch (runtime::Exception& e) {}
         } catch (runtime::Exception& e) {
             ERROR(e.what());

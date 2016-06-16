@@ -19,6 +19,7 @@
 #include <zone/zone.h>
 #include <zone/app-proxy.h>
 #include <zone/package-proxy.h>
+#include <shortcut_manager.h>
 
 #include "kaskit.h"
 #include "widget.h"
@@ -27,7 +28,25 @@ static zone_package_proxy_h __zone_pkg;
 static zone_app_proxy_h __zone_app;
 static zone_manager_h __zone_mgr;
 
-static bool __pkg_is_remvable(const char* pkg_id) {
+struct app_icon_s{
+	char* id;
+	char* label;
+	char* icon;
+	char* package;
+	bool removable;
+};
+
+static void* __create_app_icon(void* data)
+{
+	struct app_icon_s* app = (struct app_icon_s*)data;
+
+	_create_app_icon(app->package, app->id, app->label, app->icon, app->removable);
+
+	return NULL;
+}
+
+static bool __pkg_is_removable(const char* pkg_id)
+{
 	bool removable = false;
 
 	package_info_h pkg_h;
@@ -41,36 +60,37 @@ static bool __pkg_is_remvable(const char* pkg_id) {
 
 static bool __get_app_info_cb(app_info_h app_h, void* user_data)
 {
-	char* pkg_id, *app_id, *app_label = NULL, *app_icon = NULL;
-	bool nodisplay = true, removable = false;
+	struct app_icon_s app = {NULL, };
+	bool nodisplay = true;
 
 	app_info_is_nodisplay(app_h, &nodisplay);
 	if (nodisplay)
 		return true;
 
-	app_info_get_package(app_h, &pkg_id);
+	app_info_get_package(app_h, &app.package);
 
-	if (user_data == NULL ||  !strncmp(user_data, pkg_id, PATH_MAX)) {
-		app_info_get_app_id(app_h, &app_id);
-		app_info_get_label(app_h, &app_label);
-		app_info_get_icon(app_h, &app_icon);
-		removable = __pkg_is_remvable(pkg_id);
+	if (user_data == NULL ||  !strncmp(user_data, app.package, PATH_MAX)) {
+		app_info_get_app_id(app_h, &app.id);
+		app_info_get_label(app_h, &app.label);
+		app_info_get_icon(app_h, &app.icon);
+		app.removable = __pkg_is_removable(app.package);
 
-		_create_app_icon(pkg_id, app_id, app_label, app_icon, removable);
-		free(app_id);
-		if (app_label != NULL) {
-			free(app_label);
+		ecore_main_loop_thread_safe_call_sync(__create_app_icon, &app);
+
+		free(app.id);
+		if (app.label != NULL) {
+			free(app.label);
 		}
-		if (app_icon != NULL) {
-			free(app_icon);
+		if (app.icon != NULL) {
+			free(app.icon);
 		}
 	}
-	free(pkg_id);
+	free(app.package);
 
 	return true;
 }
 
-static void __create_icon(void *data) {
+static void __create_icon_thread(void* data, Ecore_Thread* thread) {
 	zone_app_proxy_foreach_app_info(__zone_app, __get_app_info_cb, data);
 	if (data != NULL) {
 		free(data);
@@ -85,7 +105,7 @@ void __pkg_event_cb(const char* type,
 {
 	if (event_state == PACKAGE_MANAGER_EVENT_STATE_COMPLETED) {
 		if (event_type == PACKAGE_MANAGER_EVENT_TYPE_INSTALL) {
-			ecore_main_loop_thread_safe_call_async(__create_icon, strdup(pkg_id));
+			ecore_thread_run(__create_icon_thread, NULL, NULL, strdup(pkg_id));
 		} else if (event_type == PACKAGE_MANAGER_EVENT_TYPE_UNINSTALL) {
 			_destroy_app_icon(pkg_id);
 		}
@@ -123,6 +143,35 @@ void _icon_uninstalled_cb(const char *pkg_id)
 	zone_package_proxy_uninstall(__zone_pkg, pkg_id);
 }
 
+static int __shortcut_result_cb(int ret,  void *data)
+{
+	dlog_print(DLOG_ERROR, LOG_TAG, "__shortcut_result_cb = %d", ret);
+	return 0;
+}
+
+static void __add_shortcut(const char *zone_name)
+{
+	char new_uri[PATH_MAX];
+
+	snprintf(new_uri, sizeof(new_uri), "zone://launch/%s", zone_name);
+	shortcut_add_to_home(zone_name, LAUNCH_BY_URI, new_uri, "", 0, __shortcut_result_cb, NULL);
+}
+
+static void __show_launcher(const char *zone_name)
+{
+	_set_kaskit_window_title(zone_name);
+
+	zone_app_proxy_create(__zone_mgr, zone_name, &__zone_app);
+	zone_package_proxy_create(__zone_mgr, zone_name, &__zone_pkg);
+
+	zone_package_proxy_set_event_status(__zone_pkg,
+		PACKAGE_MANAGER_STATUS_TYPE_INSTALL |
+		PACKAGE_MANAGER_STATUS_TYPE_UNINSTALL);
+	zone_package_proxy_set_event_cb(__zone_pkg, __pkg_event_cb, NULL);
+
+	ecore_thread_run(__create_icon_thread, NULL, NULL, NULL);
+}
+
 static bool __app_create(void *data)
 {
 	zone_manager_create(&__zone_mgr);
@@ -134,7 +183,7 @@ static bool __app_create(void *data)
 
 static void __app_control(app_control_h app_control, void *data)
 {
-	char* zone_uri, *zone_name;
+	char* zone_uri, *zone_name = "";
         int ret = 0;
 
         ret = app_control_get_uri(app_control, &zone_uri);
@@ -143,26 +192,24 @@ static void __app_control(app_control_h app_control, void *data)
                 ui_app_exit();
         }
 
-	if (strncmp(zone_uri, "zone:", sizeof("zone:") - 1) != 0) {
-		dlog_print(DLOG_ERROR, LOG_TAG, "Invalid URI");
+	if (strncmp(zone_uri, "zone://", sizeof("zone://") - 1) != 0) {
+		dlog_print(DLOG_ERROR, LOG_TAG, "Mismatched URI");
                 ui_app_exit();
 	}
 
-	zone_name = zone_uri + sizeof("zone:") - 1;
+	zone_uri = zone_uri + sizeof("zone://") - 1;
 
-	_set_kaskit_window_title(zone_name);
-
-	zone_app_proxy_create(__zone_mgr, zone_name, &__zone_app);
-	zone_package_proxy_create(__zone_mgr, zone_name, &__zone_pkg);
-
-	zone_package_proxy_set_event_status(__zone_pkg,
-		PACKAGE_MANAGER_STATUS_TYPE_INSTALL |
-		PACKAGE_MANAGER_STATUS_TYPE_UNINSTALL);
-	zone_package_proxy_set_event_cb(__zone_pkg, __pkg_event_cb, NULL);
-
-	ecore_main_loop_thread_safe_call_async(__create_icon, NULL);
-
-	return;
+	if (strncmp(zone_uri, "setup/", sizeof("setup/") - 1) == 0) {
+		zone_name = zone_uri + sizeof("setup/") - 1;
+		__add_shortcut(zone_name);
+		__show_launcher(zone_name);
+	} else if (strncmp(zone_uri, "launch/", sizeof("launch/") - 1) == 0) {
+		zone_name = zone_uri + sizeof("launch/") - 1;
+		__show_launcher(zone_name);
+	} else {
+		dlog_print(DLOG_ERROR, LOG_TAG, "Invalid URI");
+                ui_app_exit();
+	}
 }
 
 static void __app_pause(void *data)
