@@ -55,8 +55,19 @@ typedef struct {
 	app_control_h app_control;
 } appdata_s;
 
+typedef struct {
+	Evas_Object *conform;
+	Evas_Object *nf;
+	char *edj_path;
+} uidata_s;
+
 void _create_base_window(appdata_s *data);
+void _create_security_view(appdata_s *data);
+void _create_setup_view(appdata_s *data);
+void _create_two_button_layout(Evas_Object *parent, Evas_Object *left_button, Evas_Object *right_button);
+
 int _send_zone_create_request(appdata_s *ad);
 int _send_zone_remove_request(appdata_s *ad);
+void _create_notification(app_control_h app_control);
 
 #endif /* __ZONE_SETUP_H__ */

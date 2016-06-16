@@ -16,6 +16,7 @@
  * limitations under the License.
  *
  */
+#include <notification.h>
 #include "zone-setup.h"
 
 #define ZONE_METADATA_PATH "data/ZoneManifest.xml"
@@ -109,4 +110,66 @@ int _send_zone_remove_request(appdata_s *ad)
 	}
 
 	return 0;
+}
+
+static int __set_notification(notification_h noti_handle, app_control_h app_control)
+{
+	int ret = 0;
+        char *mode = NULL;
+        char *noti_text[2][2] = {
+                {NOTI_CREATE_ZONE, NOTI_BODY_CREATE_ZONE},
+                {NOTI_REMOVE_ZONE, NOTI_BODY_REMOVE_ZONE}
+        };
+        char **text = NULL;
+
+        if (app_control_get_extra_data(app_control, "mode", &mode) != APP_CONTROL_ERROR_NONE)
+                return -1;
+
+        if (!strcmp(mode, "create"))
+                text = noti_text[0];
+        else
+                text = noti_text[1];
+
+        ret = notification_set_text(noti_handle, NOTIFICATION_TEXT_TYPE_TITLE, text[0], NULL, NOTIFICATION_VARIABLE_TYPE_NONE);
+        if (ret != NOTIFICATION_ERROR_NONE)
+                return -1;
+
+        ret = notification_set_text(noti_handle, NOTIFICATION_TEXT_TYPE_CONTENT, text[1], NULL, NOTIFICATION_VARIABLE_TYPE_NONE);
+        if (ret != NOTIFICATION_ERROR_NONE)
+                return -1;
+
+        ret = notification_set_display_applist(noti_handle, NOTIFICATION_DISPLAY_APP_ALL);
+        if (ret != NOTIFICATION_ERROR_NONE)
+                return -1;
+
+        ret = notification_set_image(noti_handle, NOTIFICATION_IMAGE_TYPE_THUMBNAIL, DPM_SYSPOPUP_ICON_PATH);
+        if (ret != NOTIFICATION_ERROR_NONE)
+                return -1;
+
+        ret = notification_set_launch_option(noti_handle, NOTIFICATION_LAUNCH_OPTION_APP_CONTROL, app_control);
+        if (ret != NOTIFICATION_ERROR_NONE)
+                return -1;
+
+        return ret;
+}
+
+void _create_notification(app_control_h app_control)
+{
+	notification_h noti_handle = NULL;
+        int ret = 0;
+
+        noti_handle = notification_create(NOTIFICATION_TYPE_NOTI);
+
+        ret = __set_notification(noti_handle, app_control);
+        if (ret != NOTIFICATION_ERROR_NONE) {
+                notification_free(noti_handle);
+                app_control_destroy(app_control);
+                return;
+        }
+
+        notification_post(noti_handle);
+        notification_free(noti_handle);
+        app_control_destroy(app_control);
+
+        return;
 }

@@ -20,7 +20,8 @@ group { name: "base_layout";
 	parts {
 		part { name: "base";
 			type: RECT;
-			scale: 1;
+			scale: 0;
+			repeat_events: 0;
 			description { state: "default" 0.0;
 				rel1 { relative : 0.0 0.0;}
 				rel2 { relative : 1.0 1.0;}
@@ -28,7 +29,7 @@ group { name: "base_layout";
 		}
 		part { name: "content_layout";
 			type: SWALLOW;
-			scale: 1;
+			scale: 0;
 			description { state: "default" 0.0;
 				rel1 { relative: 0.0 0.0; to: "base";}
 				rel2 { relative: 1.0 0.0; to: "bottom_layout";}
@@ -36,7 +37,7 @@ group { name: "base_layout";
 		}
 		part { name: "bottom_layout";
 			type: SWALLOW;
-			scale: 1;
+			scale: 0;
 			description { state: "default" 0.0;
 				rel1 { relative: 0.0 1.0; to: "base"; offset: 0 -162;}
 				rel2 { relative: 1.0 1.0; to: "base";}
@@ -49,7 +50,7 @@ group { name: "two_button_layout";
 	parts {
 		part { name: "base";
 			type: RECT;
-			scale: 1;
+			scale: 0;
 			description { state: "default" 0.0;
 				rel1 { relative: 0.0 0.0; }
 				rel2 { relative: 1.0 1.0; }
@@ -58,7 +59,7 @@ group { name: "two_button_layout";
 		}
 		part { name: "prev_button";
 			type: SWALLOW;
-			scale: 1;
+			scale: 0;
 			description { state: "default" 0.0;
 				rel1 { relative: 0.0 0.0; to: "base"; offset: 22 22;}
 				rel2 { relative: 0.5 1.0; to: "base"; offset: -22 -22;}
@@ -66,7 +67,7 @@ group { name: "two_button_layout";
 		}
 		part { name: "next_button";
 			type: SWALLOW;
-			scale: 1;
+			scale: 0;
 			description { state: "default" 0.0;
 				rel1 { relative: 1.0 0.0; to_x: "prev_button"; to_y: "base"; offset: 22 22;}
 				rel2 { relative: 1.0 1.0; to: "base"; offset: -22 -22;}

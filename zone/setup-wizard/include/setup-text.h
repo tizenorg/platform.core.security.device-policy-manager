@@ -45,7 +45,9 @@
 #define NOTI_BODY_REMOVE_ZONE "Tap here to delete Separated Zone."
 
 #define CANCEL_BUTTON "Cancel"
+#define NEXT_BUTTON "Next"
 #define SETUP_BUTTON "Set up"
+#define PREV_BUTTON "Previous"
 #define REMOVE_BUTTON "Remove"
 
 #endif /*__SETUP_TEXT_H__*/

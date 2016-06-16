@@ -65,15 +65,14 @@ Evas_Object *_create_layout(Evas_Object *parent, char *file, const char *group)
 	return layout;
 }
 
-Evas_Object *_create_button(Evas_Object *parent, const char *text, const char *style)
+Evas_Object *_create_button(Evas_Object *parent, const char *text, Evas_Smart_Cb callback, void *user_data)
 {
 	Evas_Object *btn = elm_button_add(parent);
 
 	evas_object_size_hint_weight_set(btn, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	elm_object_text_set(btn, text);
-
-	if (style != NULL)
-		elm_object_style_set(btn, style);
+	elm_object_style_set(btn, "bottom");
+	evas_object_smart_callback_add(btn, "clicked", callback, user_data);
 
 	evas_object_show(btn);
 
@@ -114,4 +113,49 @@ Evas_Object *_create_progressbar(Evas_Object *parent, const char *style)
 	evas_object_show(progressbar);
 
 	return progressbar;
+}
+
+Elm_Genlist_Item_Class *_create_genlist_item_class(char *style, Elm_Gen_Item_Text_Get_Cb text_func, Elm_Gen_Item_Content_Get_Cb content_func)
+{
+	Elm_Genlist_Item_Class *itc;
+
+	itc = elm_genlist_item_class_new();
+	itc->item_style = style;
+	itc->func.text_get = text_func;
+	itc->func.content_get = content_func;
+
+	return itc;
+}
+
+Elm_Object_Item *_append_genlist_item(Evas_Object *genlist, Elm_Genlist_Item_Class *itc, Elm_Object_Select_Mode select_mode, int data)
+{
+	Elm_Object_Item *gl_item;
+	int index = 0;
+
+	if (data > 0)
+		index = data;
+
+	gl_item = elm_genlist_item_append(genlist, itc, (void *)index, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
+
+	elm_genlist_item_select_mode_set(gl_item, select_mode);
+	elm_genlist_item_class_free(itc);
+
+	return gl_item;
+}
+
+Evas_Object *_create_entry(Evas_Object *parent)
+{
+	Evas_Object *entry = elm_entry_add(parent);
+	static Elm_Entry_Filter_Limit_Size limit_size = {
+		.max_char_count = 20,
+		.max_byte_count = 0,
+	};
+
+	evas_object_size_hint_weight_set(entry, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+	elm_entry_password_set(entry, EINA_TRUE);
+	elm_entry_single_line_set(entry, EINA_TRUE);
+	elm_entry_markup_filter_append(entry, elm_entry_filter_limit_size, &limit_size);
+
+	evas_object_show(entry);
+	return entry;
 }
