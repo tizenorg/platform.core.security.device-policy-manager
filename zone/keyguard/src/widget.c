@@ -28,7 +28,7 @@ Evas_Object *_create_win(const char *package)
 {
 	Evas_Object *win = elm_win_add(NULL, package, ELM_WIN_NOTIFICATION);
 	efl_util_set_notification_window_level(win, EFL_UTIL_NOTIFICATION_LEVEL_DEFAULT);
-	eext_win_keygrab_set(win, "XF86Home");
+	/* [TBD] enable : eext_win_keygrab_set(win, "XF86Home"); */
 
 	elm_win_conformant_set(win, EINA_FALSE);
 
