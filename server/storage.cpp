@@ -13,10 +13,11 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License
  */
- #include <vconf.h>
- #include <vconf-keys.h>
+
  #include <dd-deviced.h>
  #include <dd-control.h>
+
+#include <thread>
 
 #include "storage.hxx"
 
@@ -25,6 +26,8 @@
 #include "exception.h"
 #include "process.h"
 #include "filesystem.h"
+#include "dbus/connection.h"
+#include "dbus/variant.h"
 #include "audit/logger.h"
 
 namespace DevicePolicyManager {
@@ -33,9 +36,68 @@ namespace {
 
 const std::string PROG_FACTORY_RESET = "/usr/bin/factory-reset";
 
-void WipeExternalMemoryCallback(int ret, void *user_data)
+std::vector<std::string> getStorageDeviceList(const std::string& type)
 {
-    std::cout << "WipeExternalMemoryCallback was called" << std::endl;
+    int intparams[6];
+    char* strparams[7];
+    std::vector<std::string> storages;
+
+    dbus::Connection &systemDBus = dbus::Connection::getSystem();
+    const dbus::Variant &var = systemDBus.methodcall("org.tizen.system.storage",
+                                                     "/Org/Tizen/System/Storage/Block/Manager",
+                                                     "org.tizen.system.storage.BlockManager",
+                                                     "GetDeviceList",
+                                                     -1,
+                                                     "(a(issssssisibii))",
+                                                     "(s)",
+                                                     type.c_str());
+    dbus::VariantIterator it;
+    var.get("(a(issssssisibii))", &it);
+    while (it.get("(issssssisibii)",
+                  &intparams[0], // block type: 0 - scsi, 1 : mmc
+                  &strparams[0], // devnode
+                  &strparams[1], // syspath
+                  &strparams[2], // usage
+                  &strparams[3], // fs type
+                  &strparams[4], // fs version
+                  &strparams[5], // fs uuid enc
+                  &intparams[1], // readonly: 0 - rw, 1 - ro
+                  &strparams[6], // mount point
+                  &intparams[2], // state: 0 - unmount, 1 - mount
+                  &intparams[3], // primary: 0 - flase, 1 - true
+                  &intparams[4], // flags: 1 - unmounted
+                                 //        2 - broken filesystem
+                                 //        4 - no filesystem
+                                 //        8 - not supported
+                                 //       16 - readonly
+                  &intparams[5])) { // strage id
+
+        storages.push_back(strrchr(strparams[0], '/') + 1);
+        for (int i = 0; i < 7; i++) {
+            if (strparams[i]) {
+                ::free(strparams[i]);
+            }
+        }
+    }
+
+    return storages;
+}
+
+void requestDeviceFormat(const std::string& devnode, int option)
+{
+    int ret;
+    dbus::Connection &systemDBus = dbus::Connection::getSystem();
+    systemDBus.methodcall("org.tizen.system.storage",
+                          "/Org/Tizen/System/Storage/Block/Devices/" + devnode,
+                          "org.tizen.system.storage.Block",
+                          "Format",
+                          G_MAXINT,
+                          "(i)",
+                          "(i)",
+                          option).get("(i)", &ret);
+    if (ret != 0) {
+        throw runtime::Exception("Failed to format " + devnode);
+    }
 }
 
 } // namespace
@@ -52,44 +114,36 @@ StoragePolicy::~StoragePolicy()
 
 int StoragePolicy::wipeData(int id)
 {
-    int ret = 0;
-    if (id & WIPE_INTERNAL_STORAGE) {
-        runtime::Process proc(PROG_FACTORY_RESET);
-        if (proc.execute() != 0) {
-            ERROR("Failed to launch factory-reset");
-            ret = -1;
-        }
-    }
-
-    if (id & WIPE_EXTERNAL_STORAGE) {
-        int status;
-        if (::vconf_get_int(VCONFKEY_SYSMAN_MMC_STATUS, &status) != 0) {
-            ERROR("Failed to get mmc status");
-            return -1;
+    auto worker = [id]() {
+        if (id & WIPE_INTERNAL_STORAGE) {
+            runtime::Process proc(PROG_FACTORY_RESET);
+            if (proc.execute() != 0) {
+                ERROR("Failed to launch factory-reset");
+                return -1;
+            }
         }
 
-        if (status != VCONFKEY_SYSMAN_MMC_MOUNTED) {
-            ERROR("MMC is not working");
-            return -1;
+        if (id & WIPE_EXTERNAL_STORAGE) {
+            try {
+                std::vector<std::string> devices = getStorageDeviceList("mmc");
+                for (const std::string& devnode : devices) {
+                    std::cout << "Erase device: " << devnode << std::endl;
+                    requestDeviceFormat(devnode, 1);
+                    std::cout << "Erase device: " << devnode << " completed" << std::endl;
+                }
+            } catch(runtime::Exception& e) {
+                ERROR("Failed to enforce external storage policy");
+                return -1;
+            }
         }
 
-        mmc_contents *mmc_data = new(std::nothrow) mmc_contents();
-        if (mmc_data == nullptr) {
-            ERROR("Failed to construct mmc_contents: out of memory");
-            return -1;
-        }
+        return 0;
+    };
 
-        mmc_data->mmc_cb = WipeExternalMemoryCallback;
-        mmc_data->user_data = nullptr;
+    std::thread deviceWiper(worker);
+    deviceWiper.detach();
 
-        if (::deviced_request_format_mmc(mmc_data) < 0) {
-            ERROR("Failed to format MMC");
-            delete mmc_data;
-            return -1;
-        }
-    }
-
-    return ret;
+    return 0;
 }
 
 StoragePolicy storagePolicy(Server::instance());

@@ -25,8 +25,8 @@ namespace DevicePolicyManager {
 class StoragePolicy {
 public:
     enum {
-        WIPE_INTERNAL_STORAGE = (1 << 1),
-        WIPE_EXTERNAL_STORAGE = (1 << 0)
+        WIPE_INTERNAL_STORAGE = (1 << 0),
+        WIPE_EXTERNAL_STORAGE = (1 << 1)
     };
 
     StoragePolicy(PolicyControlContext& ctxt);
