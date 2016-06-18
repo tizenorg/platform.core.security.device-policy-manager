@@ -29,7 +29,7 @@
 #include "auth/user.h"
 #include "audit/logger.h"
 
-#define SIMPLE_PASSWORD_LENGTH 7
+#define SIMPLE_PASSWORD_LENGTH 4
 #define PASSWORD_EMPTY_STRING "\\n"
 
 namespace DevicePolicyManager {
