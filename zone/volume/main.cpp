@@ -69,6 +69,7 @@ ecryptfs_payload* generateToken(char* key)
 
     ::memset(authToken, 0, sizeof(ecryptfs_payload));
     ::memcpy(keyBuffer, key, ECRYPTFS_MAX_KEY_SIZE);
+    keyBuffer[ECRYPTFS_MAX_KEY_SIZE-1] = '\0';
 
     tokenKey = &authToken->token.password;
 
