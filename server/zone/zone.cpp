@@ -19,6 +19,7 @@
 #include <sys/inotify.h>
 
 #include <notification.h>
+#include <notification_internal.h>
 #include <tzplatform_config.h>
 
 #include "zone/zone.hxx"
@@ -39,7 +40,10 @@
 #define ZONE_UID_MIN       60001
 #define ZONE_UID_MAX       65000
 
+#define DEFAULT_ZONE_OWNER "owner"
+
 #define ZONE_LAUNCHER_APP  "org.tizen.kaskit"
+#define NOTIFICATION_SUB_ICON_PATH  DATA_PATH "/zone_noti_list_sub_icon.png"
 
 namespace DevicePolicyManager {
 
@@ -70,6 +74,9 @@ const std::string SHARED_SMACKLABEL = "User::App::Shared";
 const std::string APP_SMACKLABEL = "User::Pkg::";
 
 const std::string ZONE_GROUP = "users";
+
+std::vector<std::string> createdZoneList;
+std::unordered_map<std::string, int> notiProxyCallbackMap;
 
 template <typename... Args>
 inline void execute(const std::string& path, Args&&... args)
@@ -255,7 +262,7 @@ int packageEventHandler(uid_t target_uid, int req_id,
     }
 
     try {
-        runtime::User owner("owner"), pkgUser(target_uid);
+        runtime::User owner(DEFAULT_ZONE_OWNER), pkgUser(target_uid);
 
         if (type == "install" || type == "update") {
             PackageInfo pkg(pkgid, pkgUser.getUid());
@@ -282,6 +289,22 @@ int packageEventHandler(uid_t target_uid, int req_id,
     return 0;
 }
 
+void initializeCreatedZoneList() {
+    try {
+        runtime::Path manifestDir(ZONE_MANIFEST_DIR);
+        runtime::DirectoryIterator iter(manifestDir), end;
+
+        while (iter != end) {
+            const std::string& path = iter->getPath();
+            size_t namePos = path.rfind('/') + 1;
+            size_t extPos = path.rfind(".xml");
+            const std::string& name(path.substr(namePos, extPos - namePos));
+            createdZoneList.push_back(name);
+            ++iter;
+        }
+    } catch (runtime::Exception& e) {}
+}
+
 #define NT_TITLE     NOTIFICATION_TEXT_TYPE_TITLE
 #define NT_CONTENT   NOTIFICATION_TEXT_TYPE_CONTENT
 #define NT_ICON      NOTIFICATION_IMAGE_TYPE_ICON
@@ -290,7 +313,7 @@ int packageEventHandler(uid_t target_uid, int req_id,
 #define NT_EVENT     NOTIFICATION_LY_ONGOING_EVENT
 #define NT_APP       NOTIFICATION_DISPLAY_APP_INDICATOR
 
-#define NT_ICON_PATH "/opt/data/dpm/zone-indicator.png"
+#define NT_ICON_PATH DATA_PATH "/zone_indicator_icon.png"
 #define NT_TEXT      "Container Mode"
 #define NT_APPINFO   "Zone Application"
 
@@ -301,6 +324,7 @@ void zoneProcessCallback(GDBusConnection *connection,
 	                     const gchar *interface, const gchar *signalName,
 	                     GVariant *params, gpointer userData)
 {
+    static runtime::User defaultZoneOwner(DEFAULT_ZONE_OWNER);
     int pid, status;
 
     notification_h noti = reinterpret_cast<notification_h>(userData);
@@ -320,7 +344,7 @@ void zoneProcessCallback(GDBusConnection *connection,
     if ((st.st_uid >= ZONE_UID_MIN) && (st.st_uid < ZONE_UID_MAX)) {
         notification_set_text(noti, NT_CONTENT, NT_APPINFO, NULL, NT_NONE);
 
-        notification_post(noti);
+        notification_post_for_uid(noti, defaultZoneOwner.getUid());
     }
 }
 
@@ -387,6 +411,40 @@ void zoneProcessMonitor()
                                         NULL);
 }
 
+void notiProxyCallback(void *data, notification_type_e type, notification_op *op_list, int num_op)
+{
+    static runtime::User defaultZoneOwner(DEFAULT_ZONE_OWNER);
+    //std::string& name = *reinterpret_cast<std::string*>(data);
+
+    // TODO : should remove noti in the zone when related-zone is removed
+
+    for (int i = 0; i < num_op; i++) {
+        notification_h noti_h = NULL;
+        int op_type;
+        char* icon;
+
+        notification_op_get_data(op_list + i, NOTIFICATION_OP_DATA_TYPE, &op_type);
+        notification_op_get_data(op_list + i, NOTIFICATION_OP_DATA_NOTI, &noti_h);
+
+        notification_set_image(noti_h, NOTIFICATION_IMAGE_TYPE_ICON_SUB, NOTIFICATION_SUB_ICON_PATH);
+
+        switch(op_type) {
+        case NOTIFICATION_OP_INSERT:
+            notification_post_for_uid(noti_h, defaultZoneOwner.getUid());
+            notification_get_image(noti_h, NOTIFICATION_IMAGE_TYPE_ICON, &icon);
+            // why does this occur permission denied???
+            break;
+        case NOTIFICATION_OP_DELETE:
+            // TODO : should look up noti_h by priv_id
+            notification_delete_for_uid(noti_h, defaultZoneOwner.getUid());
+            break;
+        case NOTIFICATION_OP_UPDATE:
+            notification_update_for_uid(noti_h, defaultZoneOwner.getUid());
+            break;
+        }
+    }
+}
+
 } // namespace
 
 ZoneManager::ZoneManager(PolicyControlContext& ctx)
@@ -406,6 +464,17 @@ ZoneManager::ZoneManager(PolicyControlContext& ctx)
     packageManager.setEventCallback(packageEventHandler, this);
 
     zoneProcessMonitor();
+
+    initializeCreatedZoneList();
+    for (std::string& name : createdZoneList) {
+        if (name == DEFAULT_ZONE_OWNER) {
+            continue;
+        }
+
+        runtime::User zone(name);
+        int noti = notification_register_detailed_changed_cb_for_uid(notiProxyCallback, &name, zone.getUid());
+        notiProxyCallbackMap.insert(std::make_pair(name, noti));
+    }
 }
 
 ZoneManager::~ZoneManager()
@@ -460,6 +529,9 @@ int ZoneManager::createZone(const std::string& name, const std::string& manifest
             //unlock the user
             setZoneState(user.getUid(), 1);
 
+            auto it = createdZoneList.insert(createdZoneList.begin(), name);
+            int noti = notification_register_detailed_changed_cb_for_uid(notiProxyCallback, &(*it), user.getUid());
+            notiProxyCallbackMap.insert(std::make_pair(name, noti));
             context.notify("ZoneManager::created", name, std::string());
 
             // Running launch app and add a shorcut
@@ -514,6 +586,11 @@ int ZoneManager::removeZone(const std::string& name)
             //remove zone user
             user.remove();
 
+            for (std::vector<std::string>::iterator it = createdZoneList.begin();
+                 it != createdZoneList.end(); it++) {
+                createdZoneList.erase(it);
+            }
+            notiProxyCallbackMap.erase(name);
             context.notify("ZoneManager::removed", name, std::string());
         } catch (runtime::Exception& e) {
             ERROR(e.what());
@@ -557,7 +634,7 @@ int ZoneManager::getZoneState(const std::string& name)
 {
     runtime::File manifest(ZONE_MANIFEST_DIR + name + ".xml");
     if (!manifest.exists()) {
-        return -1;
+        return 0;
     }
 
     try {
@@ -576,7 +653,7 @@ int ZoneManager::getZoneState(const std::string& name)
         }
     } catch (runtime::Exception& e) {
         ERROR(e.what());
-        return -1;
+        return 0;
     }
 
     return 0;
@@ -585,22 +662,12 @@ int ZoneManager::getZoneState(const std::string& name)
 std::vector<std::string> ZoneManager::getZoneList(int state)
 {
     std::vector<std::string> list;
-    try {
-        runtime::Path manifestDir(ZONE_MANIFEST_DIR);
-        runtime::DirectoryIterator iter(manifestDir), end;
 
-        while (iter != end) {
-            const std::string& path = iter->getPath();
-            size_t namePos = path.rfind('/') + 1;
-            size_t extPos = path.rfind(".xml");
-            const std::string& name(path.substr(namePos, extPos - namePos));
-            if (getZoneState(name) & state) {
-                list.push_back(name);
-            }
-            ++iter;
+    for (const std::string& name : createdZoneList) {
+        if (getZoneState(name) & state) {
+            list.push_back(name);
         }
-    } catch (runtime::Exception& e) {}
-
+    }
     return list;
 }
 
