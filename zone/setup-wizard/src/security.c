@@ -20,12 +20,6 @@
 #include "zone-setup.h"
 #include "widget.h"
 
-#define GROUPINDEX_UNLOCK_METHOD 0
-#define GROUPINDEX_SECURITY_OPTIONS 1
-
-#define UNLOCKMETHOD_PASSWORD 0
-#define UNLOCKMETHOD_SIMPLE_PASSWORD 1
-
 extern uidata_s ud;
 
 typedef struct {
@@ -34,6 +28,19 @@ typedef struct {
 	Evas_Object *radio_main;
 	int unlock_method;
 } security_info_s;
+
+struct security_unlock_method_type {
+	const char* text;
+	int index;
+} unlock_method_types[2] = {
+	{ "Password", 0 },
+	{ "PIN", 1 }
+};
+
+char* security_group_text[2] = {
+	"Unlock method",
+	"Security options"
+};
 
 security_info_s info = {0, };
 
@@ -53,11 +60,11 @@ static char *__security_multiline_text_get(void *data, Evas_Object *obj, const c
 
 static char *__security_group_text_get(void *data, Evas_Object *obj, const char *part)
 {
-	char *text[] = {"Unlock method", "Security options"};
-	int index = (int)data;
+	char *text = (char *)data;
 
-	if (!strcmp(part, "elm.text"))
-		return strdup(text[index]);
+	if (!strcmp(part, "elm.text")) {
+		return strdup(text);
+	}
 
 	return NULL;
 }
@@ -77,11 +84,11 @@ static char *__security_double_label_text_get(void *data, Evas_Object *obj, cons
 
 static char *__security_radio_text_get(void *data, Evas_Object *obj, const char *part)
 {
-	char *radio_text[] = {"Password", "PIN"};
-	int index = (int)data;
+	struct security_unlock_method_type *method = (struct security_unlock_method_type *)data;
 
-	if (!strcmp(part, "elm.text"))
-		return strdup(radio_text[index]);
+	if (!strcmp(part, "elm.text")) {
+		return strdup(method->text);
+	}
 
 	return NULL;
 }
@@ -89,14 +96,14 @@ static char *__security_radio_text_get(void *data, Evas_Object *obj, const char 
 static Evas_Object *__security_radio_content_get(void *data, Evas_Object *obj, const char *part)
 {
 	Evas_Object *radio;
-	int index = (int)data;
+	struct security_unlock_method_type* method = (struct security_unlock_method_type *)data;
 
 	if (!strcmp(part, "elm.swallow.icon")) {
 		radio = elm_radio_add(obj);
-		elm_radio_state_value_set(radio, index);
+		elm_radio_state_value_set(radio, method->index);
 		elm_radio_group_add(radio, info.radio_main);
 
-		if (index == info.unlock_method)
+		if (method->index == info.unlock_method)
 			elm_radio_value_set(radio, info.unlock_method);
 
 		evas_object_propagate_events_set(radio, EINA_FALSE);
@@ -110,11 +117,11 @@ static Evas_Object *__security_radio_content_get(void *data, Evas_Object *obj, c
 
 static void __security_locktype_select_cb(void *data, Evas_Object *obj, void *event_info)
 {
-	int index = (int)data;
+	struct security_unlock_method_type* method = (struct security_unlock_method_type *)data;
 
 	elm_genlist_item_selected_set((Elm_Object_Item *)event_info, EINA_FALSE);
-	elm_radio_value_set(info.radio_main, index);
-	info.unlock_method = index;
+	elm_radio_value_set(info.radio_main, method->index);
+	info.unlock_method = method->index;
 }
 
 static Eina_Bool __security_pop_cb(void *data, Elm_Object_Item *it)
@@ -186,7 +193,7 @@ static void __create_password_set_view(appdata_s *ad)
 	elm_object_style_set(genlist, "solid/default");
 
 	_itc = _create_genlist_item_class("full", NULL, __security_entry_content_get);
-	_append_genlist_item(genlist, _itc, ELM_OBJECT_SELECT_MODE_DISPLAY_ONLY, -1);
+	_append_genlist_item(genlist, _itc, ELM_OBJECT_SELECT_MODE_DISPLAY_ONLY, NULL);
 
 	elm_genlist_mode_set(genlist, ELM_LIST_COMPRESS);
 	elm_layout_content_set(layout, "content_layout", genlist);
@@ -206,7 +213,7 @@ static void __create_password_set_view(appdata_s *ad)
 
 void _create_security_view(appdata_s *ad)
 {
-	int index = UNLOCKMETHOD_SIMPLE_PASSWORD;
+	int index;
 	Evas_Object *genlist;
 	Elm_Object_Item *nf_it, *gl_item;
 	Elm_Genlist_Item_Class *_itc;
@@ -220,9 +227,9 @@ void _create_security_view(appdata_s *ad)
 	elm_object_style_set(genlist, "solid/default");
 
 	_itc = _create_genlist_item_class("multiline", __security_multiline_text_get, NULL);
-	gl_item = _append_genlist_item(genlist, _itc, ELM_OBJECT_SELECT_MODE_DISPLAY_ONLY, -1);
+	gl_item = _append_genlist_item(genlist, _itc, ELM_OBJECT_SELECT_MODE_DISPLAY_ONLY, NULL);
 	_itc =  _create_genlist_item_class("group_index", __security_group_text_get, NULL);
-	gl_item = _append_genlist_item(genlist, _itc, ELM_OBJECT_SELECT_MODE_DISPLAY_ONLY, GROUPINDEX_UNLOCK_METHOD);
+	gl_item = _append_genlist_item(genlist, _itc, ELM_OBJECT_SELECT_MODE_DISPLAY_ONLY, security_group_text[0]);
 
 	info.radio_main = elm_radio_add(genlist);
 	elm_radio_state_value_set(info.radio_main, 0);
@@ -230,19 +237,24 @@ void _create_security_view(appdata_s *ad)
 
 	_itc = _create_genlist_item_class("one_icon", __security_radio_text_get, __security_radio_content_get);
 	for (index = 0; index < 2; index++) {
-		gl_item = elm_genlist_item_append(genlist, _itc, (void *)index, NULL, ELM_GENLIST_ITEM_NONE, __security_locktype_select_cb, (void *)index);
-		if (index == UNLOCKMETHOD_SIMPLE_PASSWORD) {
-			/* [TBD] enable simple password */
+		gl_item = elm_genlist_item_append(genlist,
+										  _itc,
+										  &unlock_method_types[index],
+										  NULL,
+										  ELM_GENLIST_ITEM_NONE,
+										  __security_locktype_select_cb,
+										  &unlock_method_types[index]);
+		if (index == 1) {
 			elm_object_item_disabled_set(gl_item, EINA_TRUE);
 		}
 	}
 
 	/* Timeout list group*/
 	_itc = _create_genlist_item_class("group_index", __security_group_text_get, NULL);
-	gl_item = _append_genlist_item(genlist, _itc, ELM_OBJECT_SELECT_MODE_DISPLAY_ONLY, GROUPINDEX_SECURITY_OPTIONS);
+	gl_item = _append_genlist_item(genlist, _itc, ELM_OBJECT_SELECT_MODE_DISPLAY_ONLY, security_group_text[1]);
 
 	_itc = _create_genlist_item_class("double_label", __security_double_label_text_get, NULL);
-	gl_item = _append_genlist_item(genlist, _itc, ELM_OBJECT_SELECT_MODE_DISPLAY_ONLY, -1);
+	gl_item = _append_genlist_item(genlist, _itc, ELM_OBJECT_SELECT_MODE_DISPLAY_ONLY, NULL);
 	elm_object_item_disabled_set(gl_item, EINA_TRUE); /* [TBD] enable timeout options */
 
 	elm_genlist_mode_set(genlist, ELM_LIST_COMPRESS);

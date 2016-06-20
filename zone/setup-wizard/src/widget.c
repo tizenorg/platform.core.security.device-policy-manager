@@ -127,15 +127,11 @@ Elm_Genlist_Item_Class *_create_genlist_item_class(char *style, Elm_Gen_Item_Tex
 	return itc;
 }
 
-Elm_Object_Item *_append_genlist_item(Evas_Object *genlist, Elm_Genlist_Item_Class *itc, Elm_Object_Select_Mode select_mode, int data)
+Elm_Object_Item *_append_genlist_item(Evas_Object *genlist, Elm_Genlist_Item_Class *itc, Elm_Object_Select_Mode select_mode, void* data)
 {
 	Elm_Object_Item *gl_item;
-	int index = 0;
 
-	if (data > 0)
-		index = data;
-
-	gl_item = elm_genlist_item_append(genlist, itc, (void *)index, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
+	gl_item = elm_genlist_item_append(genlist, itc, data, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
 
 	elm_genlist_item_select_mode_set(gl_item, select_mode);
 	elm_genlist_item_class_free(itc);
