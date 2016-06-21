@@ -106,7 +106,7 @@ int ZonePolicy::createZone(const std::string& name, const std::string& setupWizA
 
 int ZonePolicy::removeZone(const std::string& name)
 {
-    if (getZoneState(name) < 0) {
+    if (getZoneState(name) == 0) {
         return -1;
     }
 

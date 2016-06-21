@@ -47,5 +47,6 @@ TARGET_COMPILE_DEFINITIONS(${ZONE_PAM_NAME} PRIVATE
 
 INSTALL(TARGETS ${ZONE_PAM_NAME} DESTINATION ${LIB_INSTALL_DIR}/security)
 INSTALL(FILES data/DefaultZoneManifest.xml DESTINATION ${CONF_INSTALL_DIR}/zone RENAME owner.xml)
-INSTALL(FILES data/zone-indicator.png DESTINATION /opt/data/dpm)
+INSTALL(FILES data/zone_indicator_icon.png DESTINATION /opt/data/dpm)
+INSTALL(FILES data/zone_noti_list_sub_icon.png DESTINATION /opt/data/dpm)
 INSTALL(FILES pam.d/systemd-user-zone DESTINATION ${PAMD_INSTALL_DIR})

@@ -338,7 +338,8 @@ mv /etc/pam.d/systemd-user.keep /etc/pam.d/systemd-user
 %attr(700,root,root) %{_sbindir}/zone-volume-manager
 %attr(700,root,root) %dir %{TZ_SYS_ETC}/dpm/zone
 %attr(600,root,root) %config %{TZ_SYS_ETC}/dpm/zone/owner.xml
-%attr(644,root,root) /opt/data/dpm/zone-indicator.png
+%attr(644,root,root) %{TZ_SYS_DATA}/dpm/zone_indicator_icon.png
+%attr(644,root,root) %{TZ_SYS_DATA}/dpm/zone_noti_list_sub_icon.png
 %config /etc/pam.d/*
 
 %endif

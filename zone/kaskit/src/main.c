@@ -153,7 +153,7 @@ static void __add_shortcut(const char *zone_name)
 {
 	char new_uri[PATH_MAX];
 
-	snprintf(new_uri, sizeof(new_uri), "zone://launch/%s", zone_name);
+	snprintf(new_uri, sizeof(new_uri), "zone://home/%s", zone_name);
 	shortcut_add_to_home(zone_name, LAUNCH_BY_URI, new_uri, "", 0, __shortcut_result_cb, NULL);
 }
 
@@ -172,6 +172,14 @@ static void __show_launcher(const char *zone_name)
 	ecore_thread_run(__create_icon_thread, NULL, NULL, NULL);
 }
 
+static void __launch_zone_app(const char *zone_name, const char *app_id)
+{
+	zone_app_proxy_create(__zone_mgr, zone_name, &__zone_app);
+	zone_package_proxy_create(__zone_mgr, zone_name, &__zone_pkg);
+	zone_app_proxy_launch(__zone_app, app_id);
+	ui_app_exit();
+}
+
 static bool __app_create(void *data)
 {
 	zone_manager_create(&__zone_mgr);
@@ -183,33 +191,42 @@ static bool __app_create(void *data)
 
 static void __app_control(app_control_h app_control, void *data)
 {
-	char* zone_uri, *zone_name = "";
+	char* zone_uri, *tmp, *zone_name, *app_id;
         int ret = 0;
 
         ret = app_control_get_uri(app_control, &zone_uri);
         if (ret != APP_CONTROL_ERROR_NONE) {
 		dlog_print(DLOG_ERROR, LOG_TAG, "No URI");
                 ui_app_exit();
+                return;
         }
 
 	if (strncmp(zone_uri, "zone://", sizeof("zone://") - 1) != 0) {
 		dlog_print(DLOG_ERROR, LOG_TAG, "Mismatched URI");
+                free(zone_uri);
                 ui_app_exit();
+                return;
 	}
 
-	zone_uri = zone_uri + sizeof("zone://") - 1;
+	tmp = zone_uri + sizeof("zone://") - 1;
 
-	if (strncmp(zone_uri, "setup/", sizeof("setup/") - 1) == 0) {
-		zone_name = zone_uri + sizeof("setup/") - 1;
+	if (strncmp(tmp, "setup/", sizeof("setup/") - 1) == 0) {
+		zone_name = tmp + sizeof("setup/") - 1;
 		__add_shortcut(zone_name);
 		__show_launcher(zone_name);
-	} else if (strncmp(zone_uri, "launch/", sizeof("launch/") - 1) == 0) {
-		zone_name = zone_uri + sizeof("launch/") - 1;
+	} else if (strncmp(tmp, "home/", sizeof("home/") - 1) == 0) {
+		zone_name = tmp + sizeof("home/") - 1;
 		__show_launcher(zone_name);
+	} else if (strncmp(tmp, "launch/", sizeof("launch/") - 1) == 0) {
+		zone_name = tmp + sizeof("launch/") - 1;
+		app_id = strchr(zone_name, '/');
+		*(app_id++) = '\0';
+		__launch_zone_app(zone_name, app_id);
 	} else {
 		dlog_print(DLOG_ERROR, LOG_TAG, "Invalid URI");
                 ui_app_exit();
 	}
+        free(zone_uri);
 }
 
 static void __app_pause(void *data)
