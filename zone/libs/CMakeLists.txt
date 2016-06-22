@@ -41,6 +41,7 @@ PKG_CHECK_MODULES(ZONE_LIBS_DEPS  REQUIRED
                                   glib-2.0
                                   capi-appfw-package-manager
                                   capi-appfw-app-manager
+                                  capi-appfw-app-control
                                   libtzplatform-config
 )
 

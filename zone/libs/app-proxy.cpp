@@ -67,10 +67,10 @@ int ZoneAppProxy::destroyIterator(int iterator)
     return -1;
 }
 
-int ZoneAppProxy::launch(const std::string& name, const std::string& appid)
+int ZoneAppProxy::launch(const std::string& name, const ZoneAppProxy::Bundle& bundle)
 {
     try {
-        return context->methodCall<int>("ZoneAppProxy::launch", name, appid);
+        return context->methodCall<int>("ZoneAppProxy::launch", name, bundle);
     } catch (runtime::Exception& e) {
         return -1;
     }

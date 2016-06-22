@@ -135,7 +135,11 @@ char* __get_current_zone_name() {
 
 void _icon_clicked_cb(const char *app_id)
 {
-	zone_app_proxy_launch(__zone_app, app_id);
+	app_control_h app_control;
+	app_control_create(&app_control);
+        app_control_set_app_id(app_control, app_id);
+	zone_app_proxy_send_launch_request(__zone_app, app_control);
+	app_control_destroy(app_control);
 }
 
 void _icon_uninstalled_cb(const char *pkg_id)
@@ -172,11 +176,11 @@ static void __show_launcher(const char *zone_name)
 	ecore_thread_run(__create_icon_thread, NULL, NULL, NULL);
 }
 
-static void __launch_zone_app(const char *zone_name, const char *app_id)
+static void __launch_zone_app(const char *zone_name, app_control_h app_control)
 {
 	zone_app_proxy_create(__zone_mgr, zone_name, &__zone_app);
 	zone_package_proxy_create(__zone_mgr, zone_name, &__zone_pkg);
-	zone_app_proxy_launch(__zone_app, app_id);
+	zone_app_proxy_send_launch_request(__zone_app, app_control);
 	ui_app_exit();
 }
 
@@ -191,7 +195,7 @@ static bool __app_create(void *data)
 
 static void __app_control(app_control_h app_control, void *data)
 {
-	char* zone_uri, *tmp, *zone_name, *app_id;
+	char* zone_uri, *tmp, *zone_name;
         int ret = 0;
 
         ret = app_control_get_uri(app_control, &zone_uri);
@@ -218,10 +222,23 @@ static void __app_control(app_control_h app_control, void *data)
 		zone_name = tmp + sizeof("home/") - 1;
 		__show_launcher(zone_name);
 	} else if (strncmp(tmp, "launch/", sizeof("launch/") - 1) == 0) {
+		char* app_id, *uri;
+
+		app_control_set_uri(app_control, NULL);
 		zone_name = tmp + sizeof("launch/") - 1;
 		app_id = strchr(zone_name, '/');
 		*(app_id++) = '\0';
-		__launch_zone_app(zone_name, app_id);
+		uri = strchr(app_id, '?');
+		if (uri != NULL) {
+			*(uri++) = '\0';
+			if (strncmp(uri, "uri=", sizeof("uri=") - 1) == 0) {
+				tmp += sizeof("uri=") - 1;
+				app_control_set_uri(app_control, uri);
+			}
+		}
+
+		app_control_set_app_id(app_control, app_id);
+		__launch_zone_app(zone_name, app_control);
 	} else {
 		dlog_print(DLOG_ERROR, LOG_TAG, "Invalid URI");
                 ui_app_exit();
