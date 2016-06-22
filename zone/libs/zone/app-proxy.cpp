@@ -146,7 +146,82 @@ int zone_app_proxy_foreach_app_info(zone_app_proxy_h handle, app_manager_app_inf
     return ZONE_ERROR_NONE;
 }
 
-int zone_app_proxy_launch(zone_app_proxy_h handle, const char* app_id)
+static bool appExtraCallback(app_control_h app_control, const char *key, void *user_data)
+{
+    ZoneAppProxy::Bundle *bundle = reinterpret_cast<ZoneAppProxy::Bundle*>(user_data);
+    ZoneAppProxy::Bundle::Extra extra;
+    bool isArray;
+
+    extra.key = key;
+
+    app_control_is_extra_data_array(app_control, key, &isArray);
+    if (isArray) {
+        char **values;
+        int length = 0;
+        app_control_get_extra_data_array(app_control, key, &values, &length);
+        for (int i = 0; i < length; i++) {
+            extra.value.push_back(values[i]);
+            free(values[i]);
+        }
+        free(values);        
+    } else {
+        char *value;
+        app_control_get_extra_data(app_control, key, &value);
+        extra.value.push_back(value);
+        free(value);
+    }
+    bundle->extraData.push_back(extra);
+
+    return true;
+}
+
+int zone_app_proxy_send_launch_request(zone_app_proxy_h handle, app_control_h app_control)
+{
+    RET_ON_FAILURE(handle, ZONE_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(app_control, ZONE_ERROR_INVALID_PARAMETER);
+
+    auto instance = getInstance(handle);
+    auto& proxy = instance->proxy;
+    const std::string& name = instance->zoneName;
+    char *str;
+
+    ZoneAppProxy::Bundle bundle;
+    app_control_get_operation(app_control, &str);
+    if (str != NULL) {
+        bundle.operation = str;
+        free(str);
+        str = NULL;
+    }
+    app_control_get_uri(app_control, &str);
+    if (str != NULL) {
+        bundle.uri = str;
+        free(str);
+        str = NULL;
+    }
+    app_control_get_mime(app_control, &str);
+    if (str != NULL) {
+        bundle.mime = str;
+        free(str);
+        str = NULL;
+    }
+    app_control_get_category(app_control, &str);
+    if (str != NULL) {
+        bundle.category = str;
+        free(str);
+        str = NULL;
+    }
+    app_control_get_app_id(app_control, &str);
+    if (str != NULL) {
+        bundle.appId = str;
+        free(str);
+        str = NULL;
+    }
+    app_control_foreach_extra_data(app_control, appExtraCallback, &bundle);
+
+    return proxy.launch(name, bundle);
+}
+
+int zone_app_proxy_terminate(zone_app_proxy_h handle, const char* app_id)
 {
     RET_ON_FAILURE(handle, ZONE_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(app_id, ZONE_ERROR_INVALID_PARAMETER);
@@ -155,7 +230,19 @@ int zone_app_proxy_launch(zone_app_proxy_h handle, const char* app_id)
     auto& proxy = instance->proxy;
     const std::string& name = instance->zoneName;
 
-    return proxy.launch(name, app_id);
+    return proxy.terminate(name, app_id);
+}
+
+int zone_app_proxy_resume(zone_app_proxy_h handle, const char* app_id)
+{
+    RET_ON_FAILURE(handle, ZONE_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(app_id, ZONE_ERROR_INVALID_PARAMETER);
+
+    auto instance = getInstance(handle);
+    auto& proxy = instance->proxy;
+    const std::string& name = instance->zoneName;
+
+    return proxy.resume(name, app_id);
 }
 
 int zone_app_proxy_is_running(zone_app_proxy_h handle, const char* app_id, int *result)

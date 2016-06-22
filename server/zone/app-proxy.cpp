@@ -52,7 +52,7 @@ ZoneAppProxy::ZoneAppProxy(PolicyControlContext& ctx)
     context.registerParametricMethod(this, (bool)(ZoneAppProxy::nextIterator)(int));
     context.registerParametricMethod(this, (int)(ZoneAppProxy::destroyIterator)(int));
 
-    context.registerParametricMethod(this, (int)(ZoneAppProxy::launch)(std::string, std::string));
+    context.registerParametricMethod(this, (int)(ZoneAppProxy::launch)(std::string, ZoneAppProxy::Bundle));
     context.registerParametricMethod(this, (int)(ZoneAppProxy::resume)(std::string, std::string));
     context.registerParametricMethod(this, (int)(ZoneAppProxy::terminate)(std::string, std::string));
     context.registerParametricMethod(this, (int)(ZoneAppProxy::isRunning)(std::string, std::string));
@@ -175,12 +175,12 @@ int ZoneAppProxy::destroyIterator(int iterator) {
     return -1;
 }
 
-int ZoneAppProxy::launch(const std::string& name, const std::string& appid)
+int ZoneAppProxy::launch(const std::string& name, const ZoneAppProxy::Bundle& bundle)
 {
     try {
         runtime::User user(name);
         Launchpad launchpad(user.getUid());
-        launchpad.launch(appid);
+        launchpad.launch(bundle.appId);
     } catch (runtime::Exception& e) {
         ERROR("Failed to launch app in the zone");
         return -1;
