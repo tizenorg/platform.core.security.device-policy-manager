@@ -419,7 +419,8 @@ void notiProxyInsert(const runtime::User& owner, const runtime::User& user, int 
     notification_h newNoti;
     app_control_h appControl;
     char zoneLauncherUri[PATH_MAX];
-    char* appId, *pkgId;
+    char UriParameter[PATH_MAX];
+    char* pkgId;
 
     notification_clone(noti, &newNoti);
 
@@ -430,8 +431,22 @@ void notiProxyInsert(const runtime::User& owner, const runtime::User& user, int 
 
     notification_get_launch_option(newNoti, NOTIFICATION_LAUNCH_OPTION_APP_CONTROL, (void *)&appControl);
     if (appControl != NULL) {
+        char* appId = NULL, *uri = NULL;
+
         app_control_get_app_id(appControl, &appId);
-        snprintf(zoneLauncherUri, PATH_MAX, "zone://launch/%s/%s", user.getName().c_str(), appId);
+        if (appId == NULL) {
+            appId = strdup("");
+        }
+
+        UriParameter[0] = '\0';
+        app_control_get_uri(appControl, &uri);
+        if (uri != NULL) {
+            snprintf(UriParameter, PATH_MAX, "?uri=%s", uri);
+            free(uri);
+        }
+
+        snprintf(zoneLauncherUri, PATH_MAX, "zone://launch/%s/%s%s", user.getName().c_str(), appId, UriParameter);
+        free(appId);
         app_control_set_app_id(appControl, ZONE_LAUNCHER_APP);
         app_control_set_uri(appControl, zoneLauncherUri);
         notification_set_launch_option(newNoti, NOTIFICATION_LAUNCH_OPTION_APP_CONTROL, appControl);

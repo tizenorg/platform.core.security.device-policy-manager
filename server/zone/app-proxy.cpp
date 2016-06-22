@@ -52,7 +52,7 @@ ZoneAppProxy::ZoneAppProxy(PolicyControlContext& ctx)
     context.registerParametricMethod(this, (bool)(ZoneAppProxy::nextIterator)(int));
     context.registerParametricMethod(this, (int)(ZoneAppProxy::destroyIterator)(int));
 
-    context.registerParametricMethod(this, (int)(ZoneAppProxy::launch)(std::string, std::string));
+    context.registerParametricMethod(this, (int)(ZoneAppProxy::launch)(std::string, ZoneAppProxy::Bundle));
     context.registerParametricMethod(this, (int)(ZoneAppProxy::resume)(std::string, std::string));
     context.registerParametricMethod(this, (int)(ZoneAppProxy::terminate)(std::string, std::string));
     context.registerParametricMethod(this, (int)(ZoneAppProxy::isRunning)(std::string, std::string));
@@ -108,7 +108,7 @@ int ZoneAppProxy::createIterator(const std::string& name)
         data.zone = name;
         data.list = packman.getAppList(user.getUid());
         data.current = 0;
-        
+
         iteratorMap.insert(std::make_pair(iteratorId, data));
 
         if (++newIteratorId < 0) {
@@ -161,7 +161,7 @@ bool ZoneAppProxy::nextIterator(int iterator) {
     if (it != iteratorMap.end()) {
         if (++it->second.current < it->second.list.size()) {
             return true;
-        } 
+        }
     }
     return false;
 }
@@ -175,12 +175,35 @@ int ZoneAppProxy::destroyIterator(int iterator) {
     return -1;
 }
 
-int ZoneAppProxy::launch(const std::string& name, const std::string& appid)
+int ZoneAppProxy::launch(const std::string& name, const ZoneAppProxy::Bundle& bundle)
 {
     try {
         runtime::User user(name);
+        ::Bundle b;
+
+        if (!bundle.operation.empty()) {
+            b.add("__APP_SVC_OP_TYPE__", bundle.operation);
+        }
+        if (!bundle.uri.empty()) {
+            b.add("__APP_SVC_URI__", bundle.uri);
+        }
+        if (!bundle.mime.empty()) {
+            b.add("__APP_SVC_MIME__", bundle.mime);
+        }
+        if (!bundle.category.empty()) {
+            b.add("__APP_SVC_CATEGORY__", bundle.category);
+        }
+
+        for (Bundle::Extra extra : bundle.extraData) {
+            if (extra.value.size() > 1) {
+                b.add(extra.key, extra.value);
+            } else if (extra.value.size() == 1) {
+                b.add(extra.key, extra.value.at(0));
+            }
+        }
+
         Launchpad launchpad(user.getUid());
-        launchpad.launch(appid);
+        launchpad.launch(bundle.appId, b);
     } catch (runtime::Exception& e) {
         ERROR("Failed to launch app in the zone");
         return -1;

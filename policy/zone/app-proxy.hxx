@@ -58,7 +58,27 @@ public:
     bool nextIterator(int iterator);
     int destroyIterator(int iterator);
 
-    int launch(const std::string& name, const std::string& appid);
+    //application bundle
+    struct Bundle {
+        std::string operation;
+        std::string uri;
+        std::string mime;
+        std::string category;
+        std::string appId;
+        struct Extra {
+            std::string key;
+            std::vector<std::string> value;
+            REFLECTABLE(key, value);
+        };
+        std::vector<Extra> extraData;
+
+        REFLECTABLE
+        (
+            operation, uri, mime, category, appId, extraData
+        );
+    };
+
+    int launch(const std::string& name, const Bundle& bundle);
     int resume(const std::string& name, const std::string& appid);
     int terminate(const std::string& name, const std::string& appid);
     bool isRunning(const std::string& name, const std::string& appid);

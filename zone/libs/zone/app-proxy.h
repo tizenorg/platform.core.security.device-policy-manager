@@ -18,6 +18,7 @@
 #define __CAPI_ZONE_APP_INFO_H__
 
 #include <app_info.h>
+#include <app_control.h>
 #include <app_manager.h>
 
 #include <zone/zone.h>
@@ -125,7 +126,7 @@ ZONE_API int zone_app_proxy_foreach_app_info(zone_app_proxy_h handle, app_manage
  *              zone.
  * @since_tizen 3.0
  * @param[in]   handle The zone application manager handle
- * @param[in]   appid The application ID to be launched
+ * @param[in]   app_control The app_control handle
  * @return      #ZONE_ERROR_NONE on success, otherwise a negative value
  * @retval      #ZONE_ERROR_NONE Successful
  * @retval      #ZONE_ERROR_INVALID_PARAMETER Invalid parameter
@@ -138,43 +139,13 @@ ZONE_API int zone_app_proxy_foreach_app_info(zone_app_proxy_h handle, app_manage
  * @pre         The zone corresponding to the given name must be
  *              created before use of this API.
  * @see         zone_app_proxy_create()
- * @see         zone_app_proxy_create()
- * @see         zone_acquire_app()
- * @see         zone_app_release()
- * @see         zone_resume_app()
- * @see         zone_terminate_app()
+ * @see         zone_app_proxy_destroy()
+ * @see         zone_app_proxy_resume()
+ * @see         zone_app_proxy_terminate()
  * @see         zone_is_running_app()
  * @see         app_control_send_launch_request()
  */
-ZONE_API int zone_app_proxy_launch(zone_app_proxy_h handle, const char* appid);
-
-/**
- * @brief       Resume the application located at the given path into the zone.
- * @details     Administrator can use this API to resume the application in the
- *              zone.
- * @since_tizen 3.0
- * @param[in]   handle The zone application manager handle
- * @param[in]   appid The application ID to be resumed
- * @return      #ZONE_ERROR_NONE on success, otherwise a negative value
- * @retval      #ZONE_ERROR_NONE Successful
- * @retval      #ZONE_ERROR_INVALID_PARAMETER Invalid parameter
- * @retval      #ZONE_ERROR_TIMED_OUT Time out
- * @retval      #ZONE_ERROR_NO_SUCH_FILE No such application file
- * @retval      #ZONE_ERROR_PERMISSION_DENIED The application does not have
- *              the privilege to call this API or the caller is not the owner
- *              of the zone
- * @pre         The handle must be created by zone_app_proxy_create().
- * @pre         The zone corresponding to the given name must be
- *              created before use of this API.
- * @see         zone_app_proxy_create()
- * @see         zone_app_proxy_create()
- * @see         zone_acquire_app()
- * @see         zone_app_release()
- * @see         zone_launch_app()
- * @see         zone_terminate_app()
- * @see         zone_is_running_app()
- */
-ZONE_API int zone_app_proxy_resume(zone_app_proxy_h handle, const char* appid);
+ZONE_API int zone_app_proxy_send_launch_request(zone_app_proxy_h handle, app_control_h app_control);
 
 /**
  * @brief       Terminate the application located at the given path into the zone.
@@ -195,15 +166,40 @@ ZONE_API int zone_app_proxy_resume(zone_app_proxy_h handle, const char* appid);
  * @pre         The zone corresponding to the given name must be
  *              created before use of this API.
  * @see         zone_app_proxy_create()
- * @see         zone_app_proxy_create()
- * @see         zone_acquire_app()
- * @see         zone_app_release()
- * @see         zone_launch_app()
- * @see         zone_resume_app()
+ * @see         zone_app_proxy_destroy()
+ * @see         zone_app_proxy_resume()
+ * @see         zone_app_proxy_send_launch_request()
  * @see         zone_is_running_app()
  * @see         app_control_send_terminate_request()
+ * @see         app_manager_send_terminate_bt_app()
  */
 ZONE_API int zone_app_proxy_terminate(zone_app_proxy_h handle, const char* appid);
+
+/**
+ * @brief       Resume the application located at the given path into the zone.
+ * @details     Administrator can use this API to resume the application in the
+ *              zone.
+ * @since_tizen 3.0
+ * @param[in]   handle The zone application manager handle
+ * @param[in]   appid The application ID to be resumed
+ * @return      #ZONE_ERROR_NONE on success, otherwise a negative value
+ * @retval      #ZONE_ERROR_NONE Successful
+ * @retval      #ZONE_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #ZONE_ERROR_TIMED_OUT Time out
+ * @retval      #ZONE_ERROR_NO_SUCH_FILE No such application file
+ * @retval      #ZONE_ERROR_PERMISSION_DENIED The application does not have
+ *              the privilege to call this API or the caller is not the owner
+ *              of the zone
+ * @pre         The handle must be created by zone_app_proxy_create().
+ * @pre         The zone corresponding to the given name must be
+ *              created before use of this API.
+ * @see         zone_app_proxy_create()
+ * @see         zone_app_proxy_destroy()
+ * @see         zone_app_proxy_send_launch_request()
+ * @see         zone_app_proxy_terminate()
+ * @see         app_manager_resume_app()
+ */
+ZONE_API int zone_app_proxy_resume(zone_app_proxy_h handle, const char* appid);
 
 /**
  * @brief       Checks whether the application in the zone is running.
@@ -221,11 +217,10 @@ ZONE_API int zone_app_proxy_terminate(zone_app_proxy_h handle, const char* appid
  * @retval      #ZONE_ERROR_TIMED_OUT Time out
  * @pre         The handle must be created by zone_app_proxy_create().
  * @see         zone_app_proxy_create()
- * @see         zone_app_proxy_create()
- * @see         zone_acquire_app()
- * @see         zone_app_release()
- * @see         zone_launch_app()
- * @see         zone_terminate_app()
+ * @see         zone_app_proxy_destroy()
+ * @see         zone_app_proxy_send_launch_request()
+ * @see         zone_app_proxy_terminate()
+ * @see         app_manager_is_running_app()
  */
 ZONE_API int zone_app_proxy_is_running(zone_app_proxy_h handle, const char* appid, int* result);
 
