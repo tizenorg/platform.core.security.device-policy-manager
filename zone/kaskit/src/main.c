@@ -28,6 +28,12 @@ static zone_package_proxy_h __zone_pkg;
 static zone_app_proxy_h __zone_app;
 static zone_manager_h __zone_mgr;
 
+static const char* __pkg_blacklist[] = {
+	"org.tizen.setting",
+	"org.tizen.dpm-toolkit",
+	NULL
+};
+
 struct app_icon_s{
 	char* id;
 	char* label;
@@ -58,16 +64,33 @@ static bool __pkg_is_removable(const char* pkg_id)
 	return removable;
 }
 
+static bool __pkg_is_in_blacklist(const char* pkg_id)
+{
+	int i;
+	for (i = 0; __pkg_blacklist[i] != NULL; i++) {
+		if (strcmp(pkg_id, __pkg_blacklist[i]) == 0) {
+			return true;
+		}
+	}
+	return false;
+}
+
 static bool __get_app_info_cb(app_info_h app_h, void* user_data)
 {
 	struct app_icon_s app = {NULL, };
 	bool nodisplay = true;
 
 	app_info_is_nodisplay(app_h, &nodisplay);
-	if (nodisplay)
+	if (nodisplay) {
 		return true;
+	}
 
 	app_info_get_package(app_h, &app.package);
+
+	if (__pkg_is_in_blacklist(app.package)) {
+		free(app.package);
+		return true;
+	}
 
 	if (user_data == NULL ||  !strncmp(user_data, app.package, PATH_MAX)) {
 		app_info_get_app_id(app_h, &app.id);
@@ -85,8 +108,8 @@ static bool __get_app_info_cb(app_info_h app_h, void* user_data)
 			free(app.icon);
 		}
 	}
-	free(app.package);
 
+	free(app.package);
 	return true;
 }
 
