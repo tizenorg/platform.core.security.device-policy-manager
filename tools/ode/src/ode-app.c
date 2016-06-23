@@ -66,9 +66,9 @@ static int create_base_gui(appdata_s* ad)
 {
 	dlog_print(DLOG_DEBUG, LOG_TAG, "### create base gui start  ###");
 	char* res_path = NULL;
-	char edj_path[PATH_MAX] = "\0";
+	char edj_path[PATH_MAX], icon_check_path[PATH_MAX], icon_bar_path[PATH_MAX] = "\0";
 
-	/* get EDJ path */
+	/* get EDJ & icon path */
 	res_path = app_get_resource_path();
 	if (res_path == NULL) {
 		dlog_print(DLOG_ERROR, LOG_TAG, "failed get resource path");
@@ -77,6 +77,10 @@ static int create_base_gui(appdata_s* ad)
 	}
 	snprintf(edj_path, PATH_MAX, "%s%s", res_path, "org.tizen.ode.edj");
 	ad->edj_path = strdup(edj_path);
+	snprintf(icon_check_path, PATH_MAX, "%s%s", res_path, "images/icon_encrypt_check.png");
+	ad->icon_check_path = strdup(icon_check_path);
+	snprintf(icon_bar_path, PATH_MAX, "%s%s", res_path, "images/icon_encrypt_bar.png");
+	ad->icon_bar_path = strdup(icon_bar_path);
 	free(res_path);
 
 	/* Window */

@@ -176,6 +176,8 @@ Tizen ODE User Interface for device policy management
 %defattr(-,root,root,-)
 %{odeapp_home}/bin/*
 %{odeapp_home}/res/*
+%{odeapp_home}/res/images/icon_encrypt_bar.png
+%{odeapp_home}/res/images/icon_encrypt_check.png
 %{TZ_SYS_RO_PACKAGES}/org.tizen.ode.xml
 
 ## DPM Syspopup Package ######################################################

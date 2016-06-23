@@ -69,17 +69,24 @@ typedef enum {
 	DECRYPT_SD_CARD,
 } dpm_encryption_viewtype;
 
+typedef enum {
+	ICON_CHECK,
+	ICON_BAR,
+} dpm_encryption_icontype;
+
 typedef struct appdata {
-	Evas_Object *win;
-	Evas_Object *conform;
-	Evas_Object *nf;
-	Evas_Object *base;
-	Evas_Object *navi_bar;
-	Evas_Object *navi_item;
-	Evas_Object *dpm_encryption_layout;
+	Evas_Object* win;
+	Evas_Object* conform;
+	Evas_Object* nf;
+	Evas_Object* base;
+	Evas_Object* navi_bar;
+	Evas_Object* navi_item;
+	Evas_Object* dpm_encryption_layout;
 	dpm_encryption_info_s device_info;
 
-	char *edj_path;
+	char* edj_path;
+	char* icon_check_path;
+	char* icon_bar_path;
 	int view_type;
 } appdata_s;
 
@@ -166,18 +173,18 @@ typedef struct appdata {
 #define IDS_ST_BODY_CONFIRM_DECRYPT_SD_CARD_MSG_2 "The decryption can't be cancelled and data will be lost if the process is interrupted. During the decryption process, your SD card can't be used. After the decryption, your SD card will be mounted again."
 #define IDS_ST_BUTTON_DECRYPT_SD_CARD_ABB3 "Decrypt SD card"
 
-void dpm_encryption_create_view(appdata_s * ad);
-void dpm_decryption_create_view(appdata_s * ad);
-void dpm_encryption_sd_card_create_view(appdata_s * ad);
-void dpm_decryption_sd_card_create_view(appdata_s * ad);
+void dpm_encryption_create_view(appdata_s* ad);
+void dpm_decryption_create_view(appdata_s* ad);
+void dpm_encryption_sd_card_create_view(appdata_s* ad);
+void dpm_decryption_sd_card_create_view(appdata_s* ad);
 
-void dpm_encryption_device_confirm_create_view(appdata_s * ad);
-void dpm_decryption_device_confirm_create_view(appdata_s * ad);
-void dpm_encryption_sd_card_confirm_create_view(appdata_s * ad);
-void dpm_decryption_sd_card_confirm_create_view(appdata_s * ad);
+void dpm_encryption_device_confirm_create_view(appdata_s* ad);
+void dpm_decryption_device_confirm_create_view(appdata_s* ad);
+void dpm_encryption_sd_card_confirm_create_view(appdata_s* ad);
+void dpm_decryption_sd_card_confirm_create_view(appdata_s* ad);
 
-void locktype_status_changed_cb(keynode_t * node, void *data);
-void sdcard_status_changed_cb(keynode_t * node, void *data);
-void battery_changed_cb(device_callback_e type, void *value, void *user_data);
+void locktype_status_changed_cb(keynode_t* node, void* data);
+void sdcard_status_changed_cb(keynode_t* node, void* data);
+void battery_changed_cb(device_callback_e type, void* value, void* user_data);
 
 #endif							/* __ODE_H__ */

@@ -211,6 +211,51 @@ static void set_sdcard_pw_btn_layout(Evas_Object* layout, appdata_s* ad)
 	return;
 }
 
+static void set_icon(appdata_s* ad, int type, char* part)
+{
+	Evas_Object* icon_check, *icon_bar = NULL;
+	int ret;
+	if (ad->dpm_encryption_layout == NULL || ad->icon_check_path == NULL || ad->icon_bar_path == NULL) {
+		dlog_print(DLOG_ERROR, LOG_TAG, "invalid parameter");
+		return;
+	}
+	if (type == ICON_CHECK) {
+		icon_check = elm_image_add(ad->dpm_encryption_layout);
+		if (icon_check == NULL) {
+			dlog_print(DLOG_ERROR, LOG_TAG, "elm_image_add failed");
+			return;
+		}
+		elm_image_file_set(icon_check, ad->icon_check_path, NULL);
+		evas_object_color_set(icon_check, 153, 153, 153, 255);
+		evas_object_size_hint_align_set(icon_check, EVAS_HINT_FILL, EVAS_HINT_FILL);
+		evas_object_size_hint_weight_set(icon_check, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+
+		ret = elm_layout_content_set(ad->dpm_encryption_layout, part, icon_check);
+		if (!ret){
+			dlog_print(DLOG_ERROR, LOG_TAG, "elm_layout_content_set failed");
+			return;
+		}
+		evas_object_show(icon_check);
+	} else if (type == ICON_BAR){
+		icon_bar = elm_image_add(ad->dpm_encryption_layout);
+		if (icon_bar == NULL) {
+			dlog_print(DLOG_ERROR, LOG_TAG, "elm_image_add failed");
+			return;
+		}
+		elm_image_file_set(icon_bar, ad->icon_bar_path, NULL);
+		evas_object_color_set(icon_bar, 0, 0, 0, 255);
+		evas_object_size_hint_align_set(icon_bar, EVAS_HINT_FILL, EVAS_HINT_FILL);
+		evas_object_size_hint_weight_set(icon_bar, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+
+		ret = elm_layout_content_set(ad->dpm_encryption_layout, part, icon_bar);
+		if (!ret){
+			dlog_print(DLOG_ERROR, LOG_TAG, "elm_layout_content_set failed");
+			return;
+		}
+		evas_object_show(icon_bar);
+	}
+}
+
 static int battery_status_update(appdata_s* ad)
 {
 	bool connected;
@@ -230,33 +275,10 @@ static int battery_status_update(appdata_s* ad)
 	}
 
 	if (battery_pct > NEEDED_BATTERY_PERCENT) {
-		switch (ad->view_type) {
-		case ENCRYPT_DEVICE:{
-				elm_object_signal_emit(ad->dpm_encryption_layout, "hide,icon,battery,warning", "Encrypt_device_layout");
-				elm_object_signal_emit(ad->dpm_encryption_layout, "show,icon,battery", "Encrypt_device_layout");
-				break;
-			}
-		case DECRYPT_DEVICE:{
-				elm_object_signal_emit(ad->dpm_encryption_layout, "hide,icon,battery,warning", "Decrypt_device_layout");
-				elm_object_signal_emit(ad->dpm_encryption_layout, "show,icon,battery", "Decrypt_device_layout");
-				break;
-			}
-		}
+		set_icon(ad, ICON_CHECK, "battery_icon");
 		ad->device_info.battery_status = 1;
-
 	} else {
-		switch (ad->view_type) {
-		case ENCRYPT_DEVICE:{
-				elm_object_signal_emit(ad->dpm_encryption_layout, "hide,icon,battery", "Encrypt_device_layout");
-				elm_object_signal_emit(ad->dpm_encryption_layout, "show,icon,battery,warning", "Encrypt_device_layout");
-				break;
-			}
-		case DECRYPT_DEVICE:{
-				elm_object_signal_emit(ad->dpm_encryption_layout, "hide,icon,battery", "Decrypt_device_layout");
-				elm_object_signal_emit(ad->dpm_encryption_layout, "show,icon,battery,warning", "Decrypt_device_layout");
-				break;
-			}
-		}
+		set_icon(ad, ICON_BAR, "battery_icon");
 		ad->device_info.battery_status = 0;
 	}
 
@@ -267,33 +289,10 @@ static int battery_status_update(appdata_s* ad)
 		return -1;
 	}
 	if (connected) {
-		switch (ad->view_type) {
-		case ENCRYPT_DEVICE:{
-				elm_object_signal_emit(ad->dpm_encryption_layout, "hide,icon,charge,warning", "Encrypt_device_layout");
-				elm_object_signal_emit(ad->dpm_encryption_layout, "show,icon,charge", "Encrypt_device_layout");
-				break;
-			}
-		case DECRYPT_DEVICE:{
-				elm_object_signal_emit(ad->dpm_encryption_layout, "hide,icon,charge,warning", "Decrypt_device_layout");
-				elm_object_signal_emit(ad->dpm_encryption_layout, "show,icon,charge", "Decrypt_device_layout");
-				break;
-			}
-		}
+		set_icon(ad, ICON_CHECK, "charge_icon");
 		ad->device_info.charger_status = 1;
-
 	} else {
-		switch (ad->view_type) {
-		case ENCRYPT_DEVICE:{
-				elm_object_signal_emit(ad->dpm_encryption_layout, "hide,icon,charge", "Encrypt_device_layout");
-				elm_object_signal_emit(ad->dpm_encryption_layout, "show,icon,charge,warning", "Encrypt_device_layout");
-				break;
-			}
-		case DECRYPT_DEVICE:{
-				elm_object_signal_emit(ad->dpm_encryption_layout, "hide,icon,charge", "Decrypt_device_layout");
-				elm_object_signal_emit(ad->dpm_encryption_layout, "show,icon,charge,warning", "Decrypt_device_layout");
-				break;
-			}
-		}
+		set_icon(ad, ICON_BAR, "charge_icon");
 		ad->device_info.charger_status = 0;
 	}
 
@@ -312,16 +311,11 @@ static int sdcard_status_update(appdata_s* ad)
 
 	vconf_get_int(VCONFKEY_SYSMAN_MMC_STATUS, &sdcard_status);
 	if (sdcard_status != VCONFKEY_SYSMAN_MMC_MOUNTED) {
-		/* unavailable */
-		elm_object_signal_emit(ad->dpm_encryption_layout, "hide,icon,sdcard", "Encrypt_sd_card_layout");
-		elm_object_signal_emit(ad->dpm_encryption_layout, "show,icon,sdcard,warning", "Encrypt_sd_card_layout");
-
+		set_icon(ad, ICON_BAR, "sd_card_icon");
 		ad->device_info.sdcard_status = 0;
 	} else {
 		/* available */
-		elm_object_signal_emit(ad->dpm_encryption_layout, "hide,icon,sdcard,warning", "Encrypt_sd_card_layout");
-		elm_object_signal_emit(ad->dpm_encryption_layout, "show,icon,sdcard", "Encrypt_sd_card_layout");
-
+		set_icon(ad, ICON_CHECK, "sd_card_icon");
 		ad->device_info.sdcard_status = 1;
 	}
 
@@ -342,13 +336,11 @@ static int locktype_status_update(appdata_s* ad)
 	vconf_get_int(VCONFKEY_SETAPPL_SCREEN_LOCK_TYPE_INT, &lock_type);
 	if (lock_type == SETTING_SCREEN_LOCK_TYPE_PASSWORD || lock_type == SETTING_SCREEN_LOCK_TYPE_SIMPLE_PASSWORD) {
 		/* available */
-		elm_object_signal_emit(ad->dpm_encryption_layout, "hide,icon,locktype,warning", "Encrypt_device_layout");
-		elm_object_signal_emit(ad->dpm_encryption_layout, "show,icon,locktype", "Encrypt_device_layout");
+		set_icon(ad, ICON_CHECK, "locktype_icon");
 		ad->device_info.locktype_status = 1;
 	} else {
 		/* unavailable */
-		elm_object_signal_emit(ad->dpm_encryption_layout, "hide,icon,locktype", "Encrypt_device_layout");
-		elm_object_signal_emit(ad->dpm_encryption_layout, "show,icon,locktype,warning", "Encrypt_device_layout");
+		set_icon(ad, ICON_BAR, "locktype_icon");
 		ad->device_info.locktype_status = 0;
 	}
 	update_next_button_status(ad);
