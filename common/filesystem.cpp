@@ -14,6 +14,7 @@
  *  limitations under the License
  */
 
+#include <sys/sendfile.h>
 #include <sys/types.h>
 #include <sys/mount.h>
 #include <sys/stat.h>
@@ -228,6 +229,26 @@ bool File::isHidden() const
     return false;
 }
 
+mode_t File::getMode() const
+{
+    struct stat st;
+    if (::stat(path.getPathname().c_str(), &st) != 0) {
+        throw runtime::Exception(runtime::GetSystemErrorMessage());
+    }
+
+    return st.st_mode;
+}
+
+size_t File::size() const
+{
+    struct stat st;
+    if (::stat(path.getPathname().c_str(), &st) != 0) {
+        throw runtime::Exception(runtime::GetSystemErrorMessage());
+    }
+
+    return st.st_size;
+}
+
 std::string File::toString() const
 {
     struct stat st;
@@ -266,6 +287,20 @@ void File::open(int flags)
     }
 }
 
+void File::open(int flags, mode_t mode)
+{
+    while (1) {
+        descriptor = ::open(path.getPathname().c_str(), flags, mode);
+        if (descriptor == -1) {
+            if (errno != EINTR) {
+                continue;
+            }
+            throw runtime::Exception(runtime::GetSystemErrorMessage());
+        }
+        return;
+    }
+}
+
 void File::close()
 {
     if (descriptor == -1) {
@@ -278,8 +313,10 @@ void File::close()
                 continue;
             }
         }
-        return;
+        break;
     }
+
+    descriptor = -1;
 }
 
 void File::read(void *buffer, const size_t size) const
@@ -316,6 +353,34 @@ void File::write(const void *buffer, const size_t size) const
 
 void File::copyTo(const std::string& dest) const
 {
+    const std::string& filename = path.getPathname();
+    if (!isDirectory()) {
+        int descriptor;
+        while (1) {
+            descriptor = ::open(filename.c_str(), O_RDONLY);
+            if (descriptor == -1) {
+                if (errno != EINTR) {
+                    continue;
+                }
+                throw runtime::Exception(runtime::GetSystemErrorMessage());
+            }
+            break;
+        }
+
+        File destFile(dest + filename.substr(filename.rfind("/")));
+        destFile.open(O_WRONLY | O_CREAT, getMode());
+        ::sendfile(destFile.descriptor, descriptor, 0, size());
+        destFile.close();
+
+        while (1) {
+            if (::close(descriptor) == -1) {
+                if (errno == EINTR) {
+                    continue;
+                }
+            }
+            break;
+        }
+    }
 }
 
 void File::moveTo(const std::string& dest)
