@@ -660,15 +660,6 @@ int ZoneManager::createZone(const std::string& name, const std::string& manifest
             int noti = notification_register_detailed_changed_cb_for_uid(notiProxyCallback, &(*it), user.getUid());
             notiProxyCallbackMap.insert(std::make_pair(name, noti));
             context.notify("ZoneManager::created", name, std::string());
-
-            // Running launch app and add a shorcut
-           try {
-                Bundle bundle;
-                bundle.add("__APP_SVC_URI__", "zone://setup/" + name);
-
-                Launchpad launchpad;
-                launchpad.launch(ZONE_LAUNCHER_APP, bundle);
-            } catch (runtime::Exception& e) {}
         } catch (runtime::Exception& e) {
             ERROR(e.what());
             context.notify("ZoneManager::removed", name, std::string());
