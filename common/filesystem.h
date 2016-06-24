@@ -62,6 +62,11 @@ public:
         return pathname;
     }
 
+    const std::string getFilename() const
+    {
+        return pathname.substr(pathname.rfind('/') + 1);
+    }
+
 private:
     Path& assign(const Path& path);
     Path& assign(const std::string& path);
@@ -125,12 +130,19 @@ public:
     bool isDevice() const;
     bool isHidden() const;
 
+    mode_t getMode() const;
+    uid_t getUid() const;
+    gid_t getGid() const;
+
+    size_t size() const;
+
     void create(mode_t mode);
     void open(int flags);
+    void open(int flags, mode_t mode);
     void read(void *buffer, const size_t size) const;
     void write(const void *buffer, const size_t size) const;
     void close();
-    void copyTo(const std::string& pathname) const;
+    File copyTo(const std::string& pathname);
     void moveTo(const std::string& pathname);
     void renameTo(const std::string& pathname);
     void remove(bool recursive = false);
@@ -148,6 +160,11 @@ public:
     const std::string& getPath() const
     {
         return path.getPathname();
+    }
+
+    const std::string getName() const
+    {
+        return path.getFilename();
     }
 
 private:

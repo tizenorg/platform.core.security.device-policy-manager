@@ -14,6 +14,7 @@
  *  limitations under the License
  */
 
+#include <sys/sendfile.h>
 #include <sys/types.h>
 #include <sys/mount.h>
 #include <sys/stat.h>
@@ -29,6 +30,7 @@
 #include <iostream>
 
 #include "filesystem.h"
+#include "smack.h"
 #include "error.h"
 #include "exception.h"
 
@@ -228,6 +230,46 @@ bool File::isHidden() const
     return false;
 }
 
+mode_t File::getMode() const
+{
+    struct stat st;
+    if (::stat(path.getPathname().c_str(), &st) != 0) {
+        throw runtime::Exception(runtime::GetSystemErrorMessage());
+    }
+
+    return st.st_mode;
+}
+
+uid_t File::getUid() const
+{
+    struct stat st;
+    if (::stat(path.getPathname().c_str(), &st) != 0) {
+        throw runtime::Exception(runtime::GetSystemErrorMessage());
+    }
+
+    return st.st_uid;
+}
+
+gid_t File::getGid() const
+{
+    struct stat st;
+    if (::stat(path.getPathname().c_str(), &st) != 0) {
+        throw runtime::Exception(runtime::GetSystemErrorMessage());
+    }
+
+    return st.st_gid;
+}
+
+size_t File::size() const
+{
+    struct stat st;
+    if (::stat(path.getPathname().c_str(), &st) != 0) {
+        throw runtime::Exception(runtime::GetSystemErrorMessage());
+    }
+
+    return st.st_size;
+}
+
 std::string File::toString() const
 {
     struct stat st;
@@ -266,6 +308,22 @@ void File::open(int flags)
     }
 }
 
+void File::open(int flags, mode_t mode)
+{
+    close();
+
+    while (1) {
+        descriptor = ::open(path.getPathname().c_str(), flags, mode);
+        if (descriptor == -1) {
+            if (errno != EINTR) {
+                continue;
+            }
+            throw runtime::Exception(runtime::GetSystemErrorMessage());
+        }
+        return;
+    }
+}
+
 void File::close()
 {
     if (descriptor == -1) {
@@ -278,8 +336,10 @@ void File::close()
                 continue;
             }
         }
-        return;
+        break;
     }
+
+    descriptor = -1;
 }
 
 void File::read(void *buffer, const size_t size) const
@@ -314,8 +374,47 @@ void File::write(const void *buffer, const size_t size) const
     }
 }
 
-void File::copyTo(const std::string& dest) const
+File File::copyTo(const std::string& destDir)
 {
+    const std::string& filename = getPath();
+    File destFile(destDir);
+    if (destFile.exists()) {
+        destFile = destDir + "/" + getName();
+    }
+
+    if (isDirectory()) {
+        DirectoryIterator iter(filename), end;
+        destFile.makeDirectory(false, getUid(), getGid());
+
+        while (iter != end) {
+            iter->copyTo(destFile.getPath());
+            ++iter;
+        }
+
+        try {
+            Smack::setTransmute(destFile, Smack::getTransmute(*this));
+        } catch (runtime::Exception &e) {}
+    } else {
+        open(O_RDONLY);
+        destFile.open(O_WRONLY | O_CREAT, getMode());
+        ::sendfile(destFile.descriptor, descriptor, 0, size());
+        destFile.close();
+        close();
+    }
+
+    try {
+        Smack::setAccess(destFile, Smack::getAccess(*this));
+    } catch (runtime::Exception &e) {}
+
+    try {
+        Smack::setExecute(destFile, Smack::getExecute(*this));
+    } catch (runtime::Exception &e) {}
+
+    try {
+        Smack::setMmap(destFile, Smack::getMmap(*this));
+    } catch (runtime::Exception &e) {}
+
+    return destFile;
 }
 
 void File::moveTo(const std::string& dest)

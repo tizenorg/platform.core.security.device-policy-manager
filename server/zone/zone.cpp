@@ -296,10 +296,8 @@ void initializeCreatedZoneList() {
         runtime::DirectoryIterator iter(manifestDir), end;
 
         while (iter != end) {
-            const std::string& path = iter->getPath();
-            size_t namePos = path.rfind('/') + 1;
-            size_t extPos = path.rfind(".xml");
-            const std::string& name(path.substr(namePos, extPos - namePos));
+            const std::string& file = iter->getName();
+            const std::string& name(file.substr(0, file.rfind(".xml")));
             createdZoneList.push_back(name);
             ++iter;
         }

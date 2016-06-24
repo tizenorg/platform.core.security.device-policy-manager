@@ -90,7 +90,7 @@ std::string Smack::get(File& file, const char* xattr)
     char* plabel;
     std::string label;
     if (::smack_new_label_from_path(file.getPath().c_str(),
-                                    xattr, 0, &plabel) != 0) {
+                                    xattr, 0, &plabel) < 0) {
         throw runtime::Exception("Getting smack label error");
     }
 
