@@ -133,6 +133,12 @@ inline std::string prepareDirectories(const runtime::User& user)
             runtime::Smack::setAccess(dir, dirs[i].smack);
             runtime::Smack::setTransmute(dir, true);
         }
+
+        const std::string& appRwPath = ::tzplatform_getenv(TZ_USER_APP);
+        runtime::File appsNames(appRwPath + "/apps-names");
+        appsNames.create(0444);
+        appsNames.chown(user.getUid(), user.getGid());
+        runtime::Smack::setAccess(appsNames, "_");
     } catch (runtime::Exception& e) {
         ::tzplatform_reset_user();
         throw runtime::Exception(e.what());
@@ -325,7 +331,7 @@ void zoneProcessCallback(GDBusConnection *connection,
 	                     const gchar *interface, const gchar *signalName,
 	                     GVariant *params, gpointer userData)
 {
-    static runtime::User owner(DEFAULT_ZONE_OWNER);
+    runtime::User owner(DEFAULT_ZONE_OWNER);
     int pid, status;
 
     notification_h noti = reinterpret_cast<notification_h>(userData);
@@ -543,7 +549,7 @@ void notiProxyUpdate(const runtime::User& owner, const runtime::User& user, int 
 
 void notiProxyCallback(void *data, notification_type_e type, notification_op *op_list, int num_op)
 {
-    static runtime::User owner(DEFAULT_ZONE_OWNER);
+    runtime::User owner(DEFAULT_ZONE_OWNER);
     runtime::User user(*reinterpret_cast<std::string*>(data));
 
     // TODO : should remove noti in the zone when related-zone is removed
