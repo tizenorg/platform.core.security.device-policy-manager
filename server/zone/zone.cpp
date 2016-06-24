@@ -325,7 +325,7 @@ void zoneProcessCallback(GDBusConnection *connection,
 	                     const gchar *interface, const gchar *signalName,
 	                     GVariant *params, gpointer userData)
 {
-    static runtime::User owner(DEFAULT_ZONE_OWNER);
+    runtime::User owner(DEFAULT_ZONE_OWNER);
     int pid, status;
 
     notification_h noti = reinterpret_cast<notification_h>(userData);
@@ -543,7 +543,7 @@ void notiProxyUpdate(const runtime::User& owner, const runtime::User& user, int 
 
 void notiProxyCallback(void *data, notification_type_e type, notification_op *op_list, int num_op)
 {
-    static runtime::User owner(DEFAULT_ZONE_OWNER);
+    runtime::User owner(DEFAULT_ZONE_OWNER);
     runtime::User user(*reinterpret_cast<std::string*>(data));
 
     // TODO : should remove noti in the zone when related-zone is removed
@@ -660,15 +660,6 @@ int ZoneManager::createZone(const std::string& name, const std::string& manifest
             int noti = notification_register_detailed_changed_cb_for_uid(notiProxyCallback, &(*it), user.getUid());
             notiProxyCallbackMap.insert(std::make_pair(name, noti));
             context.notify("ZoneManager::created", name, std::string());
-
-            // Running launch app and add a shorcut
-           try {
-                Bundle bundle;
-                bundle.add("__APP_SVC_URI__", "zone://setup/" + name);
-
-                Launchpad launchpad;
-                launchpad.launch(ZONE_LAUNCHER_APP, bundle);
-            } catch (runtime::Exception& e) {}
         } catch (runtime::Exception& e) {
             ERROR(e.what());
             context.notify("ZoneManager::removed", name, std::string());
