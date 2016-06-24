@@ -125,8 +125,12 @@ public:
     bool isDevice() const;
     bool isHidden() const;
 
+    mode_t getMode() const;
+    size_t size() const;
+
     void create(mode_t mode);
     void open(int flags);
+    void open(int flags, mode_t mode);
     void read(void *buffer, const size_t size) const;
     void write(const void *buffer, const size_t size) const;
     void close();
