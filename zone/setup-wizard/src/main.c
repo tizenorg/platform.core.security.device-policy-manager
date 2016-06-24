@@ -21,8 +21,21 @@
 
 static void __zone_request_done(const char *from, const char *info, void *user_data)
 {
+	app_control_h app_control;
+	char uri[PATH_MAX];
+
 	appdata_s *ad = (appdata_s *) user_data;
 	ad->request_done = true;
+
+	if (!strcmp(ad->mode, "create")) {
+		app_control_create(&app_control);
+		app_control_set_app_id(app_control, "org.tizen.kaskit");
+		snprintf(uri, PATH_MAX, "zone://setup/%s", ad->zone_name);
+		app_control_set_uri(app_control, uri);
+		app_control_send_launch_request(app_control, NULL, NULL);
+		app_control_destroy(app_control);
+	}
+
 }
 
 static bool __app_create(void *data)
