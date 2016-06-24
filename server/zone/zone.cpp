@@ -41,6 +41,7 @@
 #define ZONE_UID_MAX       65000
 
 #define DEFAULT_ZONE_OWNER "owner"
+#define INIT_DB_PATH "/etc/skel/.applications/dbspace"
 
 #define ZONE_LAUNCHER_APP  "org.tizen.kaskit"
 #define NOTIFICATION_SUB_ICON_PATH  DATA_PATH "/zone_noti_list_sub_icon.png"
@@ -139,8 +140,18 @@ inline std::string prepareDirectories(const runtime::User& user)
         appsNames.create(0444);
         appsNames.chown(user.getUid(), user.getGid());
         runtime::Smack::setAccess(appsNames, "_");
+
+        const std::string dbPath = ::tzplatform_getenv(TZ_USER_DB);
+        runtime::Path defaultDbDir(INIT_DB_PATH);
+        runtime::DirectoryIterator iter(defaultDbDir), end;
+
+        while (iter != end) {
+            iter->copyTo(dbPath);
+            ++iter;
+        }
     } catch (runtime::Exception& e) {
         ::tzplatform_reset_user();
+        std::cout<<"ERROR"<<std::endl;
         throw runtime::Exception(e.what());
     }
 
