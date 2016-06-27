@@ -152,8 +152,8 @@ public:
     void lock() const;
     void unlock() const;
 
-    void chown(uid_t uid, gid_t gid);
-    void chmod(mode_t mode);
+    void chown(uid_t uid, gid_t gid, bool recursive = false);
+    void chmod(mode_t mode, bool recursive = false);
 
     std::string toString() const;
 

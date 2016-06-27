@@ -481,17 +481,33 @@ void File::makeDirectory(bool recursive, uid_t uid, gid_t gid)
     }
 }
 
-void File::chown(uid_t uid, gid_t gid)
+void File::chown(uid_t uid, gid_t gid, bool recursive)
 {
     if (::chown(path.getPathname().c_str(), uid, gid) != 0) {
         throw runtime::Exception(runtime::GetSystemErrorMessage());
     }
+
+    if (recursive && isDirectory()) {
+        DirectoryIterator iter(path), end;
+        while (iter != end) {
+            iter->chown(uid, gid, true);
+            ++iter;
+        }
+    }
 }
 
-void File::chmod(mode_t mode)
+void File::chmod(mode_t mode, bool recursive)
 {
     if (::chmod(path.getPathname().c_str(), mode) != 0) {
         throw runtime::Exception(runtime::GetSystemErrorMessage());
+    }
+
+    if (recursive && isDirectory()) {
+        DirectoryIterator iter(path), end;
+        while (iter != end) {
+            iter->chmod(mode, true);
+            ++iter;
+        }
     }
 }
 
