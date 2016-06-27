@@ -61,6 +61,8 @@ const std::vector<std::string> unitsToMask = {
 
 const std::string ZONE_MANIFEST_DIR = CONF_PATH "/zone/";
 const std::string ZONE_SKEL_PATH = "/etc/skel";
+const std::string ZONE_CREATE_HOOK_PATH = "/etc/gumd/useradd.d";
+const std::string ZONE_REMOVE_HOOK_PATH = "/etc/gumd/userdel.d";
 
 const std::string ZONE_DEFAULT_OWNER = "owner";
 
@@ -102,6 +104,42 @@ inline void maskUserServices(const std::string& pivot, const runtime::User& user
         if (::symlink("/dev/null", target.c_str()) == -1) {
             throw runtime::Exception(runtime::GetSystemErrorMessage());
         }
+    }
+}
+
+inline void executeHookScripts(const runtime::User& user, const std::string& path, const std::string& pivot)
+{
+    std::vector<std::string> scripts;
+    char currentDirectory[PATH_MAX];
+
+    try {
+        runtime::DirectoryIterator iter(path), end;
+
+        while (iter != end) {
+            scripts.push_back(iter->getPath());
+            ++iter;
+        }
+    } catch (runtime::Exception& e) {}
+
+    if (getcwd(currentDirectory, PATH_MAX) == NULL) {
+        snprintf(currentDirectory, PATH_MAX, "/");
+    }
+
+    ::tzplatform_set_user(user.getUid());
+    if (chdir(::tzplatform_getenv(TZ_SYS_HOME)) != 0) {
+        throw runtime::Exception(runtime::GetSystemErrorMessage());
+    }
+    ::tzplatform_reset_user();
+
+    std::sort(scripts.begin(), scripts.end());
+
+    for (const std::string& script : scripts) {
+        execute(script, script, user.getName(), std::to_string(user.getUid()),
+                std::to_string(user.getGid()), pivot, "normal");
+    }
+
+    if (chdir(currentDirectory) != 0) {
+        throw runtime::Exception(runtime::GetSystemErrorMessage());
     }
 }
 
@@ -540,28 +578,7 @@ int ZoneManager::createZone(const std::string& name, const std::string& manifest
 
             std::string pivot = prepareDirectories(user);
             maskUserServices(pivot, user);
-
-            //initialize package db
-            execute("/usr/bin/pkg_initdb", "pkg_initdb",
-                    "--uid", std::to_string(user.getUid()));
-
-            //initialize security-manager
-            execute("/usr/bin/security-manager-cmd",
-                    "security-manager-cmd", "--manage-users=add",
-                    "--uid=" + std::to_string(user.getUid()),
-                    "--usertype=normal");
-
-            //change group to system_share
-            runtime::Group systemShareGroup("system_share");
-            ::tzplatform_set_user(user.getUid());
-            runtime::File appRootDir(::tzplatform_getenv(TZ_USER_APPROOT));
-            runtime::File dbDir(::tzplatform_getenv(TZ_USER_DB));
-            ::tzplatform_reset_user();
-
-            appRootDir.chown(user.getUid(), systemShareGroup.getGid());
-            appRootDir.chmod(0750);
-            dbDir.chown(user.getUid(), systemShareGroup.getGid());
-            dbDir.chmod(0770);
+            executeHookScripts(user, ZONE_CREATE_HOOK_PATH, pivot);
 
             manifestFile.reset(xml::Parser::parseString(manifest));
             ::umask(0077);
@@ -607,15 +624,11 @@ int ZoneManager::removeZone(const std::string& name)
         try {
             runtime::User user(name);
 
-            //remove notification for ckm-tool
-            execute("/usr/bin/ckm_tool",
-                    "ckm_tool", "-d", std::to_string(user.getUid()));
+            ::tzplatform_set_user(user.getUid());
+            std::string pivot(::tzplatform_getenv(TZ_USER_HOME));
+            ::tzplatform_reset_user();
 
-            //initialize security-manager
-            execute("/usr/bin/security-manager-cmd",
-                    "security-manager-cmd",
-                    "--manage-users=remove",
-                    "--uid=" + std::to_string(user.getUid()));
+            executeHookScripts(user, ZONE_REMOVE_HOOK_PATH, pivot);
 
             //remove zone user
             user.remove();
