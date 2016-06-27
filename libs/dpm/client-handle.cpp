@@ -101,7 +101,7 @@ int dpm_context_remove_signal_cb(dpm_context_h handle, int callback_id)
     return context.unsubscribeSignal(callback_id);
 }
 
-device_policy_manager_h dpm_manager_create(void)
+EXPORT_API device_policy_manager_h dpm_manager_create(void)
 {
     DevicePolicyContext* client = new(std::nothrow) DevicePolicyContext();
 
@@ -115,7 +115,7 @@ device_policy_manager_h dpm_manager_create(void)
     return reinterpret_cast<device_policy_manager_h>(client);
 }
 
-int dpm_manager_destroy(device_policy_manager_h handle)
+EXPORT_API int dpm_manager_destroy(device_policy_manager_h handle)
 {
     assert(handle);
 
@@ -124,11 +124,11 @@ int dpm_manager_destroy(device_policy_manager_h handle)
     return 0;
 }
 
-int dpm_add_policy_changed_cb(device_policy_manager_h handle,
-                              const char* name,
-                              dpm_policy_changed_cb callback,
-                              void* user_data,
-                              int* id)
+EXPORT_API int dpm_add_policy_changed_cb(device_policy_manager_h handle,
+                                         const char* name,
+                                         dpm_policy_changed_cb callback,
+                                         void* user_data,
+                                         int* id)
 {
     assert(handle);
 
@@ -142,7 +142,7 @@ int dpm_add_policy_changed_cb(device_policy_manager_h handle,
     return 0;
 }
 
-int dpm_remove_policy_changed_cb(device_policy_manager_h handle, int id)
+EXPORT_API int dpm_remove_policy_changed_cb(device_policy_manager_h handle, int id)
 {
     assert(handle);
 
@@ -152,8 +152,8 @@ int dpm_remove_policy_changed_cb(device_policy_manager_h handle, int id)
     return 0;
 }
 
-int dpm_add_signal_cb(device_policy_manager_h handle, const char* signal,
-                      dpm_signal_cb callback, void* user_data, int* id)
+EXPORT_API int dpm_add_signal_cb(device_policy_manager_h handle, const char* signal,
+                                 dpm_signal_cb callback, void* user_data, int* id)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(signal, DPM_ERROR_INVALID_PARAMETER);
@@ -169,7 +169,7 @@ int dpm_add_signal_cb(device_policy_manager_h handle, const char* signal,
     return 0;
 }
 
-int dpm_remove_signal_cb(device_policy_manager_h handle, int id)
+EXPORT_API int dpm_remove_signal_cb(device_policy_manager_h handle, int id)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(id >= 0, DPM_ERROR_INVALID_PARAMETER);
