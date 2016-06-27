@@ -40,8 +40,6 @@
 #define ZONE_UID_MIN       60001
 #define ZONE_UID_MAX       65000
 
-#define DEFAULT_ZONE_OWNER "owner"
-
 #define ZONE_LAUNCHER_APP  "org.tizen.kaskit"
 #define NOTIFICATION_SUB_ICON_PATH  DATA_PATH "/zone_noti_list_sub_icon.png"
 
@@ -56,22 +54,15 @@ const std::vector<std::string> defaultGroups = {
     "log"
 };
 
-const std::vector<std::string> defaultAppDirs = {
-    "cache",
-    "data",
-    "shared"
-};
-
 const std::vector<std::string> unitsToMask = {
     "starter.service",
     "scim.service"
 };
 
 const std::string ZONE_MANIFEST_DIR = CONF_PATH "/zone/";
+const std::string ZONE_SKEL_PATH = "/etc/skel";
 
-const std::string HOME_SMACKLABEL = "User::Home";
-const std::string SHARED_SMACKLABEL = "User::App::Shared";
-const std::string APP_SMACKLABEL = "User::Pkg::";
+const std::string ZONE_DEFAULT_OWNER = "owner";
 
 const std::string ZONE_GROUP = "users";
 
@@ -89,90 +80,15 @@ inline void execute(const std::string& path, Args&&... args)
 
 inline std::string prepareDirectories(const runtime::User& user)
 {
-    //create zone home directories
-    const struct {
-        enum tzplatform_variable dir;
-        const std::string& smack;
-    } dirs[] = {
-        {TZ_USER_HOME, HOME_SMACKLABEL},
-        {TZ_USER_CACHE, SHARED_SMACKLABEL},
-        {TZ_USER_APPROOT, HOME_SMACKLABEL},
-        {TZ_USER_DB, HOME_SMACKLABEL},
-        {TZ_USER_PACKAGES, HOME_SMACKLABEL},
-        {TZ_USER_ICONS, HOME_SMACKLABEL},
-        {TZ_USER_CONFIG, SHARED_SMACKLABEL},
-        {TZ_USER_DATA, HOME_SMACKLABEL},
-        {TZ_USER_SHARE, SHARED_SMACKLABEL},
-        {TZ_USER_ETC, HOME_SMACKLABEL},
-        {TZ_USER_LIVE, HOME_SMACKLABEL},
-        {TZ_USER_UG, HOME_SMACKLABEL},
-        {TZ_USER_APP, HOME_SMACKLABEL},
-        {TZ_USER_CONTENT, SHARED_SMACKLABEL},
-        {TZ_USER_CAMERA, SHARED_SMACKLABEL},
-        {TZ_USER_VIDEOS, SHARED_SMACKLABEL},
-        {TZ_USER_IMAGES, SHARED_SMACKLABEL},
-        {TZ_USER_SOUNDS, SHARED_SMACKLABEL},
-        {TZ_USER_MUSIC, SHARED_SMACKLABEL},
-        {TZ_USER_GAMES, SHARED_SMACKLABEL},
-        {TZ_USER_DOCUMENTS, SHARED_SMACKLABEL},
-        {TZ_USER_OTHERS, SHARED_SMACKLABEL},
-        {TZ_USER_DOWNLOADS, SHARED_SMACKLABEL},
-        {TZ_SYS_HOME, ""},
-    };
-
-    ::umask(0022);
-
     ::tzplatform_set_user(user.getUid());
-
     std::string pivot(::tzplatform_getenv(TZ_USER_HOME));
-
-    try {
-        for (int i = 0; dirs[i].dir != TZ_SYS_HOME; i++) {
-            runtime::File dir(::tzplatform_getenv(dirs[i].dir));
-            dir.makeDirectory(false, user.getUid(), user.getGid());
-            runtime::Smack::setAccess(dir, dirs[i].smack);
-            runtime::Smack::setTransmute(dir, true);
-        }
-    } catch (runtime::Exception& e) {
-        ::tzplatform_reset_user();
-        throw runtime::Exception(e.what());
-    }
-
     ::tzplatform_reset_user();
 
+    //copy skel files to home directory
+    runtime::File skel(ZONE_SKEL_PATH);
+    skel.copyTo(pivot).chown(user.getUid(), user.getGid(), true);
+
     return pivot;
-}
-
-inline void deployPackages(const runtime::User& user)
-{
-    try {
-        //initialize package db
-        execute("/usr/bin/pkg_initdb", "pkg_initdb",
-                "--uid", std::to_string(user.getUid()));
-
-        PackageManager& packageManager = PackageManager::instance();
-        std::vector<std::string> pkgList = packageManager.getPackageList(user.getUid());
-
-        ::umask(0022);
-
-        ::tzplatform_set_user(user.getUid());
-        for (const std::string& pkgid : pkgList) {
-            std::string appbase = std::string(::tzplatform_getenv(TZ_USER_APP)) + "/" + pkgid;
-            runtime::File dir(appbase);
-            dir.makeDirectory(false, user.getUid(), user.getGid());
-            runtime::Smack::setAccess(dir, APP_SMACKLABEL + pkgid);
-            runtime::Smack::setTransmute(dir, true);
-
-            for (const std::string& subdir : defaultAppDirs) {
-                runtime::File insideDir(appbase + "/" + subdir);
-                insideDir.makeDirectory(false, user.getUid(), user.getGid());
-            }
-        }
-        ::tzplatform_reset_user();
-    } catch (runtime::Exception& e) {
-        ::tzplatform_reset_user();
-        throw runtime::Exception(e.what());
-    }
 }
 
 inline void maskUserServices(const std::string& pivot, const runtime::User& user)
@@ -263,7 +179,7 @@ int packageEventHandler(uid_t target_uid, int req_id,
     }
 
     try {
-        runtime::User owner(DEFAULT_ZONE_OWNER), pkgUser(target_uid);
+        runtime::User owner(ZONE_DEFAULT_OWNER), pkgUser(target_uid);
 
         if (type == "install" || type == "update") {
             PackageInfo pkg(pkgid, pkgUser.getUid());
@@ -292,8 +208,7 @@ int packageEventHandler(uid_t target_uid, int req_id,
 
 void initializeCreatedZoneList() {
     try {
-        runtime::Path manifestDir(ZONE_MANIFEST_DIR);
-        runtime::DirectoryIterator iter(manifestDir), end;
+        runtime::DirectoryIterator iter(ZONE_MANIFEST_DIR), end;
 
         while (iter != end) {
             const std::string& file = iter->getName();
@@ -323,7 +238,7 @@ void zoneProcessCallback(GDBusConnection *connection,
 	                     const gchar *interface, const gchar *signalName,
 	                     GVariant *params, gpointer userData)
 {
-    static runtime::User owner(DEFAULT_ZONE_OWNER);
+    static runtime::User owner(ZONE_DEFAULT_OWNER);
     int pid, status;
 
     notification_h noti = reinterpret_cast<notification_h>(userData);
@@ -541,7 +456,7 @@ void notiProxyUpdate(const runtime::User& owner, const runtime::User& user, int 
 
 void notiProxyCallback(void *data, notification_type_e type, notification_op *op_list, int num_op)
 {
-    static runtime::User owner(DEFAULT_ZONE_OWNER);
+    static runtime::User owner(ZONE_DEFAULT_OWNER);
     runtime::User user(*reinterpret_cast<std::string*>(data));
 
     // TODO : should remove noti in the zone when related-zone is removed
@@ -592,7 +507,7 @@ ZoneManager::ZoneManager(PolicyControlContext& ctx)
 
     initializeCreatedZoneList();
     for (std::string& name : createdZoneList) {
-        if (name == DEFAULT_ZONE_OWNER) {
+        if (name == ZONE_DEFAULT_OWNER) {
             continue;
         }
 
@@ -625,7 +540,6 @@ int ZoneManager::createZone(const std::string& name, const std::string& manifest
 
             std::string pivot = prepareDirectories(user);
             maskUserServices(pivot, user);
-            deployPackages(user);
 
             //initialize security-manager
             execute("/usr/bin/security-manager-cmd",
@@ -698,7 +612,7 @@ int ZoneManager::removeZone(const std::string& name)
                     "security-manager-cmd",
                     "--manage-users=remove",
                     "--uid=" + std::to_string(user.getUid()));
-
+ 
             //remove zone user
             user.remove();
 
