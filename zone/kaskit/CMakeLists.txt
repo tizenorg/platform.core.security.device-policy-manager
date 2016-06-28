@@ -14,6 +14,7 @@ PKG_CHECK_MODULES(launcher_pkgs REQUIRED
 	capi-appfw-application
 	capi-appfw-package-manager
 	capi-appfw-app-manager
+	badge
 )
 
 INCLUDE_DIRECTORIES(${launcher_pkgs_INCLUDE_DIRS} ${ZONE_LIBS})

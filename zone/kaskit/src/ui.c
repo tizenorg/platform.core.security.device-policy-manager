@@ -262,3 +262,29 @@ void _destroy_app_icon(const char* pkg_id)
 	__num_of_apps--;
 	evas_object_size_hint_min_set(ud.app_view, 0, (__num_of_apps / 3 + 1) * ICON_SIZE_H);
 }
+
+void _update_app_icon_badge(const char* app_id, unsigned int count)
+{
+	Eina_List* i, *i_next;
+	Evas_Object* app_icon;
+	char str[8], *icon_app_id;
+
+	EINA_LIST_FOREACH_SAFE(ud.app_icon_list, i, i_next, app_icon) {
+		icon_app_id = evas_object_data_get(app_icon, "id");
+		if (strncmp(icon_app_id, app_id, PATH_MAX) == 0) {
+			if (count == 0) {
+				elm_object_signal_emit(app_icon, "icon_badge_hide", "source");
+				break;
+			}
+
+			if (count > MAX_BADGE_DISPLAY_COUNT) {
+				snprintf(str, 8, "%d+", MAX_BADGE_DISPLAY_COUNT);
+			} else {
+				snprintf(str, 8, "%d", count);
+			}
+			elm_layout_text_set(app_icon, "badge_text", str);
+			elm_object_signal_emit(app_icon, "icon_badge_show", "source");
+			break;
+		}
+	}
+}
