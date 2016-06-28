@@ -29,7 +29,9 @@
 #include <dlog.h>
 #include <Elementary.h>
 #include <efl_extension.h>
+#include <shortcut_manager.h>
 #include <zone/zone.h>
+#include <zone/app-proxy.h>
 
 #include "setup-text.h"
 
@@ -41,6 +43,8 @@
 #if !defined(PACKAGE)
 #define PACKAGE "org.tizen.zone-setup-wizard"
 #endif
+
+#define KASKIT_PACKAGE "org.tizen.kaskit"
 
 #define DPM_SYSPOPUP_ICON_PATH "/usr/share/icons/default/small/org.tizen.dpm-syspopup.png"
 

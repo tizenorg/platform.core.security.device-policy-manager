@@ -13,6 +13,7 @@ PKG_CHECK_MODULES(setup_pkgs REQUIRED
 	capi-appfw-application
 	evas
 	notification
+	shortcut
 )
 
 INCLUDE_DIRECTORIES(${setup_pkgs_INCLUDE_DIRS} ${ZONE_LIBS})
