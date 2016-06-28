@@ -235,10 +235,11 @@ Summary: Tizen Krate launcher Interface
 Group: Security/Other
 BuildRequires: pkgconfig(efl-extension)
 BuildRequires: pkgconfig(elementary)
+BuildRequires: pkgconfig(evas)
 BuildRequires: pkgconfig(capi-appfw-application)
 BuildRequires: pkgconfig(capi-appfw-package-manager)
 BuildRequires: pkgconfig(capi-appfw-app-manager)
-BuildRequires: pkgconfig(evas)
+BuildRequires: pkgconfig(badge)
 
 %description -n org.tizen.kaskit
 Tizen Krate launcher interface for zone

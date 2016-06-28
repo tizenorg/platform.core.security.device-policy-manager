@@ -16,6 +16,7 @@
  * limitations under the License.
  *
  */
+#include <badge.h>
 #include <app_control.h>
 #include <app_manager.h>
 #include <package_manager.h>
@@ -42,8 +43,19 @@ struct app_icon_s{
 static void* __create_app_icon(void* data)
 {
 	struct app_icon_s* app = (struct app_icon_s*)data;
+	unsigned int badge_show = 0, badge_count = 0;
 
 	_create_app_icon(app->package, app->id, app->label, app->icon, app->removable);
+
+	int ret = badge_get_display(app->id, &badge_show);
+	dlog_print(DLOG_ERROR, LOG_TAG, "badge_get_display err = %d", ret);
+	if (badge_show) {
+		ret =badge_get_count(app->id, &badge_count);
+		dlog_print(DLOG_ERROR, LOG_TAG, "badge_get_count err = %d", ret);
+		if (badge_count > 0) {
+			_update_app_icon_badge(app->id, badge_count);
+		}
+	}
 
 	return NULL;
 }
@@ -117,7 +129,7 @@ static void __create_icon_thread(void* data, Ecore_Thread* thread) {
 	}
 }
 
-void __pkg_event_cb(const char* type,
+static void __pkg_event_cb(const char* type,
 	const char* pkg_id,
 	package_manager_event_type_e event_type,
 	package_manager_event_state_e event_state, int progress,
@@ -132,7 +144,12 @@ void __pkg_event_cb(const char* type,
 	}
 }
 
-char* __get_current_zone_name() {
+static void __badge_changed_cb(unsigned int action, const char *app_id, unsigned int count, void *user_data) {
+	_update_app_icon_badge(app_id, count);
+}
+
+
+static char* __get_current_zone_name() {
 	struct passwd pwd, *result;
 	int bufsize;
 
@@ -182,6 +199,8 @@ static void __show_launcher()
 		PACKAGE_MANAGER_STATUS_TYPE_INSTALL |
 		PACKAGE_MANAGER_STATUS_TYPE_UNINSTALL);
 	package_manager_set_event_cb(__pkg_mgr, __pkg_event_cb, NULL);
+
+	badge_register_changed_cb(__badge_changed_cb, NULL);
 
 	ecore_thread_run(__create_icon_thread, NULL, NULL, NULL);
 
