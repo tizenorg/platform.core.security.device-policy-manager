@@ -10,9 +10,10 @@ PKG_CHECK_MODULES(launcher_pkgs REQUIRED
 	bundle
 	efl-extension
 	elementary
-	capi-appfw-application
 	evas
-	shortcut
+	capi-appfw-application
+	capi-appfw-package-manager
+	capi-appfw-app-manager
 )
 
 INCLUDE_DIRECTORIES(${launcher_pkgs_INCLUDE_DIRS} ${ZONE_LIBS})
@@ -29,7 +30,7 @@ SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pie")
 ADD_EXECUTABLE(${PKG_NAME} ${PKG_SRC})
 INSTALL(TARGETS ${PKG_NAME} DESTINATION ${APP_INSTALL_PREFIX}/${PKG_NAME}/bin)
 
-TARGET_LINK_LIBRARIES(${PKG_NAME} ${launcher_pkgs_LIBRARIES} zone)
+TARGET_LINK_LIBRARIES(${PKG_NAME} ${launcher_pkgs_LIBRARIES})
 
 #Create edj file
 ADD_CUSTOM_TARGET(org.tizen.kaskit.edj

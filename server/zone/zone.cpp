@@ -42,7 +42,7 @@
 
 #define DEFAULT_SHELL      "/bin/bash"
 
-#define ZONE_LAUNCHER_APP  "org.tizen.kaskit"
+#define ZONE_DELEGATOR_APP  "org.tizen.zone-setup-wizard"
 #define NOTIFICATION_SUB_ICON_PATH  DATA_PATH "/zone_noti_list_sub_icon.png"
 
 namespace DevicePolicyManager {
@@ -376,10 +376,9 @@ void zoneProcessMonitor()
 
 void notiProxyInsert(const runtime::User& owner, const runtime::User& user, int privId, notification_h noti)
 {
+    std::string zoneLauncherUri;
     notification_h newNoti;
     app_control_h appControl;
-    char zoneLauncherUri[PATH_MAX];
-    char UriParameter[PATH_MAX];
     char* pkgId;
 
     notification_clone(noti, &newNoti);
@@ -398,17 +397,18 @@ void notiProxyInsert(const runtime::User& owner, const runtime::User& user, int 
             appId = strdup("");
         }
 
-        UriParameter[0] = '\0';
+        zoneLauncherUri = "zone://" + user.getName() + "/" + appId;
+
         app_control_get_uri(appControl, &uri);
         if (uri != NULL) {
-            snprintf(UriParameter, PATH_MAX, "?uri=%s", uri);
+            zoneLauncherUri += "?uri=";
+            zoneLauncherUri +=  uri;
             free(uri);
         }
 
-        snprintf(zoneLauncherUri, PATH_MAX, "zone://launch/%s/%s%s", user.getName().c_str(), appId, UriParameter);
         free(appId);
-        app_control_set_app_id(appControl, ZONE_LAUNCHER_APP);
-        app_control_set_uri(appControl, zoneLauncherUri);
+        app_control_set_app_id(appControl, ZONE_DELEGATOR_APP);
+        app_control_set_uri(appControl, zoneLauncherUri.c_str());
         notification_set_launch_option(newNoti, NOTIFICATION_LAUNCH_OPTION_APP_CONTROL, appControl);
     }
 
@@ -597,6 +597,9 @@ int ZoneManager::createZone(const std::string& name, const std::string& manifest
 
             //unlock the user
             setZoneState(user.getUid(), 1);
+
+            //wait for launchpad in the zone
+            sleep(1);
 
             auto it = createdZoneList.insert(createdZoneList.begin(), name);
             int noti = notification_register_detailed_changed_cb_for_uid(notiProxyCallback, &(*it), user.getUid());
