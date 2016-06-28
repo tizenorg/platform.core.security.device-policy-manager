@@ -265,7 +265,7 @@ void initializeCreatedZoneList() {
 #define NT_ICON      NOTIFICATION_IMAGE_TYPE_ICON
 #define NT_INDICATOR NOTIFICATION_IMAGE_TYPE_ICON_FOR_INDICATOR
 #define NT_NONE      NOTIFICATION_VARIABLE_TYPE_NONE
-#define NT_EVENT     NOTIFICATION_LY_ONGOING_EVENT
+#define NT_EVENT     NOTIFICATION_LY_ONGOING_PROGRESS
 #define NT_APP       NOTIFICATION_DISPLAY_APP_INDICATOR
 
 #define NT_ICON_PATH DATA_PATH "/zone_indicator_icon.png"
@@ -280,6 +280,7 @@ void zoneProcessCallback(GDBusConnection *connection,
 	                     GVariant *params, gpointer userData)
 {
     static runtime::User owner(ZONE_DEFAULT_OWNER);
+    static std::atomic<bool> isNotiShown(false);
     int pid, status;
 
     notification_h noti = reinterpret_cast<notification_h>(userData);
@@ -297,11 +298,16 @@ void zoneProcessCallback(GDBusConnection *connection,
     }
 
     if ((st.st_uid >= ZONE_UID_MIN) && (st.st_uid < ZONE_UID_MAX)) {
-        notification_set_text(noti, NT_CONTENT, NT_APPINFO, NULL, NT_NONE);
-
-        notification_post_for_uid(noti, owner.getUid());
+        if (!isNotiShown) {
+            notification_set_text(noti, NT_CONTENT, NT_APPINFO, NULL, NT_NONE);
+            notification_post_for_uid(noti, owner.getUid());
+            isNotiShown = true;
+        }
     } else {
-        notification_delete_for_uid(noti, owner.getUid());
+        if (isNotiShown) {
+            notification_delete_for_uid(noti, owner.getUid());
+            isNotiShown = false;
+        }
     }
 }
 
