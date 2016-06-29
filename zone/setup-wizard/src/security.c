@@ -20,19 +20,18 @@
 #include "zone-setup.h"
 #include "widget.h"
 
+#define PASSPHRASE_STATE_UNDEFINED	0
+#define PASSPHRASE_STATE_SETUP		1
+#define PASSPHRASE_STATE_VERIFY		2
+
 extern uidata_s ud;
 
-typedef struct {
-	Evas_Object *entry;
-	Evas_Object *right_button;
-	Evas_Object *radio_main;
-	int unlock_method;
-} security_info_s;
-
-struct security_unlock_method_type {
+struct security_lock_type {
 	const char* text;
 	int index;
-} unlock_method_types[2] = {
+};
+
+struct security_lock_type security_lock_types[2] = {
 	{ "Password", 0 },
 	{ "PIN", 1 }
 };
@@ -42,11 +41,15 @@ char* security_group_text[2] = {
 	"Security options"
 };
 
-security_info_s info = {0, };
+static char* security_password_setup_data = NULL;
+static char* security_password_verify_data = NULL;
 
-static void __create_password_set_view(appdata_s *ad);
+static unsigned int security_passphrase_mode = PASSPHRASE_STATE_UNDEFINED;
+static int security_lock_type_selected = 0;
 
-static char *__security_multiline_text_get(void *data, Evas_Object *obj, const char *part)
+static void create_password_setup_view(appdata_s *ad);
+
+static char *security_multiline_text_get(void *data, Evas_Object *obj, const char *part)
 {
 	char text[PATH_MAX] = "\0";
 
@@ -58,7 +61,7 @@ static char *__security_multiline_text_get(void *data, Evas_Object *obj, const c
 	return NULL;
 }
 
-static char *__security_group_text_get(void *data, Evas_Object *obj, const char *part)
+static char *security_group_text_get(void *data, Evas_Object *obj, const char *part)
 {
 	char *text = (char *)data;
 
@@ -69,7 +72,7 @@ static char *__security_group_text_get(void *data, Evas_Object *obj, const char 
 	return NULL;
 }
 
-static char *__security_double_label_text_get(void *data, Evas_Object *obj, const char *part)
+static char *security_double_label_text_get(void *data, Evas_Object *obj, const char *part)
 {
 	char text[PATH_MAX] = "\0";
 	int timeout = 10; /*[TBD] get value of timeout */
@@ -82,30 +85,37 @@ static char *__security_double_label_text_get(void *data, Evas_Object *obj, cons
 	return strdup(text);
 }
 
-static char *__security_radio_text_get(void *data, Evas_Object *obj, const char *part)
+static char *security_lock_type_text_get(void *data, Evas_Object *obj, const char *part)
 {
-	struct security_unlock_method_type *method = (struct security_unlock_method_type *)data;
+	struct security_lock_type *locktype = (struct security_lock_type *)data;
 
 	if (!strcmp(part, "elm.text")) {
-		return strdup(method->text);
+		return strdup(locktype->text);
 	}
 
 	return NULL;
 }
 
-static Evas_Object *__security_radio_content_get(void *data, Evas_Object *obj, const char *part)
+static Evas_Object *security_lock_type_content_get(void *data, Evas_Object *obj, const char *part)
 {
-	Evas_Object *radio;
-	struct security_unlock_method_type* method = (struct security_unlock_method_type *)data;
+	static Evas_Object *group = NULL;
+	struct security_lock_type* locktype = (struct security_lock_type *)data;
+
+	if (group == NULL) {
+		group = elm_radio_add(obj);
+		elm_radio_state_value_set(group, 0);
+		elm_radio_value_set(group, 0);
+	}
 
 	if (!strcmp(part, "elm.swallow.icon")) {
-		radio = elm_radio_add(obj);
-		elm_radio_state_value_set(radio, method->index);
-		elm_radio_group_add(radio, info.radio_main);
+		Evas_Object* radio = elm_radio_add(obj);
+		elm_radio_state_value_set(radio, locktype->index);
 
-		if (method->index == info.unlock_method)
-			elm_radio_value_set(radio, info.unlock_method);
+		if (locktype->index == security_lock_type_selected) {
+			elm_radio_value_set(radio, locktype->index);
+		}
 
+		elm_radio_group_add(radio, group);
 		evas_object_propagate_events_set(radio, EINA_FALSE);
 		evas_object_repeat_events_set(radio, EINA_TRUE);
 
@@ -115,158 +125,161 @@ static Evas_Object *__security_radio_content_get(void *data, Evas_Object *obj, c
 	return NULL;
 }
 
-static void __security_locktype_select_cb(void *data, Evas_Object *obj, void *event_info)
+static void security_lock_type_select_cb(void *data, Evas_Object *obj, void *event_info)
 {
-	struct security_unlock_method_type* method = (struct security_unlock_method_type *)data;
+	struct security_lock_type* locktype = (struct security_lock_type *)data;
 
 	elm_genlist_item_selected_set((Elm_Object_Item *)event_info, EINA_FALSE);
-	elm_radio_value_set(info.radio_main, method->index);
-	info.unlock_method = method->index;
+	elm_radio_value_set(obj, locktype->index);
+ 	security_lock_type_selected = locktype->index;
 }
 
-static Eina_Bool __security_pop_cb(void *data, Elm_Object_Item *it)
+static Eina_Bool security_pop_cb(void *data, Elm_Object_Item *it)
 {
 	elm_object_signal_emit(ud.conform, "elm,state,indicator,overlap", "elm");
 
 	return EINA_TRUE;
 }
 
-static void __security_prev_cb(void *data, Evas_Object *obj, void *event_info)
+static void security_previous_view_cb(void *data, Evas_Object *obj, void *event_info)
 {
+	if (security_passphrase_mode != PASSPHRASE_STATE_UNDEFINED) {
+		security_passphrase_mode--;
+	}
 	elm_naviframe_item_pop(ud.nf);
 }
 
-static void __security_next_cb(void *data, Evas_Object *obj, void *event_info)
+static void security_password_setup_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	appdata_s *ad = (appdata_s *)data;
-	__create_password_set_view(ad);
-}
+	if (security_passphrase_mode < PASSPHRASE_STATE_VERIFY) {
+		security_passphrase_mode++;
+		create_password_setup_view(ad);
+		return;
+	}
 
-static void __security_setup_cb(void *data, Evas_Object *obj, void *event_info)
-{
-	appdata_s *ad = (appdata_s *)data;
+	if (strcmp(security_password_setup_data, security_password_verify_data) != 0) {
+		dlog_print(DLOG_ERROR, LOG_TAG, "Password not matched");
+		return;
+	}
+
 	/* [TBD] send password to authfw :: const char *pwd = elm_object_text_get(info.entry); */
 
-	if (_send_zone_create_request(ad) != 0)
+	if (_send_zone_create_request(ad) != 0) {
 		ui_app_exit();
+	}
 
 	elm_object_signal_emit(ud.conform, "elm,state,indicator,overlap", "elm");
 	_create_setup_view(ad);
 }
 
-static void __entry_changed_cb(void *data, Evas_Object *obj, void *event_info)
+static void security_password_entry_unfocused_cb(void *data, Evas_Object *obj, void *event_info)
 {
-	if (elm_entry_is_empty(info.entry) == EINA_TRUE)
-		elm_object_disabled_set(info.right_button, EINA_TRUE);
-	else
-		elm_object_disabled_set(info.right_button, EINA_FALSE);
-	return;
+	char **password = (char **)data;
+	*password = strdup(elm_entry_entry_get(obj));
 }
 
-static Evas_Object *__security_entry_content_get(void *data, Evas_Object *obj, const char *part)
+static Evas_Object *security_password_setup_content_get(void *data, Evas_Object *obj, const char *part)
 {
 	if (!strcmp(part, "elm.swallow.content")) {
-		Evas_Object *layout;
+		Evas_Object *layout, *entry;
 
 		layout =  _create_layout(obj, ud.edj_path, "security_layout");
-		info.entry = _create_entry(obj);
-		elm_object_part_content_set(layout, "entry", info.entry);
-		evas_object_smart_callback_add(info.entry, "changed", __entry_changed_cb, NULL);
+
+		entry = _create_entry(obj);
+		elm_object_part_text_set(layout, "title", "Enter password");
+		elm_object_part_content_set(layout, "entry", entry);
+		evas_object_smart_callback_add(entry, "unfocused", security_password_entry_unfocused_cb, data);
 
 		return layout;
 	}
+
 	return NULL;
 }
 
-static void __create_password_set_view(appdata_s *ad)
+static void create_password_setup_view(appdata_s *ad)
 {
-	Elm_Object_Item *nf_it;
-	Elm_Genlist_Item_Class *_itc;
-	Evas_Object *layout;
-	Evas_Object *left_button, *right_button;
-
-	Evas_Object *genlist;
+	char** entry;
+	const char* title;
+	Elm_Object_Item *item;
+	Elm_Genlist_Item_Class *itc;
+	Evas_Object *genlist, *layout, *left_button, *right_button;
 
 	layout = _create_layout(ud.nf, ud.edj_path, "base_layout");
-
 	genlist = elm_genlist_add(layout);
-	elm_object_style_set(genlist, "solid/default");
-
-	_itc = _create_genlist_item_class("full", NULL, __security_entry_content_get);
-	_append_genlist_item(genlist, _itc, ELM_OBJECT_SELECT_MODE_DISPLAY_ONLY, NULL);
-
-	elm_genlist_mode_set(genlist, ELM_LIST_COMPRESS);
 	elm_layout_content_set(layout, "content_layout", genlist);
+	elm_object_style_set(genlist, "solid/default");
+	elm_genlist_mode_set(genlist, ELM_LIST_COMPRESS);
 
-	left_button = _create_button(layout, PREV_BUTTON, __security_prev_cb, NULL);
-	right_button = _create_button(layout, SETUP_BUTTON, __security_setup_cb, ad);
+	left_button = _create_button(layout, PREV_BUTTON, security_previous_view_cb, NULL);
+	right_button = _create_button(layout, NEXT_BUTTON, security_password_setup_cb, ad);
 
-	info.right_button = right_button;
-	elm_object_disabled_set(info.right_button, EINA_TRUE);
-
+	//elm_object_disabled_set(right_button, EINA_TRUE);
 	_create_two_button_layout(layout, left_button, right_button);
 
-	nf_it = elm_naviframe_item_push(ud.nf, "Password Setting", NULL, NULL, layout, NULL);
-	elm_naviframe_item_title_enabled_set(nf_it, EINA_TRUE, EINA_TRUE);
-	return;
+	if (security_passphrase_mode == 1) {
+		entry = &security_password_setup_data;
+		title = "Setup Password";
+	} else {
+		entry = &security_password_verify_data;
+		title = "Verify Password";
+	}
+
+	itc = _create_genlist_item_class("full", NULL, security_password_setup_content_get);
+	item = _append_genlist_item(genlist, itc, ELM_OBJECT_SELECT_MODE_DISPLAY_ONLY, (void **)entry);
+
+	item = elm_naviframe_item_push(ud.nf, title, NULL, NULL, layout, NULL);
+	elm_naviframe_item_title_enabled_set(item, EINA_TRUE, EINA_TRUE);
 }
 
 void _create_security_view(appdata_s *ad)
 {
-	int index;
-	Evas_Object *genlist;
-	Elm_Object_Item *nf_it, *gl_item;
-	Elm_Genlist_Item_Class *_itc;
-	Evas_Object *layout;
-	Evas_Object *left_button, *right_button;
+	int  index;
+	Elm_Object_Item *item;
+	Elm_Genlist_Item_Class *itc;
+	Evas_Object *genlist, *layout, *left_button, *right_button;
 
 	elm_object_signal_emit(ud.conform, "elm,state,indicator,nooverlap", "elm");
-	layout = _create_layout(ud.nf, ud.edj_path, "base_layout");
 
+	layout = _create_layout(ud.nf, ud.edj_path, "base_layout");
 	genlist = elm_genlist_add(layout);
 	elm_object_style_set(genlist, "solid/default");
+	elm_layout_content_set(layout, "content_layout", genlist);
+	elm_genlist_mode_set(genlist, ELM_LIST_COMPRESS);
 
-	_itc = _create_genlist_item_class("multiline", __security_multiline_text_get, NULL);
-	gl_item = _append_genlist_item(genlist, _itc, ELM_OBJECT_SELECT_MODE_DISPLAY_ONLY, NULL);
-	_itc =  _create_genlist_item_class("group_index", __security_group_text_get, NULL);
-	gl_item = _append_genlist_item(genlist, _itc, ELM_OBJECT_SELECT_MODE_DISPLAY_ONLY, security_group_text[0]);
+	itc = _create_genlist_item_class("multiline", security_multiline_text_get, NULL);
+	_append_genlist_item(genlist, itc, ELM_OBJECT_SELECT_MODE_DISPLAY_ONLY, NULL);
 
-	info.radio_main = elm_radio_add(genlist);
-	elm_radio_state_value_set(info.radio_main, 0);
-	elm_radio_value_set(info.radio_main, 0);
+	itc =  _create_genlist_item_class("group_index", security_group_text_get, NULL);
+	_append_genlist_item(genlist, itc, ELM_OBJECT_SELECT_MODE_DISPLAY_ONLY, security_group_text[0]);
 
-	_itc = _create_genlist_item_class("one_icon", __security_radio_text_get, __security_radio_content_get);
+	itc = _create_genlist_item_class("one_icon", security_lock_type_text_get, security_lock_type_content_get);
 	for (index = 0; index < 2; index++) {
-		gl_item = elm_genlist_item_append(genlist,
-										  _itc,
-										  &unlock_method_types[index],
-										  NULL,
-										  ELM_GENLIST_ITEM_NONE,
-										  __security_locktype_select_cb,
-										  &unlock_method_types[index]);
+		item = elm_genlist_item_append(genlist,
+									   itc,
+									   &security_lock_types[index],
+									   NULL,
+									   ELM_GENLIST_ITEM_NONE,
+									   security_lock_type_select_cb,
+									   &security_lock_types[index]);
 		if (index == 1) {
-			elm_object_item_disabled_set(gl_item, EINA_TRUE);
+			elm_object_item_disabled_set(item, EINA_TRUE);
 		}
 	}
 
 	/* Timeout list group*/
-	_itc = _create_genlist_item_class("group_index", __security_group_text_get, NULL);
-	gl_item = _append_genlist_item(genlist, _itc, ELM_OBJECT_SELECT_MODE_DISPLAY_ONLY, security_group_text[1]);
+	itc = _create_genlist_item_class("group_index", security_group_text_get, NULL);
+	_append_genlist_item(genlist, itc, ELM_OBJECT_SELECT_MODE_DISPLAY_ONLY, security_group_text[1]);
 
-	_itc = _create_genlist_item_class("double_label", __security_double_label_text_get, NULL);
-	gl_item = _append_genlist_item(genlist, _itc, ELM_OBJECT_SELECT_MODE_DISPLAY_ONLY, NULL);
-	elm_object_item_disabled_set(gl_item, EINA_TRUE); /* [TBD] enable timeout options */
+	itc = _create_genlist_item_class("double_label", security_double_label_text_get, NULL);
+	item = _append_genlist_item(genlist, itc, ELM_OBJECT_SELECT_MODE_DISPLAY_ONLY, NULL);
+	elm_object_item_disabled_set(item, EINA_TRUE); /* [TBD] enable timeout options */
 
-	elm_genlist_mode_set(genlist, ELM_LIST_COMPRESS);
-	elm_layout_content_set(layout, "content_layout", genlist);
-
-	left_button = _create_button(layout, PREV_BUTTON, __security_prev_cb, NULL);
-	right_button = _create_button(layout, NEXT_BUTTON, __security_next_cb, ad);
-
+	left_button = _create_button(layout, PREV_BUTTON, security_previous_view_cb, NULL);
+	right_button = _create_button(layout, NEXT_BUTTON, security_password_setup_cb, ad);
 	_create_two_button_layout(layout, left_button, right_button);
 
-	nf_it = elm_naviframe_item_push(ud.nf, "Krate Security", NULL, NULL, layout, NULL);
-	elm_naviframe_item_title_enabled_set(nf_it, EINA_TRUE, EINA_TRUE);
-	elm_naviframe_item_pop_cb_set(nf_it, __security_pop_cb, NULL);
-	return;
+	item = elm_naviframe_item_push(ud.nf, "Krate Security", NULL, NULL, layout, NULL);
+	elm_naviframe_item_title_enabled_set(item, EINA_TRUE, EINA_TRUE);
+	elm_naviframe_item_pop_cb_set(item, security_pop_cb, NULL);
 }
