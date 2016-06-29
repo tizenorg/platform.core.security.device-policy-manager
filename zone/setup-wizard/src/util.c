@@ -83,8 +83,8 @@ static char *__get_zone_metadata(void)
 
 int _send_zone_create_request(appdata_s *ad)
 {
+    int ret;
 	char *metadata = NULL;
-        int ret;
 
 	metadata = __get_zone_metadata();
 	if (metadata == NULL) {

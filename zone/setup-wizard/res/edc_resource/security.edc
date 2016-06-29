@@ -19,7 +19,7 @@ group { name: "security_layout";
 				color: 0 0 0 255;
 				rel1 { relative: 0.0 0.1; to: "bg"; offset: 45 0;}
 				rel2 { relative: 1.0 0.1; to: "bg"; offset: -45 40;}
-				text { font: "Tizen:style=Regular"; size: "32"; align: 0.0 0.5; text: "Enter Password";}
+				text { font: "Tizen:style=Regular"; size: "32"; align: 0.0 0.5; }
 			}
 		}
 		part { name: "entry_bg";
@@ -39,7 +39,7 @@ group { name: "security_layout";
 				rel2 { relative: 1.0 1.0; to: "entry_bg";}
 			}
 		}
-		part { name: "entry_separator";
+		 part { name: "entry_separator";
 			type: RECT;
 			scale: 0;
 			description { state: "default" 0.0;

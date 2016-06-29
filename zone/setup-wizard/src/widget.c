@@ -144,7 +144,7 @@ Evas_Object *_create_entry(Evas_Object *parent)
 	Evas_Object *entry = elm_entry_add(parent);
 	static Elm_Entry_Filter_Limit_Size limit_size = {
 		.max_char_count = 20,
-		.max_byte_count = 0,
+		.max_byte_count = 0
 	};
 
 	evas_object_size_hint_weight_set(entry, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
