@@ -25,3 +25,6 @@ ADD_SUBDIRECTORY(${ZONE_LIBS})
 ADD_SUBDIRECTORY(${ZONE_CLI})
 ADD_SUBDIRECTORY(${ZONE_APPS})
 ADD_SUBDIRECTORY(${ZONE_VOLUME})
+
+INSTALL(FILES gumd-scripts/20_pam-zone-add.post DESTINATION /etc/gumd/useradd.d)
+INSTALL(FILES gumd-scripts/20_pam-zone-remove.post DESTINATION /etc/gumd/userdel.d)
