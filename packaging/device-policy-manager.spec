@@ -223,7 +223,7 @@ Tizen ZONE setup wizard interface for zone
 
 %files -n org.tizen.zone-setup-wizard
 %defattr(-,root,root,-)
-%manifest zone/setup-wizard/org.tizen.zone-setup-wizard.manifest
+%manifest zone/apps/setup-wizard/org.tizen.zone-setup-wizard.manifest
 %{setup_home}/bin/*
 %{setup_home}/res/*
 %{setup_home}/res/data/ZoneManifest.xml
@@ -248,7 +248,7 @@ Tizen Krate launcher interface for zone
 
 %files -n org.tizen.kaskit
 %defattr(-,root,root,-)
-%manifest zone/kaskit/org.tizen.kaskit.manifest
+%manifest zone/apps/kaskit/org.tizen.kaskit.manifest
 %{launcher_home}/bin/*
 %{launcher_home}/res/*
 %{launcher_home}/res/images/default_app_icon.png
@@ -271,7 +271,7 @@ Tizen Krate keyguard interface for zone
 
 %files -n org.tizen.keyguard
 %defattr(-,root,root,-)
-%manifest zone/keyguard/org.tizen.keyguard.manifest
+%manifest zone/apps/keyguard/org.tizen.keyguard.manifest
 %{keyguard_home}/bin/*
 %{keyguard_home}/res/*
 %{TZ_SYS_RO_PACKAGES}/org.tizen.keyguard.xml
