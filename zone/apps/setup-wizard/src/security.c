@@ -163,7 +163,7 @@ static void security_password_setup_cb(void *data, Evas_Object *obj, void *event
 		return;
 	}
 
-	/* [TBD] send password to authfw :: const char *pwd = elm_object_text_get(info.entry); */
+        ad->zone_password = security_password_setup_data;
 
 	if (_send_zone_create_request(ad) != 0) {
 		ui_app_exit();

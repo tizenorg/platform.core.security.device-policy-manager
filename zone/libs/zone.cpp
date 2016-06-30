@@ -82,4 +82,13 @@ std::vector<std::string> ZoneManager::getZoneList(int state)
     }
 }
 
+int ZoneManager::resetZonePassword(const std::string& name, const std::string& newPassword)
+{
+    try {
+        return context->methodCall<int>("ZoneManager::resetZonePassword", name, newPassword);
+    } catch (runtime::Exception& e) {
+        return -1;
+    }
+}
+
 } // namespace DevicePolicyManager

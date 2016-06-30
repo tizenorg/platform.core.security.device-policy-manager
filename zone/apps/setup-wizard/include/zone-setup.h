@@ -51,6 +51,7 @@
 typedef struct {
 	char *mode;
 	char *zone_name;
+        char *zone_password;
 
 	zone_manager_h zone_manager;
 	int zone_event_cb_id;

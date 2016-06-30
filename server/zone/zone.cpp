@@ -21,6 +21,7 @@
 #include <notification.h>
 #include <notification_internal.h>
 #include <tzplatform_config.h>
+#include <auth-passwd-admin.h>
 
 #include "zone/zone.hxx"
 
@@ -543,6 +544,7 @@ ZoneManager::ZoneManager(PolicyControlContext& ctx)
     context.registerParametricMethod(this, (int)(ZoneManager::unlockZone)(std::string));
     context.registerParametricMethod(this, (int)(ZoneManager::getZoneState)(std::string));
     context.registerParametricMethod(this, (std::vector<std::string>)(ZoneManager::getZoneList)(int));
+    context.registerParametricMethod(this, (int)(ZoneManager::resetZonePassword)(std::string, std::string));
 
     context.createNotification("ZoneManager::created");
     context.createNotification("ZoneManager::removed");
@@ -728,6 +730,22 @@ std::vector<std::string> ZoneManager::getZoneList(int state)
         }
     }
     return list;
+}
+
+int ZoneManager::resetZonePassword(const std::string& name, const std::string& newPassword)
+{
+    try {
+        runtime::User user(name);
+        int ret = auth_passwd_reset_passwd(AUTH_PWD_NORMAL, user.getUid(), newPassword.c_str());
+        if (ret != AUTH_PASSWD_API_SUCCESS) {
+            throw runtime::Exception("Failed to reset password for " + name);
+        }
+    } catch (runtime::Exception& e) {
+        ERROR(e.what());
+        return -1;
+    }
+
+    return 0;
 }
 
 ZoneManager zoneManager(Server::instance());

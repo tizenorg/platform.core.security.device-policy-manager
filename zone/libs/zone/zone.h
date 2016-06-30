@@ -342,6 +342,25 @@ ZONE_API int zone_manager_foreach_name(zone_manager_h handle,
                                        void* user_data);
 
 /**
+ * @brief       Reset password for the zone.
+ * @details     This API can be used to set password for the zone. The password
+ *              of the zone can be used for authenticating user.
+ * @since_tizen 3.0
+ * @param[in]   handle The zone policy handle
+ * @param[in]   name The zone name
+ * @param[out]  new_password new password if NULL, existing password will be removed
+ * @return      #ZONE_ERROR_NONE on success, otherwise a negative value
+ * @retval      #ZONE_ERROR_NONE Successful
+ * @retval      #ZONE_ERROR_NO_DATA No such zone to get state
+ * @retval      #ZONE_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval      #ZONE_ERROR_TIMED_OUT Time out
+ * @pre         The handle must be created by zone_manager_create().
+ * @see         zone_manager_create()
+ * @see         zone_manager_destroy()
+ */
+ZONE_API int zone_manager_reset_zone_password(zone_manager_h handle, const char* name, const char* new_password);
+
+/**
  * @}
  */
 

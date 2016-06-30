@@ -176,3 +176,18 @@ int zone_manager_foreach_name(zone_manager_h handle, zone_state_e state,
 
     return ZONE_ERROR_NONE;
 }
+
+int zone_manager_reset_zone_password(zone_manager_h handle, const char* name, const char* new_password)
+{
+    RET_ON_FAILURE(handle, ZONE_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(name, ZONE_ERROR_INVALID_PARAMETER);
+
+    if (new_password == NULL) {
+        new_password = "";
+    }
+
+    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+    ZoneManager zone = client.createPolicyInterface<ZoneManager>();
+
+    return zone.resetZonePassword(name, new_password);
+}
