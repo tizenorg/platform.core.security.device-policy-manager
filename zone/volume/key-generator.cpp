@@ -49,23 +49,23 @@
 #ifdef WORDS_BIGENDIAN
 #define blk0(i) block->l[i]
 #else
-#define blk0(i) (block->l[i] = (rol(block->l[i],24)&0xff00ff00) \
-    |(rol(block->l[i],8)&0x00ff00ff))
+#define blk0(i) (block->l[i] = (rol(block->l[i], 24)&0xff00ff00) \
+    |(rol(block->l[i], 8)&0x00ff00ff))
 #endif
 #define blk(i) (block->l[i&15] = rol(block->l[(i+13)&15]^block->l[(i+8)&15] \
-    ^block->l[(i+2)&15]^block->l[i&15],1))
+    ^block->l[(i+2)&15]^block->l[i&15], 1))
 
 /* (R0+R1), R2, R3, R4 are the different operations used in SHA1 */
 #define R0(v, w, x, y, z, i) \
-    z+=((w&(x^y))^y)+blk0(i)+0x5a827999+rol(v,5);w=rol(w,30);
+    z+=((w&(x^y))^y)+blk0(i)+0x5a827999+rol(v, 5);w=rol(w, 30);
 #define R1(v, w, x, y, z, i) \
-    z+=((w&(x^y))^y)+blk(i)+0x5a827999+rol(v,5);w=rol(w,30);
+    z+=((w&(x^y))^y)+blk(i)+0x5a827999+rol(v, 5);w=rol(w, 30);
 #define R2(v, w, x, y, z, i) \
-    z+=(w^x^y)+blk(i)+0x6ed9eba1+rol(v,5);w=rol(w,30);
+    z+=(w^x^y)+blk(i)+0x6ed9eba1+rol(v, 5);w=rol(w, 30);
 #define R3(v, w, x, y, z, i) \
-    z+=(((w|x)&y)|(w&x))+blk(i)+0x8f1bbcdc+rol(v,5);w=rol(w,30);
+    z+=(((w|x)&y)|(w&x))+blk(i)+0x8f1bbcdc+rol(v, 5);w=rol(w, 30);
 #define R4(v, w, x, y, z, i) \
-    z+=(w^x^y)+blk(i)+0xca62c1d6+rol(v,5);w=rol(w,30);
+    z+=(w^x^y)+blk(i)+0xca62c1d6+rol(v, 5);w=rol(w, 30);
 
 #define __min__(a, b) (((a) < (b)) ? (a) : (b))
 
@@ -269,7 +269,7 @@ void KeyGenerator::sha1Hmac(const unsigned char* key, int keyLen, const unsigned
     ::memset(inPad, 0, SHA_BLOCKSIZE);
     ::memset(outPad, 0, SHA_BLOCKSIZE);
 
-    for (i=0; i<SHA_BLOCKSIZE; i++) {
+    for (i = 0; i < SHA_BLOCKSIZE; i++) {
         outPad[i] = buf[i] ^ 0x5c;
         inPad[i]= buf[i] ^ 0x36;
     }
@@ -285,7 +285,7 @@ void KeyGenerator::sha1Hmac(const unsigned char* key, int keyLen, const unsigned
     sha1Final(out, &ctx);
 }
 
-int KeyGenerator::pbkdf2(const char * pass,int passLen,const unsigned char* salt, int saltLen, int iter, int keyLen, unsigned char* out)
+int KeyGenerator::pbkdf2(const char * pass, int passLen, const unsigned char* salt, int saltLen, int iter, int keyLen, unsigned char* out)
 {
     unsigned char digtmp1[SHA1_DIGEST_SIZE], digtmp2[SHA1_DIGEST_SIZE], itmp[saltLen + 4];
     int j, k;
@@ -305,16 +305,16 @@ int KeyGenerator::pbkdf2(const char * pass,int passLen,const unsigned char* salt
         sha1Hmac((unsigned char*)pass, passLen, itmp, saltLen+4,  digtmp1);
         ::memcpy(digtmp2, digtmp1, SHA1_DIGEST_SIZE);
 
-        for (j=1; j<iter; j++) {
-            sha1Hmac((unsigned char*)pass, passLen,digtmp1, SHA1_DIGEST_SIZE,  digtmp1);
-            for (k=0; k<SHA1_DIGEST_SIZE; k++) {
+        for (j = 1; j < iter; j++) {
+            sha1Hmac((unsigned char*)pass, passLen, digtmp1, SHA1_DIGEST_SIZE,  digtmp1);
+            for (k = 0; k < SHA1_DIGEST_SIZE; k++) {
                 digtmp2[k] ^= digtmp1[k];
             }
         }
         toWriteLen = __min__((keyLen - genKeyLen), SHA1_DIGEST_SIZE);
         ::memcpy(out+genKeyLen, digtmp2, toWriteLen);
         genKeyLen += toWriteLen;
-        ++ i;
+        ++i;
     }
 
     return 1;
