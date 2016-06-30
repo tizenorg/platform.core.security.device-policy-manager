@@ -60,7 +60,7 @@ ecryptfs_payload* generateToken(char* key)
 {
     struct ecryptfs_password* tokenKey;
 
-    unsigned char keyBuffer[ECRYPTFS_MAX_KEY_SIZE];
+    unsigned char keyBuffer[ECRYPTFS_MAX_KEY_SIZE+1];
 
     ecryptfs_payload* authToken = (ecryptfs_payload *)::malloc(sizeof(ecryptfs_payload));
     if (authToken == NULL) {
@@ -69,6 +69,7 @@ ecryptfs_payload* generateToken(char* key)
 
     ::memset(authToken, 0, sizeof(ecryptfs_payload));
     ::strncpy((char*)keyBuffer, key, ECRYPTFS_MAX_KEY_SIZE);
+    keyBuffer[ECRYPTFS_MAX_KEY_SIZE] = '\0';
 
     tokenKey = &authToken->token.password;
 
