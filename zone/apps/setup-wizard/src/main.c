@@ -34,19 +34,22 @@ static void __zone_request_done(const char *from, const char *info, void *user_d
 	char uri[PATH_MAX];
 
 	appdata_s *ad = (appdata_s *) user_data;
-	ad->request_done = true;
 
 	if (!strcmp(ad->mode, "create")) {
-		snprintf(uri, sizeof(uri), "zone://%s/" KASKIT_PACKAGE, ad->zone_name);
-		shortcut_add_to_home(ad->zone_name, LAUNCH_BY_URI, uri, "", 0, NULL, NULL);
+		app_control_create(&app_control);
+		app_control_set_app_id(app_control, KEYGUARD_PACKAGE);
+		snprintf(uri, sizeof(uri), "zone://setup/%s", ad->zone_name);
+		app_control_set_uri(app_control, uri);
+		app_control_send_launch_request(app_control, NULL, NULL);
+		app_control_destroy(app_control);
 
 		app_control_create(&app_control);
 		app_control_set_app_id(app_control, KASKIT_PACKAGE);
 		__launch_zone_app(ad->zone_manager, ad->zone_name, app_control);
 		app_control_destroy(app_control);
-
 	}
 
+	ad->request_done = true;
 }
 
 static bool __app_create(void *data)
@@ -106,55 +109,10 @@ static void __set_zone_callback(appdata_s *ad)
 	return;
 }
 
-static int __parse_uri(app_control_h app_control, appdata_s *ad)
-{
-	char* uri, *zone_uri, *app_id, *zone_name;
-	int ret = 0;
-
-	ret = app_control_get_uri(app_control, &uri);
-	if (ret != APP_CONTROL_ERROR_NONE || uri == NULL) {
-		dlog_print(DLOG_DEBUG, LOG_TAG, "No URI");
-		return -1;
-	}
-
-	if (strncmp(uri, "zone://", sizeof("zone://") - 1) != 0) {
-		dlog_print(DLOG_ERROR, LOG_TAG, "Mismatched URI");
-		free(uri);
-		return -1;
-	}
-
-	zone_name = uri + sizeof("zone://") - 1;
-
-	app_control_set_uri(app_control, NULL);
-	app_id = strchr(zone_name, '/');
-	*(app_id++) = '\0';
-	zone_uri = strchr(app_id, '?');
-	if (zone_uri != NULL) {
-		*(zone_uri++) = '\0';
-		if (strncmp(uri, "uri=", sizeof("uri=") - 1) == 0) {
-			zone_uri += sizeof("uri=") - 1;
-			app_control_set_uri(app_control, zone_uri);
-		}
-	}
-
-	app_control_set_app_id(app_control, app_id);
-	__launch_zone_app(ad->zone_manager, zone_name, app_control);
-
-	free(uri);
-
-	return 0;
-}
-
 static void __app_control(app_control_h app_control, void *data)
 {
 	appdata_s *ad = (appdata_s *) data;
 	int ret = 0;
-
-        ret = __parse_uri(app_control, ad);
-	if (ret == 0) {
-		ui_app_exit();
-		return;
-	}
 
 	ret = app_control_get_extra_data(app_control, "mode", &ad->mode);
 	if (ret != APP_CONTROL_ERROR_NONE) {
@@ -184,7 +142,6 @@ static void __app_control(app_control_h app_control, void *data)
 		return;
 	}
 
-	elm_app_base_scale_set(1.8);
 	_create_base_window(ad);
 
 	return;

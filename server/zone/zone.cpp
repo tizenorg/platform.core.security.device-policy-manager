@@ -42,7 +42,7 @@
 
 #define DEFAULT_SHELL      "/bin/bash"
 
-#define ZONE_DELEGATOR_APP  "org.tizen.zone-setup-wizard"
+#define ZONE_DELEGATOR_APP  "org.tizen.keyguard"
 #define NOTIFICATION_SUB_ICON_PATH  DATA_PATH "/zone_noti_list_sub_icon.png"
 
 namespace DevicePolicyManager {
@@ -397,7 +397,7 @@ void notiProxyInsert(const runtime::User& owner, const runtime::User& user, int 
             appId = strdup("");
         }
 
-        zoneLauncherUri = "zone://" + user.getName() + "/" + appId;
+        zoneLauncherUri = "zone://enter/" + user.getName() + "/" + appId;
 
         app_control_get_uri(appControl, &uri);
         if (uri != NULL) {

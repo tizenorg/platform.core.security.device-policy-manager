@@ -26,7 +26,10 @@ static void __win_delete_request_cb(void *data , Evas_Object *obj , void *event_
 
 Evas_Object *_create_win(const char *package)
 {
-	Evas_Object *win = elm_win_add(NULL, package, ELM_WIN_NOTIFICATION);
+        Evas_Object *win;
+        elm_app_base_scale_set(1.8);
+
+	win = elm_win_add(NULL, package, ELM_WIN_NOTIFICATION);
 	efl_util_set_notification_window_level(win, EFL_UTIL_NOTIFICATION_LEVEL_DEFAULT);
 	/* [TBD] enable : eext_win_keygrab_set(win, "XF86Home"); */
 

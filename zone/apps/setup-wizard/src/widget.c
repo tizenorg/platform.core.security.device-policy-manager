@@ -26,15 +26,18 @@ static void __win_delete_request_cb(void *data , Evas_Object *obj , void *event_
 
 Evas_Object *_create_win(const char *package)
 {
-	Evas_Object *win = elm_win_util_standard_add(package, package);
-	elm_win_conformant_set(win, EINA_TRUE);
-	elm_win_autodel_set(win, EINA_TRUE);
+	Evas_Object *win;
 
-	evas_object_smart_callback_add(win, "delete,request", __win_delete_request_cb, NULL);
-	elm_win_indicator_mode_set(win, ELM_WIN_INDICATOR_SHOW);
-	elm_win_indicator_opacity_set(win, ELM_WIN_INDICATOR_TRANSPARENT);
+        elm_app_base_scale_set(1.8);
 
-	return win;
+	win = elm_win_util_standard_add(package, package);
+        elm_win_conformant_set(win, EINA_TRUE);
+        elm_win_autodel_set(win, EINA_TRUE);
+        elm_win_alpha_set(win, EINA_TRUE);
+
+        evas_object_smart_callback_add(win, "delete,request", __win_delete_request_cb, NULL);
+
+        return win;
 }
 
 Evas_Object *_create_conformant(Evas_Object *parent)

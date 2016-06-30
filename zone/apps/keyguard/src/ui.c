@@ -34,10 +34,9 @@ static void __change_info_text(const char *text)
 
 static void __entry_change_cb(void *data, Evas_Object *obj, void *event_info)
 {
-	char text[PATH_MAX];
-	int left_attempts = 10; /* [TBD] get left attempts number */
+	char text[32];
 
-	snprintf(text, PATH_MAX, "%d attempts left", left_attempts);
+	snprintf(text, 32, "%u attempts left", _get_left_attempts());
 	__change_info_text(text);
 }
 
@@ -54,14 +53,17 @@ static void __checkbox_change_cb(void *data, Evas_Object *obj, void *event_info)
 
 static void __entry_activate_cb(void *data, Evas_Object *obj, void *event_info)
 {
-	char password[10] = "asdf"; /* [TBD] get krate password from dpm */
 	const char *input = elm_object_text_get(obj);
 
-	if (!strcmp(password, input)) {
+	if (_check_password(input)) {
+		_launch_req_app();
 		ui_app_exit();
 	} else {
 		elm_entry_input_panel_hide(obj);
 		__change_info_text("Incorrect Password. Try again.");
+		if (_get_left_attempts() == 0) {
+			ui_app_exit();
+		}
 	}
 }
 

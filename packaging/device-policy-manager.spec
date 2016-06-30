@@ -213,7 +213,6 @@ BuildRequires: pkgconfig(elementary)
 BuildRequires: pkgconfig(capi-appfw-application)
 BuildRequires: pkgconfig(evas)
 BuildRequires: pkgconfig(notification)
-BuildRequires: pkgconfig(shortcut)
 Requires: libzone = %{version}-%{release}
 
 %description -n org.tizen.zone-setup-wizard
@@ -263,6 +262,8 @@ BuildRequires: pkgconfig(elementary)
 BuildRequires: pkgconfig(capi-appfw-application)
 BuildRequires: pkgconfig(evas)
 BuildRequires: pkgconfig(capi-ui-efl-util)
+BuildRequires: pkgconfig(auth-fw)
+BuildRequires: pkgconfig(shortcut)
 
 %description -n org.tizen.keyguard
 Tizen Krate keyguard interface for zone
@@ -282,7 +283,6 @@ Summary: Tizen Zone Client library
 Group: Development/Libraries
 BuildRequires: pkgconfig(capi-appfw-application)
 BuildRequires: pkgconfig(capi-appfw-package-manager)
-BuildRequires: pkgconfig(capi-appfw-app-control)
 BuildRequires: pkgconfig(libtzplatform-config)
 Requires: %{name} = %{version}-%{release}
 Requires(post): /sbin/ldconfig

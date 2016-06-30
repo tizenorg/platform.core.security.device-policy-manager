@@ -13,6 +13,8 @@ PKG_CHECK_MODULES(keyguard_pkgs REQUIRED
 	capi-appfw-application
 	capi-ui-efl-util
 	evas
+	auth-fw
+	shortcut
 )
 
 INCLUDE_DIRECTORIES(${keyguard_pkgs_INCLUDE_DIRS} ${ZONE_LIBS})

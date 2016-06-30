@@ -29,7 +29,10 @@
 #include <dlog.h>
 #include <Elementary.h>
 #include <efl_extension.h>
+#include <shortcut_manager.h>
+#include <auth-passwd.h>
 #include <zone/zone.h>
+#include <zone/app-proxy.h>
 
 #ifdef  LOG_TAG
 #undef  LOG_TAG
@@ -40,6 +43,14 @@
 #define PACKAGE "org.tizen.keyguard"
 #endif
 
+#define KEYGUARD_PACKAGE "org.tizen.keyguard"
+#define KASKIT_PACKAGE "org.tizen.kaskit"
+
 void _create_keyguard_window(void);
+void _launch_req_app(void);
+
+bool _has_password(void);
+bool _check_password(const char* password);
+unsigned int _get_left_attempts(void);
 
 #endif /* __ZONE_KEYGUARD_H__ */
