@@ -41,6 +41,8 @@ public:
 
     std::vector<std::string> getZoneList(int state);
 
+    int resetZonePassword(const std::string& name, const std::string& newPassword);
+
 private:
     PolicyControlContext& context;
 };

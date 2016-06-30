@@ -35,8 +35,13 @@ static void __change_info_text(const char *text)
 static void __entry_change_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	char text[32];
+	unsigned int attempts = _get_left_attempts();
 
-	snprintf(text, 32, "%u attempts left", _get_left_attempts());
+	if (attempts == 0xffffffff) {
+		snprintf(text, 32, "No limit to attempt");
+	} else {
+		snprintf(text, 32, "%u attempts left", attempts);
+	}
 	__change_info_text(text);
 }
 

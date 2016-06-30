@@ -29,17 +29,35 @@ void _launch_req_app()
 
 bool _check_password(const char* password)
 {
-	return true;
+	unsigned int attempt, max_attempt, expire_sec;
+	int ret;
+
+	ret = auth_passwd_check_passwd(AUTH_PWD_NORMAL, password, &attempt, &max_attempt, &expire_sec);
+
+	return ret == AUTH_PASSWD_API_SUCCESS;
 }
 
 bool _has_password()
 {
-	return true;
+	unsigned int attempt, max_attempt, expire_sec;
+	int ret;
+
+	ret = auth_passwd_check_passwd_state(AUTH_PWD_NORMAL, &attempt, &max_attempt, &expire_sec);
+
+	return ret != AUTH_PASSWD_API_ERROR_NO_PASSWORD;
 }
 
 unsigned int _get_left_attempts()
 {
-	return 10;
+	unsigned int attempt = 0, max_attempt = 0, expire_sec;
+
+        auth_passwd_check_passwd_state(AUTH_PWD_NORMAL, &attempt, &max_attempt, &expire_sec);
+
+	if (max_attempt == 0) {
+		return 0xffffffff;
+	}
+	
+	return max_attempt - attempt;
 }
 
 static void __launch_zone_app(const char* zone_name, app_control_h app_control)

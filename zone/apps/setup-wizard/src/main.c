@@ -36,6 +36,8 @@ static void __zone_request_done(const char *from, const char *info, void *user_d
 	appdata_s *ad = (appdata_s *) user_data;
 
 	if (!strcmp(ad->mode, "create")) {
+		zone_manager_reset_zone_password(ad->zone_manager, ad->zone_name, ad->zone_password);
+
 		app_control_create(&app_control);
 		app_control_set_app_id(app_control, KEYGUARD_PACKAGE);
 		snprintf(uri, sizeof(uri), "zone://setup/%s", ad->zone_name);
