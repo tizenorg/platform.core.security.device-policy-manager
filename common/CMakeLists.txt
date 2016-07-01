@@ -17,7 +17,6 @@
 PROJECT(dpm-common)
 
 SET (COMMON_SOURCES     ${DPM_COMMON}/error.cpp
-                        ${DPM_COMMON}/smack.cpp
                         ${DPM_COMMON}/process.cpp
                         ${DPM_COMMON}/eventfd.cpp
                         ${DPM_COMMON}/mainloop.cpp
@@ -43,7 +42,6 @@ SET (COMMON_SOURCES     ${DPM_COMMON}/error.cpp
                         ${DPM_COMMON}/db/connection.cpp
                         ${DPM_COMMON}/auth/user.cpp
                         ${DPM_COMMON}/auth/group.cpp
-                        ${DPM_COMMON}/auth/shadow.cpp
                         ${DPM_COMMON}/dbus/error.cpp
                         ${DPM_COMMON}/dbus/variant.cpp
                         ${DPM_COMMON}/dbus/connection.cpp
@@ -55,7 +53,6 @@ ADD_LIBRARY(${PROJECT_NAME} STATIC ${COMMON_SOURCES})
 
 PKG_CHECK_MODULES(COMMON_DEPS REQUIRED  libxml-2.0
                                         sqlite3
-                                        libsmack
                                         gio-2.0
 )
 

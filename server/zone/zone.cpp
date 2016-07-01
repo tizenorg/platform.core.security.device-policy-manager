@@ -18,6 +18,8 @@
 #include <sys/types.h>
 #include <sys/inotify.h>
 
+#include <gum/gum-user.h>
+#include <gum/common/gum-user-types.h>
 #include <notification.h>
 #include <notification_internal.h>
 #include <tzplatform_config.h>
@@ -26,22 +28,15 @@
 #include "zone/zone.hxx"
 
 #include "error.h"
-#include "smack.h"
 #include "process.h"
 #include "packman.h"
 #include "launchpad.h"
 #include "filesystem.h"
 #include "auth/user.h"
-#include "auth/group.h"
 #include "xml/parser.h"
 #include "xml/document.h"
 #include "audit/logger.h"
 #include "dbus/connection.h"
-
-#define ZONE_UID_MIN       60001
-#define ZONE_UID_MAX       65000
-
-#define DEFAULT_SHELL      "/bin/bash"
 
 #define ZONE_DELEGATOR_APP  "org.tizen.keyguard"
 #define NOTIFICATION_SUB_ICON_PATH  DATA_PATH "/zone_noti_list_sub_icon.png"
@@ -72,32 +67,17 @@ const std::string ZONE_DEFAULT_OWNER = "owner";
 const std::string ZONE_GROUP = "users";
 
 std::vector<std::string> createdZoneList;
+static std::atomic<bool> isZoneForeground(false);
+
 std::unordered_map<std::string, int> notiProxyCallbackMap;
 std::unordered_map<int, notification_h> notiHandleMap;
 
-template <typename... Args>
-inline void execute(const std::string& path, Args&&... args)
-{
-    std::vector<std::string> argsVector = { args... };
-    runtime::Process proc(path, argsVector);
-    proc.execute();
-}
-
-inline std::string prepareDirectories(const runtime::User& user)
+inline void maskUserServices(const runtime::User& user)
 {
     ::tzplatform_set_user(user.getUid());
     std::string pivot(::tzplatform_getenv(TZ_USER_HOME));
     ::tzplatform_reset_user();
 
-    //copy skel files to home directory
-    runtime::File skel(ZONE_SKEL_PATH);
-    skel.copyTo(pivot).chown(user.getUid(), user.getGid(), true);
-
-    return pivot;
-}
-
-inline void maskUserServices(const std::string& pivot, const runtime::User& user)
-{
     runtime::File unitbase(pivot + "/.config/systemd/user");
     unitbase.makeDirectory(true);
     unitbase.chmod(S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
@@ -107,43 +87,6 @@ inline void maskUserServices(const std::string& pivot, const runtime::User& user
         if (::symlink("/dev/null", target.c_str()) == -1) {
             throw runtime::Exception(runtime::GetSystemErrorMessage());
         }
-    }
-}
-
-inline void executeHookScripts(const runtime::User& user, const std::string& path, const std::string& pivot)
-{
-    std::vector<std::string> scripts;
-    char currentDirectory[PATH_MAX];
-
-    try {
-        runtime::DirectoryIterator iter(path), end;
-
-        while (iter != end) {
-            scripts.push_back(iter->getPath());
-            ++iter;
-        }
-    } catch (runtime::Exception& e) {}
-
-    if (getcwd(currentDirectory, PATH_MAX) == NULL) {
-        snprintf(currentDirectory, PATH_MAX, "/");
-    }
-
-    ::tzplatform_set_user(user.getUid());
-    if (chdir(::tzplatform_getenv(TZ_SYS_HOME)) != 0) {
-        throw runtime::Exception(runtime::GetSystemErrorMessage());
-    }
-    ::tzplatform_reset_user();
-
-    std::sort(scripts.begin(), scripts.end());
-
-    for (const std::string& script : scripts) {
-        execute(DEFAULT_SHELL, script, script, user.getName(),
-                std::to_string(user.getUid()),
-                std::to_string(user.getGid()), pivot, "normal");
-    }
-
-    if (chdir(currentDirectory) != 0) {
-        throw runtime::Exception(runtime::GetSystemErrorMessage());
     }
 }
 
@@ -281,7 +224,6 @@ void zoneProcessCallback(GDBusConnection *connection,
 	                     GVariant *params, gpointer userData)
 {
     static runtime::User owner(ZONE_DEFAULT_OWNER);
-    static std::atomic<bool> isNotiShown(false);
     int pid, status;
 
     notification_h noti = reinterpret_cast<notification_h>(userData);
@@ -298,16 +240,16 @@ void zoneProcessCallback(GDBusConnection *connection,
         return;
     }
 
-    if ((st.st_uid >= ZONE_UID_MIN) && (st.st_uid < ZONE_UID_MAX)) {
-        if (!isNotiShown) {
+    if (owner.getUid() != st.st_uid) {
+        if (!isZoneForeground) {
             notification_set_text(noti, NT_CONTENT, NT_APPINFO, NULL, NT_NONE);
             notification_post_for_uid(noti, owner.getUid());
-            isNotiShown = true;
+            isZoneForeground = true;
         }
     } else {
-        if (isNotiShown) {
+        if (isZoneForeground) {
             notification_delete_for_uid(noti, owner.getUid());
-            isNotiShown = false;
+            isZoneForeground = false;
         }
     }
 }
@@ -577,23 +519,26 @@ int ZoneManager::createZone(const std::string& name, const std::string& manifest
     auto provisioningWorker = [name, manifest, this]() {
         std::unique_ptr<xml::Document> manifestFile;
 
-        mode_t omask = ::umask(0);
         try {
-            //create zone user
-            runtime::User user = runtime::User::create(name,
-                                        ZONE_GROUP, ZONE_UID_MIN, ZONE_UID_MAX);
-            for (const std::string& grp : defaultGroups) {
-                runtime::Group group(grp);
-                group.addMember(name);
+            //create zone user by gumd
+            GumUser *guser = gum_user_create_sync(FALSE);
+            g_object_set(G_OBJECT(guser), "username", name.c_str(),
+                            "usertype", GUM_USERTYPE_SECURITY, NULL);
+            gboolean ret = gum_user_add_sync(guser);
+            g_object_unref(guser);
+
+            if (!ret) {
+                throw runtime::Exception("Failed to remove user (" + name + ") by gumd");
             }
 
-            std::string pivot = prepareDirectories(user);
-            maskUserServices(pivot, user);
-            executeHookScripts(user, ZONE_CREATE_HOOK_PATH, pivot);
+            runtime::User user(name);
+
+            maskUserServices(user);
 
             manifestFile.reset(xml::Parser::parseString(manifest));
-            ::umask(0077);
+            mode_t omask = ::umask(0077);
             manifestFile->write(ZONE_MANIFEST_DIR + name + ".xml", "UTF-8", true);
+            ::umask(omask);
 
             //TODO: write container owner info
 
@@ -612,7 +557,6 @@ int ZoneManager::createZone(const std::string& name, const std::string& manifest
             context.notify("ZoneManager::removed", name, std::string());
         }
 
-        ::umask(omask);
     };
 
     std::thread asyncWork(provisioningWorker);
@@ -638,14 +582,14 @@ int ZoneManager::removeZone(const std::string& name)
         try {
             runtime::User user(name);
 
-            ::tzplatform_set_user(user.getUid());
-            std::string pivot(::tzplatform_getenv(TZ_USER_HOME));
-            ::tzplatform_reset_user();
-
-            executeHookScripts(user, ZONE_REMOVE_HOOK_PATH, pivot);
-
             //remove zone user
-            user.remove();
+            GumUser *guser = gum_user_get_sync(user.getUid(), FALSE);
+            gboolean ret = gum_user_delete_sync(guser, TRUE);
+            g_object_unref(guser);
+
+            if (!ret) {
+                throw runtime::Exception("Failed to remove user (" + name + ") by gumd");
+            }
 
             for (std::vector<std::string>::iterator it = createdZoneList.begin();
                  it != createdZoneList.end(); it++) {
@@ -693,8 +637,8 @@ int ZoneManager::unlockZone(const std::string& name)
 
 int ZoneManager::getZoneState(const std::string& name)
 {
-    runtime::File manifest(ZONE_MANIFEST_DIR + name + ".xml");
-    if (!manifest.exists()) {
+    auto it = std::find(createdZoneList.begin(), createdZoneList.end(), name);
+    if (it == createdZoneList.end()) {
         return 0;
     }
 
