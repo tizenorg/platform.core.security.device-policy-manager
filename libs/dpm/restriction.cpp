@@ -27,7 +27,7 @@ using namespace DevicePolicyManager;
 
 EXPORT_API int dpm_restriction_set_camera_state(device_policy_manager_h handle, int allow)
 {
-	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
@@ -36,7 +36,7 @@ EXPORT_API int dpm_restriction_set_camera_state(device_policy_manager_h handle, 
 
 EXPORT_API int dpm_restriction_get_camera_state(device_policy_manager_h handle, int *is_allowed)
 {
-	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(is_allowed, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
@@ -52,7 +52,7 @@ EXPORT_API int dpm_restriction_get_camera_state(device_policy_manager_h handle, 
 
 EXPORT_API int dpm_restriction_set_microphone_state(device_policy_manager_h handle, int allow)
 {
-	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
@@ -61,7 +61,8 @@ EXPORT_API int dpm_restriction_set_microphone_state(device_policy_manager_h hand
 
 EXPORT_API int dpm_restriction_get_microphone_state(device_policy_manager_h handle, int *is_allowed)
 {
-	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(is_allowed, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
@@ -100,7 +101,7 @@ EXPORT_API int dpm_restriction_get_location_state(device_policy_manager_h handle
 
 EXPORT_API int dpm_restriction_set_usb_debugging_state(device_policy_manager_h handle, int allow)
 {
-	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
@@ -109,8 +110,8 @@ EXPORT_API int dpm_restriction_set_usb_debugging_state(device_policy_manager_h h
 
 EXPORT_API int dpm_restriction_get_usb_debugging_state(device_policy_manager_h handle, int *is_allowed)
 {
-	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-	RET_ON_FAILURE(is_allowed, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(is_allowed, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
@@ -148,17 +149,17 @@ EXPORT_API int dpm_restriction_get_usb_tethering_state(device_policy_manager_h h
 
 EXPORT_API int dpm_restriction_set_settings_changes_state(device_policy_manager_h handle, int allow)
 {
-	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
-	return restriction.setSettingsChangesState(allow);
+    return restriction.setSettingsChangesState(allow);
 }
 
 EXPORT_API int dpm_restriction_get_settings_changes_state(device_policy_manager_h handle, int *is_allowed)
 {
-	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-	RET_ON_FAILURE(is_allowed, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(is_allowed, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
@@ -173,21 +174,21 @@ EXPORT_API int dpm_restriction_get_settings_changes_state(device_policy_manager_
 
 EXPORT_API int dpm_restriction_set_external_storage_state(device_policy_manager_h handle, int allow)
 {
-	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
-	return restriction.setExternalStorageState(allow);
+    return restriction.setExternalStorageState(allow);
 }
 
 EXPORT_API int dpm_restriction_get_external_storage_state(device_policy_manager_h handle, int *is_allowed)
 {
-	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-	RET_ON_FAILURE(is_allowed, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(is_allowed, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
-	int ret = restriction.getExternalStorageState();
+    int ret = restriction.getExternalStorageState();
     if (ret < 0) {
         return 0;
     }
@@ -197,17 +198,17 @@ EXPORT_API int dpm_restriction_get_external_storage_state(device_policy_manager_
 
 EXPORT_API int dpm_restriction_set_clipboard_state(device_policy_manager_h handle, int allow)
 {
-	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
-	return restriction.setClipboardState(allow);
+    return restriction.setClipboardState(allow);
 }
 
 EXPORT_API int dpm_restriction_get_clipboard_state(device_policy_manager_h handle, int *is_allowed)
 {
-	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-	RET_ON_FAILURE(is_allowed, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(is_allowed, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
@@ -343,7 +344,7 @@ EXPORT_API int dpm_restriction_get_bluetooth_desktop_connectivity_state(device_p
 
 EXPORT_API int dpm_restriction_set_bluetooth_pairing_state(device_policy_manager_h handle, int allow)
 {
-	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     BluetoothPolicy bluetooth = client.createPolicyInterface<BluetoothPolicy>();
@@ -352,7 +353,7 @@ EXPORT_API int dpm_restriction_set_bluetooth_pairing_state(device_policy_manager
 
 EXPORT_API int dpm_restriction_get_bluetooth_pairing_state(device_policy_manager_h handle, int *is_allowed)
 {
-	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
     RET_ON_FAILURE(is_allowed, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
