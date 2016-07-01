@@ -53,6 +53,7 @@ SET(DEPENDENCY		glib-2.0
 					capi-network-connection
 					capi-network-bluetooth
 					notification
+					libgum
 )
 
 INCLUDE("${TIZEN_PROFILE_NAME}.cmake")
