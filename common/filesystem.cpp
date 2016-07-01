@@ -30,7 +30,6 @@
 #include <iostream>
 
 #include "filesystem.h"
-#include "smack.h"
 #include "error.h"
 #include "exception.h"
 
@@ -390,10 +389,6 @@ File File::copyTo(const std::string& destDir)
             iter->copyTo(destFile.getPath());
             ++iter;
         }
-
-        try {
-            Smack::setTransmute(destFile, Smack::getTransmute(*this));
-        } catch (runtime::Exception &e) {}
     } else {
         open(O_RDONLY);
         destFile.open(O_WRONLY | O_CREAT, getMode());
@@ -401,18 +396,6 @@ File File::copyTo(const std::string& destDir)
         destFile.close();
         close();
     }
-
-    try {
-        Smack::setAccess(destFile, Smack::getAccess(*this));
-    } catch (runtime::Exception &e) {}
-
-    try {
-        Smack::setExecute(destFile, Smack::getExecute(*this));
-    } catch (runtime::Exception &e) {}
-
-    try {
-        Smack::setMmap(destFile, Smack::getMmap(*this));
-    } catch (runtime::Exception &e) {}
 
     return destFile;
 }

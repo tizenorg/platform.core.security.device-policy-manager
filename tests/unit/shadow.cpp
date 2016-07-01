@@ -35,39 +35,6 @@ TESTCASE(GetGroupTest)
     }
 }
 
-TESTCASE(CreateGroupTest)
-{
-    try {
-        runtime::Group group = runtime::Group::create("testgroup");
-    } catch (runtime::Exception& e) {
-        TEST_FAIL(e.what());
-    }
-
-    try {
-        runtime::Group group("testgroup");
-    } catch (runtime::Exception& e) {
-        TEST_FAIL(e.what());
-    }
-}
-
-TESTCASE(RemoveGroupTest)
-{
-    try {
-        runtime::Group group("testgroup");
-        group.remove();
-    } catch (runtime::Exception& e) {
-        TEST_FAIL(e.what());
-    }
-
-    try {
-        runtime::Group group("testgroup");
-    } catch (runtime::Exception& e) {
-        return;
-    }
-
-    TEST_FAIL("Failed to remove group");
-}
-
 TESTCASE(GetUserTest)
 {
     try {
@@ -75,62 +42,4 @@ TESTCASE(GetUserTest)
     } catch (runtime::Exception& e) {
         TEST_FAIL(e.what());
     }
-}
-
-TESTCASE(CreateUserTest)
-{
-    try {
-        runtime::User user = runtime::User::create("testuser", "testgroup");
-    } catch (runtime::Exception& e) {
-        TEST_FAIL(e.what());
-    }
-    try {
-        runtime::User user("testuser");
-    } catch (runtime::Exception& e) {
-        TEST_FAIL(e.what());
-    }
-}
-
-TESTCASE(AddMemberGroupTest)
-{
-    try {
-        runtime::Group group("users");
-        group.addMember("test");
-        group.addMember("testuser");
-    } catch (runtime::Exception& e) {
-        TEST_FAIL(e.what());
-    }
-}
-TESTCASE(RemoveMemberGroupTest)
-{
-    try {
-        runtime::Group group("users");
-        group.removeMember("test");
-        group.removeMember("noexist");
-    } catch (runtime::Exception& e) {
-        TEST_FAIL(e.what());
-    }
-}
-
-TESTCASE(RemoveUserTest)
-{
-    try {
-        runtime::User user("testuser");
-        user.remove();
-    } catch (runtime::Exception& e) {
-        TEST_FAIL(e.what());
-    }
-
-    try {
-        runtime::Group group("testgroup");
-        group.remove();
-    } catch (runtime::Exception& e) {}
-
-    try {
-        runtime::User user("testuser");
-    } catch (runtime::Exception& e) {
-        return;
-    }
-
-    TEST_FAIL("Failed to remove user");
 }
