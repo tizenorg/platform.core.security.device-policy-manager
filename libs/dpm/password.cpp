@@ -39,6 +39,7 @@ EXPORT_API int dpm_password_set_quality(device_policy_manager_h handle, dpm_pass
 EXPORT_API int dpm_password_get_quality(device_policy_manager_h handle, dpm_password_quality_e *quality)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(quality, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
@@ -56,6 +57,7 @@ EXPORT_API int dpm_password_get_quality(device_policy_manager_h handle, dpm_pass
 EXPORT_API int dpm_password_set_minimum_length(device_policy_manager_h handle, int value)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(value > 0, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
@@ -84,6 +86,7 @@ EXPORT_API int dpm_password_get_minimum_length(device_policy_manager_h handle, i
 EXPORT_API int dpm_password_set_min_complex_chars(device_policy_manager_h handle, int value)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(value > 0, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
@@ -94,6 +97,7 @@ EXPORT_API int dpm_password_set_min_complex_chars(device_policy_manager_h handle
 EXPORT_API int dpm_password_get_min_complex_chars(device_policy_manager_h handle, int *value)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(value, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
@@ -111,6 +115,7 @@ EXPORT_API int dpm_password_get_min_complex_chars(device_policy_manager_h handle
 EXPORT_API int dpm_password_set_maximum_failed_attempts_for_wipe(device_policy_manager_h handle, int value)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(value > 0, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
@@ -139,6 +144,7 @@ EXPORT_API int dpm_password_get_maximum_failed_attempts_for_wipe(device_policy_m
 EXPORT_API int dpm_password_set_expires(device_policy_manager_h handle, int value)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(value > 0, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
@@ -149,6 +155,7 @@ EXPORT_API int dpm_password_set_expires(device_policy_manager_h handle, int valu
 EXPORT_API int dpm_password_get_expires(device_policy_manager_h handle, int *value)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(value, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
@@ -166,6 +173,7 @@ EXPORT_API int dpm_password_get_expires(device_policy_manager_h handle, int *val
 EXPORT_API int dpm_password_set_history(device_policy_manager_h handle, int value)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(value > 0, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
@@ -176,6 +184,7 @@ EXPORT_API int dpm_password_set_history(device_policy_manager_h handle, int valu
 EXPORT_API int dpm_password_get_history(device_policy_manager_h handle, int *value)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(value, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
@@ -225,6 +234,7 @@ EXPORT_API int dpm_password_enforce_change(device_policy_manager_h handle)
 EXPORT_API int dpm_password_set_max_inactivity_time_device_lock(device_policy_manager_h handle, int value)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(value > 0, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
@@ -253,6 +263,9 @@ EXPORT_API int dpm_password_get_max_inactivity_time_device_lock(device_policy_ma
 EXPORT_API int dpm_password_set_status(device_policy_manager_h handle, dpm_password_status_e status)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(status >= DPM_PASSWORD_STATUS_NORMAL &&
+                    status <= DPM_PASSWORD_STATUS_MAX_ATTEMPTS_EXCEEDED,
+                    DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
@@ -273,7 +286,7 @@ EXPORT_API int dpm_password_delete_pattern(device_policy_manager_h handle)
 EXPORT_API int dpm_password_get_pattern(device_policy_manager_h handle, char **pattern)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(*pattern, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(pattern, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
@@ -286,6 +299,7 @@ EXPORT_API int dpm_password_get_pattern(device_policy_manager_h handle, char **p
 EXPORT_API int dpm_password_set_maximum_character_occurrences(device_policy_manager_h handle, int value)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(value > 0, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
@@ -314,6 +328,7 @@ EXPORT_API int dpm_password_get_maximum_character_occurrences(device_policy_mana
 EXPORT_API int dpm_password_set_maximum_numeric_sequence_length(device_policy_manager_h handle, int value)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(value > 0, DPM_ERROR_INVALID_PARAMETER);
 
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     PasswordPolicy password = client.createPolicyInterface<PasswordPolicy>();
@@ -377,6 +392,10 @@ EXPORT_API int dpm_password_destroy_iterator(dpm_password_iterator_h iter)
 
 EXPORT_API int dpm_password_set_forbidden_strings(device_policy_manager_h handle, const char *strings[], int length)
 {
+    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(strings, DPM_ERROR_INVALID_PARAMETER);
+    RET_ON_FAILURE(length > 0, DPM_ERROR_INVALID_PARAMETER);
+
     int iter;
     std::vector<std::string> forbiddenStrings;
 

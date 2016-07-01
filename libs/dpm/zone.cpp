@@ -70,9 +70,8 @@ EXPORT_API int dpm_zone_foreach_name(device_policy_manager_h handle, dpm_zone_st
     DevicePolicyContext &client = GetDevicePolicyContext(handle);
     ZonePolicy zone = client.createPolicyInterface<ZonePolicy>();
     std::vector<std::string> list = zone.getZoneList(state);
-    for (std::vector<std::string>::iterator it = list.begin();
-         it != list.end(); it++) {
-        callback((*it).c_str(), user_data);
+    for (const std::string& name : list) {
+        callback(name.c_str(), user_data);
     }
 
     return DPM_ERROR_NONE;
