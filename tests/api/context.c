@@ -21,12 +21,12 @@
 
 #include "testbench.h"
 
-#define MAX_WORKER_THREADS  8
-#define MAX_ITERATIONS      1000
+#define MAX_WORKER_THREADS  5
+#define MAX_ITERATIONS      10
 
 volatile int completed = 0;
 
-void device_policy_context_callback(const char* name, const char* state, void* user_data)
+void device_policy_handle_callback(const char* name, const char* state, void* user_data)
 {
     int *triggered = user_data;
     printf("*");
@@ -36,25 +36,25 @@ void device_policy_context_callback(const char* name, const char* state, void* u
 void* getter(void* data)
 {
     int i = 0;
-    dpm_context_h context;
+    device_policy_manager_h handle;
     volatile int triggered = 0;;
 
     printf("Policy receiver %d is ready\n", *((int *)data));
 
     while(1) {
-        context = dpm_context_create();
-        if (context == NULL) {
-            printf("Failed to create client context\n");
+        handle = dpm_manager_create();
+        if (handle == NULL) {
+            printf("Failed to create client handle\n");
             return (void *)TEST_FAILED;
         }
 
         int id;
-        dpm_context_add_policy_changed_cb(context, "camera", device_policy_context_callback, (void *)&triggered, &id);
+        dpm_add_policy_changed_cb(handle, "camera", device_policy_handle_callback, (void *)&triggered, &id);
 
         while (!triggered) {
             if (completed) {
-                dpm_context_remove_policy_changed_cb(context, id);
-                dpm_context_destroy(context);
+                dpm_remove_policy_changed_cb(handle, id);
+                dpm_manager_destroy(handle);
                 return (void *)TEST_SUCCESSED;
             }
         }
@@ -65,8 +65,8 @@ void* getter(void* data)
             printf("\n");
         }
 
-        dpm_context_remove_policy_changed_cb(context, id);
-        dpm_context_destroy(context);
+        dpm_remove_policy_changed_cb(handle, id);
+        dpm_manager_destroy(handle);
 
         printf("G");
 
@@ -79,36 +79,31 @@ void* getter(void* data)
 void* setter(void *data)
 {
     int i;
-    dpm_context_h context;
+    device_policy_manager_h handle;
 
     printf("Thread setter %d is ready\n", *((int *)data));
 
     for (i = 0; i < MAX_ITERATIONS; i++) {
-        context = dpm_context_create();
-        if (context == NULL) {
-            printf("Failed to create client context\n");
+        handle = dpm_manager_create();
+        if (handle == NULL) {
+            printf("Failed to create client handle\n");
             completed = 1;
             return (void *)TEST_FAILED;
         }
 
-        dpm_restriction_policy_h policy = dpm_context_acquire_restriction_policy(context);
-
         int state = 0;
 
-        dpm_restriction_get_camera_state(policy, &state);
-        dpm_restriction_set_camera_state(policy, state ? 0 : 1);
-
-        dpm_context_release_restriction_policy(context, policy);
+        dpm_restriction_get_camera_state(handle, &state);
+        dpm_restriction_set_camera_state(handle, state ? 0 : 1);
 
         if ((i % 10) == 0) {
             printf("\n");
         }
 
-        printf("S");
-
-        dpm_context_destroy(context);
+        dpm_manager_destroy(handle);
 
     }
+
     printf("\n");
 
     completed = 1;
@@ -116,7 +111,7 @@ void* setter(void *data)
     return (void *)TEST_SUCCESSED;
 }
 
-static int device_policy_context(struct testcase* tc)
+static int device_policy_handle(struct testcase* tc)
 {
     pthread_t handle[MAX_WORKER_THREADS];
     int i, ret, status, idx[MAX_WORKER_THREADS];
@@ -142,12 +137,12 @@ static int device_policy_context(struct testcase* tc)
     return ret;
 }
 
-struct testcase device_policy_context_testcase = {
-    .description = "device policy context",
-    .handler = device_policy_context
+struct testcase device_policy_handle_testcase = {
+    .description = "device policy handle",
+    .handler = device_policy_handle
 };
 
-void TESTCASE_CONSTRUCTOR device_policy_context_build_testcase(void)
+void TESTCASE_CONSTRUCTOR device_policy_handle_build_testcase(void)
 {
-    testbench_populate_testcase(&device_policy_context_testcase);
+    testbench_populate_testcase(&device_policy_handle_testcase);
 }
