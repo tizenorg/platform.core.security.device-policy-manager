@@ -57,32 +57,6 @@ EXPORT_API int dpm_application_get_mode_restriction(device_policy_manager_h hand
     return DPM_ERROR_NONE;
 }
 
-EXPORT_API int dpm_application_set_package_state(device_policy_manager_h handle, const char* pkgid, dpm_package_state_e state)
-{
-    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(pkgid, DPM_ERROR_INVALID_PARAMETER);
-
-    DevicePolicyContext& client = GetDevicePolicyContext(handle);
-    ApplicationPolicy application = client.createPolicyInterface<ApplicationPolicy>();
-    return application.setApplicationState(pkgid, state);
-}
-
-EXPORT_API int dpm_application_get_package_state(device_policy_manager_h handle, const char* pkgid, int *state)
-{
-    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(pkgid, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(state, DPM_ERROR_INVALID_PARAMETER);
-
-    DevicePolicyContext& client = GetDevicePolicyContext(handle);
-    ApplicationPolicy application = client.createPolicyInterface<ApplicationPolicy>();
-    int ret = application.getApplicationState(pkgid);
-    if (ret < 0) {
-        return -1;
-    }
-    *state = ret;
-    return DPM_ERROR_NONE;
-}
-
 EXPORT_API int dpm_application_add_privilege_to_blacklist(device_policy_manager_h handle, int type, const char* privilege)
 {
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);

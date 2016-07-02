@@ -147,31 +147,6 @@ EXPORT_API int dpm_restriction_get_usb_tethering_state(device_policy_manager_h h
     return DPM_ERROR_NONE;
 }
 
-EXPORT_API int dpm_restriction_set_settings_changes_state(device_policy_manager_h handle, int allow)
-{
-    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-
-    DevicePolicyContext &client = GetDevicePolicyContext(handle);
-    RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
-    return restriction.setSettingsChangesState(allow);
-}
-
-EXPORT_API int dpm_restriction_get_settings_changes_state(device_policy_manager_h handle, int *is_allowed)
-{
-    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(is_allowed, DPM_ERROR_INVALID_PARAMETER);
-
-    DevicePolicyContext &client = GetDevicePolicyContext(handle);
-    RestrictionPolicy restriction = client.createPolicyInterface<RestrictionPolicy>();
-	int ret = restriction.getSettingsChangesState();
-    if (ret < 0) {
-        return -1;
-    }
-
-    *is_allowed = ret;
-    return DPM_ERROR_NONE;
-}
-
 EXPORT_API int dpm_restriction_set_external_storage_state(device_policy_manager_h handle, int allow)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);

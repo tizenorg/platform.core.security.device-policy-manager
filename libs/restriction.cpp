@@ -83,24 +83,6 @@ int RestrictionPolicy::getClipboardState()
 	}
 }
 
-int RestrictionPolicy::setSettingsChangesState(int enable)
-{
-	try {
-		return context->methodCall<int>("RestrictionPolicy::setSettingsChangesState", enable);
-	} catch (runtime::Exception& e) {
-		return -1;
-	}
-}
-
-int RestrictionPolicy::getSettingsChangesState()
-{
-	try {
-		return context->methodCall<int>("RestrictionPolicy::getSettingsChangesState");
-	} catch (runtime::Exception& e) {
-		return -1;
-	}
-}
-
 int RestrictionPolicy::setUsbDebuggingState(int enable)
 {
 	try {

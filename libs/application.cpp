@@ -29,24 +29,6 @@ ApplicationPolicy::~ApplicationPolicy()
 {
 }
 
-int ApplicationPolicy::setApplicationState(const std::string& appid, int state)
-{
-    try {
-        return context->methodCall<int>("ApplicationPolicy::setApplicationState", appid, state);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
-}
-
-int ApplicationPolicy::getApplicationState(const std::string& appid)
-{
-    try {
-        return context->methodCall<int>("ApplicationPolicy::getApplicationState", appid);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
-}
-
 int ApplicationPolicy::installPackage(const std::string& pkgpath)
 {
     try {
@@ -60,51 +42,6 @@ int ApplicationPolicy::uninstallPackage(const std::string& pkgid)
 {
     try {
         return context->methodCall<int>("ApplicationPolicy::uninstallPackage", pkgid);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
-}
-
-int ApplicationPolicy::disableApplication(const std::string& appid)
-{
-    try {
-        return context->methodCall<int>("ApplicationPolicy::disableApplication", appid);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
-}
-
-int ApplicationPolicy::enableApplication(const std::string& appid)
-{
-    try {
-        return context->methodCall<int>("ApplicationPolicy::enableApplication", appid);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
-}
-
-int ApplicationPolicy::startApplication(const std::string& appid)
-{
-    try {
-        return context->methodCall<int>("ApplicationPolicy::startApplication", appid);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
-}
-
-int ApplicationPolicy::stopApplication(const std::string& appid)
-{
-    try {
-        return context->methodCall<int>("ApplicationPolicy::stopApplication", appid);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
-}
-
-int ApplicationPolicy::wipeApplicationData(const std::string& appid)
-{
-    try {
-        return context->methodCall<int>("ApplicationPolicy::wipeApplicationData", appid);
     } catch (runtime::Exception& e) {
         return -1;
     }

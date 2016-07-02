@@ -28,37 +28,10 @@ SecurityPolicy::~SecurityPolicy()
 {
 }
 
-int SecurityPolicy::lockoutDevice()
-{
-    try {
-        return context->methodCall<int>("SecurityPolicy::lockoutDevice");
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
-}
-
 int SecurityPolicy::lockoutScreen()
 {
     try {
         return context->methodCall<int>("SecurityPolicy::lockoutScreen");
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
-}
-
-int SecurityPolicy::reboot()
-{
-    try {
-        return context->methodCall<int>("SecurityPolicy::reboot");
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
-}
-
-int SecurityPolicy::powerOffDevice()
-{
-    try {
-        return context->methodCall<int>("SecurityPolicy::powerOffDevice");
     } catch (runtime::Exception& e) {
         return -1;
     }
@@ -97,24 +70,6 @@ int SecurityPolicy::isExternalStorageEncrypted()
         return context->methodCall<int>("SecurityPolicy::isExternalStorageEncrypted");
     } catch (runtime::Exception& e) {
         return -1;
-    }
-}
-
-std::vector<std::string> SecurityPolicy::getFileNamesOnDevice(const std::string& path)
-{
-    try {
-        return context->methodCall<std::vector<std::string>>("SecurityPolicy::getFileNamesOnDevice", path);
-    } catch (runtime::Exception& e) {
-        return std::vector<std::string>();
-    }
-}
-
-std::vector<std::string> SecurityPolicy::getFileNamesWithAttributes(const std::string& path)
-{
-    try {
-        return context->methodCall<std::vector<std::string>>("SecurityPolicy::getFileNamesWithAttributes", path);
-    } catch (runtime::Exception& e) {
-        return std::vector<std::string>();
     }
 }
 

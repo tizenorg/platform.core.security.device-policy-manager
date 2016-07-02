@@ -64,36 +64,6 @@ ClientManager::~ClientManager()
 {
 }
 
-void ClientManager::activateClient(const std::string& name)
-{
-    std::lock_guard<Mutex> lock(mutex);
-
-    ClientList::iterator iter = registeredClients.begin();
-    while (iter != registeredClients.end()) {
-        if ((*iter).getName() == name) {
-            activatedClients.push_back(std::move(*iter));
-            registeredClients.erase(iter);
-            return;
-        }
-        ++iter;
-    }
-}
-
-void ClientManager::deactivateClient(const std::string& name)
-{
-    std::lock_guard<Mutex> lock(mutex);
-
-    ClientList::iterator iter = activatedClients.begin();
-    while (iter != activatedClients.end()) {
-        if ((*iter).getName() == name) {
-            registeredClients.push_back(std::move(*iter));
-            activatedClients.erase(iter);
-            return;
-        }
-        ++iter;
-    }
-}
-
 void ClientManager::registerClient(const std::string& name)
 {
     std::lock_guard<Mutex> lock(mutex);
@@ -144,36 +114,6 @@ void ClientManager::deregisterClient(const std::string& name)
 
     if (!removeClient(registeredClients, name)) {
         removeClient(activatedClients, name);
-    }
-}
-
-void ClientManager::dumpRegisteredClients()
-{
-    std::cout << "Dump Registered Clients" << std::endl;
-
-    std::lock_guard<Mutex> lock(mutex);
-
-    ClientList::iterator iter = registeredClients.begin();
-    while (iter != registeredClients.end()) {
-        Client& client = (*iter);
-        std::cout << "R[" << client.getName()
-                  << "/" << client.getKey() << "]" << std::endl;
-        ++iter;
-    }
-}
-
-void ClientManager::dumpActivatedClients()
-{
-    std::cout << "Dump Activated Clients" << std::endl;
-
-    std::lock_guard<Mutex> lock(mutex);
-
-    ClientList::iterator iter = activatedClients.begin();
-    while (iter != activatedClients.end()) {
-        Client& client = (*iter);
-        std::cout << "A[" << client.getName()
-                  << "/" << client.getKey() << "]" << std::endl;
-        ++iter;
     }
 }
 

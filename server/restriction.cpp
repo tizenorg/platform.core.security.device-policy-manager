@@ -49,8 +49,6 @@ RestrictionPolicy::RestrictionPolicy(PolicyControlContext& ctxt) :
 	context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getMicrophoneState));
 	context.registerParametricMethod(this, (int)(RestrictionPolicy::setClipboardState)(int));
 	context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getClipboardState));
-	context.registerParametricMethod(this, (int)(RestrictionPolicy::setSettingsChangesState)(int));
-	context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getSettingsChangesState));
 	context.registerParametricMethod(this, (int)(RestrictionPolicy::setUsbDebuggingState)(int));
 	context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getUsbDebuggingState));
     context.registerParametricMethod(this, (int)(RestrictionPolicy::setUsbTetheringState)(int));
@@ -127,16 +125,6 @@ int RestrictionPolicy::setClipboardState(int enable)
 int RestrictionPolicy::getClipboardState()
 {
     return IsPolicyAllowed(context, "clipboard");
-}
-
-int RestrictionPolicy::setSettingsChangesState(int enable)
-{
-    return SetPolicyAllowed(context, "settings-changes", enable);
-}
-
-int RestrictionPolicy::getSettingsChangesState()
-{
-    return IsPolicyAllowed(context, "settings-changes");
 }
 
 int RestrictionPolicy::setUsbDebuggingState(int enable)

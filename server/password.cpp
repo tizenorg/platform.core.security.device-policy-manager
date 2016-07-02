@@ -48,7 +48,6 @@ int createNotificationLaunch(void)
     char sViewtype[][40] = {"SETTING_PW_TYPE_SET_SIMPLE_PASSWORD", "SETTING_PW_TYPE_SET_PASSWORD"};
 
     vconf_get_int(VCONFKEY_SETAPPL_SCREEN_LOCK_TYPE_INT, &lock_type);
-    ERROR("Lock Type: " + std::to_string(lock_type));
     if (lock_type == SETTING_SCREEN_LOCK_TYPE_SIMPLE_PASSWORD)
         view_type = 0;
     else
@@ -64,8 +63,6 @@ int createNotificationLaunch(void)
         notification_free(passwdNoti);
         return -1;
     }
-
-    ERROR("Password Notification");
 
     ret = 0;
     try {
@@ -498,8 +495,6 @@ int PasswordPolicy::enforcePasswordPolicyChange()
     const char *passwd_user_data[6] = {"app-id", "setting-password-efl", "caller", "DPM", "viewtype", "SETTING_PW_TYPE_SET_PASSWORD"};
 
     vconf_get_int(VCONFKEY_SETAPPL_SCREEN_LOCK_TYPE_INT, &lock_type);
-    ERROR("Lock Type: " + std::to_string(lock_type));
-    ERROR("enforce Password Policy Change");
     ::bundle_add_str(b, "id", "password-enforce-change");
     if (lock_type == SETTING_SCREEN_LOCK_TYPE_SIMPLE_PASSWORD)
         ::bundle_add_str_array(b, "user-data", simple_user_data, 6);
@@ -530,7 +525,6 @@ int PasswordPolicy::setPasswordPolicyStatus(const int status)
 {
     int current_status = std::stoi(GetPasswordPolicy(__context, "password-status"));
 
-    ERROR("current status: " + std::to_string(current_status) + ", status: " + std::to_string(status));
     if (status >= PasswordPolicy::DPM_PASSWORD_STATUS_MAX) {
         return -1;
     }
@@ -544,7 +538,6 @@ int PasswordPolicy::setPasswordPolicyStatus(const int status)
         if (status == PasswordPolicy::DPM_PASSWORD_STATUS_CHANGED) {
             return SetPasswordPolicy(__context, "password-status", std::to_string(PasswordPolicy::DPM_PASSWORD_STATUS_NORMAL));
         } else if (status == PasswordPolicy::DPM_PASSWORD_STATUS_NOT_CHANGED) {
-            ERROR("Display Noti");
             return createNotificationLaunch();
         }
     } else if (current_status ==  PasswordPolicy::DPM_PASSWORD_STATUS_NORMAL) {

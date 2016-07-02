@@ -29,23 +29,6 @@ namespace audit {
 LogLevel Logger::logLevel = LogLevel::Trace;
 std::unique_ptr<LogSink> Logger::backend(new ConsoleLogSink());
 
-LogLevel StringToLogLevel(const std::string& level)
-{
-    if (level == "ERROR") {
-        return LogLevel::Error;
-    } else if (level == "WARN") {
-        return LogLevel::Warning;
-    } else if (level == "DEBUG") {
-        return LogLevel::Debug;
-    } else if (level == "INFO") {
-        return LogLevel::Info;
-    } else if (level == "TRACE") {
-        return LogLevel::Trace;
-    } else {
-        throw runtime::Exception("Invalid LogLevel");
-    }
-}
-
 std::string LogLevelToString(const LogLevel level)
 {
     switch (level) {

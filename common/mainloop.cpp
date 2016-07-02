@@ -52,7 +52,7 @@ Mainloop::Mainloop() :
 Mainloop::~Mainloop()
 {
     if (!callbacks.empty()) {
-        assert(0 && "callback list is not empty");
+        //assert(0 && "callback list is not empty");
     }
 
     ::close(pollFd);

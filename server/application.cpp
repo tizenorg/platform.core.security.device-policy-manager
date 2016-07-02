@@ -44,13 +44,6 @@ ApplicationPolicy::ApplicationPolicy(PolicyControlContext& ctxt) :
 
     context.registerParametricMethod(this, (int)(ApplicationPolicy::installPackage)(std::string));
     context.registerParametricMethod(this, (int)(ApplicationPolicy::uninstallPackage)(std::string));
-    context.registerParametricMethod(this, (int)(ApplicationPolicy::disableApplication)(std::string));
-    context.registerParametricMethod(this, (int)(ApplicationPolicy::enableApplication)(std::string));
-    context.registerParametricMethod(this, (int)(ApplicationPolicy::getApplicationState)(std::string));
-    context.registerParametricMethod(this, (int)(ApplicationPolicy::setApplicationState)(std::string, int));
-    context.registerParametricMethod(this, (int)(ApplicationPolicy::startApplication)(std::string));
-    context.registerParametricMethod(this, (int)(ApplicationPolicy::stopApplication)(std::string));
-    context.registerParametricMethod(this, (int)(ApplicationPolicy::wipeApplicationData)(std::string));
 }
 
 ApplicationPolicy::~ApplicationPolicy()
@@ -77,81 +70,6 @@ int ApplicationPolicy::uninstallPackage(const std::string& pkgid)
         packman.uninstallPackage(pkgid, context.getPeerUid());
     } catch (runtime::Exception& e) {
         ERROR("Exception on package uninstallation: " + pkgid);
-        return -1;
-    }
-
-    return 0;
-}
-
-int ApplicationPolicy::disableApplication(const std::string& appid)
-{
-    try {
-        Launchpad launchpad(context.getPeerUid());
-        if (launchpad.isRunning(appid)) {
-            launchpad.terminate(appid);
-            // Notify user that the app hass terminated due to the policy
-        }
-        PackageManager& packman = PackageManager::instance();
-        packman.deactivatePackage(appid, context.getPeerUid());
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
-
-    return 0;
-}
-
-int ApplicationPolicy::enableApplication(const std::string& appid)
-{
-    try {
-        PackageManager& packman = PackageManager::instance();
-        packman.activatePackage(appid, context.getPeerUid());
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
-
-    return 0;
-}
-
-int ApplicationPolicy::getApplicationState(const std::string& appid)
-{
-    return true;
-}
-
-int ApplicationPolicy::setApplicationState(const std::string& appid, const int state)
-{
-    return true;
-}
-
-int ApplicationPolicy::startApplication(const std::string& appid)
-{
-    try {
-        Launchpad launchpad(context.getPeerUid());
-        launchpad.launch(appid);
-     } catch (runtime::Exception& e) {
-        ERROR("Failed to start device encryption");
-        return -1;
-    }
-
-    return 0;
-}
-
-int ApplicationPolicy::stopApplication(const std::string& appid)
-{
-    Launchpad launchpad(context.getPeerUid());
-    if (launchpad.isRunning(appid)) {
-        launchpad.terminate(appid);
-    }
-
-    return 0;
-}
-
-int ApplicationPolicy::wipeApplicationData(const std::string& appid)
-{
-    try {
-        PackageManager& packman = PackageManager::instance();
-        packman.wipePackageData(appid, context.getPeerUid());
-    } catch (runtime::Exception& e) {
-        ERROR("Exception on wiping package data");
         return -1;
     }
 

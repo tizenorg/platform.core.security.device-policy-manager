@@ -35,15 +35,6 @@ extern "C" {
  */
 
 /**
- * @brief       Enumeration for application state
- * @since_tizen 3.0
- */
-typedef enum {
-    DPM_PACKAGE_STATE_DISABLE = 0, /**< Package disable */
-    DPM_PACKAGE_STATE_ENABLE  = 1  /**< Package enable */
-} dpm_package_state_e;
-
-/**
  * @brief       Enumeration for installation mode
  * @since_tizen 3.0
  */
@@ -110,45 +101,6 @@ int dpm_application_unset_mode_restriction(device_policy_manager_h handle, int m
  * @see         dpm_application_get_mode_restriction()
  */
 int dpm_application_get_mode_restriction(device_policy_manager_h handle, int *mode);
-
-/**
- * @brief       Enables/disables an package without installation/uninstallation.
- * @details     Administrator can silently enable/disable any package without
- *              user interaction.
- * @since_tizen 3.0
- * @param[in]   handle The device policy manager handle
- * @param[in]   pkgid The package name
- * @param[in]   state The package state
- * @return      #DPM_ERROR_NONE on success, otherwise a negative value
- * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_TIMEOUT Time out
- * @retval      #DPM_ERROR_ACCESS_DENIED The application does not have
- *              the privilege to call this API
- * @pre         handle must be created by dpm_context_acquire_application_policy()
- * @see         dpm_context_acquire_application_policy()
- * @see         dpm_context_release_application_policy()
- * @see         dpm_application_get_package_state()
- */
-int dpm_application_set_package_state(device_policy_manager_h handle, const char* pkgid, dpm_package_state_e state);
-
-/**
- * @brief       Checks whether a geiven application package is enabled or disabled
- * @details     Administrator can use this API to silently disable installation of an application
- *              without user interaction. The user can not install applications for which
- *              the administrator has disabled installation.
- * @since_tizen 3.0
- * @param[in]   handle The application policy handle
- * @param[in]   pkgid The package name of the application whose installation is to be disabled
- * @param[out]  state The current state of the application package
- * @return      #DPM_ERROR_NONE on success, otherwise a negative value
- * @retval      #DPM_ERROR_NONE Successful
- * @retval      #DPM_ERROR_TIMEOUT Time out
- * @pre         handle must be created by dpm_context_acquire_application_policy()
- * @see         dpm_context_acquire_application_policy()
- * @see         dpm_context_release_application_policy()
- * @see         dpm_application_set_package_state()
- */
-int dpm_application_get_package_state(device_policy_manager_h handle, const char* pkgid, int *state);
 
 /**
  * @brief       Adds privilege to blacklist

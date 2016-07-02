@@ -29,7 +29,6 @@
 #include "policy-helper.h"
 
 #include "app-bundle.h"
-#include "syspopup.h"
 #include "audit/logger.h"
 #include "dbus/connection.h"
 

@@ -38,9 +38,6 @@ public:
 	int setClipboardState(int enable);
 	int getClipboardState();
 
-	int setSettingsChangesState(int enable);
-	int getSettingsChangesState();
-
 	int setUsbDebuggingState(int enable);
 	int getUsbDebuggingState();
 

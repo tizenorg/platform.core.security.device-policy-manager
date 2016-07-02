@@ -40,19 +40,8 @@ public:
     ApplicationPolicy(PolicyControlContext& ctxt);
     ~ApplicationPolicy();
 
-    int setApplicationState(const std::string& appid, int state);
-    int getApplicationState(const std::string& appid);
-
-    int disableApplication(const std::string& appid);
-    int enableApplication(const std::string& appid);
-
     int installPackage(const std::string& pkgpath);
     int uninstallPackage(const std::string& pkgid);
-
-    int startApplication(const std::string& appid);
-    int stopApplication(const std::string& appid);
-
-    int wipeApplicationData(const std::string& appid);
 
     int setModeRestriction(int mode);
     int unsetModeRestriction(int mode);

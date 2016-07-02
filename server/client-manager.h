@@ -62,15 +62,10 @@ public:
     ClientManager(const ClientManager&) = delete;
     ClientManager& operator=(const ClientManager&) = delete;
 
-    void activateClient(const std::string& name);
-    void deactivateClient(const std::string& name);
     void registerClient(const std::string& name);
     void deregisterClient(const std::string& name);
 
     std::string generateKey();
-
-    void dumpRegisteredClients();
-    void dumpActivatedClients();
 
     static ClientManager& instance();
 

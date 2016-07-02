@@ -23,15 +23,6 @@
 
 using namespace DevicePolicyManager;
 
-EXPORT_API int dpm_security_lockout_device(device_policy_manager_h handle)
-{
-    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-
-	DevicePolicyContext &context = GetDevicePolicyContext(handle);
-	SecurityPolicy security = context.createPolicyInterface<SecurityPolicy>();
-    return security.lockoutDevice();
-}
-
 EXPORT_API int dpm_security_lockout_screen(device_policy_manager_h handle)
 {
     RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);

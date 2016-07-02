@@ -29,7 +29,6 @@
 
 #include "security.hxx"
 
-#include "syspopup.h"
 #include "launchpad.h"
 #include "process.h"
 #include "filesystem.h"
@@ -49,25 +48,15 @@ const std::string PROG_POWEROFF = "/usr/sbin/poweroff";
 SecurityPolicy::SecurityPolicy(PolicyControlContext& ctxt) :
     context(ctxt)
 {
-    ctxt.registerNonparametricMethod(this, (int)(SecurityPolicy::lockoutDevice));
     ctxt.registerNonparametricMethod(this, (int)(SecurityPolicy::lockoutScreen));
-    ctxt.registerNonparametricMethod(this, (int)(SecurityPolicy::reboot));
-    ctxt.registerNonparametricMethod(this, (int)(SecurityPolicy::powerOffDevice));
     ctxt.registerNonparametricMethod(this, (int)(SecurityPolicy::isInternalStorageEncrypted));
     ctxt.registerNonparametricMethod(this, (int)(SecurityPolicy::isExternalStorageEncrypted));
     ctxt.registerParametricMethod(this, (int)(SecurityPolicy::setInternalStorageEncryption)(bool));
     ctxt.registerParametricMethod(this, (int)(SecurityPolicy::setExternalStorageEncryption)(bool));
-    ctxt.registerParametricMethod(this, (std::vector<std::string>)(SecurityPolicy::getFileNamesOnDevice)(std::string));
-    ctxt.registerParametricMethod(this, (std::vector<std::string>)(SecurityPolicy::getFileNamesWithAttributes)(std::string));
 }
 
 SecurityPolicy::~SecurityPolicy()
 {
-}
-
-int SecurityPolicy::lockoutDevice()
-{
-    return 0;
 }
 
 int SecurityPolicy::lockoutScreen()
@@ -81,33 +70,6 @@ int SecurityPolicy::lockoutScreen()
     }
 
     return 0;
-}
-
-int SecurityPolicy::reboot()
-{
-    if (::reboot(RB_AUTOBOOT) < 0) {
-        ERROR("Failed to reboot device");
-        return -1;
-    }
-
-    return 0;
-}
-
-int SecurityPolicy::powerOffDevice()
-{
-    int ret = 0;
-
-    if (::deviced_call_predef_action("poweroff", 0) < 0) {
-        WARN("Poweroff failed in deviced... Start poweroff fallback");
-        runtime::Process proc(PROG_POWEROFF);
-        ret = proc.execute();
-        if (ret != 0) {
-            ERROR("Failed to turn off device power");
-            ret = -1;
-        }
-    }
-
-    return ret;
 }
 
 int SecurityPolicy::setInternalStorageEncryption(bool encrypt)
@@ -174,44 +136,6 @@ int SecurityPolicy::isExternalStorageEncrypted()
     }
 
     return false;
-}
-
-std::vector<std::string> SecurityPolicy::getFileNamesOnDevice(const std::string& path)
-{
-    std::vector<std::string> files;
-
-    try {
-        runtime::DirectoryIterator iter(path), end;
-        while (iter != end) {
-            files.push_back(iter->getPath());
-            ++iter;
-        }
-    } catch (runtime::Exception& e) {
-        ERROR("Error on directory iteration");
-        // Return empty list
-        return std::vector<std::string>();
-    }
-
-    return files;
-}
-
-std::vector<std::string> SecurityPolicy::getFileNamesWithAttributes(const std::string& path)
-{
-    std::vector<std::string> files;
-
-    try {
-        runtime::DirectoryIterator iter(path), end;
-        while (iter != end) {
-            files.push_back(iter->getPath());
-            ++iter;
-        }
-    } catch (runtime::Exception& e) {
-        ERROR("Error on directory iteration");
-        // Return empty list
-        return std::vector<std::string>();
-    }
-
-    return files;
 }
 
 SecurityPolicy securityPolicy(Server::instance());

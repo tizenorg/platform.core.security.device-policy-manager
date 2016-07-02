@@ -32,17 +32,12 @@ public:
     SecurityPolicy(PolicyControlContext& ctxt);
     ~SecurityPolicy();
 
-    int lockoutDevice();
     int lockoutScreen();
     int wipeData(const int id);
-    int reboot();
-    int powerOffDevice();
     int setInternalStorageEncryption(bool encrypt);
     int isInternalStorageEncrypted();
     int setExternalStorageEncryption(bool encrypt);
     int isExternalStorageEncrypted();
-    std::vector<std::string> getFileNamesOnDevice(const std::string& path);
-    std::vector<std::string> getFileNamesWithAttributes(const std::string& path);
 
 private:
     PolicyControlContext& context;

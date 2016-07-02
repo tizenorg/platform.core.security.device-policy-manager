@@ -19,7 +19,6 @@ SET(TARGET ${PROJECT_NAME})
 SET(FOUNDATION		main.cpp
 					server.cpp
 					app-bundle.cpp
-					syspopup.cpp
 					launchpad.cpp
 					packman.cpp
 					policy.cpp
