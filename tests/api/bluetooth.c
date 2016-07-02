@@ -15,204 +15,149 @@
  */
 
 #include <stdio.h>
-#include <stdbool.h>
+
 #include <dpm/bluetooth.h>
+
 #include "testbench.h"
 
 static int bluetooth_add_device_to_blacklist(struct testcase* tc)
 {
-    dpm_context_h context;
+    device_policy_manager_h handle;
 
-    context = dpm_context_create();
-    if (context == NULL) {
-        printf("Failed to create client context\n");
-        return TEST_FAILED;
-    }
-
-    dpm_bluetooth_policy_h policy = dpm_context_acquire_bluetooth_policy(context);
-    if (policy == NULL) {
-        printf("Failed to get bluetooth policy interface\n");
-        dpm_context_destroy(context);
+    handle = dpm_manager_create();
+    if (handle == NULL) {
+        printf("Failed to create client handle\n");
         return TEST_FAILED;
     }
 
     const char* dummy_mac = "e8:11:32:30:78:9c";
-    if (dpm_bluetooth_add_device_to_blacklist(policy, dummy_mac) != 0) {
+    if (dpm_bluetooth_add_device_to_blacklist(handle, dummy_mac) != 0) {
         printf("Failed to add device from blacklist\n");
-        dpm_context_release_bluetooth_policy(context, policy);
-        dpm_context_destroy(context);
+        dpm_manager_destroy(handle);
         return TEST_FAILED;
     }
 
-    dpm_context_release_bluetooth_policy(context, policy);
-    dpm_context_destroy(context);
+    dpm_manager_destroy(handle);
 
     return TEST_SUCCESSED;
 }
 
 static int bluetooth_remove_device_from_blacklist(struct testcase* tc)
 {
-    dpm_context_h context;
+    device_policy_manager_h handle;
 
-    context = dpm_context_create();
-    if (context == NULL) {
-        printf("Failed to create client context\n");
-        return TEST_FAILED;
-    }
-
-    dpm_bluetooth_policy_h policy = dpm_context_acquire_bluetooth_policy(context);
-    if (policy == NULL) {
-        printf("Failed to get bluetooth policy interface\n");
-        dpm_context_destroy(context);
+    handle = dpm_manager_create();
+    if (handle == NULL) {
+        printf("Failed to create client handle\n");
         return TEST_FAILED;
     }
 
     const char* dummy_mac = "e8:11:32:30:78:9c";
-    if (dpm_bluetooth_remove_device_from_blacklist(policy, dummy_mac) != 0) {
+    if (dpm_bluetooth_remove_device_from_blacklist(handle, dummy_mac) != 0) {
         printf("Failed to remove device from blacklist\n");
-        dpm_context_release_bluetooth_policy(context, policy);
-        dpm_context_destroy(context);
+        dpm_manager_destroy(handle);
         return TEST_FAILED;
     }
 
-    dpm_context_release_bluetooth_policy(context, policy);
-    dpm_context_destroy(context);
+    dpm_manager_destroy(handle);
     return TEST_SUCCESSED;
 }
 
 static int bluetooth_device_restriction(struct testcase* tc)
 {
     int allow = false;
-    dpm_context_h context;
+    device_policy_manager_h handle;
 
-    context = dpm_context_create();
-    if (context == NULL) {
-        printf("Failed to create client context\n");
+    handle = dpm_manager_create();
+    if (handle == NULL) {
+        printf("Failed to create client handle\n");
         return TEST_FAILED;
     }
 
-    dpm_bluetooth_policy_h policy = dpm_context_acquire_bluetooth_policy(context);
-    if (policy == NULL) {
-        printf("Failed to get bluetooth policy interface\n");
-        dpm_context_destroy(context);
-        return TEST_FAILED;
-    }
-
-    if (dpm_bluetooth_set_device_restriction(policy, true) != 0) {
+    if (dpm_bluetooth_set_device_restriction(handle, true) != 0) {
         printf("Failed to set device restriction\n");
-        dpm_context_release_bluetooth_policy(context, policy);
-        dpm_context_destroy(context);
+        dpm_manager_destroy(handle);
         return TEST_FAILED;
     }
 
     // the 'allow' will be always 'true' before server/bluetooth.cpp has been implemented.
-    if (dpm_bluetooth_is_device_restricted(policy, &allow) != DPM_ERROR_NONE) {
+    if (dpm_bluetooth_is_device_restricted(handle, &allow) != DPM_ERROR_NONE) {
         printf("Failed to check device restriction\n");
-        dpm_context_release_bluetooth_policy(context, policy);
-        dpm_context_destroy(context);
+        dpm_manager_destroy(handle);
         return TEST_FAILED;
     }
 
-    dpm_context_release_bluetooth_policy(context, policy);
-    dpm_context_destroy(context);
+    dpm_manager_destroy(handle);
     return TEST_SUCCESSED;
 }
 
 static int bluetooth_add_uuid_to_blacklist(struct testcase* tc)
 {
-    dpm_context_h context;
+    device_policy_manager_h handle;
 
-    context = dpm_context_create();
-    if (context == NULL) {
-        printf("Failed to create client context\n");
-        return TEST_FAILED;
-    }
-
-    dpm_bluetooth_policy_h policy = dpm_context_acquire_bluetooth_policy(context);
-    if (policy == NULL) {
-        printf("Failed to get bluetooth policy interface\n");
-        dpm_context_destroy(context);
+    handle = dpm_manager_create();
+    if (handle == NULL) {
+        printf("Failed to create client handle\n");
         return TEST_FAILED;
     }
 
     const char* dummy_uuid = "ff8ca1f3-0221-40c9-91fd-25ebbbfa68c3";
-    if (dpm_bluetooth_add_uuid_to_blacklist(policy, dummy_uuid) != 0) {
+    if (dpm_bluetooth_add_uuid_to_blacklist(handle, dummy_uuid) != 0) {
         printf("Failed to add uuid to blacklist\n");
-        dpm_context_release_bluetooth_policy(context, policy);
-        dpm_context_destroy(context);
+        dpm_manager_destroy(handle);
         return TEST_FAILED;
     }
 
-    dpm_context_release_bluetooth_policy(context, policy);
-    dpm_context_destroy(context);
+    dpm_manager_destroy(handle);
     return TEST_SUCCESSED;
 }
 
 static int bluetooth_remove_uuid_from_blacklist(struct testcase* tc)
 {
-    dpm_context_h context;
+    device_policy_manager_h handle;
 
-    context = dpm_context_create();
-    if (context == NULL) {
-        printf("Failed to create client context\n");
-        return TEST_FAILED;
-    }
-
-    dpm_bluetooth_policy_h policy = dpm_context_acquire_bluetooth_policy(context);
-    if (policy == NULL) {
-        printf("Failed to get bluetooth policy interface\n");
-        dpm_context_destroy(context);
+    handle = dpm_manager_create();
+    if (handle == NULL) {
+        printf("Failed to create client handle\n");
         return TEST_FAILED;
     }
 
     const char* dummy_uuid = "ff8ca1f3-0221-40c9-91fd-25ebbbfa68c3";
-    if (dpm_bluetooth_remove_uuid_from_blacklist(policy, dummy_uuid) != 0) {
+    if (dpm_bluetooth_remove_uuid_from_blacklist(handle, dummy_uuid) != 0) {
         printf("Failed to remove uuid from blacklist\n");
-        dpm_context_release_bluetooth_policy(context, policy);
-        dpm_context_destroy(context);
+        dpm_manager_destroy(handle);
         return TEST_FAILED;
     }
 
-    dpm_context_release_bluetooth_policy(context, policy);
-    dpm_context_destroy(context);
+    dpm_manager_destroy(handle);
     return TEST_SUCCESSED;
 }
 
 static int bluetooth_uuid_restriction(struct testcase* tc)
 {
     int allow = false;
-    dpm_context_h context;
+    device_policy_manager_h handle;
 
-    context = dpm_context_create();
-    if (context == NULL) {
-        printf("Failed to create client context\n");
+    handle = dpm_manager_create();
+    if (handle == NULL) {
+        printf("Failed to create client handle\n");
         return TEST_FAILED;
     }
 
-    dpm_bluetooth_policy_h policy = dpm_context_acquire_bluetooth_policy(context);
-    if (policy == NULL) {
-        printf("Failed to get bluetooth policy interface\n");
-        dpm_context_destroy(context);
-        return TEST_FAILED;
-    }
-
-    if (dpm_bluetooth_set_uuid_restriction(policy, true) != 0) {
+    if (dpm_bluetooth_set_uuid_restriction(handle, true) != 0) {
         printf("Failed to set uuid restriction\n");
-        dpm_context_release_bluetooth_policy(context, policy);
-        dpm_context_destroy(context);
+        dpm_manager_destroy(handle);
         return TEST_FAILED;
     }
 
     // the 'allow' will be always 'true' before server/bluetooth.cpp has been implemented.
-    if (dpm_bluetooth_is_uuid_restricted(policy, &allow) != DPM_ERROR_NONE) {
+    if (dpm_bluetooth_is_uuid_restricted(handle, &allow) != DPM_ERROR_NONE) {
         printf("Failed to check uuid restriction\n");
-        dpm_context_release_bluetooth_policy(context, policy);
-        dpm_context_destroy(context);
+        dpm_manager_destroy(handle);
         return TEST_FAILED;
     }
 
-    dpm_context_release_bluetooth_policy(context, policy);
-    dpm_context_destroy(context);
+    dpm_manager_destroy(handle);
     return TEST_SUCCESSED;
 }
 
