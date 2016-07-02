@@ -17,10 +17,15 @@ SET(API_TEST_TARGET	"dpm-api-tests")
 
 SET(API_TEST_SOURCES main.c
                      testbench.c
-#					 context.c
-#                     bluetooth.c
-#					 restriction.c
-#                     security.c
+                     admin.c
+                     application.c
+                     context.c
+                     bluetooth.c
+                     manager.c
+                     password.c
+					 restriction.c
+                     security.c
+                     wifi.c
 )
 
 ADD_EXECUTABLE(${API_TEST_TARGET} ${API_TEST_SOURCES})
