@@ -36,25 +36,25 @@ static void device_policy_handle_callback(const char* name, const char* state, v
 static void* getter(void* data)
 {
     int i = 0;
-    dpm_context_h handle;
+    device_policy_manager_h handle;
     volatile int triggered = 0;;
 
     printf("Policy receiver %d is ready\n", *((int *)data));
 
     while(1) {
-        handle = dpm_context_create();
+        handle = dpm_manager_create();
         if (handle == NULL) {
             printf("Failed to create client handle\n");
             return (void *)TEST_FAILED;
         }
 
         int id;
-        dpm_context_add_policy_changed_cb(handle, "camera", device_policy_handle_callback, (void *)&triggered, &id);
+        dpm_add_policy_changed_cb(handle, "camera", device_policy_handle_callback, (void *)&triggered, &id);
 
         while (!triggered) {
             if (completed) {
-                dpm_context_remove_policy_changed_cb(handle, id);
-                dpm_context_destroy(handle);
+                dpm_remove_policy_changed_cb(handle, id);
+                dpm_manager_destroy(handle);
                 return (void *)TEST_SUCCESSED;
             }
         }
@@ -65,8 +65,8 @@ static void* getter(void* data)
             printf("\n");
         }
 
-        dpm_context_remove_policy_changed_cb(handle, id);
-        dpm_context_destroy(handle);
+        dpm_remove_policy_changed_cb(handle, id);
+        dpm_manager_destroy(handle);
 
         printf("G");
 
@@ -79,12 +79,12 @@ static void* getter(void* data)
 static void* setter(void *data)
 {
     int i;
-    dpm_context_h handle;
+    device_policy_manager_h handle;
 
     printf("Thread setter %d is ready\n", *((int *)data));
 
     for (i = 0; i < MAX_ITERATIONS; i++) {
-        handle = dpm_context_create();
+        handle = dpm_manager_create();
         if (handle == NULL) {
             printf("Failed to create client handle\n");
             completed = 1;
@@ -100,7 +100,7 @@ static void* setter(void *data)
             printf("\n");
         }
 
-        dpm_context_destroy(handle);
+        dpm_manager_destroy(handle);
 
     }
 
@@ -111,7 +111,7 @@ static void* setter(void *data)
     return (void *)TEST_SUCCESSED;
 }
 
-static int device_policy_handle(struct testcase* tc)
+static int device_context_handle(struct testcase* tc)
 {
     pthread_t handle[MAX_WORKER_THREADS];
     int i, ret, status, idx[MAX_WORKER_THREADS];
@@ -137,12 +137,12 @@ static int device_policy_handle(struct testcase* tc)
     return ret;
 }
 
-struct testcase device_policy_handle_testcase = {
-    .description = "device policy handle",
-    .handler = device_policy_handle
+struct testcase device_context_handle_testcase = {
+    .description = "device context handle",
+    .handler = device_context_handle
 };
 
-void TESTCASE_CONSTRUCTOR device_policy_handle_build_testcase(void)
+void TESTCASE_CONSTRUCTOR device_context_handle_build_testcase(void)
 {
-    testbench_populate_testcase(&device_policy_handle_testcase);
+    testbench_populate_testcase(&device_context_handle_testcase);
 }

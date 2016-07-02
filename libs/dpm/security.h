@@ -148,7 +148,6 @@ int dpm_security_is_external_storage_encrypted(device_policy_manager_h handle, i
 typedef enum {
 	DPM_SECURITY_WIPE_INTERNAL_STORAGE = (1 << 0), /**< Wipe internal memory */
 	DPM_SECURITY_WIPE_EXTERNAL_STORAGE = (1 << 1),  /**< Wipe external memory */
-	DPM_SECURITY_WIPE_INTERNAL_AND_EXTERNAL_STORAGE = (1 << 2)  /**< Wipe internal and external memory */
 } dpm_security_wipe_type_e;
 
 /**
