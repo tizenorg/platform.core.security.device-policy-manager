@@ -128,7 +128,6 @@ public:
     bool isFile() const;
     bool isDirectory() const;
     bool isDevice() const;
-    bool isHidden() const;
 
     mode_t getMode() const;
     uid_t getUid() const;
@@ -143,8 +142,6 @@ public:
     void write(const void *buffer, const size_t size) const;
     void close();
     File copyTo(const std::string& pathname);
-    void moveTo(const std::string& pathname);
-    void renameTo(const std::string& pathname);
     void remove(bool recursive = false);
     void makeBaseDirectory(uid_t uid = 0, gid_t gid = 0);
     void makeDirectory(bool recursive = false, uid_t uid = 0, gid_t gid = 0);

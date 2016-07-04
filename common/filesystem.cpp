@@ -225,11 +225,6 @@ bool File::isDevice() const
     return (S_ISCHR(st.st_mode) || S_ISBLK(st.st_mode));
 }
 
-bool File::isHidden() const
-{
-    return false;
-}
-
 mode_t File::getMode() const
 {
     struct stat st;
@@ -415,14 +410,6 @@ File File::copyTo(const std::string& destDir)
     } catch (runtime::Exception &e) {}
 
     return destFile;
-}
-
-void File::moveTo(const std::string& dest)
-{
-}
-
-void File::renameTo(const std::string& dest)
-{
 }
 
 void File::remove(bool recursive)

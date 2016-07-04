@@ -97,4 +97,3 @@ TESTCASE(ColumnTest)
         TEST_FAIL(e.what());
     }
 }
-

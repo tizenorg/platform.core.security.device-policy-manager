@@ -18,6 +18,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <signal.h>
+#include <fcntl.h>
 
 #include <iostream>
 #include <string>
@@ -33,15 +34,80 @@ TESTCASE(DirectoryIteration)
     runtime::DirectoryIterator iter(runtime::Path("/dev"));
     runtime::DirectoryIterator end;
 
+    TEST_EXPECT(false, iter == end);
+
     while (iter != end) {
-        runtime::File &file = *iter;
-        std::cout << "File Name: " << file.getPath()
-                  << "   Is Dev File: " << file.isDevice()
-                  << "   Is Reg FIle: " << file.isFile()
-                  << "   Is Directory: " << file.isDirectory()
-                  << "   Is Link: " << file.isLink()
-                  << std::endl;
         ++iter;
     }
 }
 
+TESTCASE(FileIO)
+{
+    char readbuf[100];
+    char testbuf[100] = "Test Data";
+
+    runtime::File tmp("/tmp/test-file");
+    try {
+        tmp.create(O_RDWR);
+        tmp.write(testbuf, ::strlen(testbuf));
+        tmp.read(readbuf, ::strlen(testbuf));
+        tmp.close();
+    } catch (runtime::Exception& e) {
+        TEST_FAIL(e.what());
+    }
+
+    try {
+        runtime::File tmpFile("/tmp/test-file", O_RDWR);
+        tmpFile.close();
+        tmpFile.remove();
+    } catch (runtime::Exception& e) {
+        TEST_FAIL(e.what());
+    }
+}
+
+TESTCASE(FileAttribute)
+{
+    runtime::File tmp("/tmp");
+    TEST_EXPECT(true, tmp.exists());
+    TEST_EXPECT(true, tmp.canRead());
+    TEST_EXPECT(true, tmp.canWrite());
+    TEST_EXPECT(true, tmp.canExecute());
+    TEST_EXPECT(false, tmp.isLink());
+    TEST_EXPECT(false, tmp.isFile());
+    TEST_EXPECT(true, tmp.isDirectory());
+    TEST_EXPECT(false, tmp.isDevice());
+
+    runtime::File testDir("/tmp/dpm-unit-test/dir");
+    try {
+        testDir.makeDirectory(true, ::getuid(), ::getgid());
+        testDir.chown(::getuid(), ::getgid(), false);
+    } catch (runtime::Exception& e) {
+        TEST_FAIL(e.what());
+    }
+
+    runtime::File dir("/tmp/dpm-unit-test");
+    try {
+        dir.remove(true);
+    } catch (runtime::Exception& e) {
+        TEST_FAIL(e.what());
+    }
+}
+
+TESTCASE(Path)
+{
+    runtime::Path tmp("/tmp");
+    TEST_EXPECT(true, tmp.isAbsolute());
+    TEST_EXPECT(false, tmp.isRelative());
+
+    TEST_EXPECT("/tmp", tmp.getPathname());
+    TEST_EXPECT("tmp", tmp.getFilename());
+
+    runtime::Path copy = tmp;
+    TEST_EXPECT(true, copy == tmp);
+
+    TEST_EXPECT(true, copy.isAbsolute());
+    TEST_EXPECT(false, copy.isRelative());
+
+    TEST_EXPECT("/tmp", copy.getPathname());
+    TEST_EXPECT("tmp", copy.getFilename());
+}

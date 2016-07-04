@@ -43,9 +43,7 @@ Statement::Statement(const Connection& db, const std::string& query) :
 
 Statement::~Statement()
 {
-    if (::sqlite3_finalize(statement) != SQLITE_OK) {
-        throw runtime::Exception(getErrorMessage());
-    }
+    ::sqlite3_finalize(statement);
 }
 
 void Statement::reset()
