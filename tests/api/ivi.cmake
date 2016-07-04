@@ -13,26 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-SET(API_TEST_TARGET	"dpm-api-tests")
 
-SET(API_TEST_SOURCES main.c
-                     testbench.c
-                     admin.c
-                     application.c
-                     context.c
-                     bluetooth.c
-                     manager.c
-                     restriction.c
-                     security.c
-                     wifi.c
+SET(API_TEST_SOURCES    ${API_TEST_SOURCES}
+                        password.cpp
 )
-
-INCLUDE("${TIZEN_PROFILE_NAME}.cmake")
-
-ADD_EXECUTABLE(${API_TEST_TARGET} ${API_TEST_SOURCES})
-
-INCLUDE_DIRECTORIES(SYSTEM ${DPM_LIBS} ${DPM_TESTS})
-
-TARGET_LINK_LIBRARIES(${API_TEST_TARGET} dpm)
-
-INSTALL(TARGETS ${API_TEST_TARGET} DESTINATION bin)
