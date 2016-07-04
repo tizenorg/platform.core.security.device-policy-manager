@@ -209,6 +209,7 @@ Tizen DPM system popup interface package
 Summary: Tizen Zone Client library
 Group: Development/Libraries
 BuildRequires: pkgconfig(capi-appfw-application)
+BuildRequires: pkgconfig(capi-appfw-app-manager)
 BuildRequires: pkgconfig(capi-appfw-package-manager)
 BuildRequires: pkgconfig(libtzplatform-config)
 Requires: %{name} = %{version}-%{release}
