@@ -62,25 +62,21 @@ public:
 
     String method1(String& arg1)
     {
-        INFO("[SERVER] Remote method1 is called with: " + arg1.value);
         return String("Method1 result");
     }
 
     String method2(String& arg1, String& arg2)
     {
-        INFO("[SERVER] Remote method2 is called with: " + arg1.value + ", " + arg2.value);
         return String("Method2 result");
     }
 
     String method3(String& arg1, String& arg2, String& arg3)
     {
-        INFO("[SERVER] Remote method3 is called with: " + arg1.value + ", " + arg2.value + ", " + arg3.value);
         return String("Method3 result");
     }
 
     String method4(String& arg1, String& arg2, String& arg3, String& arg4)
     {
-        INFO("[SERVER] Remote method4 is called with: " + arg1.value + ", " + arg2.value + ", " + arg3.value + ", " + arg4.value);
         return String("Method4 result");
     }
 
@@ -121,12 +117,10 @@ public:
     void connect()
     {
         auto policyChangedListener = [this](const std::string& name, int value) {
-            std::cout << "Policy Changed: " << name << " : " << value << std::endl;
             policyChangeNotificationTriggered = true;
         };
 
         auto policySignalListener = [this](const std::string& name) {
-            std::cout << "Signal Triggered" << std::endl;
             signalTriggered = true;
         };
 
@@ -335,8 +329,6 @@ public:
 
             client.requestSignal();
             client.requestPolicyChangeNotification();
-
-            sleep(5);
 
             client.disconnect();
         } catch (runtime::Exception& e) {
