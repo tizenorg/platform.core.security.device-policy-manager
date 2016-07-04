@@ -85,7 +85,7 @@ static inline void usage(const std::string name)
 int showZoneInstances()
 {
     try {
-        runtime::DirectoryIterator iter(runtime::Path("/var/run/zone")), end;
+        runtime::DirectoryIterator iter("/var/run/zone"), end;
 
         while (iter != end) {
             const std::string& path = (*iter).getPath();

@@ -28,11 +28,11 @@ public:
 
     Process(const std::string& prog);
     Process(const std::string& prog, const std::vector<std::string>& args);
-    Process(const Process& proc);
+    Process(const Process& proc) = delete;
 
     ~Process();
 
-    Process& operator=(const Process& proc);
+    Process& operator=(const Process& proc) = delete;
 
     int execute();
     int start();
