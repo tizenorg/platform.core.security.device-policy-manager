@@ -87,7 +87,7 @@ int ZonePolicy::createZone(const std::string& name, const std::string& setupWizA
     }
 
     try {
-        std::vector<std::string> data = {"app-id", "org.tizen.zone-setup-wizard",
+        std::vector<std::string> data = {"app-id", "org.tizen.krate-setup-wizard",
                                          "mode", "create",
                                          "zone", name};
         Bundle bundle;
@@ -111,7 +111,7 @@ int ZonePolicy::removeZone(const std::string& name)
     }
 
     try {
-        std::vector<std::string> data = {"app-id", "org.tizen.zone-setup-wizard",
+        std::vector<std::string> data = {"app-id", "org.tizen.krate-setup-wizard",
                                          "mode", "remove",
                                          "zone", name};
         Bundle bundle;
