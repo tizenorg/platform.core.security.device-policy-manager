@@ -201,6 +201,47 @@ Tizen DPM system popup interface package
 %{TZ_SYS_RO_PACKAGES}/org.tizen.dpm-syspopup.xml
 /usr/share/icons/default/small/org.tizen.dpm-syspopup.png
 
+## Zone Client Package ########################################################
+%package -n libzone
+Summary: Tizen Zone Client library
+Group: Development/Libraries
+BuildRequires: pkgconfig(capi-appfw-application)
+BuildRequires: pkgconfig(capi-appfw-package-manager)
+BuildRequires: pkgconfig(libtzplatform-config)
+Requires: %{name} = %{version}-%{release}
+Requires(post): /sbin/ldconfig
+Requires(postun): /sbin/ldconfig
+
+%description -n libzone
+The libzone package contains the libraries needed to control inside of the zone.
+
+%post -n libzone -p /sbin/ldconfig
+
+%postun -n libzone -p /sbin/ldconfig
+
+%files -n libzone
+%manifest device-policy-manager.manifest
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libzone.so.%{version}
+%{_libdir}/libzone.so.0
+
+## Devel Package ##############################################################
+%package -n libzone-devel
+Summary: Libraries and header files for zone client development
+Group: Development/Libraries
+Requires: libzone = %{version}-%{release}
+
+%description -n libzone-devel
+The libzone-devel package includes the libraries and header files necessary for
+developing the zone client program.
+
+%files -n libzone-devel
+%manifest device-policy-manager.manifest
+%defattr(644,root,root,755)
+%{_libdir}/libzone.so
+%{_includedir}/zone
+%{_libdir}/pkgconfig/zone.pc
+
 ## Begin of mobile feature ###################################################
 %if "%{profile}" == "mobile"
 
@@ -276,47 +317,6 @@ Tizen Krate keyguard interface for zone
 %{keyguard_home}/bin/*
 %{keyguard_home}/res/*
 %{TZ_SYS_RO_PACKAGES}/org.tizen.keyguard.xml
-
-## Zone Client Package ########################################################
-%package -n libzone
-Summary: Tizen Zone Client library
-Group: Development/Libraries
-BuildRequires: pkgconfig(capi-appfw-application)
-BuildRequires: pkgconfig(capi-appfw-package-manager)
-BuildRequires: pkgconfig(libtzplatform-config)
-Requires: %{name} = %{version}-%{release}
-Requires(post): /sbin/ldconfig
-Requires(postun): /sbin/ldconfig
-
-%description -n libzone
-The libzone package contains the libraries needed to control inside of the zone.
-
-%post -n libzone -p /sbin/ldconfig
-
-%postun -n libzone -p /sbin/ldconfig
-
-%files -n libzone
-%manifest device-policy-manager.manifest
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libzone.so.%{version}
-%{_libdir}/libzone.so.0
-
-## Devel Package ##############################################################
-%package -n libzone-devel
-Summary: Libraries and header files for zone client development
-Group: Development/Libraries
-Requires: libzone = %{version}-%{release}
-
-%description -n libzone-devel
-The libzone-devel package includes the libraries and header files necessary for
-developing the zone client program.
-
-%files -n libzone-devel
-%manifest device-policy-manager.manifest
-%defattr(644,root,root,755)
-%{_libdir}/libzone.so
-%{_includedir}/zone
-%{_libdir}/pkgconfig/zone.pc
 
 ## PAM Plugin Package ########################################################
 %package -n dpm-pam-zone

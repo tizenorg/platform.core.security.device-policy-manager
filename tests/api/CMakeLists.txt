@@ -26,12 +26,14 @@ SET(API_TEST_SOURCES main.c
 					 restriction.c
                      security.c
                      wifi.c
+                     zone.c
+                     zone/zone.c
 )
 
 ADD_EXECUTABLE(${API_TEST_TARGET} ${API_TEST_SOURCES})
 
-INCLUDE_DIRECTORIES(SYSTEM ${DPM_LIBS} ${DPM_TESTS})
+INCLUDE_DIRECTORIES(SYSTEM ${DPM_LIBS} ${DPM_ZONE}/libs ${DPM_TESTS})
 
-TARGET_LINK_LIBRARIES(${API_TEST_TARGET} dpm)
+TARGET_LINK_LIBRARIES(${API_TEST_TARGET} dpm zone)
 
 INSTALL(TARGETS ${API_TEST_TARGET} DESTINATION bin)
