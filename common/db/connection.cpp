@@ -33,7 +33,7 @@ Connection::Connection(const std::string& name, const int flags) :
 
 Connection::~Connection()
 {
-    sqlite3_close(handle);
+    ::sqlite3_close(handle);
 }
 
 int Connection::exec(const std::string& query)
@@ -42,12 +42,7 @@ int Connection::exec(const std::string& query)
         throw runtime::Exception(getErrorMessage());
     }
 
-    return sqlite3_changes(handle);
-}
-
-bool Connection::isTableExists(const std::string& tableName)
-{
-    return false;
+    return ::sqlite3_changes(handle);
 }
 
 } // namespace database

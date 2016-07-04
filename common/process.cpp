@@ -36,17 +36,8 @@ Process::Process(const std::string& prog, const std::vector<std::string>& args) 
 {
 }
 
-Process::Process(const Process& proc)
-{
-}
-
 Process::~Process()
 {
-}
-
-Process& Process::operator=(const Process& proc)
-{
-    return *this;
 }
 
 int Process::execute()

@@ -35,65 +35,6 @@
 
 namespace runtime {
 
-Path::Path()
-{
-}
-
-Path::Path(const std::string& path)
-{
-    assign(path);
-}
-
-Path::Path(const char* path)
-{
-    assign(path);
-}
-
-Path::Path(const Path& path)
-    : pathname(path.pathname)
-{
-}
-
-Path::~Path()
-{
-}
-
-Path& Path::assign(const Path& path)
-{
-    if (&path != this) {
-        pathname = path.pathname;
-    }
-
-    return *this;
-}
-
-Path& Path::assign(const std::string& path)
-{
-    pathname = path;
-
-    return *this;
-}
-
-Path& Path::assign(const char* path)
-{
-    return assign(std::string(path));
-}
-
-Path& Path::operator=(const Path& path)
-{
-    return assign(path);
-}
-
-Path& Path::operator=(const std::string& path)
-{
-    return assign(path);
-}
-
-Path& Path::operator=(const char* path)
-{
-    return assign(path);
-}
-
 File::File()
     : descriptor(-1)
 {
@@ -106,11 +47,6 @@ File::File(const char* pathname)
 
 File::File(const std::string& pathname)
     : descriptor(-1), path(pathname)
-{
-}
-
-File::File(const Path& filePath)
-    : descriptor(-1), path(filePath)
 {
 }
 
@@ -133,13 +69,13 @@ File::~File()
 bool File::exists() const
 {
     struct stat st;
-    return (::stat(path.getPathname().c_str(), &st) == 0);
+    return (::stat(path.c_str(), &st) == 0);
 }
 
 bool File::canRead() const
 {
     struct stat st;
-    if (::stat(path.getPathname().c_str(), &st) != 0) {
+    if (::stat(path.c_str(), &st) != 0) {
         throw runtime::Exception(runtime::GetSystemErrorMessage());
     }
 
@@ -155,7 +91,7 @@ bool File::canRead() const
 bool File::canWrite() const
 {
     struct stat st;
-    if (::stat(path.getPathname().c_str(), &st) != 0) {
+    if (::stat(path.c_str(), &st) != 0) {
         throw runtime::Exception(runtime::GetSystemErrorMessage());
     }
 
@@ -171,7 +107,7 @@ bool File::canWrite() const
 bool File::canExecute() const
 {
     struct stat st;
-    if (::stat(path.getPathname().c_str(), &st) != 0) {
+    if (::stat(path.c_str(), &st) != 0) {
         throw runtime::Exception(runtime::GetSystemErrorMessage());
     }
 
@@ -187,7 +123,7 @@ bool File::canExecute() const
 bool File::isLink() const
 {
     struct stat st;
-    if (::stat(path.getPathname().c_str(), &st) != 0) {
+    if (::stat(path.c_str(), &st) != 0) {
         throw runtime::Exception(runtime::GetSystemErrorMessage());
     }
 
@@ -197,7 +133,7 @@ bool File::isLink() const
 bool File::isFile() const
 {
     struct stat st;
-    if (::stat(path.getPathname().c_str(), &st) != 0) {
+    if (::stat(path.c_str(), &st) != 0) {
         throw runtime::Exception(runtime::GetSystemErrorMessage());
     }
 
@@ -207,7 +143,7 @@ bool File::isFile() const
 bool File::isDirectory() const
 {
     struct stat st;
-    if (::stat(path.getPathname().c_str(), &st) != 0) {
+    if (::stat(path.c_str(), &st) != 0) {
         throw runtime::Exception(runtime::GetSystemErrorMessage());
     }
 
@@ -217,22 +153,17 @@ bool File::isDirectory() const
 bool File::isDevice() const
 {
     struct stat st;
-    if (::stat(path.getPathname().c_str(), &st) != 0) {
+    if (::stat(path.c_str(), &st) != 0) {
         throw runtime::Exception(runtime::GetSystemErrorMessage());
     }
 
     return (S_ISCHR(st.st_mode) || S_ISBLK(st.st_mode));
 }
 
-bool File::isHidden() const
-{
-    return false;
-}
-
 mode_t File::getMode() const
 {
     struct stat st;
-    if (::stat(path.getPathname().c_str(), &st) != 0) {
+    if (::stat(path.c_str(), &st) != 0) {
         throw runtime::Exception(runtime::GetSystemErrorMessage());
     }
 
@@ -242,7 +173,7 @@ mode_t File::getMode() const
 uid_t File::getUid() const
 {
     struct stat st;
-    if (::stat(path.getPathname().c_str(), &st) != 0) {
+    if (::stat(path.c_str(), &st) != 0) {
         throw runtime::Exception(runtime::GetSystemErrorMessage());
     }
 
@@ -252,7 +183,7 @@ uid_t File::getUid() const
 gid_t File::getGid() const
 {
     struct stat st;
-    if (::stat(path.getPathname().c_str(), &st) != 0) {
+    if (::stat(path.c_str(), &st) != 0) {
         throw runtime::Exception(runtime::GetSystemErrorMessage());
     }
 
@@ -262,27 +193,17 @@ gid_t File::getGid() const
 size_t File::size() const
 {
     struct stat st;
-    if (::stat(path.getPathname().c_str(), &st) != 0) {
+    if (::stat(path.c_str(), &st) != 0) {
         throw runtime::Exception(runtime::GetSystemErrorMessage());
     }
 
     return st.st_size;
 }
 
-std::string File::toString() const
-{
-    struct stat st;
-    if (::stat(path.getPathname().c_str(), &st) != 0) {
-        throw runtime::Exception(runtime::GetSystemErrorMessage());
-    }
-
-    return std::string("Test String");
-}
-
 void File::create(mode_t mode)
 {
     while (1) {
-        descriptor = ::creat(path.getPathname().c_str(), mode);
+        descriptor = ::creat(path.c_str(), mode);
         if (descriptor == -1) {
             if (errno != EINTR) {
                 continue;
@@ -296,23 +217,7 @@ void File::create(mode_t mode)
 void File::open(int flags)
 {
     while (1) {
-        descriptor = ::open(path.getPathname().c_str(), flags);
-        if (descriptor == -1) {
-            if (errno != EINTR) {
-                continue;
-            }
-            throw runtime::Exception(runtime::GetSystemErrorMessage());
-        }
-        return;
-    }
-}
-
-void File::open(int flags, mode_t mode)
-{
-    close();
-
-    while (1) {
-        descriptor = ::open(path.getPathname().c_str(), flags, mode);
+        descriptor = ::open(path.c_str(), flags);
         if (descriptor == -1) {
             if (errno != EINTR) {
                 continue;
@@ -391,21 +296,13 @@ File File::copyTo(const std::string& destDir)
         }
     } else {
         open(O_RDONLY);
-        destFile.open(O_WRONLY | O_CREAT, getMode());
+        destFile.create(getMode());
         ::sendfile(destFile.descriptor, descriptor, 0, size());
         destFile.close();
         close();
     }
 
     return destFile;
-}
-
-void File::moveTo(const std::string& dest)
-{
-}
-
-void File::renameTo(const std::string& dest)
-{
 }
 
 void File::remove(bool recursive)
@@ -418,11 +315,11 @@ void File::remove(bool recursive)
                 ++iter;
             }
         }
-        if (::rmdir(path.getPathname().c_str()) != 0) {
+        if (::rmdir(path.c_str()) != 0) {
             throw runtime::Exception(runtime::GetSystemErrorMessage());
         }
     } else {
-        if (::unlink(path.getPathname().c_str()) != 0) {
+        if (::unlink(path.c_str()) != 0) {
             throw runtime::Exception(runtime::GetSystemErrorMessage());
         }
     }
@@ -430,8 +327,8 @@ void File::remove(bool recursive)
 
 void File::makeBaseDirectory(uid_t uid, gid_t gid)
 {
-    std::string::size_type i = path.isRelative() ? -1 : 0;
-    const std::string& pathStr = path.getPathname();
+    std::string::size_type i = path[0] != '/' ? -1 : 0;
+    const std::string& pathStr = path;
     while ((i = pathStr.find('/', i + 1)) != std::string::npos) {
         std::string substr = pathStr.substr(0, i);
         int ret = ::mkdir(substr.c_str(), 0777);
@@ -455,8 +352,8 @@ void File::makeDirectory(bool recursive, uid_t uid, gid_t gid)
         makeBaseDirectory(uid, gid);
     }
 
-    if (::mkdir(path.getPathname().c_str(), 0777) == -1) {
-        throw runtime::Exception("mkdir failed in makeDirectory: " + path.getPathname());
+    if (::mkdir(path.c_str(), 0777) == -1) {
+        throw runtime::Exception("mkdir failed in makeDirectory: " + path);
     }
 
     if ((uid | gid) != 0) {
@@ -466,7 +363,7 @@ void File::makeDirectory(bool recursive, uid_t uid, gid_t gid)
 
 void File::chown(uid_t uid, gid_t gid, bool recursive)
 {
-    if (::chown(path.getPathname().c_str(), uid, gid) != 0) {
+    if (::chown(path.c_str(), uid, gid) != 0) {
         throw runtime::Exception(runtime::GetSystemErrorMessage());
     }
 
@@ -481,7 +378,7 @@ void File::chown(uid_t uid, gid_t gid, bool recursive)
 
 void File::chmod(mode_t mode, bool recursive)
 {
-    if (::chmod(path.getPathname().c_str(), mode) != 0) {
+    if (::chmod(path.c_str(), mode) != 0) {
         throw runtime::Exception(runtime::GetSystemErrorMessage());
     }
 
@@ -517,11 +414,6 @@ DirectoryIterator::DirectoryIterator(const std::string& dir)
     : directoryHandle(nullptr)
 {
     reset(dir);
-}
-
-DirectoryIterator::DirectoryIterator(const Path& dir)
-    : DirectoryIterator(dir.getPathname())
-{
 }
 
 DirectoryIterator::~DirectoryIterator()
@@ -579,12 +471,6 @@ void DirectoryIterator::next()
 DirectoryIterator& DirectoryIterator::operator=(const std::string& dir)
 {
     reset(dir);
-    return *this;
-}
-
-DirectoryIterator& DirectoryIterator::operator=(const Path& dir)
-{
-    reset(dir.getPathname());
     return *this;
 }
 
