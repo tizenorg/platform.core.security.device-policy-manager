@@ -65,17 +65,6 @@ Node& Document::getRootNode()
     return *rootNode;
 }
 
-std::string Document::getEncoding() const
-{
-    std::string encoding;
-
-    if (implementation->encoding) {
-        encoding = (const char*)implementation->encoding;
-    }
-
-    return encoding;
-}
-
 Node::NodeList Document::evaluate(const std::string& xpath)
 {
     auto ctxt = xmlXPathNewContext(implementation);

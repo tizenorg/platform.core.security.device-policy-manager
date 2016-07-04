@@ -36,7 +36,6 @@ public:
     ~Document();
 
     Node& getRootNode();
-    std::string getEncoding() const;
 
     Node::NodeList evaluate(const std::string& xpath);
     void write(const std::string& filename, const std::string& encoding, bool formatted);

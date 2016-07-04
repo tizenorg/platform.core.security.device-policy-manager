@@ -31,7 +31,7 @@
 
 #include "testbench/testbench.h"
 
-const std::string testXmlFilePath = "/usr/share/dpm/sample-policy.xml";
+const std::string testXmlFilePath = "/opt/data/dpm/sample-policy.xml";
 
 TESTCASE(XPath)
 {
@@ -39,20 +39,12 @@ TESTCASE(XPath)
         xml::Document* document = xml::Parser::parseFile(testXmlFilePath);
         xml::Node::NodeList nodes = document->evaluate("//policy-group[@name='APPLICATION']/policy[@name='SET_APP_INSTALLATION_MODE']");
         xml::Node::NodeList::iterator iter = nodes.begin();
+
+        TEST_EXPECT(false, iter == nodes.end());
+
         while (iter != nodes.end()) {
-            std::cout << "Node Name: " << iter->getName() << std::endl;
             ++iter;
         }
-    } catch (runtime::Exception& e) {
-        TEST_FAIL(e.what());
-    }
-}
-
-TESTCASE(XmlWriter)
-{
-    try {
-        xml::Document* document = xml::Parser::parseFile(testXmlFilePath);
-        document->write("/opt/usr/tx.xml", "UTF-8", true);
     } catch (runtime::Exception& e) {
         TEST_FAIL(e.what());
     }
@@ -67,11 +59,44 @@ TESTCASE(XmlDomTree)
 
         xml::Node::NodeList list = root.getChildren();
         xml::Node::NodeList::iterator iter = list.begin();
+
+        TEST_EXPECT(false, iter == list.end());
+
         while (iter != list.end()) {
-            std::cout << "Node Name: " << iter->getName() << std::endl;
             ++iter;
         }
     } catch (runtime::Exception& e) {
         TEST_FAIL(e.what());
+    }
+}
+
+TESTCASE(XmlGenerate)
+{
+    try {
+        xml::Document doc("TestNode", "0.1");
+        xml::Node &root = doc.getRootNode();
+        xml::Node node = root.addNewChild("ChildNode");
+        TEST_EXPECT("ChildNode", node.getName());
+
+        node.setName("ModifiedChildNode");
+        TEST_EXPECT("ModifiedChildNode", node.getName());
+
+        node.setContent("Content");
+        TEST_EXPECT("Content", node.getContent());
+
+        node.setProp("Prop", "Value");
+        TEST_EXPECT("Value", node.getProp("Prop"));
+
+        doc.write("/tmp/test.xml", "UTF-8", true);
+    } catch (runtime::Exception& e) {
+        TEST_FAIL(e.what());
+    }
+}
+
+TESTCASE(XmlException)
+{
+    try {
+        xml::Parser::parseFile("Invalid Source");
+    } catch (runtime::Exception& e) {
     }
 }
