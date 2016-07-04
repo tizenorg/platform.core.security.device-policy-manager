@@ -53,7 +53,7 @@ EXPORT_API int dpm_zone_get_state(device_policy_manager_h handle, const char* na
     ZonePolicy zone = client.createPolicyInterface<ZonePolicy>();
 
     int result = zone.getZoneState(name);
-    if (result <0) {
+    if (result == 0) {
         return DPM_ERROR_NO_DATA;
     }
 
@@ -71,7 +71,8 @@ EXPORT_API int dpm_zone_foreach_name(device_policy_manager_h handle, dpm_zone_st
     ZonePolicy zone = client.createPolicyInterface<ZonePolicy>();
     std::vector<std::string> list = zone.getZoneList(state);
     for (const std::string& name : list) {
-        callback(name.c_str(), user_data);
+        if (!callback(name.c_str(), user_data))
+            break;
     }
 
     return DPM_ERROR_NONE;

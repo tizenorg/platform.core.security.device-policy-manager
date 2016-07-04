@@ -21,58 +21,105 @@
 #include "testbench.h"
 
 #define TEST_ZONE_ID "zone1"
-#define TEST_SETUP_WIZARD_PKG_ID "org.tizen.zone-setup-wizard"
+#define TEST_SETUP_WIZARD_PKG_ID "org.tizen.krate-setup-wizard"
+
+#define OWNER_ZONE_ID "owner"
 
 static int zone_create(struct testcase* tc)
 {
-    int ret;
-    dpm_context_h context;
-    dpm_zone_policy_h policy;
-    dpm_zone_state_e state;
+    int ret = TEST_SUCCESSED;
+    device_policy_manager_h handle;
 
-    context = dpm_context_create();
-    if (context == NULL) {
+    handle = dpm_manager_create();
+    if (handle == NULL) {
         printf("Failed to create client context\n");
         return TEST_FAILED;
     }
 
-    policy = dpm_context_acquire_zone_policy(context);
-    if (policy == NULL) {
-        printf("Failed to get zone policy");
-        dpm_context_destroy(context);
-        return TEST_FAILED;
-    }
-
-    ret = TEST_SUCCESSED;
-    if (dpm_zone_create(policy, TEST_ZONE_ID, TEST_SETUP_WIZARD_PKG_ID) != DPM_ERROR_NONE) {
-        ret = TEST_FAILED;
-        goto out;
-    }
-
-    if (dpm_zone_get_state(policy, TEST_ZONE_ID, &state) != DPM_ERROR_NONE) {
-        ret = TEST_FAILED;
-        goto remove;
-    }
-
-remove:
-    if (dpm_zone_destroy(policy, TEST_ZONE_ID) == DPM_ERROR_NONE) {
+    if (dpm_zone_create(handle, TEST_ZONE_ID, TEST_SETUP_WIZARD_PKG_ID) != DPM_ERROR_NONE) {
         ret = TEST_FAILED;
         goto out;
     }
 
 out:
-    dpm_context_release_zone_policy(context, policy);
-    dpm_context_destroy(context);
+    dpm_manager_destroy(handle);
 
     return ret;
 }
 
-struct testcase zone_testcase_lifecycle = {
-    .description = "dpm_zone",
+static int zone_get_state(struct testcase* tc)
+{
+    int ret = TEST_SUCCESSED;
+    device_policy_manager_h handle;
+    dpm_zone_state_e state;
+
+    handle = dpm_manager_create();
+    if (handle == NULL) {
+        printf("Failed to create client context\n");
+        return TEST_FAILED;
+    }
+
+    if (dpm_zone_get_state(handle, OWNER_ZONE_ID, &state) != DPM_ERROR_NONE) {
+        ret = TEST_FAILED;
+        goto out;
+    }
+
+    if (state == 0) {
+        ret = TEST_FAILED;
+    }
+
+out:
+    dpm_manager_destroy(handle);
+
+    return ret;
+}
+
+static bool get_list_cb(const char* name, void* result)
+{
+    *((int*)result) = TEST_SUCCESSED;
+    return true;
+}
+
+static int zone_get_list(struct testcase* tc)
+{
+    int ret = TEST_SUCCESSED;
+    device_policy_manager_h handle;
+
+    handle = dpm_manager_create();
+    if (handle == NULL) {
+        printf("Failed to create client context\n");
+        return TEST_FAILED;
+    }
+
+    if (dpm_zone_foreach_name(handle, DPM_ZONE_STATE_ALL, get_list_cb, &ret) != DPM_ERROR_NONE) {
+        ret = TEST_FAILED;
+        goto out;
+    }
+
+out:
+    dpm_manager_destroy(handle);
+
+    return ret;
+}
+
+struct testcase dpm_zone_testcase_lifecycle = {
+    .description = "dpm_zone_lifecycle",
     .handler = zone_create
+};
+
+struct testcase dpm_zone_testcase_state = {
+    .description = "dpm_zone_state",
+    .handler = zone_get_state
+};
+
+struct testcase dpm_zone_testcase_list = {
+    .description = "dpm_zone_list",
+    .handler = zone_get_list
 };
 
 void TESTCASE_CONSTRUCTOR zone_policy_build_testcase(void)
 {
-    testbench_populate_testcase(&zone_testcase_lifecycle);
+    testbench_populate_testcase(&dpm_zone_testcase_lifecycle);
+    testbench_populate_testcase(&dpm_zone_testcase_state);
+    testbench_populate_testcase(&dpm_zone_testcase_list);
 }

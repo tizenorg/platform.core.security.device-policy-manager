@@ -26,6 +26,7 @@ SET(API_TEST_SOURCES main.c
 					 restriction.c
                      security.c
                      wifi.c
+                     zone.c
 )
 
 ADD_EXECUTABLE(${API_TEST_TARGET} ${API_TEST_SOURCES})

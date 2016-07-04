@@ -116,47 +116,11 @@ int zone_manager_get_zone_state(zone_manager_h handle, const char* name, zone_st
     ZoneManager zone = client.createPolicyInterface<ZoneManager>();
 
     int result = zone.getZoneState(name);
-    if (result <0) {
+    if (result == 0) {
         return ZONE_ERROR_NO_DATA;
     }
 
     *state = (zone_state_e)result;
-    return ZONE_ERROR_NONE;
-}
-
-typedef runtime::Array<std::string> zone_iterator;
-
-zone_iterator_h zone_manager_create_zone_iterator(zone_manager_h handle, zone_state_e state)
-{
-    RET_ON_FAILURE(handle, NULL);
-
-    DevicePolicyContext &client = GetDevicePolicyContext(handle);
-    ZoneManager zone = client.createPolicyInterface<ZoneManager>();
-
-    return reinterpret_cast<zone_iterator_h>(new zone_iterator(zone.getZoneList(state)));
-}
-
-int zone_iterator_next(zone_iterator_h iter, const char** result)
-{
-    RET_ON_FAILURE(iter, ZONE_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(result, ZONE_ERROR_INVALID_PARAMETER);
-
-    zone_iterator* it = reinterpret_cast<zone_iterator*>(iter);
-
-    if (it->isEnd())
-        *result = NULL;
-    else
-        *result = it->next()->c_str();
-
-    return ZONE_ERROR_NONE;
-}
-
-int zone_iterator_destroy(zone_iterator_h iter)
-{
-    RET_ON_FAILURE(iter, ZONE_ERROR_INVALID_PARAMETER);
-
-    delete reinterpret_cast<zone_iterator*>(iter);
-
     return ZONE_ERROR_NONE;
 }
 
@@ -171,7 +135,8 @@ int zone_manager_foreach_name(zone_manager_h handle, zone_state_e state,
     std::vector<std::string> list = zone.getZoneList(state);
     for (std::vector<std::string>::iterator it = list.begin();
          it != list.end(); it++) {
-        callback((*it).c_str(), user_data);
+        if (!callback((*it).c_str(), user_data))
+            break;
     }
 
     return ZONE_ERROR_NONE;
