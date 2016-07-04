@@ -26,8 +26,13 @@ SET(API_TEST_SOURCES main.c
 					 restriction.c
                      security.c
                      wifi.c
-                     zone.c
 )
+
+IF("${TIZEN_PROFILE_NAME}" STREQUAL "mobile")
+SET(API_TEST_SOURCES    ${API_TEST_SOURCES}
+                        zone.c
+)
+ENDIF()
 
 ADD_EXECUTABLE(${API_TEST_TARGET} ${API_TEST_SOURCES})
 
