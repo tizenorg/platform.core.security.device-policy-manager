@@ -22,7 +22,6 @@ SET (COMMON_SOURCES     ${DPM_COMMON}/error.cpp
                         ${DPM_COMMON}/eventfd.cpp
                         ${DPM_COMMON}/mainloop.cpp
                         ${DPM_COMMON}/filesystem.cpp
-                        ${DPM_COMMON}/backtrace.cpp
                         ${DPM_COMMON}/thread-pool.cpp
                         ${DPM_COMMON}/rmi/socket.cpp
                         ${DPM_COMMON}/rmi/client.cpp
