@@ -22,7 +22,7 @@
 #include "audit/logger.h"
 #include "testbench/testbench.h"
 
-const std::string testSetupWizardAppid = "org.tizen.zone-setup-wizard";
+const std::string testSetupWizardAppid = "org.tizen.krate-setup-wizard";
 const std::string testZonePolicyName = "zone1";
 
 TESTCASE(ZonePolicyCreateTest)
