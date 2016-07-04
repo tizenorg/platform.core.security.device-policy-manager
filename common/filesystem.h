@@ -24,64 +24,12 @@
 
 namespace runtime {
 
-class Path {
-public:
-    Path();
-    Path(const std::string& path);
-    Path(const char* path);
-    Path(const Path& path);
-
-    ~Path();
-
-    Path& operator=(const Path& path);
-    Path& operator=(const std::string& path);
-    Path& operator=(const char* path);
-
-    bool operator==(const Path& path) const
-    {
-        return (pathname == path.pathname);
-    }
-
-    bool operator!=(const Path& path) const
-    {
-        return !(pathname == path.pathname);
-    }
-
-    bool isAbsolute() const
-    {
-        return (pathname[0] == '/');
-    }
-
-    bool isRelative() const
-    {
-        return (pathname[0] != '/');
-    }
-
-    const std::string& getPathname() const
-    {
-        return pathname;
-    }
-
-    const std::string getFilename() const
-    {
-        return pathname.substr(pathname.rfind('/') + 1);
-    }
-
-private:
-    Path& assign(const Path& path);
-    Path& assign(const std::string& path);
-    Path& assign(const char* path);
-
-    std::string pathname;
-};
-
 class File {
 public:
     File();
     File(const char* pathname);
     File(const std::string& pathname);
     File(const File& file);
-    File(const Path& filePath);
     File(const std::string& path, int flags);
 
     ~File();
@@ -95,12 +43,6 @@ public:
     File& operator=(const File& file)
     {
         path = file.path;
-        return *this;
-    }
-
-    File& operator=(const Path& filePath)
-    {
-        path = filePath;
         return *this;
     }
 
@@ -128,7 +70,6 @@ public:
     bool isFile() const;
     bool isDirectory() const;
     bool isDevice() const;
-    bool isHidden() const;
 
     mode_t getMode() const;
     uid_t getUid() const;
@@ -138,13 +79,10 @@ public:
 
     void create(mode_t mode);
     void open(int flags);
-    void open(int flags, mode_t mode);
     void read(void *buffer, const size_t size) const;
     void write(const void *buffer, const size_t size) const;
     void close();
     File copyTo(const std::string& pathname);
-    void moveTo(const std::string& pathname);
-    void renameTo(const std::string& pathname);
     void remove(bool recursive = false);
     void makeBaseDirectory(uid_t uid = 0, gid_t gid = 0);
     void makeDirectory(bool recursive = false, uid_t uid = 0, gid_t gid = 0);
@@ -155,33 +93,29 @@ public:
     void chown(uid_t uid, gid_t gid, bool recursive = false);
     void chmod(mode_t mode, bool recursive = false);
 
-    std::string toString() const;
-
     const std::string& getPath() const
     {
-        return path.getPathname();
+        return path;
     }
 
     const std::string getName() const
     {
-        return path.getFilename();
+        return path.substr(path.rfind('/') + 1);
     }
 
 private:
     int descriptor;
-    Path path;
+    std::string path;
 };
 
 class DirectoryIterator {
 public:
     DirectoryIterator();
     DirectoryIterator(const std::string& dir);
-    DirectoryIterator(const Path& dir);
 
     ~DirectoryIterator();
 
     DirectoryIterator& operator=(const std::string& dir);
-    DirectoryIterator& operator=(const Path& dir);
     DirectoryIterator& operator++();
 
     bool operator==(const DirectoryIterator& iterator) const

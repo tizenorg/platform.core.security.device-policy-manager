@@ -13,18 +13,36 @@
 // limitations under the License.
 //
 
-#include "testbench/testbench.h"
+#include <string>
+#include <vector>
+
+#include "exception.h"
+#include "process.h"
 #include "audit/logger.h"
 
-int main(int /*argc*/, char** /*argv*/)
-{
-    audit::Logger::setLogLevel(audit::LogLevel::Trace);
-	TRACE("Trace");
-	INFO("Info");
-	DEBUG("Debug");
-	WARN("Warning");
-	ERROR("Error");
-    testbench::Testbench::runAllTestSuites();
+#include "testbench/testbench.h"
 
-    return 0;
+TESTCASE(ProcTerminate)
+{
+    try {
+        runtime::Process proc("/bin/bash");
+        proc.execute();
+        if (proc.isRunning()) {
+            proc.terminate();
+        }
+    } catch (runtime::Exception& e) {
+    }
+}
+
+TESTCASE(ProcWithArg)
+{
+    try {
+        std::vector<std::string> args = {
+            "-l",
+            "-a"
+        };
+        runtime::Process proc("/bin/ls", args);
+        proc.execute();
+    } catch (runtime::Exception& e) {
+    }
 }

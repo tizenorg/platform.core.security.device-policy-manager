@@ -35,7 +35,7 @@ std::string Error::message(int errorCode)
 
 std::string Error::message()
 {
-    return message(errno);
+    return message(lastErrorCode());
 }
 
 std::string GetSystemErrorMessage(int errorCode)
@@ -45,7 +45,7 @@ std::string GetSystemErrorMessage(int errorCode)
 
 std::string GetSystemErrorMessage()
 {
-    return GetSystemErrorMessage(errno);
+    return Error::message();
 }
 
 } // namespace runtime
