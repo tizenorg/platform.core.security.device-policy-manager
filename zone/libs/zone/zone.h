@@ -240,82 +240,14 @@ typedef enum {
 ZONE_API int zone_manager_get_zone_state(zone_manager_h handle, const char* name, zone_state_e* state);
 
 /**
- * @brief       The zone list iterator handle
- * @since_tizen 3.0
- * @see         zone_manager_create_zone_terator()
- * @see         zone_iterator_next()
- * @see         zone_iterator_destroy()
- */
-typedef void* zone_iterator_h;
-
-/**
- * @brief       Creates a zone list iterator.
- * @details     The zone list iterator can be used to get all defined zones.
- * @since_tizen 3.0
- * @param[in]   handle The zone policy handle
- * @param[in]   state a combination of the zone state to look
- * @return      A zone list iterator on success, otherwise
- *              null value
- * @remark      The specific error code can be obtained by using the
- *              get_last_result() method. Error codes are described in
- *              exception section.
- * @exception   #ZONE_ERROR_NONE No error
- * @exception   #ZONE_ERROR_OUT_OF_MEMORY Out of memory
- * @exception   #ZONE_ERROR_INVALID_PARAMETER Invalid parameter
- * @exception   #ZONE_ERROR_TIMED_OUT Time out
- * @pre         The handle must be created by zone_manager_create().
- * @see         zone_manager_create()
- * @see         zone_manager_destroy()
- * @see         zone_manager_create_zone()
- * @see         zone_manager_destroy_zone()
- * @see         zone_iterator_next()
- * @see         zone_interator_destroy()
- * @see         get_last_result()
- */
-ZONE_API zone_iterator_h zone_manager_create_zone_iterator(zone_manager_h handle, zone_state_e state);
-
-/**
- * @brief       Fetches a zone name and forwards the iterator.
- * @details     This API returns zone name indicated by the iterator, and then
- *              the iterator is moved to the next position. If the iterator reaches
- *              the end of the list, null value will be returned.
- * @since_tizen 3.0
- * @param[in]   iter The iterator to be controlled
- * @param[out]  zone_name The zone name got from the iterator
- * @return      #ZONE_ERROR_NONE on success, otherwise a negative value
- * @retval      #ZONE_ERROR_NONE Successful
- * @retval      #ZONE_ERROR_INVALID_PARAMETER Invalid parameter
- * @retval      #ZONE_ERROR_TIMED_OUT Time out
- * @pre         The iter must be created by zone_manager_create_iterator().
- * @see         zone_manager_create_zone_iterator()
- * @see         zone_interator_destroy()
- */
-ZONE_API int zone_iterator_next(zone_iterator_h iter, const char** zone_name);
-
-/**
- * @brief       Frees the zone iterator.
- * @details     This API frees the zone iterator. This API must be called
- *              if the iterator no longer used.
- * @since_tizen 3.0
- * @param[in]   iter The iterator to be removed
- * @return      #ZONE_ERROR_NONE on success, otherwise a negative value
- * @retval      #ZONE_ERROR_NONE Successful
- * @retval      #ZONE_ERROR_INVALID_PARAMETER Invalid parameter
- * @retval      #ZONE_ERROR_TIMED_OUT Time out
- * @pre         The iter must be created by zone_manager_create_iterator()
- * @see         zone_manager_create_zone_iterator()
- * @see         zone_iterator_next()
- */
-ZONE_API int zone_iterator_destroy(zone_iterator_h iter);
-
-/**
  * @brief       Called to get all the name of created zones.
  * @since_tizen 3.0
  * @param[in]   name The zone name
  * @param[in]   user_data The user data passed from zone_manager_foreach_name
+ * @return      true to continue with the next iteration of the loop, otherwise false to break out out the loop
  * @see         zone_manager_foreach_name()
  */
-typedef void(*zone_manager_foreach_cb)(const char* name, void* user_data);
+typedef bool(*zone_manager_foreach_cb)(const char* name, void* user_data);
 
 /**
  * @brief       Retrieves all the name of created zones
