@@ -31,26 +31,9 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-extern "C" void __gcov_flush(void);
-
-void dump_coverage_data(int signum)
+void signalHandler(int signum)
 {
-	printf("received signal\n");
-	__gcov_flush();
 	exit(0);
-}
-
-void init_signals(void)
-{
-	struct sigaction new_action, old_action;
-
-	new_action.sa_handler = dump_coverage_data;
-	sigemptyset(&new_action.sa_mask);
-	new_action.sa_flags = 0;
-	sigaction(SIGUSR1, NULL, &old_action);
-	if (old_action.sa_handler != SIG_IGN) {
-		sigaction(SIGUSR1, &new_action, NULL);
-	}
 }
 
 static bool daemonize(void)
@@ -129,7 +112,7 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-	init_signals();
+	signal(SIGINT, signalHandler);
 
     ::umask(0);
 
