@@ -29,6 +29,7 @@
 
 #include "security.hxx"
 
+#include "privilege.h"
 #include "launchpad.h"
 #include "process.h"
 #include "filesystem.h"
@@ -48,11 +49,11 @@ const std::string PROG_POWEROFF = "/usr/sbin/poweroff";
 SecurityPolicy::SecurityPolicy(PolicyControlContext& ctxt) :
     context(ctxt)
 {
-    ctxt.registerNonparametricMethod(this, (int)(SecurityPolicy::lockoutScreen));
-    ctxt.registerNonparametricMethod(this, (int)(SecurityPolicy::isInternalStorageEncrypted));
-    ctxt.registerNonparametricMethod(this, (int)(SecurityPolicy::isExternalStorageEncrypted));
-    ctxt.registerParametricMethod(this, (int)(SecurityPolicy::setInternalStorageEncryption)(bool));
-    ctxt.registerParametricMethod(this, (int)(SecurityPolicy::setExternalStorageEncryption)(bool));
+    ctxt.registerNonparametricMethod(this, DPM_PRIVILEGE_LOCK, (int)(SecurityPolicy::lockoutScreen));
+    ctxt.registerNonparametricMethod(this, "", (int)(SecurityPolicy::isInternalStorageEncrypted));
+    ctxt.registerNonparametricMethod(this, "", (int)(SecurityPolicy::isExternalStorageEncrypted));
+    ctxt.registerParametricMethod(this, DPM_PRIVILEGE_SECURITY, (int)(SecurityPolicy::setInternalStorageEncryption)(bool));
+    ctxt.registerParametricMethod(this, DPM_PRIVILEGE_SECURITY, (int)(SecurityPolicy::setExternalStorageEncryption)(bool));
 }
 
 SecurityPolicy::~SecurityPolicy()

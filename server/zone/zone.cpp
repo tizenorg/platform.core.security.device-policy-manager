@@ -480,13 +480,13 @@ void notiProxyCallback(void *data, notification_type_e type, notification_op *op
 ZoneManager::ZoneManager(PolicyControlContext& ctx)
     : context(ctx)
 {
-    context.registerParametricMethod(this, (int)(ZoneManager::createZone)(std::string, std::string));
-    context.registerParametricMethod(this, (int)(ZoneManager::removeZone)(std::string));
-    context.registerParametricMethod(this, (int)(ZoneManager::lockZone)(std::string));
-    context.registerParametricMethod(this, (int)(ZoneManager::unlockZone)(std::string));
-    context.registerParametricMethod(this, (int)(ZoneManager::getZoneState)(std::string));
-    context.registerParametricMethod(this, (std::vector<std::string>)(ZoneManager::getZoneList)(int));
-    context.registerParametricMethod(this, (int)(ZoneManager::resetZonePassword)(std::string, std::string));
+    context.registerParametricMethod(this, "", (int)(ZoneManager::createZone)(std::string, std::string));
+    context.registerParametricMethod(this, "", (int)(ZoneManager::removeZone)(std::string));
+    context.registerParametricMethod(this, "", (int)(ZoneManager::lockZone)(std::string));
+    context.registerParametricMethod(this, "", (int)(ZoneManager::unlockZone)(std::string));
+    context.registerParametricMethod(this, "", (int)(ZoneManager::getZoneState)(std::string));
+    context.registerParametricMethod(this, "", (std::vector<std::string>)(ZoneManager::getZoneList)(int));
+    context.registerParametricMethod(this, "", (int)(ZoneManager::resetZonePassword)(std::string, std::string));
 
     context.createNotification("ZoneManager::created");
     context.createNotification("ZoneManager::removed");
