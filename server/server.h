@@ -23,6 +23,7 @@
 #include "policy-storage.h"
 
 #include "file-descriptor.h"
+#include "filesystem.h"
 #include "rmi/service.h"
 
 class Server {
@@ -31,10 +32,10 @@ public:
     void terminate();
 
     template<typename Type, typename... Args>
-    void setMethodHandler(const std::string& method,
-                         const typename rmi::MethodHandler<Type, Args...>::type& handler)
+    void setMethodHandler(const std::string& privilege, const std::string& method,
+                          const typename rmi::MethodHandler<Type, Args...>::type& handler)
     {
-        service->setMethodHandler<Type, Args...>(method, handler);
+        service->setMethodHandler<Type, Args...>(privilege, method, handler);
     }
 
     template <typename... Args>
@@ -71,12 +72,15 @@ public:
     FileDescriptor registerNotificationSubscriber(const std::string& name);
     int unregisterNotificationSubscriber(const std::string& name, int id);
 
+    bool checkPeerPrivilege(const rmi::Credentials& cred, const std::string& privilege);
+
     static Server& instance();
 
 private:
     Server();
     ~Server();
 
+    std::string securityLabel;
     std::unique_ptr<PolicyStorage> policyStorage;
     std::unique_ptr<rmi::Service> service;
 };

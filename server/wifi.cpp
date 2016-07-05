@@ -26,6 +26,7 @@
 
 #include "wifi.hxx"
 
+#include "privilege.h"
 #include "policy-helper.h"
 
 #include "app-bundle.h"
@@ -93,19 +94,19 @@ inline void applyBlocklistToConnectedAP()
 WifiPolicy::WifiPolicy(PolicyControlContext& ctx) :
     context(ctx)
 {
-	context.registerParametricMethod(this, (int)(WifiPolicy::setState)(bool));
-	context.registerNonparametricMethod(this, (bool)(WifiPolicy::getState));
+	context.registerParametricMethod(this, DPM_PRIVILEGE_WIFI, (int)(WifiPolicy::setState)(bool));
+	context.registerNonparametricMethod(this, "", (bool)(WifiPolicy::getState));
 
-	context.registerParametricMethod(this, (int)(WifiPolicy::setHotspotState)(bool));
-	context.registerNonparametricMethod(this, (bool)(WifiPolicy::getHotspotState));
+	context.registerParametricMethod(this, DPM_PRIVILEGE_WIFI, (int)(WifiPolicy::setHotspotState)(bool));
+	context.registerNonparametricMethod(this, "", (bool)(WifiPolicy::getHotspotState));
 
-    context.registerParametricMethod(this, (int)(WifiPolicy::setProfileChangeRestriction)(bool));
-    context.registerNonparametricMethod(this, (bool)(WifiPolicy::isProfileChangeRestricted));
+    context.registerParametricMethod(this, DPM_PRIVILEGE_WIFI, (int)(WifiPolicy::setProfileChangeRestriction)(bool));
+    context.registerNonparametricMethod(this, "", (bool)(WifiPolicy::isProfileChangeRestricted));
 
-    context.registerParametricMethod(this, (int)(WifiPolicy::setNetworkAccessRestriction)(bool));
-    context.registerNonparametricMethod(this, (bool)(WifiPolicy::isNetworkAccessRestricted));
-    context.registerParametricMethod(this, (int)(WifiPolicy::addSsidToBlocklist)(std::string));
-    context.registerParametricMethod(this, (int)(WifiPolicy::removeSsidFromBlocklist)(std::string));
+    context.registerParametricMethod(this, DPM_PRIVILEGE_WIFI, (int)(WifiPolicy::setNetworkAccessRestriction)(bool));
+    context.registerNonparametricMethod(this, "", (bool)(WifiPolicy::isNetworkAccessRestricted));
+    context.registerParametricMethod(this, DPM_PRIVILEGE_WIFI, (int)(WifiPolicy::addSsidToBlocklist)(std::string));
+    context.registerParametricMethod(this, "", (int)(WifiPolicy::removeSsidFromBlocklist)(std::string));
 
 	context.createNotification("wifi");
 	context.createNotification("wifi-hotspot");

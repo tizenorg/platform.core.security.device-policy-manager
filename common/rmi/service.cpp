@@ -67,6 +67,15 @@ Service::ConnectionRegistry::iterator Service::getConnectionIterator(const int i
     });
 }
 
+void Service::setPrivilegeChecker(const PrivilegeChecker& checker)
+{
+    auto check = [checker, this](const Credentials& cred, const std::string& privilege) {
+        return checker(cred, privilege);
+    };
+
+    onMethodCall = std::move(checker);
+}
+
 void Service::setNewConnectionCallback(const ConnectionCallback& connectionCallback)
 {
     auto callback = [connectionCallback, this](const std::shared_ptr<Connection>& connection) {
@@ -181,11 +190,14 @@ void Service::onMessageProcess(const std::shared_ptr<Connection>& connection)
     // we should increase the reference count of the shared_ptr by capturing it as value
     auto process = [&, connection](Message& request) {
         try {
-            std::shared_ptr<MethodDispatcher> methodDispatcher = methodRegistry.at(request.target());
+            std::shared_ptr<MethodContext> methodContext = methodRegistry.at(request.target());
 
-            // [TBD] Request authentication before dispatching method handler.
             processingContext = ProcessingContext(connection);
-            connection->send((*methodDispatcher)(request));
+            if (onMethodCall(processingContext.credentials, methodContext->privilege) != true) {
+                throw runtime::Exception("Permission denied");
+            }
+
+            connection->send(methodContext->dispatcher(request));
         } catch (std::exception& e) {
             try {
                 // Forward the exception to the peer

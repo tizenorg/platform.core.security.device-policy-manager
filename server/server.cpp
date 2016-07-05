@@ -13,8 +13,14 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License
  */
+#include <functional>
+
+#include <cynara-client.h>
+#include <cynara-session.h>
 
 #include "server.h"
+
+using namespace std::placeholders;
 
 namespace {
 
@@ -28,8 +34,10 @@ Server::Server()
 
     service.reset(new rmi::Service(POLICY_MANAGER_ADDRESS));
 
-    service->registerParametricMethod(this, (FileDescriptor)(Server::registerNotificationSubscriber)(std::string));
-    service->registerParametricMethod(this, (int)(Server::unregisterNotificationSubscriber)(std::string, int));
+    service->setPrivilegeChecker(std::bind(&Server::checkPeerPrivilege, this, _1, _2));
+
+    service->registerParametricMethod(this, "", (FileDescriptor)(Server::registerNotificationSubscriber)(std::string));
+    service->registerParametricMethod(this, "", (int)(Server::unregisterNotificationSubscriber)(std::string, int));
 }
 
 Server::~Server()
@@ -87,6 +95,34 @@ int Server::updatePolicy(const std::string& name, const std::string& value)
 std::string Server::getPolicy(const std::string& name) const
 {
     return policyStorage->getPolicy(name).getContent();
+}
+
+bool Server::checkPeerPrivilege(const rmi::Credentials& cred, const std::string& privilege)
+{
+    cynara *p_cynara;
+
+    DEBUG("Peer security: " + cred.security);
+
+    if (privilege.empty()) {
+        return true;
+    }
+
+    if (::cynara_initialize(&p_cynara, NULL) != CYNARA_API_SUCCESS) {
+        ERROR("Failure in cynara API");
+        return false;
+    }
+
+    if (::cynara_check(p_cynara, cred.security.c_str(), "",
+                       std::to_string(cred.uid).c_str(),
+                       privilege.c_str()) != CYNARA_API_ACCESS_ALLOWED) {
+        ::cynara_finish(p_cynara);
+        ERROR("Access denied");
+        return false;
+    }
+
+    ::cynara_finish(p_cynara);
+
+    return true;
 }
 
 Server& Server::instance()

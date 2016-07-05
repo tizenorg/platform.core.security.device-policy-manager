@@ -21,6 +21,7 @@
 
 #include "storage.hxx"
 
+#include "privilege.h"
 #include "policy-helper.h"
 
 #include "exception.h"
@@ -105,7 +106,7 @@ void requestDeviceFormat(const std::string& devnode, int option)
 StoragePolicy::StoragePolicy(PolicyControlContext& ctx) :
     context(ctx)
 {
-	context.registerParametricMethod(this, (int)(StoragePolicy::wipeData)(int));
+	context.registerParametricMethod(this, DPM_PRIVILEGE_WIPE, (int)(StoragePolicy::wipeData)(int));
 }
 
 StoragePolicy::~StoragePolicy()

@@ -34,6 +34,8 @@ BuildRequires: pkgconfig(capi-system-system-settings)
 BuildRequires: pkgconfig(notification)
 BuildRequires: pkgconfig(key-manager)
 BuildRequires: pkgconfig(libgum)
+BuildRequires:  pkgconfig(cynara-client)
+BuildRequires:  pkgconfig(cynara-session)
 
 %if "%{profile}" != "tv"
 BuildRequires: pkgconfig(capi-location-manager)
