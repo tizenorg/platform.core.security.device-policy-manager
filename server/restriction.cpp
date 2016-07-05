@@ -17,6 +17,8 @@
 #include <vconf.h>
 
 #include "restriction.hxx"
+
+#include "privilege.h"
 #include "policy-helper.h"
 #include "audit/logger.h"
 #include "dbus/connection.h"
@@ -43,24 +45,24 @@ namespace DevicePolicyManager {
 RestrictionPolicy::RestrictionPolicy(PolicyControlContext& ctxt) :
 	context(ctxt)
 {
-	context.registerParametricMethod(this, (int)(RestrictionPolicy::setCameraState)(int));
-	context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getCameraState));
-	context.registerParametricMethod(this, (int)(RestrictionPolicy::setMicrophoneState)(int));
-	context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getMicrophoneState));
-	context.registerParametricMethod(this, (int)(RestrictionPolicy::setClipboardState)(int));
-	context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getClipboardState));
-	context.registerParametricMethod(this, (int)(RestrictionPolicy::setUsbDebuggingState)(int));
-	context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getUsbDebuggingState));
-    context.registerParametricMethod(this, (int)(RestrictionPolicy::setUsbTetheringState)(int));
-    context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getUsbTetheringState));
-	context.registerParametricMethod(this, (int)(RestrictionPolicy::setExternalStorageState)(int));
-	context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getExternalStorageState));
-	context.registerParametricMethod(this, (int)(RestrictionPolicy::setPopImapEmailState)(int));
-	context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getPopImapEmailState));
-	context.registerParametricMethod(this, (int)(RestrictionPolicy::setMessagingState)(int));
-	context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getMessagingState));
-	context.registerParametricMethod(this, (int)(RestrictionPolicy::setBrowserState)(int));
-	context.registerNonparametricMethod(this, (int)(RestrictionPolicy::getBrowserState));
+	context.registerParametricMethod(this, DPM_PRIVILEGE_CAMERA, (int)(RestrictionPolicy::setCameraState)(int));
+	context.registerNonparametricMethod(this, "", (int)(RestrictionPolicy::getCameraState));
+	context.registerParametricMethod(this, DPM_PRIVILEGE_MICROPHONE, (int)(RestrictionPolicy::setMicrophoneState)(int));
+	context.registerNonparametricMethod(this, "", (int)(RestrictionPolicy::getMicrophoneState));
+	context.registerParametricMethod(this, DPM_PRIVILEGE_CLIPBOARD, (int)(RestrictionPolicy::setClipboardState)(int));
+	context.registerNonparametricMethod(this, "", (int)(RestrictionPolicy::getClipboardState));
+	context.registerParametricMethod(this, DPM_PRIVILEGE_DEBUGGING, (int)(RestrictionPolicy::setUsbDebuggingState)(int));
+	context.registerNonparametricMethod(this, "", (int)(RestrictionPolicy::getUsbDebuggingState));
+    context.registerParametricMethod(this, DPM_PRIVILEGE_USB, (int)(RestrictionPolicy::setUsbTetheringState)(int));
+    context.registerNonparametricMethod(this, "", (int)(RestrictionPolicy::getUsbTetheringState));
+	context.registerParametricMethod(this, DPM_PRIVILEGE_STORAGE, (int)(RestrictionPolicy::setExternalStorageState)(int));
+	context.registerNonparametricMethod(this, "", (int)(RestrictionPolicy::getExternalStorageState));
+	context.registerParametricMethod(this, DPM_PRIVILEGE_EMAIL, (int)(RestrictionPolicy::setPopImapEmailState)(int));
+	context.registerNonparametricMethod(this, "", (int)(RestrictionPolicy::getPopImapEmailState));
+	context.registerParametricMethod(this, DPM_PRIVILEGE_MESSAGING, (int)(RestrictionPolicy::setMessagingState)(int));
+	context.registerNonparametricMethod(this, "", (int)(RestrictionPolicy::getMessagingState));
+	context.registerParametricMethod(this, DPM_PRIVILEGE_BROWSER, (int)(RestrictionPolicy::setBrowserState)(int));
+	context.registerNonparametricMethod(this, "", (int)(RestrictionPolicy::getBrowserState));
 
 	context.createNotification("camera");
 	context.createNotification("clipboard");

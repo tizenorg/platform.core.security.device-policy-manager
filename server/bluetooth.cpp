@@ -21,6 +21,7 @@
 #include "bluetooth.hxx"
 #include "restriction.hxx"
 
+#include "privilege.h"
 #include "policy-helper.h"
 #include "audit/logger.h"
 #include "dbus/connection.h"
@@ -94,23 +95,23 @@ static void bluetoothAdapterStateChangedCallback(int result, bt_adapter_state_e 
 BluetoothPolicy::BluetoothPolicy(PolicyControlContext& ctxt) :
     context(ctxt)
 {
-    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::setModeChangeState)(bool));
-    ctxt.registerNonparametricMethod(this, (bool)(BluetoothPolicy::getModeChangeState));
-    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::setDesktopConnectivityState)(bool));
-    ctxt.registerNonparametricMethod(this, (bool)(BluetoothPolicy::getDesktopConnectivityState));
-    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::setTetheringState)(bool));
-    ctxt.registerNonparametricMethod(this, (bool)(BluetoothPolicy::getTetheringState));
-    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::setPairingState)(bool));
-    ctxt.registerNonparametricMethod(this, (bool)(BluetoothPolicy::getPairingState));
+    ctxt.registerParametricMethod(this, DPM_PRIVILEGE_BLUETOOTH, (int)(BluetoothPolicy::setModeChangeState)(bool));
+    ctxt.registerNonparametricMethod(this, "", (bool)(BluetoothPolicy::getModeChangeState));
+    ctxt.registerParametricMethod(this, DPM_PRIVILEGE_BLUETOOTH, (int)(BluetoothPolicy::setDesktopConnectivityState)(bool));
+    ctxt.registerNonparametricMethod(this, "", (bool)(BluetoothPolicy::getDesktopConnectivityState));
+    ctxt.registerParametricMethod(this, DPM_PRIVILEGE_BLUETOOTH, (int)(BluetoothPolicy::setTetheringState)(bool));
+    ctxt.registerNonparametricMethod(this, "", (bool)(BluetoothPolicy::getTetheringState));
+    ctxt.registerParametricMethod(this, DPM_PRIVILEGE_BLUETOOTH, (int)(BluetoothPolicy::setPairingState)(bool));
+    ctxt.registerNonparametricMethod(this, "", (bool)(BluetoothPolicy::getPairingState));
 
-    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::addDeviceToBlacklist)(std::string));
-    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::removeDeviceFromBlacklist)(std::string));
-    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::setDeviceRestriction)(bool));
-    ctxt.registerNonparametricMethod(this, (bool)(BluetoothPolicy::isDeviceRestricted));
-    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::addUuidToBlacklist)(std::string));
-    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::removeUuidFromBlacklist)(std::string));
-    ctxt.registerParametricMethod(this, (int)(BluetoothPolicy::setUuidRestriction)(bool));
-    ctxt.registerNonparametricMethod(this, (bool)(BluetoothPolicy::isUuidRestricted));
+    ctxt.registerParametricMethod(this, DPM_PRIVILEGE_BLUETOOTH, (int)(BluetoothPolicy::addDeviceToBlacklist)(std::string));
+    ctxt.registerParametricMethod(this, DPM_PRIVILEGE_BLUETOOTH, (int)(BluetoothPolicy::removeDeviceFromBlacklist)(std::string));
+    ctxt.registerParametricMethod(this, DPM_PRIVILEGE_BLUETOOTH, (int)(BluetoothPolicy::setDeviceRestriction)(bool));
+    ctxt.registerNonparametricMethod(this, "", (bool)(BluetoothPolicy::isDeviceRestricted));
+    ctxt.registerParametricMethod(this, DPM_PRIVILEGE_BLUETOOTH, (int)(BluetoothPolicy::addUuidToBlacklist)(std::string));
+    ctxt.registerParametricMethod(this, DPM_PRIVILEGE_BLUETOOTH, (int)(BluetoothPolicy::removeUuidFromBlacklist)(std::string));
+    ctxt.registerParametricMethod(this, DPM_PRIVILEGE_BLUETOOTH, (int)(BluetoothPolicy::setUuidRestriction)(bool));
+    ctxt.registerNonparametricMethod(this, "", (bool)(BluetoothPolicy::isUuidRestricted));
 
     ctxt.createNotification("bluetooth");
     ctxt.createNotification("bluetooth-tethering");

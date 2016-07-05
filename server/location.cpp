@@ -18,6 +18,7 @@
 
 #include "location.hxx"
 
+#include "privilege.h"
 #include "policy-helper.h"
 #include "audit/logger.h"
 
@@ -26,8 +27,8 @@ namespace DevicePolicyManager {
 LocationPolicy::LocationPolicy(PolicyControlContext& ctxt) :
     context(ctxt)
 {
-	context.registerParametricMethod(this, (int)(LocationPolicy::setLocationState)(int));
-	context.registerNonparametricMethod(this, (int)(LocationPolicy::getLocationState));
+	context.registerParametricMethod(this, DPM_PRIVILEGE_LOCATION, (int)(LocationPolicy::setLocationState)(int));
+	context.registerNonparametricMethod(this, "", (int)(LocationPolicy::getLocationState));
 
 	context.createNotification("location");
 }
