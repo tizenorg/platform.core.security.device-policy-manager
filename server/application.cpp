@@ -34,16 +34,16 @@ namespace DevicePolicyManager {
 ApplicationPolicy::ApplicationPolicy(PolicyControlContext& ctxt) :
     context(ctxt)
 {
-    context.registerNonparametricMethod(this, (int)(ApplicationPolicy::getModeRestriction)());
-    context.registerParametricMethod(this, (int)(ApplicationPolicy::setModeRestriction)(int));
-    context.registerParametricMethod(this, (int)(ApplicationPolicy::unsetModeRestriction)(int));
+    context.registerNonparametricMethod(this, "", (int)(ApplicationPolicy::getModeRestriction)());
+    context.registerParametricMethod(this, "", (int)(ApplicationPolicy::setModeRestriction)(int));
+    context.registerParametricMethod(this, "", (int)(ApplicationPolicy::unsetModeRestriction)(int));
 
-    context.registerParametricMethod(this, (int)(ApplicationPolicy::addPrivilegeToBlacklist)(int, std::string));
-    context.registerParametricMethod(this, (int)(ApplicationPolicy::removePrivilegeFromBlacklist)(int, std::string));
-    context.registerParametricMethod(this, (int)(ApplicationPolicy::checkPrivilegeIsBlacklisted)(int, std::string));
+    context.registerParametricMethod(this, "", (int)(ApplicationPolicy::addPrivilegeToBlacklist)(int, std::string));
+    context.registerParametricMethod(this, "", (int)(ApplicationPolicy::removePrivilegeFromBlacklist)(int, std::string));
+    context.registerParametricMethod(this, "", (int)(ApplicationPolicy::checkPrivilegeIsBlacklisted)(int, std::string));
 
-    context.registerParametricMethod(this, (int)(ApplicationPolicy::installPackage)(std::string));
-    context.registerParametricMethod(this, (int)(ApplicationPolicy::uninstallPackage)(std::string));
+    context.registerParametricMethod(this, "", (int)(ApplicationPolicy::installPackage)(std::string));
+    context.registerParametricMethod(this, "", (int)(ApplicationPolicy::uninstallPackage)(std::string));
 }
 
 ApplicationPolicy::~ApplicationPolicy()

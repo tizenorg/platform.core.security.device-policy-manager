@@ -53,6 +53,8 @@ SET(DEPENDENCY		glib-2.0
 					capi-network-connection
 					capi-network-bluetooth
 					notification
+                    cynara-client
+                    cynara-session
 )
 
 INCLUDE("${TIZEN_PROFILE_NAME}.cmake")

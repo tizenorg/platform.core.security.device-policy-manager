@@ -15,6 +15,6 @@
 #
 
 SET(API_TEST_SOURCES    ${API_TEST_SOURCES}
-                        password.cpp
-                        zone.cpp
+                        password.c
+                        zone.c
 )

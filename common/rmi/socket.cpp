@@ -44,13 +44,19 @@ void setCloseOnExec(int fd)
 
 Credentials getCredentials(int fd)
 {
+    socklen_t length = 256;
+    char buf[256];
     struct ucred cred;
     socklen_t credsz = sizeof(cred);
     if (::getsockopt(fd, SOL_SOCKET, SO_PEERCRED, &cred, &credsz)) {
         throw SocketException(runtime::GetSystemErrorMessage());
     }
 
-    return {cred.pid, cred.uid, cred.gid};
+    if (::getsockopt(fd, SOL_SOCKET, SO_PEERSEC, buf, &length)) {
+        throw SocketException(runtime::GetSystemErrorMessage());
+    }
+
+    return {cred.pid, cred.uid, cred.gid, buf};
 }
 
 } // namespace
