@@ -25,6 +25,8 @@
 #include "zone.hxx"
 #include "zone/zone.hxx"
 
+#include "privilege.h"
+
 #include "error.h"
 #include "launchpad.h"
 #include "filesystem.h"
@@ -60,12 +62,12 @@ bool isAllowedName(const std::string& name) {
 ZonePolicy::ZonePolicy(PolicyControlContext& ctx)
     : context(ctx)
 {
-    context.registerParametricMethod(this, (int)(ZonePolicy::createZone)(std::string, std::string));
-    context.registerParametricMethod(this, (int)(ZonePolicy::removeZone)(std::string));
-    context.registerParametricMethod(this, (int)(ZonePolicy::lockZone)(std::string));
-    context.registerParametricMethod(this, (int)(ZonePolicy::unlockZone)(std::string));
-    context.registerParametricMethod(this, (int)(ZonePolicy::getZoneState)(std::string));
-    context.registerParametricMethod(this, (std::vector<std::string>)(ZonePolicy::getZoneList)(int));
+    context.registerParametricMethod(this, DPM_PRIVILEGE_ZONE, (int)(ZonePolicy::createZone)(std::string, std::string));
+    context.registerParametricMethod(this, DPM_PRIVILEGE_ZONE, (int)(ZonePolicy::removeZone)(std::string));
+    context.registerParametricMethod(this, DPM_PRIVILEGE_ZONE, (int)(ZonePolicy::lockZone)(std::string));
+    context.registerParametricMethod(this, DPM_PRIVILEGE_ZONE, (int)(ZonePolicy::unlockZone)(std::string));
+    context.registerParametricMethod(this, "", (int)(ZonePolicy::getZoneState)(std::string));
+    context.registerParametricMethod(this, "", (std::vector<std::string>)(ZonePolicy::getZoneList)(int));
 
     context.createNotification("ZonePolicy::created");
     context.createNotification("ZonePolicy::removed");

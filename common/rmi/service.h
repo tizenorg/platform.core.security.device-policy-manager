@@ -48,23 +48,24 @@
 #define PROTOTYPE_(D, N) SEQUENCE(D, N)
 #define PROTOTYPE(...)   PROTOTYPE_(PLACEHOLDER, VAR_ARGS_SIZE(__VA_ARGS__))
 
-#define registerMethod(T, M, ...)                                             \
+#define registerMethod(T, P, M, ...)                                          \
 setMethodHandler<TYPEOF(M), TYPEOF(STRIP(STRIP(M)))>                          \
-                (STRINGIFY(TYPEOF(STRIP(M))), std::bind(&TYPEOF(STRIP(M)), T, \
+                (P, STRINGIFY(TYPEOF(STRIP(M))), std::bind(&TYPEOF(STRIP(M)), T, \
                 PROTOTYPE(TYPEOF(STRIP(STRIP(M))))))
 
-#define registerParametricMethod(T, M, ...)                                   \
+#define registerParametricMethod(T, P, M, ...)                                \
 setMethodHandler<TYPEOF(M), TYPEOF(STRIP(STRIP(M)))>                          \
-                (STRINGIFY(TYPEOF(STRIP(M))), std::bind(&TYPEOF(STRIP(M)), T, \
+                (P, STRINGIFY(TYPEOF(STRIP(M))), std::bind(&TYPEOF(STRIP(M)), T, \
                 PROTOTYPE(TYPEOF(STRIP(STRIP(M))))))
 
-#define registerNonparametricMethod(T, M, ...)                                \
+#define registerNonparametricMethod(T, P, M, ...)                             \
 setMethodHandler<TYPEOF(M)>                                                   \
-                (STRINGIFY(TYPEOF(STRIP(M))), std::bind(&TYPEOF(STRIP(M)), T))
+                (P, STRINGIFY(TYPEOF(STRIP(M))), std::bind(&TYPEOF(STRIP(M)), T))
 
 namespace rmi {
 
 typedef std::function<bool(const Connection& connection)> ConnectionCallback;
+typedef std::function<bool(const Credentials& cred, const std::string& privilege)> PrivilegeChecker;
 
 class Service {
 public:
@@ -77,11 +78,12 @@ public:
     void start(bool useGMainloop = false);
     void stop();
 
+    void setPrivilegeChecker(const PrivilegeChecker& checker);
     void setNewConnectionCallback(const ConnectionCallback& callback);
     void setCloseConnectionCallback(const ConnectionCallback& callback);
 
     template<typename Type, typename... Args>
-    void setMethodHandler(const std::string& method,
+    void setMethodHandler(const std::string& privilege, const std::string& method,
                           const typename MethodHandler<Type, Args...>::type& handler);
 
     void createNotification(const std::string& name);
@@ -121,7 +123,18 @@ private:
     typedef std::function<void(const std::shared_ptr<Connection>& connection)> CallbackDispatcher;
 
     typedef std::function<Message(Message& message)> MethodDispatcher;
-    typedef std::unordered_map<std::string, std::shared_ptr<MethodDispatcher>> MethodRegistry;
+
+    struct MethodContext {
+        MethodContext(const std::string& priv, MethodDispatcher&& disp) :
+            privilege(priv), dispatcher(std::move(disp))
+        {
+        }
+
+        std::string privilege;
+        MethodDispatcher dispatcher;
+    };
+
+    typedef std::unordered_map<std::string, std::shared_ptr<MethodContext>> MethodRegistry;
     typedef std::unordered_map<std::string, Notification> NotificationRegistry;
 
     void onMessageProcess(const std::shared_ptr<Connection>& connection);
@@ -130,6 +143,7 @@ private:
 
     CallbackDispatcher onNewConnection;
     CallbackDispatcher onCloseConnection;
+    PrivilegeChecker onMethodCall;
 
     MethodRegistry methodRegistry;
     NotificationRegistry notificationRegistry;
@@ -147,7 +161,7 @@ private:
 };
 
 template<typename Type, typename... Args>
-void Service::setMethodHandler(const std::string& method,
+void Service::setMethodHandler(const std::string& privilege, const std::string& method,
                                const typename MethodHandler<Type, Args...>::type& handler)
 {
     auto dispatchMethod = [handler](Message& message) {
@@ -164,7 +178,7 @@ void Service::setMethodHandler(const std::string& method,
         throw runtime::Exception("Method handler already registered");
     }
 
-    methodRegistry[method] = std::make_shared<MethodDispatcher>(std::move(dispatchMethod));
+    methodRegistry[method] = std::make_shared<MethodContext>(privilege, dispatchMethod);
 }
 
 template <typename... Args>

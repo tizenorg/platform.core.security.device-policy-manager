@@ -45,17 +45,17 @@ int newIteratorId = 0;
 ZoneAppProxy::ZoneAppProxy(PolicyControlContext& ctx)
     : context(ctx)
 {
-    context.registerParametricMethod(this, (ZoneAppProxy::AppInfo)(ZoneAppProxy::getAppInfo)(std::string, std::string));
+    context.registerParametricMethod(this, "", (ZoneAppProxy::AppInfo)(ZoneAppProxy::getAppInfo)(std::string, std::string));
 
-    context.registerParametricMethod(this, (int)(ZoneAppProxy::createIterator)(std::string));
-    context.registerParametricMethod(this, (ZoneAppProxy::AppInfo)(ZoneAppProxy::getIteratorValue)(int));
-    context.registerParametricMethod(this, (bool)(ZoneAppProxy::nextIterator)(int));
-    context.registerParametricMethod(this, (int)(ZoneAppProxy::destroyIterator)(int));
+    context.registerParametricMethod(this, "", (int)(ZoneAppProxy::createIterator)(std::string));
+    context.registerParametricMethod(this, "", (ZoneAppProxy::AppInfo)(ZoneAppProxy::getIteratorValue)(int));
+    context.registerParametricMethod(this, "", (bool)(ZoneAppProxy::nextIterator)(int));
+    context.registerParametricMethod(this, "", (int)(ZoneAppProxy::destroyIterator)(int));
 
-    context.registerParametricMethod(this, (int)(ZoneAppProxy::launch)(std::string, ZoneAppProxy::Bundle));
-    context.registerParametricMethod(this, (int)(ZoneAppProxy::resume)(std::string, std::string));
-    context.registerParametricMethod(this, (int)(ZoneAppProxy::terminate)(std::string, std::string));
-    context.registerParametricMethod(this, (int)(ZoneAppProxy::isRunning)(std::string, std::string));
+    context.registerParametricMethod(this, "", (int)(ZoneAppProxy::launch)(std::string, ZoneAppProxy::Bundle));
+    context.registerParametricMethod(this, "", (int)(ZoneAppProxy::resume)(std::string, std::string));
+    context.registerParametricMethod(this, "", (int)(ZoneAppProxy::terminate)(std::string, std::string));
+    context.registerParametricMethod(this, "", (int)(ZoneAppProxy::isRunning)(std::string, std::string));
 }
 
 ZoneAppProxy::~ZoneAppProxy()

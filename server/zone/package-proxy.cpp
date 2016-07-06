@@ -29,11 +29,11 @@ namespace DevicePolicyManager {
 ZonePackageProxy::ZonePackageProxy(PolicyControlContext& ctx)
     : context(ctx)
 {
-    context.registerParametricMethod(this, (ZonePackageProxy::PackageInfo)(ZonePackageProxy::getPackageInfo)(std::string, std::string));
-    context.registerParametricMethod(this, (std::vector<std::string>)(ZonePackageProxy::getPackageList)(std::string));
+    context.registerParametricMethod(this, "", (ZonePackageProxy::PackageInfo)(ZonePackageProxy::getPackageInfo)(std::string, std::string));
+    context.registerParametricMethod(this, "", (std::vector<std::string>)(ZonePackageProxy::getPackageList)(std::string));
 
-    context.registerParametricMethod(this, (int)(ZonePackageProxy::install)(std::string, std::string));
-    context.registerParametricMethod(this, (int)(ZonePackageProxy::uninstall)(std::string, std::string));
+    context.registerParametricMethod(this, "", (int)(ZonePackageProxy::install)(std::string, std::string));
+    context.registerParametricMethod(this, "", (int)(ZonePackageProxy::uninstall)(std::string, std::string));
 }
 
 ZonePackageProxy::~ZonePackageProxy()
