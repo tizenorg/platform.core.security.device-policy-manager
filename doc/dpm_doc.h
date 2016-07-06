@@ -126,6 +126,9 @@
   * application are only allowed to subscribe policy change notification published by
   * the device policy manager.
   *<br>
+  */ 
+
+ /**
   * @ingroup CAPI_SECURITY_DPM_MODULE
   * @defgroup CAPI_DPM_MANAGER_MODULE Policy Manager Interface
   * @brief The policy client provides functions required to access the device policy APIs.
@@ -138,7 +141,9 @@
   * before attempting to use almost any of the device policy APIs, and the handle should be
   * freed by using dpm_manager_destroy() when interaction with the device policy manager
   * is no longer required.
-  *
+  */ 
+
+ /**
   * @ingroup CAPI_SECURITY_DPM_MODULE
   * @defgroup CAPI_DPM_PASSWORD_POLICY_MODULE Password policy group
   * @brief Password policy group provides APIs to control password policies.
@@ -149,7 +154,9 @@
   * password type, password quality and expiration date. Any API which requires privileges
   * is only available for the registered device admin client which is enrolled to the device
   * by enrollment process.
-  *
+  */ 
+
+ /**
   * @ingroup CAPI_SECURITY_DPM_MODULE
   * @defgroup CAPI_DPM_RESTRICTION_POLICY_MODULE Restriction policy group
   * @brief Restriction policy group provides APIs to control restriction functionality.
@@ -160,7 +167,9 @@
   * Camera, Microphone, Wi-Fi, bluetooth, USB and so on. Any API which requires privileges
   * is only available for the registered device admin client which is enrolled to the device
   * by enrollment process.
-  *
+  */ 
+
+ /**
   * @ingroup CAPI_SECURITY_DPM_MODULE
   * @defgroup CAPI_DPM_SECURITY_POLICY_MODULE Security policy group
   * @brief Security policy group provides APIs to control security functionality
@@ -171,7 +180,9 @@
   * device encryption and screen lock. Any API which requires privileges
   * is only available for the registered device admin client which is enrolled to the device
   * by enrollment process.
-  *
+  */ 
+
+ /**
   * @ingroup CAPI_SECURITY_DPM_MODULE
   * @defgroup CAPI_DPM_ZONE_POLICY_MODULE Zone policy group
   * @brief Zone policy group provides APIs to control containers
