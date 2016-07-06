@@ -21,6 +21,7 @@ SET(UNIT_TEST_SOURCES	main.cpp
 						xml.cpp
 						filesystem.cpp
 						shadow.cpp
+						proc.cpp
 						${DPM_TESTBENCH}/testbench.cpp
 )
 

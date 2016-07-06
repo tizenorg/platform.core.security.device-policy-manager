@@ -37,7 +37,8 @@ TESTCASE(DatabaseTest)
                         "ID INTEGER PRIMARY KEY AUTOINCREMENT,"  \
                         "PKG TEXT,"                              \
                         "KEY TEXT,"                              \
-                        "IS_USED INTEGER)";
+                        "IS_USED INTEGER,"                       \
+                        "USER INTEGER)";
 
     try {
         database::Connection db("/tmp/test.db", database::Connection::ReadWrite | database::Connection::Create);
@@ -47,20 +48,95 @@ TESTCASE(DatabaseTest)
     }
 }
 
-TESTCASE(StatementTest)
+TESTCASE(InvalidStatementTest)
 {
-    std::string query = "INSERT INTO CLIENT VALUES (NULL, ?, ?, ?)";
+    try {
+        database::Connection db("/tmp/test.db", database::Connection::ReadWrite | database::Connection::Create);
+        database::Statement stmt(db, "INVALID STATEMENT");
+    } catch (runtime::Exception& e) {
+    }
+}
+
+TESTCASE(ColumnBindTestWithIndex1)
+{
+    std::string query = "INSERT INTO CLIENT VALUES (NULL, ?, ?, ?, ?)";
+
+    try {
+        const char *str = "PACKAGE";
+        void *blob = (void *)str;
+        double user=5001;
+        sqlite3_int64 used = 1;
+        std::string key = "test key";
+
+        database::Connection db("/tmp/test.db", database::Connection::ReadWrite | database::Connection::Create);
+        database::Statement stmt(db, query);
+        stmt.bind(1, blob, 8);
+        stmt.bind(2, key);
+        stmt.bind(3, used);
+        stmt.bind(4, user);
+        stmt.exec();
+        database::Statement select(db, "SELECT * FROM CLIENT");
+
+        TEST_EXPECT(5, select.getColumnCount());
+        stmt.clearBindings();
+        stmt.reset();
+    } catch (runtime::Exception& e) {
+        TEST_FAIL(e.what());
+    }
+}
+
+TESTCASE(ColumnBindTestWithIndex2)
+{
+    std::string query = "INSERT INTO CLIENT VALUES (NULL, ?, ?, ?, ?)";
 
     try {
         database::Connection db("/tmp/test.db", database::Connection::ReadWrite | database::Connection::Create);
         database::Statement stmt(db, query);
-        stmt.bind(1, "test package");
-        stmt.bind(2, "test key");
+        stmt.bind(1, "TEST PACKAGE");
+        stmt.bind(2, "TEST KEY");
         stmt.bind(3, false);
+        stmt.bind(4, 5001);
         stmt.exec();
-        database::Statement select(db, "SELECT * FROM CLIENT");
+    } catch (runtime::Exception& e) {
+        TEST_FAIL(e.what());
+    }
+}
 
-        TEST_EXPECT(4, select.getColumnCount());
+TESTCASE(ColumnBindTestWithName1)
+{
+    std::string query = "INSERT INTO CLIENT VALUES (NULL, :PKG, :KEY, :IS_USED, :USER)";
+
+    try {
+        database::Connection db("/tmp/test.db", database::Connection::ReadWrite | database::Connection::Create);
+        database::Statement stmt(db, query);
+        stmt.bind(":PKG", "TEST PACKAGE");
+        stmt.bind(":KEY", "TEST KEY");
+        stmt.bind(":IS_USED", true);
+        stmt.bind(":USER", 5001);
+        stmt.exec();
+    } catch (runtime::Exception& e) {
+        TEST_FAIL(e.what());
+    }
+}
+
+TESTCASE(ColumnBindTestWithName2)
+{
+    std::string query = "INSERT INTO CLIENT VALUES (NULL, :PKG, :KEY, :IS_USED, :USER)";
+
+    try {
+        const char *str = "PACKAGE";
+        void *blob = (void *)str;
+        double user = 5001;
+        sqlite3_int64 used = 1;
+        std::string key = "test key";
+
+        database::Connection db("/tmp/test.db", database::Connection::ReadWrite | database::Connection::Create);
+        database::Statement stmt(db, query);
+        stmt.bind(":PKG", blob, 8);
+        stmt.bind(":KEY", key);
+        stmt.bind(":IS_USED", used);
+        stmt.bind(":USER", user);
+        stmt.exec();
     } catch (runtime::Exception& e) {
         TEST_FAIL(e.what());
     }
@@ -68,33 +144,59 @@ TESTCASE(StatementTest)
 
 TESTCASE(ColumnTest)
 {
-    std::string query = "INSERT INTO CLIENT VALUES (NULL, ?, ?, ?)";
-
     try {
         database::Connection db("/tmp/test.db", database::Connection::ReadWrite | database::Connection::Create);
-        database::Statement stmt(db, query);
-        stmt.bind(1, "test package");
-        stmt.bind(2, "test key");
-        stmt.bind(3, false);
-        stmt.exec();
         database::Statement select(db, "SELECT * FROM CLIENT");
-        select.step();
-        database::Column id = select.getColumn(0);
-        database::Column pkg = select.getColumn(1);
-        database::Column key = select.getColumn(2);
-        database::Column used = select.getColumn(3);
+        while (select.step()) {
+            for (int  i = 0; i < select.getColumnCount(); i++) {
+                TEST_EXPECT(false, select.isNullColumn(i));
+                std::cout << "C: " << select.getColumnName(i);
+            }
+            std::cout << std::endl;
 
-        std::cout << "Id Column Name: " << id.getName() << std::endl;
-        std::cout << "Pkg Column Name: " << pkg.getName() << std::endl;
-        std::cout << "Key Column Name: " << key.getName() << std::endl;
-        std::cout << "Used Column Name: " << used.getName() << std::endl;
+            database::Column id = select.getColumn(0);
+            database::Column pkg = select.getColumn(1);
+            database::Column key = select.getColumn(2);
+            database::Column used = select.getColumn(3);
 
-        std::cout << "Id Column Value: " << id.getInt() << std::endl;
-        std::cout << "Pkg Column Value: " << pkg.getText() << std::endl;
-        std::cout << "Key Column Value: " << key.getText() << std::endl;
-        std::cout << "Used Column Value: " << used.getInt() << std::endl;
+            std::cout << "Column: " << id.getName()
+                      << ", Int: " << id.getInt()
+                      << ", Int64: " << id.getInt64()
+                      << ", Double: " << id.getDouble()
+                      << ", Type: " << id.getType()
+                      << ", Bytes: " << id.getBytes()
+                      << ", Double: " << id.getDouble()
+                      << std::endl;
+            std::cout << "Column: " << pkg.getName()
+                      << ", Text: " << pkg.getText()
+                      << ", Type: " << pkg.getType()
+                      << ", Bytes: " << pkg.getBytes()
+                      << ", Blob: " << (const char*)pkg.getBlob()
+                      << std::endl;
+            std::cout << "Column: " << key.getName()
+                      << ", Text: " << key.getText()
+                      << ", Type: " << key.getType()
+                      << ", Bytes: " << key.getBytes()
+                      << ", Blob: " << (const char*)key.getBlob()
+                      << std::endl;
+            std::cout << "Column: " << used.getName()
+                      << ", Int: " << used.getInt()
+                      << ", Int64: " << used.getInt64()
+                      << ", Double: " << used.getDouble()
+                      << ", Type: " << used.getType()
+                      << ", Bytes: " << used.getBytes()
+                      << std::endl;
+        }
     } catch (runtime::Exception& e) {
         TEST_FAIL(e.what());
     }
 }
 
+TESTCASE(InvalidDB)
+{
+    try {
+        database::Connection db("/tmp/invalid.db", database::Connection::ReadWrite);
+    } catch (runtime::Exception& e) {
+
+    }
+}
