@@ -63,17 +63,6 @@ static void __block_clicked_cb(void *data, Evas_Object *obj, void *event_info)
 	return;
 }
 
-static int __send_launch_request(app_control_h app_control)
-{
-	if (app_control_set_launch_mode(app_control, APP_CONTROL_LAUNCH_MODE_GROUP) != APP_CONTROL_ERROR_NONE)
-		return -1;
-
-	if (app_control_send_launch_request(app_control, NULL, NULL) != APP_CONTROL_ERROR_NONE)
-		return -1;
-
-	return 0;
-}
-
 static void __ok_btn_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	Evas_Object *popup = (Evas_Object *) data;
@@ -82,7 +71,7 @@ static void __ok_btn_cb(void *data, Evas_Object *obj, void *event_info)
 	/* call application */
 	app_control_h app_control = (app_control_h)evas_object_data_get(popup, "app-control");
 
-	if (__send_launch_request(app_control) != 0)
+	if (app_control_send_launch_request(app_control, NULL, NULL) != APP_CONTROL_ERROR_NONE)
 		dlog_print(DLOG_ERROR, LOG_TAG, "failed to send launch request");
 
 	app_control_destroy(app_control);
