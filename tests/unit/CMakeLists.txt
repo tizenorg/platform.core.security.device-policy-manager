@@ -22,6 +22,9 @@ SET(UNIT_TEST_SOURCES	main.cpp
 						filesystem.cpp
 						shadow.cpp
 						proc.cpp
+						misc.cpp
+						eventfd.cpp
+						logger.cpp
 						${DPM_TESTBENCH}/testbench.cpp
 )
 

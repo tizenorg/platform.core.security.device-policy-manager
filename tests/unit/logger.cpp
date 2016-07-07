@@ -14,34 +14,29 @@
  *  limitations under the License
  */
 
-#ifndef __RUNTIME_EVENTFD_H__
-#define __RUNTIME_EVENTFD_H__
+#include <string>
+#include <vector>
 
-#include <sys/eventfd.h>
+#include "array.h"
+#include "error.h"
+#include "exception.h"
+#include "audit/logger.h"
 
-namespace runtime {
+#include "testbench/testbench.h"
 
-class EventFD {
-public:
-	EventFD(unsigned int initval = 0, int flags = EFD_SEMAPHORE | EFD_CLOEXEC);
-	~EventFD();
+TESTCASE(LogMacroTest)
+{
+    TRACE("Trace");
+    INFO("Info");
+    DEBUG("Debug");
+    WARN("Warning");
+    ERROR("Error");
+}
 
-	EventFD(const EventFD&) = delete;
-	EventFD& operator=(const EventFD&) = delete;
-
-	void send();
-	void receive();
-	void close();
-
-	int getFd() const
-	{
-		return fd;
+TESTCASE(LogSeverityTest)
+{
+	try {
+		audit::LogLevelToString((audit::LogLevel)-1);
+	} catch (runtime::Exception& e) {
 	}
-
-private:
-	int fd;
-};
-
-} // namespace runtime
-
-#endif //__RUNTIME_EVENTFD_H__
+}

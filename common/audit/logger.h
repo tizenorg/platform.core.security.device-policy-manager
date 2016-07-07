@@ -75,5 +75,8 @@ do {                                                                   \
 #define DEBUG(MESSAGE) do {} while (0)
 #define TRACE(MESSAGE) do {} while (0)
 #endif //NDEBUG
+
+std::string LogLevelToString(const LogLevel level);
+
 } // namespace audit
 #endif //__AUDIT_LOGGER_H__

@@ -58,6 +58,15 @@ TESTCASE(InvalidStatementTest)
 	}
 }
 
+TESTCASE(InvalidStatementTest2)
+{
+	try {
+		database::Connection db("/tmp/test.db", database::Connection::ReadWrite | database::Connection::Create);
+		db.exec("INVALID");
+	} catch (runtime::Exception& e) {
+	}
+}
+
 TESTCASE(ColumnBindTestWithIndex1)
 {
 	std::string query = "INSERT INTO CLIENT VALUES (NULL, ?, ?, ?, ?)";
@@ -120,6 +129,20 @@ TESTCASE(ColumnBindTestWithName1)
 	}
 }
 
+TESTCASE(ColumnBindNullTest)
+{
+	std::string query = "INSERT INTO CLIENT VALUES (NULL, :PKG, :KEY, :IS_USED, :USER)";
+
+	try {
+		database::Connection db("/tmp/test.db", database::Connection::ReadWrite | database::Connection::Create);
+		database::Statement stmt(db, query);
+		stmt.bind(":PKG");
+		stmt.bind(2);
+	} catch (runtime::Exception& e) {
+		TEST_FAIL(e.what());
+	}
+}
+
 TESTCASE(ColumnBindTestWithName2)
 {
 	std::string query = "INSERT INTO CLIENT VALUES (NULL, :PKG, :KEY, :IS_USED, :USER)";
@@ -150,7 +173,9 @@ TESTCASE(ColumnTest)
 		database::Statement select(db, "SELECT * FROM CLIENT");
 		while (select.step()) {
 			for (int  i = 0; i < select.getColumnCount(); i++) {
-				TEST_EXPECT(false, select.isNullColumn(i));
+				if (select.isNullColumn(i)) {
+					continue;
+				}
 				std::cout << "C: " << select.getColumnName(i);
 			}
 			std::cout << std::endl;
@@ -190,6 +215,146 @@ TESTCASE(ColumnTest)
 		}
 	} catch (runtime::Exception& e) {
 		TEST_FAIL(e.what());
+	}
+}
+
+TESTCASE(ColumnOutRange1)
+{
+
+	try {
+		database::Connection db("/tmp/test.db", database::Connection::ReadWrite | database::Connection::Create);
+		database::Statement select(db, "SELECT * FROM CLIENT");
+		select.step();
+		database::Column column = select.getColumn(32);
+	} catch (runtime::Exception& e) {
+	}
+}
+
+TESTCASE(ColumnOutRange2)
+{
+
+	try {
+		database::Connection db("/tmp/test.db", database::Connection::ReadWrite | database::Connection::Create);
+		database::Statement select(db, "SELECT * FROM CLIENT");
+		select.step();
+		select.isNullColumn(32);
+	} catch (runtime::Exception& e) {
+	}
+}
+
+TESTCASE(ColumnOutRange3)
+{
+
+	try {
+		database::Connection db("/tmp/test.db", database::Connection::ReadWrite | database::Connection::Create);
+		database::Statement select(db, "SELECT * FROM CLIENT");
+		select.step();
+		select.getColumnName(32);
+	} catch (runtime::Exception& e) {
+	}
+}
+
+TESTCASE(ColumnBindOutRange1)
+{
+	std::string query = "INSERT INTO CLIENT VALUES (NULL, :PKG, :KEY, :IS_USED, :USER)";
+
+	try {
+		database::Connection db("/tmp/test.db", database::Connection::ReadWrite | database::Connection::Create);
+		database::Statement stmt(db, query);
+		try {
+			stmt.bind(":TPK", "TEST PACKAGE");
+		} catch (runtime::Exception& e) {
+		}
+
+		try {
+			stmt.bind(":TPK", (int)10);
+		} catch (runtime::Exception& e) {
+		}
+
+		try {
+			stmt.bind(":TPK", (sqlite3_int64)10);
+		} catch (runtime::Exception& e) {
+		}
+
+		try {
+			stmt.bind(":TPK", (double)10);
+		} catch (runtime::Exception& e) {
+		}
+
+		try {
+			stmt.bind(":TPK", "invalid");
+		} catch (runtime::Exception& e) {
+		}
+
+		try {
+			stmt.bind(":TPK", std::string("invalid"));
+		} catch (runtime::Exception& e) {
+		}
+
+		try {
+			stmt.bind(":TPK", (void *)NULL, 12);
+		} catch (runtime::Exception& e) {
+		}
+
+		try {
+			stmt.bind(":TPK");
+		} catch (runtime::Exception& e) {
+		}
+
+		stmt.exec();
+	} catch (runtime::Exception& e) {
+	}
+}
+
+TESTCASE(ColumnBindOutRange2)
+{
+	std::string query = "INSERT INTO CLIENT VALUES (NULL, :PKG, :KEY, :IS_USED, :USER)";
+
+	try {
+		database::Connection db("/tmp/test.db", database::Connection::ReadWrite | database::Connection::Create);
+		database::Statement stmt(db, query);
+		try {
+			stmt.bind(32, "TEST PACKAGE");
+		} catch (runtime::Exception& e) {
+		}
+
+		try {
+			stmt.bind(32, (int)10);
+		} catch (runtime::Exception& e) {
+		}
+
+		try {
+			stmt.bind(32, (sqlite3_int64)10);
+		} catch (runtime::Exception& e) {
+		}
+
+		try {
+			stmt.bind(32, (double)10);
+		} catch (runtime::Exception& e) {
+		}
+
+		try {
+			stmt.bind(32, "invalid");
+		} catch (runtime::Exception& e) {
+		}
+
+		try {
+			stmt.bind(32, std::string("invalid"));
+		} catch (runtime::Exception& e) {
+		}
+
+		try {
+			stmt.bind(32, (void *)NULL, 12);
+		} catch (runtime::Exception& e) {
+		}
+
+		try {
+			stmt.bind(32);
+		} catch (runtime::Exception& e) {
+		}
+
+		stmt.exec();
+	} catch (runtime::Exception& e) {
 	}
 }
 
