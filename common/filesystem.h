@@ -26,143 +26,143 @@ namespace runtime {
 
 class File {
 public:
-    File();
-    File(const char* pathname);
-    File(const std::string& pathname);
-    File(const File& file);
-    File(const std::string& path, int flags);
+	File();
+	File(const char* pathname);
+	File(const std::string& pathname);
+	File(const File& file);
+	File(const std::string& path, int flags);
 
-    ~File();
+	~File();
 
-    File& operator=(const std::string& pathname)
-    {
-        path = pathname;
-        return *this;
-    }
+	File& operator=(const std::string& pathname)
+	{
+		path = pathname;
+		return *this;
+	}
 
-    File& operator=(const File& file)
-    {
-        path = file.path;
-        return *this;
-    }
+	File& operator=(const File& file)
+	{
+		path = file.path;
+		return *this;
+	}
 
-    bool operator<(const File& file) const;
-    bool operator>(const File& file) const;
-    bool operator<=(const File& file) const;
-    bool operator>=(const File& file) const;
+	bool operator<(const File& file) const;
+	bool operator>(const File& file) const;
+	bool operator<=(const File& file) const;
+	bool operator>=(const File& file) const;
 
-    bool operator==(const File& file) const
-    {
-        return (path == file.path);
-    }
+	bool operator==(const File& file) const
+	{
+		return (path == file.path);
+	}
 
-    bool operator!=(const File& file) const
-    {
-        return !(path == file.path);
-    }
+	bool operator!=(const File& file) const
+	{
+		return !(path == file.path);
+	}
 
-    bool exists() const;
-    bool canRead() const;
-    bool canWrite() const;
-    bool canExecute() const;
+	bool exists() const;
+	bool canRead() const;
+	bool canWrite() const;
+	bool canExecute() const;
 
-    bool isLink() const;
-    bool isFile() const;
-    bool isDirectory() const;
-    bool isDevice() const;
+	bool isLink() const;
+	bool isFile() const;
+	bool isDirectory() const;
+	bool isDevice() const;
 
-    mode_t getMode() const;
-    uid_t getUid() const;
-    gid_t getGid() const;
+	mode_t getMode() const;
+	uid_t getUid() const;
+	gid_t getGid() const;
 
-    size_t size() const;
+	size_t size() const;
 
-    void create(mode_t mode);
-    void open(int flags);
-    void read(void *buffer, const size_t size) const;
-    void write(const void *buffer, const size_t size) const;
-    void close();
-    File copyTo(const std::string& pathname);
-    void remove(bool recursive = false);
-    void makeBaseDirectory(uid_t uid = 0, gid_t gid = 0);
-    void makeDirectory(bool recursive = false, uid_t uid = 0, gid_t gid = 0);
+	void create(mode_t mode);
+	void open(int flags);
+	void read(void *buffer, const size_t size) const;
+	void write(const void *buffer, const size_t size) const;
+	void close();
+	File copyTo(const std::string& pathname);
+	void remove(bool recursive = false);
+	void makeBaseDirectory(uid_t uid = 0, gid_t gid = 0);
+	void makeDirectory(bool recursive = false, uid_t uid = 0, gid_t gid = 0);
 
-    void lock() const;
-    void unlock() const;
+	void lock() const;
+	void unlock() const;
 
-    void chown(uid_t uid, gid_t gid, bool recursive = false);
-    void chmod(mode_t mode, bool recursive = false);
+	void chown(uid_t uid, gid_t gid, bool recursive = false);
+	void chmod(mode_t mode, bool recursive = false);
 
-    const std::string& getPath() const
-    {
-        return path;
-    }
+	const std::string& getPath() const
+	{
+		return path;
+	}
 
-    const std::string getName() const
-    {
-        return path.substr(path.rfind('/') + 1);
-    }
+	const std::string getName() const
+	{
+		return path.substr(path.rfind('/') + 1);
+	}
 
 private:
-    int descriptor;
-    std::string path;
+	int descriptor;
+	std::string path;
 };
 
 class DirectoryIterator {
 public:
-    DirectoryIterator();
-    DirectoryIterator(const std::string& dir);
+	DirectoryIterator();
+	DirectoryIterator(const std::string& dir);
 
-    ~DirectoryIterator();
+	~DirectoryIterator();
 
-    DirectoryIterator& operator=(const std::string& dir);
-    DirectoryIterator& operator++();
+	DirectoryIterator& operator=(const std::string& dir);
+	DirectoryIterator& operator++();
 
-    bool operator==(const DirectoryIterator& iterator) const
-    {
-        return (current == iterator.current);
-    }
+	bool operator==(const DirectoryIterator& iterator) const
+	{
+		return (current == iterator.current);
+	}
 
-    bool operator!=(const DirectoryIterator& iterator) const
-    {
-        return !(current == iterator.current);
-    }
+	bool operator!=(const DirectoryIterator& iterator) const
+	{
+		return !(current == iterator.current);
+	}
 
-    const File& operator*() const
-    {
-        return current;
-    }
+	const File& operator*() const
+	{
+		return current;
+	}
 
-    File& operator*()
-    {
-        return current;
-    }
+	File& operator*()
+	{
+		return current;
+	}
 
-    const File* operator->() const
-    {
-        return &current;
-    }
+	const File* operator->() const
+	{
+		return &current;
+	}
 
-    File* operator->()
-    {
-        return &current;
-    }
+	File* operator->()
+	{
+		return &current;
+	}
 
 private:
-    void next();
-    void reset(const std::string& dir);
+	void next();
+	void reset(const std::string& dir);
 
-    File current;
-    DIR* directoryHandle;
-    std::string basename;
+	File current;
+	DIR* directoryHandle;
+	std::string basename;
 };
 
 class Mount final {
 public:
-    Mount() = delete;
+	Mount() = delete;
 
-    static void mountEntry(const std::string& src, const std::string& dest,
-                           const std::string& type, const std::string& opts);
+	static void mountEntry(const std::string& src, const std::string& dest,
+						   const std::string& type, const std::string& opts);
 };
 
 int Open(const std::string& path, int flags, mode_t mode);

@@ -28,26 +28,26 @@
 namespace audit {
 
 enum class LogLevel : int {
-    Error,
-    Warning,
-    Debug,
-    Info,
-    Trace
+	Error,
+	Warning,
+	Debug,
+	Info,
+	Trace
 };
 
 class Logger {
 public:
-    static void setLogLevel(const LogLevel level);
-    static LogLevel getLogLevel(void);
-    static void log(LogLevel severity,
-                    const std::string& file,
-                    const unsigned int line,
-                    const std::string& func,
-                    const std::string& message);
+	static void setLogLevel(const LogLevel level);
+	static LogLevel getLogLevel(void);
+	static void log(LogLevel severity,
+					const std::string& file,
+					const unsigned int line,
+					const std::string& func,
+					const std::string& message);
 
 private:
-    static LogLevel logLevel;
-    static std::unique_ptr<LogSink> backend;
+	static LogLevel logLevel;
+	static std::unique_ptr<LogSink> backend;
 };
 
 #ifndef __FILENAME__
@@ -57,10 +57,10 @@ private:
 
 #define LOG(SEVERITY, MESSAGE)                                         \
 do {                                                                   \
-    if (audit::LogLevel::SEVERITY <= audit::Logger::getLogLevel()) {   \
-        audit::Logger::log(audit::LogLevel::SEVERITY,                  \
-                           __FILENAME__, __LINE__, __func__, MESSAGE); \
-    }                                                                  \
+	if (audit::LogLevel::SEVERITY <= audit::Logger::getLogLevel()) {   \
+		audit::Logger::log(audit::LogLevel::SEVERITY,                  \
+						   __FILENAME__, __LINE__, __func__, MESSAGE); \
+	}                                                                  \
 } while (0)
 
 #define ERROR(MESSAGE)	LOG(Error, MESSAGE)

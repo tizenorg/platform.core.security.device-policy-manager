@@ -17,9 +17,10 @@
 #ifndef __RUNTIME_GROUP_H__
 #define __RUNTIME_GROUP_H__
 
-#include <string>
 #include <limits.h>
 #include <sys/types.h>
+
+#include <string>
 
 #ifndef INVALID_GID
 #define INVALID_GID             UINT_MAX
@@ -29,24 +30,24 @@ namespace runtime {
 
 class Group final {
 public:
-    Group(const std::string& name);
-    Group(const gid_t group);
-    Group(const Group& group);
-    Group();
+	Group(const std::string& name);
+	Group(const gid_t group);
+	Group(const Group& group);
+	Group();
 
-    const std::string& getName() const
-    {
-        return name;
-    }
+	const std::string& getName() const
+	{
+		return name;
+	}
 
-    const gid_t getGid() const
-    {
-        return gid;
-    }
+	const gid_t getGid() const
+	{
+		return gid;
+	}
 
 private:
-    std::string name;
-    gid_t gid;
+	std::string name;
+	gid_t gid;
 };
 
 } // namespace runtime

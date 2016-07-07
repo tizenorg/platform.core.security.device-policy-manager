@@ -27,14 +27,14 @@ using namespace DevicePolicyManager;
 
 EXPORT_API int dpm_admin_register_client(device_policy_manager_h handle, const char* name)
 {
-    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+	DevicePolicyContext &client = GetDevicePolicyContext(handle);
 	AdministrationPolicy admin = client.createPolicyInterface<AdministrationPolicy>();
-    return admin.registerPolicyClient(name);
+	return admin.registerPolicyClient(name);
 }
 
 EXPORT_API int dpm_admin_deregister_client(device_policy_manager_h handle, const char* name)
 {
-    DevicePolicyContext &client = GetDevicePolicyContext(handle);
+	DevicePolicyContext &client = GetDevicePolicyContext(handle);
 	AdministrationPolicy admin = client.createPolicyInterface<AdministrationPolicy>();
-    return admin.deregisterPolicyClient(name);
+	return admin.deregisterPolicyClient(name);
 }

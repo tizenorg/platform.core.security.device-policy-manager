@@ -27,60 +27,60 @@ namespace xml {
 
 Document* Parser::parseContext(xmlParserCtxt* context, bool validate)
 {
-    if (context == nullptr) {
-        throw runtime::Exception("Could not create parser context");
-    }
+	if (context == nullptr) {
+		throw runtime::Exception("Could not create parser context");
+	}
 
-    KeepBlanks(false);
+	KeepBlanks(false);
 
-    int options = 0;
+	int options = 0;
 
-    if (validate) {
-        options |= XML_PARSE_DTDVALID;
-    } else {
-        options &= ~XML_PARSE_DTDVALID;
-    }
+	if (validate) {
+		options |= XML_PARSE_DTDVALID;
+	} else {
+		options &= ~XML_PARSE_DTDVALID;
+	}
 
-    xmlCtxtUseOptions(context, options);
+	xmlCtxtUseOptions(context, options);
 
-    if (xmlParseDocument(context) < 0) {
-        xmlFreeParserCtxt(context);
-        throw runtime::Exception("Parsing failed");
-    }
+	if (xmlParseDocument(context) < 0) {
+		xmlFreeParserCtxt(context);
+		throw runtime::Exception("Parsing failed");
+	}
 
-    xmlDoc* document = context->myDoc;
+	xmlDoc* document = context->myDoc;
 
-    // We took the ownership on the doc
-    context->myDoc = nullptr;
+	// We took the ownership on the doc
+	context->myDoc = nullptr;
 
-    xmlFreeParserCtxt(context);
+	xmlFreeParserCtxt(context);
 
-    return new Document(document);
+	return new Document(document);
 }
 
 Document* Parser::parseFile(const std::string& filename, bool validate)
 {
-    xmlParserCtxt* context = xmlCreateFileParserCtxt(filename.c_str());
-    if (context == nullptr) {
-        throw runtime::Exception("Could not create parser context");
-    }
+	xmlParserCtxt* context = xmlCreateFileParserCtxt(filename.c_str());
+	if (context == nullptr) {
+		throw runtime::Exception("Could not create parser context");
+	}
 
-    if (context->directory == nullptr) {
-        context->directory = xmlParserGetDirectory(filename.c_str());
-    }
+	if (context->directory == nullptr) {
+		context->directory = xmlParserGetDirectory(filename.c_str());
+	}
 
-    return parseContext(context, validate);
+	return parseContext(context, validate);
 }
 
 Document* Parser::parseString(const std::string& xml, bool validate)
 {
-    xmlParserCtxt* context = xmlCreateMemoryParserCtxt(xml.c_str(), xml.size() + 1);
+	xmlParserCtxt* context = xmlCreateMemoryParserCtxt(xml.c_str(), xml.size() + 1);
 
-    if (context == nullptr) {
-        throw runtime::Exception("Could not create parser context");
-    }
+	if (context == nullptr) {
+		throw runtime::Exception("Could not create parser context");
+	}
 
-    return parseContext(context, validate);
+	return parseContext(context, validate);
 }
 
 } // namespace xml

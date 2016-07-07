@@ -125,10 +125,10 @@ DPM_API int dpm_context_destroy(dpm_context_h handle);
  * @see         dpm_context_remove_policy_changed_cb()
  */
 DPM_API int dpm_context_add_policy_changed_cb(dpm_context_h handle,
-                                              const char* name,
-                                              dpm_policy_changed_cb callback,
-                                              void* user_data,
-                                              int* id);
+											  const char* name,
+											  dpm_policy_changed_cb callback,
+											  void* user_data,
+											  int* id);
 /**
  * @brief       Removes policy change callback from the device policy
  *              manager.
@@ -147,7 +147,7 @@ DPM_API int dpm_context_add_policy_changed_cb(dpm_context_h handle,
  * @see         dpm_context_add_policy_changed_cb()
  */
 DPM_API int dpm_context_remove_policy_changed_cb(dpm_context_h handle,
-                                                 int id);
+												 int id);
 /**
  * @brief       Called when a zone raises a signal.
  * @since_tizen 3.0
@@ -180,8 +180,8 @@ typedef void(*dpm_signal_cb)(const char* name, const char* object, void *user_da
  * @see         dpm_context_remove_signal_cb()
  */
 DPM_API int dpm_context_add_signal_cb(dpm_context_h context, const char* signal,
-                                      dpm_signal_cb callback, void* user_data,
-                                      int* id);
+									  dpm_signal_cb callback, void* user_data,
+									  int* id);
 
 /**
  * @brief       Removes signal callback.
@@ -207,12 +207,12 @@ DPM_API int dpm_context_remove_signal_cb(dpm_context_h context, int id);
 typedef void* dpm_##_n_##_policy_h;                                                      \
 static inline dpm_##_n_##_policy_h dpm_context_acquire_##_n_##_policy(dpm_context_h handle)       \
 {                                                                                          \
-    return handle;                                                                         \
+	return handle;                                                                         \
 }                                                                                          \
-                                                                                           \
+																						   \
 static inline int dpm_context_release_##_n_##_policy(dpm_context_h context, dpm_##_n_##_policy_h handle) \
 {                                                                                          \
-    return DPM_ERROR_NONE;                                                                 \
+	return DPM_ERROR_NONE;                                                                 \
 }
 
 DEFINE_POLICY_HANDLE(password)

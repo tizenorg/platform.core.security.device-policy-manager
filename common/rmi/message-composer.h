@@ -26,48 +26,48 @@ namespace rmi {
 
 class MessageComposer {
 public:
-    MessageComposer(size_t caps = 4096);
-    MessageComposer(const MessageComposer& rhs);
-    MessageComposer(MessageComposer&& rhs);
+	MessageComposer(size_t caps = 4096);
+	MessageComposer(const MessageComposer& rhs);
+	MessageComposer(MessageComposer&& rhs);
 
-    ~MessageComposer();
+	~MessageComposer();
 
-    MessageComposer& operator=(const MessageComposer& rhs);
-    MessageComposer& operator=(MessageComposer&& rhs);
+	MessageComposer& operator=(const MessageComposer& rhs);
+	MessageComposer& operator=(MessageComposer&& rhs);
 
-    void write(const void* ptr, const size_t sz);
-    void read(void* ptr, const size_t sz);
+	void write(const void* ptr, const size_t sz);
+	void read(void* ptr, const size_t sz);
 
-    void reserve(size_t size)
-    {
-        produce = size;
-    }
+	void reserve(size_t size)
+	{
+		produce = size;
+	}
 
-    void reset()
-    {
-        produce = consume = 0;
-    }
+	void reset()
+	{
+		produce = consume = 0;
+	}
 
-    char* begin() const
-    {
-        return buffer + consume;
-    }
+	char* begin() const
+	{
+		return buffer + consume;
+	}
 
-    char* end() const
-    {
-        return buffer + produce;
-    }
+	char* end() const
+	{
+		return buffer + produce;
+	}
 
-    size_t size() const
-    {
-        return (end() - begin());
-    }
+	size_t size() const
+	{
+		return (end() - begin());
+	}
 
 private:
-    size_t capacity;
-    size_t produce;
-    size_t consume;
-    char *buffer;
+	size_t capacity;
+	size_t produce;
+	size_t consume;
+	char *buffer;
 };
 
 } // namespae rmi

@@ -21,58 +21,58 @@
 
 static int admin_register_client(struct testcase* tc)
 {
-    int ret;
-    device_policy_manager_h handle;
+	int ret;
+	device_policy_manager_h handle;
 
-    handle = dpm_manager_create();
-    if (handle == NULL) {
-        printf("Failed to create client handle\n");
-        return TEST_FAILED;
-    }
+	handle = dpm_manager_create();
+	if (handle == NULL) {
+		printf("Failed to create client handle\n");
+		return TEST_FAILED;
+	}
 
-    ret = TEST_SUCCESSED;
-    if (dpm_admin_register_client(handle, "org.tizen.dpm-toolkit") != DPM_ERROR_NONE) {
-        ret = TEST_FAILED;
-    }
+	ret = TEST_SUCCESSED;
+	if (dpm_admin_register_client(handle, "org.tizen.dpm-toolkit") != DPM_ERROR_NONE) {
+		ret = TEST_FAILED;
+	}
 
-    dpm_manager_destroy(handle);
+	dpm_manager_destroy(handle);
 
-    return ret;
+	return ret;
 }
 
 static int admin_deregister_client(struct testcase* tc)
 {
-    int ret;
-    device_policy_manager_h handle;
+	int ret;
+	device_policy_manager_h handle;
 
-    handle = dpm_manager_create();
-    if (handle == NULL) {
-        printf("Failed to create client handle\n");
-        return TEST_FAILED;
-    }
+	handle = dpm_manager_create();
+	if (handle == NULL) {
+		printf("Failed to create client handle\n");
+		return TEST_FAILED;
+	}
 
-    ret = TEST_SUCCESSED;
-    if (dpm_admin_deregister_client(handle, "org.tizen.dpm-toolkit") != DPM_ERROR_NONE) {
-        ret = TEST_FAILED;
-    }
+	ret = TEST_SUCCESSED;
+	if (dpm_admin_deregister_client(handle, "org.tizen.dpm-toolkit") != DPM_ERROR_NONE) {
+		ret = TEST_FAILED;
+	}
 
-    dpm_manager_destroy(handle);
+	dpm_manager_destroy(handle);
 
-    return ret;
+	return ret;
 }
 
 struct testcase admin_testcase_register_client = {
-    .description = "admin_testcase_register_client",
-    .handler = admin_register_client
+	.description = "admin_testcase_register_client",
+	.handler = admin_register_client
 };
 
 struct testcase admin_testcase_deregister_client = {
-    .description = "admin_testcase_deregister_client",
-    .handler = admin_deregister_client
+	.description = "admin_testcase_deregister_client",
+	.handler = admin_deregister_client
 };
 
 void TESTCASE_CONSTRUCTOR admin_policy_build_testcase(void)
 {
-    testbench_populate_testcase(&admin_testcase_deregister_client);
-    testbench_populate_testcase(&admin_testcase_register_client);
+	testbench_populate_testcase(&admin_testcase_deregister_client);
+	testbench_populate_testcase(&admin_testcase_register_client);
 }

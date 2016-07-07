@@ -16,9 +16,9 @@
 SET(ZONE_VOLUME_MANAGER_TARGET	"zone-volume-manager")
 
 SET(ZONE_VOLUME_MANAGER_SOURCES key-manager.cpp
-                                key-generator.cpp
-                                kernel-keyring.cpp
-                                main.cpp
+								key-generator.cpp
+								kernel-keyring.cpp
+								main.cpp
 )
 
 PKG_CHECK_MODULES(ZONE_VOLUME_MANAGER_DEPS REQUIRED key-manager)

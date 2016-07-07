@@ -23,9 +23,9 @@ namespace audit {
 
 class LogSink {
 public:
-    LogSink() {}
-    virtual ~LogSink() {}
-    virtual void sink(const std::string& message) = 0;
+	LogSink() {}
+	virtual ~LogSink() {}
+	virtual void sink(const std::string& message) = 0;
 };
 
 } // namespace audit

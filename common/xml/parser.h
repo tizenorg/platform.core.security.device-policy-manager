@@ -28,11 +28,11 @@ namespace xml {
 
 class Parser {
 public:
-    static Document* parseFile(const std::string& filename, bool validate = false);
-    static Document* parseString(const std::string& xml, bool validate = false);
+	static Document* parseFile(const std::string& filename, bool validate = false);
+	static Document* parseString(const std::string& xml, bool validate = false);
 
 private:
-    static Document* parseContext(xmlParserCtxt* context, bool validate = false);
+	static Document* parseContext(xmlParserCtxt* context, bool validate = false);
 };
 
 } // namespace xml

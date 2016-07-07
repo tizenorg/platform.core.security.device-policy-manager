@@ -17,23 +17,23 @@
 PROJECT(zone-cli)
 
 FILE(GLOB ZONE_CLI_SRCS	zone-admin-cli.cpp
-                        ${ZONE_MODULE}/session.cpp
-                        ${ZONE_MODULE}/zone-builder.cpp
+						${ZONE_MODULE}/session.cpp
+						${ZONE_MODULE}/zone-builder.cpp
 )
 
 SET(ZONE_CLI_NAME "zone-admin-cli")
 
 ADD_EXECUTABLE(${ZONE_CLI_NAME} ${ZONE_CLI_SRCS})
 SET_TARGET_PROPERTIES(${ZONE_CLI_NAME} PROPERTIES PREFIX ""
-    COMPILE_DEFINITIONS PID_FILE_PATH="${RUN_INSTALL_DIR}/zone"
-    COMPILE_FLAGS "-fPIE"
-    LINK_FLAGS "-pie"
+	COMPILE_DEFINITIONS PID_FILE_PATH="${RUN_INSTALL_DIR}/zone"
+	COMPILE_FLAGS "-fPIE"
+	LINK_FLAGS "-pie"
 )
 
 PKG_CHECK_MODULES(ZONE_CLI_DEPS  REQUIRED
-                                 glib-2.0
-                                 capi-appfw-package-manager
-                                 capi-appfw-app-manager
+								 glib-2.0
+								 capi-appfw-package-manager
+								 capi-appfw-app-manager
 )
 
 INCLUDE_DIRECTORIES(SYSTEM ${ZONE_CLI_DEPS_INCLUDE_DIRS} ${DPM_COMMON} ${ZONE_MODULE} ${ZONE_LIBS})

@@ -21,12 +21,12 @@
 namespace xml {
 
 Node::Node(xmlNode* node) :
-    implementation(node)
+	implementation(node)
 {
 }
 
 Node::Node(Node&& node) :
-    implementation(node.implementation)
+	implementation(node.implementation)
 {
 }
 
@@ -36,82 +36,82 @@ Node::~Node()
 
 Node::NodeList Node::getChildren() const
 {
-    NodeList nodeList;
+	NodeList nodeList;
 
-    auto child = implementation->xmlChildrenNode;
-    while (child != nullptr) {
-        nodeList.emplace_back(child);
-        child = child->next;
-    }
+	auto child = implementation->xmlChildrenNode;
+	while (child != nullptr) {
+		nodeList.emplace_back(child);
+		child = child->next;
+	}
 
-    return nodeList;
+	return nodeList;
 }
 
 Node Node::addNewChild(const std::string& name)
 {
-    xmlNode* nodePtr = xmlNewNode(NULL, xmlStrdup((const xmlChar*)name.c_str()));
-    if (nodePtr == nullptr) {
-        throw runtime::Exception("Can not create a new node");
-    }
-    xmlAddChild(implementation, nodePtr);
+	xmlNode* nodePtr = xmlNewNode(NULL, xmlStrdup((const xmlChar*)name.c_str()));
+	if (nodePtr == nullptr) {
+		throw runtime::Exception("Can not create a new node");
+	}
+	xmlAddChild(implementation, nodePtr);
 
-    return Node(nodePtr);
+	return Node(nodePtr);
 }
 
 std::string Node::getName() const
 {
-    return implementation->name ? (const char*)implementation->name : "";
+	return implementation->name ? (const char*)implementation->name : "";
 }
 
 void Node::setName(const std::string& name)
 {
-    xmlNodeSetName(implementation, (const xmlChar*)name.c_str());
+	xmlNodeSetName(implementation, (const xmlChar*)name.c_str());
 }
 
 std::string Node::getContent() const
 {
-    xmlChar* content = xmlNodeGetContent(implementation);
-    if (content == NULL) {
-        return "";
-    }
-    std::string ret((const char*)content);
-    xmlFree(content);
-    return ret;
+	xmlChar* content = xmlNodeGetContent(implementation);
+	if (content == NULL) {
+		return "";
+	}
+	std::string ret((const char*)content);
+	xmlFree(content);
+	return ret;
 }
 
 void Node::setContent(const std::string& content)
 {
-    xmlNodeSetContent(implementation, (xmlChar*)content.c_str());
+	xmlNodeSetContent(implementation, (xmlChar*)content.c_str());
 }
 
 std::string Node::getProp(const std::string& name) const
 {
-    if (implementation->type != XML_ELEMENT_NODE) {
-        throw runtime::Exception("This node type does not have properties");
-    }
+	if (implementation->type != XML_ELEMENT_NODE) {
+		throw runtime::Exception("This node type does not have properties");
+	}
 
-    xmlChar* prop = xmlGetProp(implementation, (xmlChar*)name.c_str());
-    if (prop) {
-        std::string ret((const char*)prop);
-        xmlFree(prop);
-        return ret;
-    }
+	xmlChar* prop = xmlGetProp(implementation, (xmlChar*)name.c_str());
+	if (prop) {
+		std::string ret((const char*)prop);
+		xmlFree(prop);
+		return ret;
+	}
 
-    return "";
+	return "";
 }
 
 void Node::setProp(const std::string& name, const std::string& val)
 {
-    if (implementation->type != XML_ELEMENT_NODE) {
-        throw runtime::Exception("Can not set properties for this node type");
-    }
+	if (implementation->type != XML_ELEMENT_NODE) {
+		throw runtime::Exception("Can not set properties for this node type");
+	}
 
-    xmlSetProp(implementation, (xmlChar*)name.c_str(), (xmlChar*)val.c_str());
+	xmlSetProp(implementation, (xmlChar*)name.c_str(), (xmlChar*)val.c_str());
 }
 
 bool Node::isBlank() const
 {
-    return xmlIsBlankNode(const_cast<xmlNode*>(implementation));
+	return xmlIsBlankNode(const_cast<xmlNode*>(implementation));
 }
 
 } // namespace xml

@@ -19,112 +19,112 @@
 namespace rmi {
 
 MessageComposer::MessageComposer(size_t caps) :
-    capacity(caps),
-    produce(0),
-    consume(0),
-    buffer(new char[caps])
+	capacity(caps),
+	produce(0),
+	consume(0),
+	buffer(new char[caps])
 {
 }
 
 MessageComposer::MessageComposer(const MessageComposer& rhs) :
-    capacity(rhs.capacity),
-    produce(rhs.produce),
-    consume(rhs.consume),
-    buffer(new char[rhs.capacity])
+	capacity(rhs.capacity),
+	produce(rhs.produce),
+	consume(rhs.consume),
+	buffer(new char[rhs.capacity])
 {
-    std::copy(rhs.buffer + consume, rhs.buffer + produce, buffer + consume);
+	std::copy(rhs.buffer + consume, rhs.buffer + produce, buffer + consume);
 }
 
 MessageComposer::MessageComposer(MessageComposer&& rhs) :
-    capacity(0),
-    produce(0),
-    consume(0),
-    buffer(nullptr)
+	capacity(0),
+	produce(0),
+	consume(0),
+	buffer(nullptr)
 {
-    buffer = rhs.buffer;
-    capacity = rhs.capacity;
-    produce = rhs.produce;
-    consume = rhs.consume;
+	buffer = rhs.buffer;
+	capacity = rhs.capacity;
+	produce = rhs.produce;
+	consume = rhs.consume;
 
-    // Release buffer pointer from the source object so that
-    // the destructor does not free the memory multiple times.
+	// Release buffer pointer from the source object so that
+	// the destructor does not free the memory multiple times.
 
-    rhs.buffer = nullptr;
-    rhs.produce = 0;
-    rhs.consume = 0;
+	rhs.buffer = nullptr;
+	rhs.produce = 0;
+	rhs.consume = 0;
 }
 
 MessageComposer::~MessageComposer()
 {
-    if (buffer != nullptr) {
-        delete[] buffer;
-    }
+	if (buffer != nullptr) {
+		delete[] buffer;
+	}
 }
 
 MessageComposer& MessageComposer::operator=(const MessageComposer& rhs)
 {
-    if (this != &rhs) {
-        delete[] buffer;
+	if (this != &rhs) {
+		delete[] buffer;
 
-        capacity = rhs.capacity;
-        produce = rhs.produce;
-        consume = rhs.consume;
-        buffer = new char[capacity];
-        std::copy(rhs.buffer + consume, rhs.buffer + produce, buffer + consume);
-    }
+		capacity = rhs.capacity;
+		produce = rhs.produce;
+		consume = rhs.consume;
+		buffer = new char[capacity];
+		std::copy(rhs.buffer + consume, rhs.buffer + produce, buffer + consume);
+	}
 
-    return *this;
+	return *this;
 }
 
 MessageComposer& MessageComposer::operator=(MessageComposer&& rhs)
 {
-    if (this != &rhs) {
-        // Free existing buffer
-        delete[] buffer;
+	if (this != &rhs) {
+		// Free existing buffer
+		delete[] buffer;
 
-        // Copy the buffer pointer and its attributes from the
-        // source object.
-        buffer = rhs.buffer;
-        produce = rhs.produce;
-        consume = rhs.consume;
-        capacity = rhs.capacity;
+		// Copy the buffer pointer and its attributes from the
+		// source object.
+		buffer = rhs.buffer;
+		produce = rhs.produce;
+		consume = rhs.consume;
+		capacity = rhs.capacity;
 
-        // Release buffer pointer from the source object so that
-        // the destructor does not free the memory multiple times.
-        rhs.buffer = nullptr;
-        rhs.produce = 0;
-        rhs.consume = 0;
-        rhs.capacity = 0;
-    }
+		// Release buffer pointer from the source object so that
+		// the destructor does not free the memory multiple times.
+		rhs.buffer = nullptr;
+		rhs.produce = 0;
+		rhs.consume = 0;
+		rhs.capacity = 0;
+	}
 
-    return *this;
+	return *this;
 }
 
 void MessageComposer::write(const void* ptr, const size_t sz)
 {
-    size_t bytes = sz;
-    if ((produce + bytes) > capacity) {
-        bytes = capacity - produce;
-    }
+	size_t bytes = sz;
+	if ((produce + bytes) > capacity) {
+		bytes = capacity - produce;
+	}
 
-    ::memcpy(reinterpret_cast<char *>(buffer + produce), ptr, bytes);
-    produce += bytes;
+	::memcpy(reinterpret_cast<char *>(buffer + produce), ptr, bytes);
+	produce += bytes;
 }
 
 void MessageComposer::read(void* ptr, const size_t sz)
 {
-    size_t bytes = sz;
-    if ((consume + bytes) > produce) {
-        bytes = produce - consume;
-    }
+	size_t bytes = sz;
+	if ((consume + bytes) > produce) {
+		bytes = produce - consume;
+	}
 
-    ::memcpy(ptr, reinterpret_cast<char *>(buffer) + consume, bytes);
-    consume += bytes;
+	::memcpy(ptr, reinterpret_cast<char *>(buffer) + consume, bytes);
+	consume += bytes;
 
-    // Reset cursors if there is no data
-    if (consume == produce) {
-        consume = produce = 0;
-    }
+	// Reset cursors if there is no data
+	if (consume == produce) {
+		consume = produce = 0;
+	}
 }
 
 } // namespae rmi

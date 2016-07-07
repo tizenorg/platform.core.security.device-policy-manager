@@ -92,9 +92,9 @@ int dpm_zone_destroy(device_policy_manager_h handle, const char* name);
  * @since_tizen 3.0
  */
 typedef enum {
-    DPM_ZONE_STATE_LOCKED       = 0x01,  /**< Zone has been defined, but it can not start. */
-    DPM_ZONE_STATE_RUNNING      = 0x02, /**< Zone has been started. */
-    DPM_ZONE_STATE_ALL          = 0xff  /**< This presents all of the state  */
+	DPM_ZONE_STATE_LOCKED       = 0x01,  /**< Zone has been defined, but it can not start. */
+	DPM_ZONE_STATE_RUNNING      = 0x02, /**< Zone has been started. */
+	DPM_ZONE_STATE_ALL          = 0xff  /**< This presents all of the state  */
 } dpm_zone_state_e;
 
 /**
@@ -146,8 +146,8 @@ typedef bool(*dpm_zone_foreach_name_cb)(const char* name, void *user_data);
  * @see         dpm_zone_destroy()
  */
 int dpm_zone_foreach_name(device_policy_manager_h handle,
-                          dpm_zone_state_e state,
-                          dpm_zone_foreach_name_cb callback, void* user_data);
+						  dpm_zone_state_e state,
+						  dpm_zone_foreach_name_cb callback, void* user_data);
 
 
 /**

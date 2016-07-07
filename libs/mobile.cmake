@@ -15,13 +15,13 @@
 #
 
 SET(POLICY      ${POLICY}
-                password.cpp
-                zone.cpp
-                dpm/password.cpp
-                dpm/zone.cpp
+				password.cpp
+				zone.cpp
+				dpm/password.cpp
+				dpm/zone.cpp
 )
 
 SET(CAPI        ${CAPI}
-                dpm/password.h
-                dpm/zone.h
+				dpm/password.h
+				dpm/zone.h
 )

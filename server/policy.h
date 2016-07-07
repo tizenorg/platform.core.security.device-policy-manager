@@ -26,24 +26,24 @@
 
 class Policy {
 public:
-    Policy() = delete;
-    Policy(xml::Node&& node);
+	Policy() = delete;
+	Policy(xml::Node&& node);
 
-    const std::string getContent() const
-    {
-        return data.getContent();
-    }
+	const std::string getContent() const
+	{
+		return data.getContent();
+	}
 
-    void setContent(const std::string& content)
-    {
-        updateLock->lock();
-        data.setContent(content);
-        updateLock->unlock();
-    }
+	void setContent(const std::string& content)
+	{
+		updateLock->lock();
+		data.setContent(content);
+		updateLock->unlock();
+	}
 
 private:
-    xml::Node data;
-    std::unique_ptr<std::mutex> updateLock;
+	xml::Node data;
+	std::unique_ptr<std::mutex> updateLock;
 };
 
 #endif //__DPM_POLICY_H__

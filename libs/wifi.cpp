@@ -20,7 +20,7 @@
 namespace DevicePolicyManager {
 
 WifiPolicy::WifiPolicy(PolicyControlContext& ctxt) :
-    context(ctxt)
+	context(ctxt)
 {
 }
 
@@ -30,92 +30,92 @@ WifiPolicy::~WifiPolicy()
 
 int WifiPolicy::setState(bool enable)
 {
-    try {
-        return context->methodCall<int>("WifiPolicy::setState", enable);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<int>("WifiPolicy::setState", enable);
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 
 bool WifiPolicy::getState()
 {
-    try {
-        return context->methodCall<bool>("WifiPolicy::getState");
-    } catch (runtime::Exception &e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<bool>("WifiPolicy::getState");
+	} catch (runtime::Exception &e) {
+		return -1;
+	}
 }
 
 int WifiPolicy::setHotspotState(bool enable)
 {
-    try {
-        return context->methodCall<int>("WifiPolicy::setHotspotState", enable);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<int>("WifiPolicy::setHotspotState", enable);
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 
 bool WifiPolicy::getHotspotState()
 {
-    try {
-        return context->methodCall<bool>("WifiPolicy::getHotspotState");
-    } catch (runtime::Exception &e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<bool>("WifiPolicy::getHotspotState");
+	} catch (runtime::Exception &e) {
+		return -1;
+	}
 }
 
 int WifiPolicy::setProfileChangeRestriction(bool enable)
 {
-    try {
-        return context->methodCall<int>("WifiPolicy::setProfileChangeRestriction", enable);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<int>("WifiPolicy::setProfileChangeRestriction", enable);
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 
 bool WifiPolicy::isProfileChangeRestricted(void)
 {
-    try {
-        return context->methodCall<bool>("WifiPolicy::isProfileChangeRestricted");
-    } catch (runtime::Exception &e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<bool>("WifiPolicy::isProfileChangeRestricted");
+	} catch (runtime::Exception &e) {
+		return -1;
+	}
 }
 
 int WifiPolicy::setNetworkAccessRestriction(bool enable)
 {
-    try {
-        return context->methodCall<int>("WifiPolicy::setNetworkAccessRestriction", enable);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<int>("WifiPolicy::setNetworkAccessRestriction", enable);
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 
 bool WifiPolicy::isNetworkAccessRestricted(void)
 {
-    try {
-        return context->methodCall<bool>("WifiPolicy::isNetworkAccessRestricted");
-    } catch (runtime::Exception &e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<bool>("WifiPolicy::isNetworkAccessRestricted");
+	} catch (runtime::Exception &e) {
+		return -1;
+	}
 }
 
 int WifiPolicy::addSsidToBlocklist(const std::string& ssid)
 {
-    try {
-        return context->methodCall<int>("WifiPolicy::addSsidToBlocklist", ssid);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<int>("WifiPolicy::addSsidToBlocklist", ssid);
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 
 int WifiPolicy::removeSsidFromBlocklist(const std::string& ssid)
 {
-    try {
-        return context->methodCall<int>("WifiPolicy::removeSsidFromBlocklist", ssid);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<int>("WifiPolicy::removeSsidFromBlocklist", ssid);
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 
 } // namespace DevicePolicyManager

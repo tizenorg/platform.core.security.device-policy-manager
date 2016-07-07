@@ -27,20 +27,20 @@
 
 KeySerial KernelKeyRing::add(const char *type, const char* description, const void* payload, size_t plen, KeySerial ringid)
 {
-    return ::syscall(__NR_add_key, type, description, payload, plen, ringid);
+	return ::syscall(__NR_add_key, type, description, payload, plen, ringid);
 }
 
 long KernelKeyRing::search(KeySerial ringid, const char* type, const char* description, KeySerial destringid)
 {
-    return ::syscall(__NR_keyctl, KEYCTL_SEARCH, ringid, type, description, destringid);
+	return ::syscall(__NR_keyctl, KEYCTL_SEARCH, ringid, type, description, destringid);
 }
 
 long KernelKeyRing::link(KeySerial keyid, KeySerial ringid)
 {
-    return ::syscall(__NR_keyctl, KEYCTL_LINK, keyid, ringid);
+	return ::syscall(__NR_keyctl, KEYCTL_LINK, keyid, ringid);
 }
 
 long KernelKeyRing::unlink(KeySerial keyid, KeySerial ringid)
 {
-    return ::syscall(__NR_keyctl, KEYCTL_UNLINK, keyid, ringid);
+	return ::syscall(__NR_keyctl, KEYCTL_UNLINK, keyid, ringid);
 }

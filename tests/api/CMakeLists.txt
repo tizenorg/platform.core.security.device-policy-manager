@@ -16,15 +16,15 @@
 SET(API_TEST_TARGET	"dpm-api-tests")
 
 SET(API_TEST_SOURCES main.c
-                     testbench.c
-                     admin.c
-                     application.c
-                     context.c
-                     bluetooth.c
-                     manager.c
-                     restriction.c
-                     security.c
-                     wifi.c
+					 testbench.c
+					 admin.c
+					 application.c
+					 context.c
+					 bluetooth.c
+					 manager.c
+					 restriction.c
+					 security.c
+					 wifi.c
 )
 
 INCLUDE("${TIZEN_PROFILE_NAME}.cmake")

@@ -30,14 +30,14 @@ dpm_storage_policy_h dpm_context_acquire_storage_policy(dpm_context_h handle)
 int dpm_context_release_storage_policy(dpm_storage_policy_h handle)
 {
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    return DPM_ERROR_NONE;
+	return DPM_ERROR_NONE;
 }
 
 int dpm_storage_wipe_data(dpm_storage_policy_h handle, const dpm_wipe_type_e type)
 {
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyContext &client = GetDevicePolicyContext(handle);
-    StoragePolicy storage = client.createPolicyInterface<StoragePolicy>();
+	DevicePolicyContext &client = GetDevicePolicyContext(handle);
+	StoragePolicy storage = client.createPolicyInterface<StoragePolicy>();
 	return storage.wipeData(type);
 }

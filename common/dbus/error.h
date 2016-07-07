@@ -24,17 +24,17 @@ namespace dbus {
 
 class Error {
 public:
-    Error();
-    ~Error();
+	Error();
+	~Error();
 
-    GError** operator& ();
-    const GError* operator-> () const;
-    operator bool () const;
+	GError** operator& ();
+	const GError* operator-> () const;
+	operator bool () const;
 
-    friend std::ostream& operator<<(std::ostream& os, const Error& e);
+	friend std::ostream& operator<<(std::ostream& os, const Error& e);
 
 private:
-    GError* error;
+	GError* error;
 };
 
 } // namespace dbus

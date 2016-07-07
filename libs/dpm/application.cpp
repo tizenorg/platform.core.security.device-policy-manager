@@ -24,37 +24,37 @@ using namespace DevicePolicyManager;
 
 EXPORT_API int dpm_application_set_mode_restriction(device_policy_manager_h handle, int mode)
 {
-    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(mode, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(mode, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyContext& client = GetDevicePolicyContext(handle);
-    ApplicationPolicy application = client.createPolicyInterface<ApplicationPolicy>();
-    return application.setModeRestriction(mode);
+	DevicePolicyContext& client = GetDevicePolicyContext(handle);
+	ApplicationPolicy application = client.createPolicyInterface<ApplicationPolicy>();
+	return application.setModeRestriction(mode);
 }
 
 EXPORT_API int dpm_application_unset_mode_restriction(device_policy_manager_h handle, int mode)
 {
-    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(mode, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(mode, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyContext& client = GetDevicePolicyContext(handle);
-    ApplicationPolicy application = client.createPolicyInterface<ApplicationPolicy>();
-    return application.unsetModeRestriction(mode);
+	DevicePolicyContext& client = GetDevicePolicyContext(handle);
+	ApplicationPolicy application = client.createPolicyInterface<ApplicationPolicy>();
+	return application.unsetModeRestriction(mode);
 }
 
 EXPORT_API int dpm_application_get_mode_restriction(device_policy_manager_h handle, int *mode)
 {
-    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(mode, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(mode, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyContext& client = GetDevicePolicyContext(handle);
-    ApplicationPolicy application = client.createPolicyInterface<ApplicationPolicy>();
-    int ret = application.getModeRestriction();
-    if (ret < 0) {
-        return -1;
-    }
-    *mode = ret;
-    return DPM_ERROR_NONE;
+	DevicePolicyContext& client = GetDevicePolicyContext(handle);
+	ApplicationPolicy application = client.createPolicyInterface<ApplicationPolicy>();
+	int ret = application.getModeRestriction();
+	if (ret < 0) {
+		return -1;
+	}
+	*mode = ret;
+	return DPM_ERROR_NONE;
 }
 
 EXPORT_API int dpm_application_add_privilege_to_blacklist(device_policy_manager_h handle, int type, const char* privilege)

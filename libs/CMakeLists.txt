@@ -21,23 +21,23 @@ SET(LIB_SOVERSION "0")
 SET(PC_FILE "${PROJECT_NAME}.pc")
 
 SET(FOUNDATION          policy-client.cpp
-                        dpm/client-handle.cpp
+						dpm/client-handle.cpp
 )
 
 SET(POLICY              administration.cpp
-                        application.cpp
-                        bluetooth.cpp
-                        location.cpp
-                        restriction.cpp
-                        security.cpp
-                        storage.cpp
-                        wifi.cpp
-                        dpm/administration.cpp
-                        dpm/application.cpp
-                        dpm/bluetooth.cpp
-                        dpm/restriction.cpp
-                        dpm/security.cpp
-                        dpm/wifi.cpp
+						application.cpp
+						bluetooth.cpp
+						location.cpp
+						restriction.cpp
+						security.cpp
+						storage.cpp
+						wifi.cpp
+						dpm/administration.cpp
+						dpm/application.cpp
+						dpm/bluetooth.cpp
+						dpm/restriction.cpp
+						dpm/security.cpp
+						dpm/wifi.cpp
 )
 
 SET(CAPI                dpm/device-policy-manager.h

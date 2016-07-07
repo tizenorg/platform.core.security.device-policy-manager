@@ -26,48 +26,48 @@ namespace rmi {
 
 template<typename Type, typename... Args>
 struct MethodHandler {
-    typedef std::function<Type(Args&...)> type;
+	typedef std::function<Type(Args&...)> type;
 };
 // using MethodHandler = std::function<Type(Args&...)>;
 
 template<typename Type, typename... Args>
 struct CallbackHolder {
-    template<int...>
-    struct Sequence {};
+	template<int...>
+	struct Sequence {};
 
-    template<int N, int... S>
-    struct SequenceExpansion : SequenceExpansion<N-1, N-1, S...> {};
+	template<int N, int... S>
+	struct SequenceExpansion : SequenceExpansion<N-1, N-1, S...> {};
 
-    template<int... S>
-    struct SequenceExpansion<0, S...> {
-        typedef Sequence<S...> type;
-    };
+	template<int... S>
+	struct SequenceExpansion<0, S...> {
+		typedef Sequence<S...> type;
+	};
 
-    std::tuple<Args...> parameters;
-    const typename MethodHandler<Type, Args...>::type& callback;
+	std::tuple<Args...> parameters;
+	const typename MethodHandler<Type, Args...>::type& callback;
 
-    CallbackHolder(const typename MethodHandler<Type, Args...>::type& m) :
-        callback(m)
-    {
-    }
+	CallbackHolder(const typename MethodHandler<Type, Args...>::type& m) :
+		callback(m)
+	{
+	}
 
-    Type dispatch(Message& message)
-    {
-        return callCallback(message, typename SequenceExpansion<sizeof...(Args)>::type());
-    }
+	Type dispatch(Message& message)
+	{
+		return callCallback(message, typename SequenceExpansion<sizeof...(Args)>::type());
+	}
 
-    template<typename...R>
-    Type callCallback(Message& message, R&... args)
-    {
-        message.unpackParameters(args...);
-        return callback(args...);
-    }
+	template<typename...R>
+	Type callCallback(Message& message, R&... args)
+	{
+		message.unpackParameters(args...);
+		return callback(args...);
+	}
 
-    template<int... S>
-    Type callCallback(Message& message, Sequence<S...>)
-    {
-        return callCallback(message, std::get<S>(parameters)...);
-    }
+	template<int... S>
+	Type callCallback(Message& message, Sequence<S...>)
+	{
+		return callCallback(message, std::get<S>(parameters)...);
+	}
 };
 
 } // namespace rmi

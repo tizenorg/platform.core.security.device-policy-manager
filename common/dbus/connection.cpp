@@ -29,141 +29,141 @@ namespace {
 const std::string DBUS_SYSTEM_BUS_ADDRESS = "unix:path=/var/run/dbus/system_bus_socket";
 
 void defaultCallback(GDBusConnection* connection,
-                     const gchar *sender_name,
-                     const gchar *object_path,
-                     const gchar *interface_name,
-                     const gchar *signal_name,
-                     GVariant *parameters,
-                     gpointer user_data) {
-    Connection::signalCallback* func = reinterpret_cast<Connection::signalCallback*> (user_data);
-    (*func)(Variant(parameters));
-    delete func;
+					 const gchar *sender_name,
+					 const gchar *object_path,
+					 const gchar *interface_name,
+					 const gchar *signal_name,
+					 GVariant *parameters,
+					 gpointer user_data) {
+	Connection::signalCallback* func = reinterpret_cast<Connection::signalCallback*> (user_data);
+	(*func)(Variant(parameters));
+	delete func;
 }
 
 } // namespace
 
 Connection::Connection(const std::string& address) :
-     connection(nullptr)
+	 connection(nullptr)
 {
-    Error error;
-    const GDBusConnectionFlags flags = static_cast<GDBusConnectionFlags>
-        (G_DBUS_CONNECTION_FLAGS_AUTHENTICATION_CLIENT | G_DBUS_CONNECTION_FLAGS_MESSAGE_BUS_CONNECTION);
+	Error error;
+	const GDBusConnectionFlags flags = static_cast<GDBusConnectionFlags>
+		(G_DBUS_CONNECTION_FLAGS_AUTHENTICATION_CLIENT | G_DBUS_CONNECTION_FLAGS_MESSAGE_BUS_CONNECTION);
 
-    connection = g_dbus_connection_new_for_address_sync(address.c_str(), flags, NULL, NULL, &error);
-    if (error) {
-        ERROR(error->message);
-        throw runtime::Exception(error->message);
-    }
+	connection = g_dbus_connection_new_for_address_sync(address.c_str(), flags, NULL, NULL, &error);
+	if (error) {
+		ERROR(error->message);
+		throw runtime::Exception(error->message);
+	}
 }
 
 Connection::Connection(Connection&& other) :
-    connection(other.connection)
+	connection(other.connection)
 {
-    other.connection = nullptr;
+	other.connection = nullptr;
 }
 
 Connection::~Connection()
 {
-    if (connection) {
-        g_dbus_connection_close_sync(connection, NULL, NULL);
-        g_object_unref(connection);
-    }
+	if (connection) {
+		g_dbus_connection_close_sync(connection, NULL, NULL);
+		g_object_unref(connection);
+	}
 }
 
 Connection& Connection::getSystem()
 {
-    static Connection __instance__(DBUS_SYSTEM_BUS_ADDRESS);
-    return __instance__;
+	static Connection __instance__(DBUS_SYSTEM_BUS_ADDRESS);
+	return __instance__;
 }
 
 void Connection::emitSignal(const std::string& busName,
-                            const std::string& object,
-                            const std::string& interface,
-                            const std::string& name,
-                            const std::string& paramType,
-                            ...)
+							const std::string& object,
+							const std::string& interface,
+							const std::string& name,
+							const std::string& paramType,
+							...)
 {
-    Error error;
-    va_list ap;
+	Error error;
+	va_list ap;
 
-    va_start(ap, paramType);
-    g_dbus_connection_emit_signal(connection,
-                                  busName.empty() ? NULL : busName.c_str(),
-                                  object.c_str(),
-                                  interface.c_str(),
-                                  name.c_str(),
-                                  paramType.empty() ? NULL :
-                                      g_variant_new(paramType.c_str(), NULL, &ap),
-                                  &error);
-    va_end(ap);
+	va_start(ap, paramType);
+	g_dbus_connection_emit_signal(connection,
+								  busName.empty() ? NULL : busName.c_str(),
+								  object.c_str(),
+								  interface.c_str(),
+								  name.c_str(),
+								  paramType.empty() ? NULL :
+								  g_variant_new(paramType.c_str(), NULL, &ap),
+								  &error);
+	va_end(ap);
 
-    if (error) {
-        ERROR(error->message);
-        throw runtime::Exception(error->message);
-    }
+	if (error) {
+		ERROR(error->message);
+		throw runtime::Exception(error->message);
+	}
 }
 
 Connection::subscriptionId Connection::subscribeSignal(const std::string& sender,
-                                                       const std::string& interface,
-                                                       const std::string& object,
-                                                       const std::string& member,
-                                                       const signalCallback callback)
+													   const std::string& interface,
+													   const std::string& object,
+													   const std::string& member,
+													   const signalCallback callback)
 {
-    subscriptionId id;
-    id = g_dbus_connection_signal_subscribe(connection,
-                                            sender.empty()    ? NULL : sender.c_str(),
-                                            interface.empty() ? NULL : interface.c_str(),
-                                            object.empty()    ? NULL : object.c_str(),
-                                            member.empty()    ? NULL : member.c_str(),
-                                            NULL,
-                                            G_DBUS_SIGNAL_FLAGS_NONE,
-                                            defaultCallback,
-                                            new signalCallback(callback),
-                                            NULL);
-    return id;
+	subscriptionId id;
+	id = g_dbus_connection_signal_subscribe(connection,
+											sender.empty()    ? NULL : sender.c_str(),
+											interface.empty() ? NULL : interface.c_str(),
+											object.empty()    ? NULL : object.c_str(),
+											member.empty()    ? NULL : member.c_str(),
+											NULL,
+											G_DBUS_SIGNAL_FLAGS_NONE,
+											defaultCallback,
+											new signalCallback(callback),
+											NULL);
+	return id;
 }
 
 void Connection::unsubscribeSignal(Connection::subscriptionId id)
 {
-    g_dbus_connection_signal_unsubscribe(connection, id);
+	g_dbus_connection_signal_unsubscribe(connection, id);
 }
 
 const Variant Connection::methodcall(const std::string& busName,
-                                     const std::string& object,
-                                     const std::string& interface,
-                                     const std::string& method,
-                                     int timeout,
-                                     const std::string& replyType,
-                                     const std::string& paramType,
-                                     ...)
+									 const std::string& object,
+									 const std::string& interface,
+									 const std::string& method,
+									 int timeout,
+									 const std::string& replyType,
+									 const std::string& paramType,
+									 ...)
 {
-    Variant result;
-    Error error;
-    va_list ap;
+	Variant result;
+	Error error;
+	va_list ap;
 
-    va_start(ap, paramType);
-    result = g_dbus_connection_call_sync(connection,
-                                         busName.empty() ? NULL :
-                                             busName.c_str(),
-                                         object.c_str(),
-                                         interface.c_str(),
-                                         method.c_str(),
-                                         paramType.empty() ? NULL :
-                                             g_variant_new_va(paramType.c_str(), NULL, &ap),
-                                         replyType.empty() ? NULL :
-                                             G_VARIANT_TYPE(replyType.c_str()),
-                                         G_DBUS_CALL_FLAGS_NONE,
-                                         timeout,
-                                         NULL,
-                                         &error);
-    va_end(ap);
+	va_start(ap, paramType);
+	result = g_dbus_connection_call_sync(connection,
+										 busName.empty() ? NULL :
+										 busName.c_str(),
+										 object.c_str(),
+										 interface.c_str(),
+										 method.c_str(),
+										 paramType.empty() ? NULL :
+										 g_variant_new_va(paramType.c_str(), NULL, &ap),
+										 replyType.empty() ? NULL :
+										 G_VARIANT_TYPE(replyType.c_str()),
+										 G_DBUS_CALL_FLAGS_NONE,
+										 timeout,
+										 NULL,
+										 &error);
+	va_end(ap);
 
-    if (error) {
-        ERROR(error->message);
-        throw runtime::Exception(error->message);
-    }
+	if (error) {
+		ERROR(error->message);
+		throw runtime::Exception(error->message);
+	}
 
-    return result;
+	return result;
 }
 
 } // namespace dbus

@@ -20,14 +20,14 @@ namespace xml {
 
 KeepBlanks::KeepBlanks(bool value)
 {
-    preservedIndentTreeOutput = xmlIndentTreeOutput;
-    preservedKeepBlanksDefault = xmlKeepBlanksDefault(value ? 1 : 0);
+	preservedIndentTreeOutput = xmlIndentTreeOutput;
+	preservedKeepBlanksDefault = xmlKeepBlanksDefault(value ? 1 : 0);
 }
 
 KeepBlanks::~KeepBlanks()
 {
-    xmlKeepBlanksDefault(preservedKeepBlanksDefault);
-    xmlIndentTreeOutput = preservedIndentTreeOutput;
+	xmlKeepBlanksDefault(preservedKeepBlanksDefault);
+	xmlIndentTreeOutput = preservedIndentTreeOutput;
 }
 
 } // namespace xml

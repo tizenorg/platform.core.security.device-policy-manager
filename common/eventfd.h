@@ -23,25 +23,24 @@ namespace runtime {
 
 class EventFD {
 public:
-    EventFD(unsigned int initval = 0, int flags = EFD_SEMAPHORE | EFD_CLOEXEC);
-    ~EventFD();
+	EventFD(unsigned int initval = 0, int flags = EFD_SEMAPHORE | EFD_CLOEXEC);
+	~EventFD();
 
-    EventFD(const EventFD&) = delete;
-    EventFD& operator=(const EventFD&) = delete;
+	EventFD(const EventFD&) = delete;
+	EventFD& operator=(const EventFD&) = delete;
 
-    void send();
-    void receive();
+	void send();
+	void receive();
 
-    int getFd() const
-    {
-        return fd;
-    }
+	int getFd() const
+	{
+		return fd;
+	}
 
 private:
-    int fd;
+	int fd;
 };
 
 } // namespace runtime
 
 #endif //__RUNTIME_EVENTFD_H__
-

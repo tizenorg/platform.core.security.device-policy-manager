@@ -31,47 +31,47 @@ std::unique_ptr<LogSink> Logger::backend(new ConsoleLogSink());
 
 std::string LogLevelToString(const LogLevel level)
 {
-    switch (level) {
-    case LogLevel::Error:
-        return "ERROR";
-    case LogLevel::Warning:
-        return "WARN";
-    case LogLevel::Debug:
-        return "DEBUG";
-    case LogLevel::Info:
-        return "INFO";
-    case LogLevel::Trace:
-        return "TRACE";
-    default:
-        return "UNKNOWN";
-    }
+	switch (level) {
+	case LogLevel::Error:
+		return "ERROR";
+	case LogLevel::Warning:
+		return "WARN";
+	case LogLevel::Debug:
+		return "DEBUG";
+	case LogLevel::Info:
+		return "INFO";
+	case LogLevel::Trace:
+		return "TRACE";
+	default:
+		return "UNKNOWN";
+	}
 }
 
 void Logger::setLogLevel(const LogLevel level)
 {
-    Logger::logLevel = level;
+	Logger::logLevel = level;
 }
 
 LogLevel Logger::getLogLevel(void)
 {
-    return Logger::logLevel;
+	return Logger::logLevel;
 }
 
 void Logger::log(LogLevel severity,
-                 const std::string& file,
-                 const unsigned int line,
-                 const std::string& func,
-                 const std::string& message)
+				 const std::string& file,
+				 const unsigned int line,
+				 const std::string& func,
+				 const std::string& message)
 {
-    std::ostringstream buffer;
+	std::ostringstream buffer;
 
-    buffer << LogLevelToString(severity)
-           << "<" << ::getpid() << ">:"
-           << file << ":" << line
-           << " " << func << " " << message
-           << std::endl;
+	buffer << LogLevelToString(severity)
+		   << "<" << ::getpid() << ">:"
+		   << file << ":" << line
+		   << " " << func << " " << message
+		   << std::endl;
 
-    Logger::backend->sink(buffer.str());
+	Logger::backend->sink(buffer.str());
 }
 
 } // namespace audit
