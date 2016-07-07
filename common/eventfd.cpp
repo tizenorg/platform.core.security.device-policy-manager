@@ -40,6 +40,11 @@ EventFD::~EventFD()
 	}
 }
 
+void EventFD::close()
+{
+	::close(fd);
+}
+
 void EventFD::send()
 {
 	const std::uint64_t val = 1;

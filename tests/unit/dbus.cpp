@@ -14,35 +14,18 @@
  *  limitations under the License
  */
 
-#include "dbus/error.h"
+#include "exception.h"
+#include "dbus/connection.h"
+#include "dbus/variant.h"
+#include "audit/logger.h"
 
-namespace dbus {
+#include "testbench/testbench.h"
 
-Error::Error() :
-	error(nullptr)
+TESTCASE(DbusNegativeTest)
 {
-}
-
-Error::~Error()
-{
-	if (error) {
-		g_error_free(error);
+	try {
+		dbus::Connection &systemDBus = dbus::Connection::getSystem();
+		systemDBus.methodcall("Unknown", "Unknown", "Unknown", "Unknown", -1, "", "");
+	} catch (std::exception& e) {
 	}
 }
-
-GError** Error::operator& ()
-{
-	return &error;
-}
-
-const GError* Error::operator-> () const
-{
-	return error;
-}
-
-Error::operator bool () const
-{
-	return error != nullptr;
-}
-
-} // namespace dbus

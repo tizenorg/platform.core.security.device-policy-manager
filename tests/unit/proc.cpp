@@ -23,18 +23,6 @@
 
 #include "testbench/testbench.h"
 
-TESTCASE(ProcTerminate)
-{
-	try {
-		runtime::Process proc("/bin/bash");
-		proc.execute();
-		if (proc.isRunning()) {
-			proc.terminate();
-		}
-	} catch (runtime::Exception& e) {
-	}
-}
-
 TESTCASE(ProcWithArg)
 {
 	try {
@@ -42,8 +30,61 @@ TESTCASE(ProcWithArg)
 			"-l",
 			"-a"
 		};
-		runtime::Process proc("/bin/ls", args);
-		proc.execute();
+		runtime::Process proc("/bin/ls > /dev/null", args);
+		TEST_EXPECT(true, proc.execute() != -1);
+		proc.waitForFinished();
+	} catch (runtime::Exception& e) {
+	}
+}
+
+TESTCASE(ProcKill)
+{
+	try {
+		runtime::Process proc("/opt/data/unittest-proc.sh");
+		TEST_EXPECT(true, proc.execute() != -1);
+		if (proc.isRunning()) {
+			proc.kill();
+			proc.waitForFinished();
+		}
+	} catch (runtime::Exception& e) {
+	}
+}
+
+TESTCASE(ProcTerminate)
+{
+	try {
+		runtime::Process proc("/opt/data/unittest-proc.sh");
+		TEST_EXPECT(true, proc.execute() != -1);
+		if (proc.isRunning()) {
+			proc.terminate();
+			proc.waitForFinished();
+		}
+	} catch (runtime::Exception& e) {
+	}
+}
+
+TESTCASE(ProcInvalidProcess)
+{
+	try {
+		runtime::Process proc("/opt/data/unittest-proc.sh");
+		TEST_EXPECT(true, proc.execute() != -1);
+		proc.terminate();
+		proc.waitForFinished();
+		TEST_EXPECT(false, proc.isRunning());
+		try {
+			proc.kill();
+		} catch (runtime::Exception& e) {
+		}
+
+		try {
+			proc.terminate();
+		} catch (runtime::Exception& e) {
+		}
+
+		try {
+			proc.waitForFinished();
+		} catch (runtime::Exception& e) {
+		}
 	} catch (runtime::Exception& e) {
 	}
 }

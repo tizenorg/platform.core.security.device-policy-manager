@@ -44,9 +44,7 @@ TESTCASE(DirectoryIteration)
 
 TESTCASE(FileIO)
 {
-	char readbuf[100];
 	char testbuf[100] = "Test Data";
-
 	runtime::File tmp("/tmp/test-file");
 	try {
 		tmp.create(755);
@@ -58,6 +56,7 @@ TESTCASE(FileIO)
 		TEST_FAIL(e.what());
 	}
 
+	char readbuf[100];
 	try {
 		runtime::File tmpFile("/tmp/test-file", O_RDWR);
 		tmpFile.read(readbuf, ::strlen(testbuf));
@@ -106,4 +105,57 @@ TESTCASE(FileAttribute)
 			  << " Mode: " << tmp.getMode()
 			  << " Path: " << tmp.getPath()
 			  << " File: " << tmp.getName() << std::endl;
+}
+
+TESTCASE(FileAttributeNegative)
+{
+	try {
+		runtime::File tmp("/unknown");
+
+		TEST_EXPECT(false, tmp.exists());
+		TEST_EXPECT(false, tmp.canRead());
+		TEST_EXPECT(false, tmp.canWrite());
+		TEST_EXPECT(false, tmp.canExecute());
+
+		try {
+			tmp.isLink();
+		} catch (runtime::Exception& e) {
+		}
+
+		try {
+			tmp.isFile();
+		} catch (runtime::Exception& e) {
+		}
+
+		try {
+			tmp.isDirectory();
+		} catch (runtime::Exception& e) {
+		}
+
+		try {
+			tmp.isDevice();
+		} catch (runtime::Exception& e) {
+		}
+	} catch (runtime::Exception& e) {
+	}
+}
+
+TESTCASE(FileDevice)
+{
+	runtime::File tmp("/dev/kmem");
+
+	TEST_EXPECT(true, tmp.isDevice());
+}
+
+TESTCASE(FileSymlinkTest)
+{
+	runtime::File tmp("/var");
+
+	TEST_EXPECT(true, tmp.isLink());
+}
+
+TESTCASE(FileReferenceTest)
+{
+	runtime::File one("/tmp");
+	runtime::File two(one);
 }

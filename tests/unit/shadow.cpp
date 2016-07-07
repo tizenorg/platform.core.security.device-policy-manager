@@ -31,6 +31,7 @@ TESTCASE(GetGroupTest)
 {
 	try {
 		runtime::Group group("users");
+		runtime::Group another(group);
 	} catch (runtime::Exception& e) {
 		TEST_FAIL(e.what());
 	}
@@ -40,7 +41,59 @@ TESTCASE(GetUserTest)
 {
 	try {
 		runtime::User user("root");
+		runtime::User another(user);
 	} catch (runtime::Exception& e) {
 		TEST_FAIL(e.what());
+	}
+}
+
+TESTCASE(GetGroupNegativeTest)
+{
+	try {
+		runtime::Group group("invalid");
+	} catch (runtime::Exception& e) {
+	}
+}
+
+TESTCASE(GetGroupNegativeTest2)
+{
+	try {
+		runtime::Group group(-1);
+	} catch (runtime::Exception& e) {
+	}
+
+}
+
+TESTCASE(GetUserNegativetest)
+{
+	try {
+		runtime::User user("invalid");
+	} catch (runtime::Exception& e) {
+	}
+}
+
+TESTCASE(GetUserNegativetest2)
+{
+	try {
+		runtime::User user(-1);
+	} catch (runtime::Exception& e) {
+	}
+}
+
+TESTCASE(GetCurrentGroupTest)
+{
+	try {
+		runtime::Group group;
+		runtime::Group another(group.getGid());
+	} catch (runtime::Exception& e) {
+	}
+}
+
+TESTCASE(GetCurrentUserTest)
+{
+	try {
+		runtime::User user;
+		runtime::User another(user.getUid());
+	} catch (runtime::Exception& e) {
 	}
 }

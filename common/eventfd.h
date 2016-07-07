@@ -31,6 +31,7 @@ public:
 
 	void send();
 	void receive();
+	void close();
 
 	int getFd() const
 	{

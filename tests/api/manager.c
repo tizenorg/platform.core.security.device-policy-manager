@@ -27,6 +27,36 @@
 
 static volatile int completed = 0;
 
+static void signal_callback(const char* name, const char* object, void* user_data)
+{
+}
+
+static int policy_manager_signal(struct testcase* tc)
+{
+	device_policy_manager_h handle;
+
+	handle = dpm_manager_create();
+	if (handle == NULL) {
+		printf("Failed to create client handle\n");
+		return TEST_FAILED;
+	}
+
+	int id;
+	if (dpm_add_signal_cb(handle, "unknown", signal_callback, NULL, &id) == DPM_ERROR_NONE) {
+		dpm_manager_destroy(handle);
+		return TEST_FAILED;
+	}
+
+	if (dpm_add_signal_cb(handle, "camera", signal_callback, NULL, &id) != DPM_ERROR_NONE) {
+		dpm_manager_destroy(handle);
+		return TEST_FAILED;
+	}
+
+	dpm_remove_signal_cb(handle, id);
+	dpm_manager_destroy(handle);
+	return TEST_SUCCESSED;
+}
+
 static void device_policy_handle_callback(const char* name, const char* state, void* user_data)
 {
 	int *triggered = user_data;
@@ -39,8 +69,6 @@ static void* getter(void* data)
 	int i = 0;
 	device_policy_manager_h handle;
 	volatile int triggered = 0;;
-
-	printf("Policy receiver %d is ready\n", *((int *)data));
 
 	while (1) {
 		handle = dpm_manager_create();
@@ -82,8 +110,6 @@ static void* setter(void *data)
 	int i;
 	device_policy_manager_h handle;
 
-	printf("Thread setter %d is ready\n", *((int *)data));
-
 	for (i = 0; i < MAX_ITERATIONS; i++) {
 		handle = dpm_manager_create();
 		if (handle == NULL) {
@@ -112,7 +138,7 @@ static void* setter(void *data)
 	return (void *)TEST_SUCCESSED;
 }
 
-static int device_context_handle(struct testcase* tc)
+static int policy_manager_handle(struct testcase* tc)
 {
 	pthread_t handle[MAX_WORKER_THREADS];
 	int i, ret, status, idx[MAX_WORKER_THREADS];
@@ -138,12 +164,18 @@ static int device_context_handle(struct testcase* tc)
 	return ret;
 }
 
-struct testcase device_context_handle_testcase = {
-	.description = "device context handle",
-	.handler = device_context_handle
+struct testcase policy_manager_handle_testcase = {
+	.description = "policy manager handle",
+	.handler = policy_manager_handle
+};
+
+struct testcase policy_manager_signal_testcase = {
+	.description = "policy manager signal",
+	.handler = policy_manager_signal
 };
 
 void TESTCASE_CONSTRUCTOR device_context_handle_build_testcase(void)
 {
-	testbench_populate_testcase(&device_context_handle_testcase);
+	testbench_populate_testcase(&policy_manager_handle_testcase);
+	testbench_populate_testcase(&policy_manager_signal_testcase);
 }

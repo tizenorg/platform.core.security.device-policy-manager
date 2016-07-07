@@ -60,7 +60,7 @@ int Process::execute()
 		std::quick_exit(EXIT_FAILURE);
 	}
 
-	return waitForFinished();
+	return pid;
 }
 
 int Process::waitForFinished()

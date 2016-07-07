@@ -101,8 +101,6 @@ bool Server::checkPeerPrivilege(const rmi::Credentials& cred, const std::string&
 {
 	cynara *p_cynara;
 
-	DEBUG("Peer security: " + cred.security);
-
 	if (privilege.empty()) {
 		return true;
 	}

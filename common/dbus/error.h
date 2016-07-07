@@ -31,8 +31,6 @@ public:
 	const GError* operator-> () const;
 	operator bool () const;
 
-	friend std::ostream& operator<<(std::ostream& os, const Error& e);
-
 private:
 	GError* error;
 };
