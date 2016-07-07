@@ -21,26 +21,26 @@ namespace rmi {
 std::atomic<unsigned int> Message::sequence(0);
 
 Message::Message() :
-    signature({sequence++, Invalid, ""})
+	signature({sequence++, Invalid, ""})
 {
 }
 
 Message::Message(unsigned int id, unsigned int type, const std::string& target) :
-    signature({id, type, target})
+	signature({id, type, target})
 {
-    enclose(signature);
+	enclose(signature);
 }
 
 Message::Message(unsigned int type, const std::string& target) :
-    signature({sequence++, type, target})
+	signature({sequence++, type, target})
 {
-    enclose(signature);
+	enclose(signature);
 }
 
 Message::Message(Message&& rhs)
-    : signature(std::move(rhs.signature)),
-      buffer(std::move(rhs.buffer)),
-      fileDescriptors(std::move(rhs.fileDescriptors))
+	: signature(std::move(rhs.signature)),
+	  buffer(std::move(rhs.buffer)),
+	  fileDescriptors(std::move(rhs.fileDescriptors))
 {
 }
 
@@ -49,57 +49,57 @@ Message::~Message()
 }
 
 Message::Message(const Message& rhs) :
-    signature(rhs.signature),
-    buffer(rhs.buffer)
+	signature(rhs.signature),
+	buffer(rhs.buffer)
 {
-    enclose(signature);
+	enclose(signature);
 }
 
 Message& Message::operator=(const Message& rhs)
 {
-    if (this != &rhs) {
-        buffer = rhs.buffer;
-        signature = rhs.signature;
-    }
+	if (this != &rhs) {
+		buffer = rhs.buffer;
+		signature = rhs.signature;
+	}
 
-    return *this;
+	return *this;
 }
 
 Message& Message::operator=(Message&& rhs)
 {
-    if (this != &rhs) {
-        buffer = std::move(rhs.buffer);
-        signature = std::move(rhs.signature);
-        fileDescriptors = std::move(rhs.fileDescriptors);
-    }
+	if (this != &rhs) {
+		buffer = std::move(rhs.buffer);
+		signature = std::move(rhs.signature);
+		fileDescriptors = std::move(rhs.fileDescriptors);
+	}
 
-    return *this;
+	return *this;
 }
 
 Message Message::createReplyMessage() const
 {
-    return Message(id(), Reply, target());
+	return Message(id(), Reply, target());
 }
 
 Message Message::createErrorMessage(const std::string& message) const
 {
-    Message error(id(), Error, target());
-    error.enclose(message);
+	Message error(id(), Error, target());
+	error.enclose(message);
 
-    return error;
+	return error;
 }
 
 template<> void Message::enclose(FileDescriptor&& fd)
 {
-    fileDescriptors.push_back(std::move(fd));
+	fileDescriptors.push_back(std::move(fd));
 }
 
 template<> void Message::disclose(FileDescriptor& fd)
 {
-    if (!fileDescriptors.empty()) {
-        fd.fileDescriptor = std::move(fileDescriptors.front()).fileDescriptor;
-        fileDescriptors.pop_front();
-    }
+	if (!fileDescriptors.empty()) {
+		fd.fileDescriptor = std::move(fileDescriptors.front()).fileDescriptor;
+		fileDescriptors.pop_front();
+	}
 }
 
 } // namespace rmi

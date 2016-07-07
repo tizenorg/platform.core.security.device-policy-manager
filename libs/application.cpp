@@ -21,7 +21,7 @@
 namespace DevicePolicyManager {
 
 ApplicationPolicy::ApplicationPolicy(PolicyControlContext& ctxt) :
-    context(ctxt)
+	context(ctxt)
 {
 }
 
@@ -31,73 +31,73 @@ ApplicationPolicy::~ApplicationPolicy()
 
 int ApplicationPolicy::installPackage(const std::string& pkgpath)
 {
-    try {
-        return context->methodCall<int>("ApplicationPolicy::installPackage", pkgpath);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<int>("ApplicationPolicy::installPackage", pkgpath);
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 
 int ApplicationPolicy::uninstallPackage(const std::string& pkgid)
 {
-    try {
-        return context->methodCall<int>("ApplicationPolicy::uninstallPackage", pkgid);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<int>("ApplicationPolicy::uninstallPackage", pkgid);
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 
 int ApplicationPolicy::setModeRestriction(int mode)
 {
-    try {
-        return context->methodCall<int>("ApplicationPolicy::setModeRestriction", mode);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<int>("ApplicationPolicy::setModeRestriction", mode);
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 
 int ApplicationPolicy::unsetModeRestriction(int mode)
 {
-    try {
-        return context->methodCall<int>("ApplicationPolicy::unsetModeRestriction", mode);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<int>("ApplicationPolicy::unsetModeRestriction", mode);
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 
 int ApplicationPolicy::getModeRestriction()
 {
-    try {
-        return context->methodCall<int>("ApplicationPolicy::getModeRestriction");
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<int>("ApplicationPolicy::getModeRestriction");
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 
 int ApplicationPolicy::addPrivilegeToBlacklist(int type, const std::string& privilege)
 {
-    try {
-        return context->methodCall<int>("ApplicationPolicy::addPrivilegeToBlacklist", type, privilege);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<int>("ApplicationPolicy::addPrivilegeToBlacklist", type, privilege);
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 
 int ApplicationPolicy::removePrivilegeFromBlacklist(int type, const std::string& privilege)
 {
-    try {
-        return context->methodCall<int>("ApplicationPolicy::removePrivilegeFromBlacklist", type, privilege);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<int>("ApplicationPolicy::removePrivilegeFromBlacklist", type, privilege);
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 
 int ApplicationPolicy::checkPrivilegeIsBlacklisted(int type, const std::string& privilege)
 {
-    try {
-        return context->methodCall<int>("ApplicationPolicy::checkPrivilegeIsBlacklisted", type, privilege);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<int>("ApplicationPolicy::checkPrivilegeIsBlacklisted", type, privilege);
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 } // namespace DevicePolicyManager

@@ -26,32 +26,32 @@
 
 class Bundle {
 public:
-    Bundle();
-    ~Bundle();
+	Bundle();
+	~Bundle();
 
-    template<typename T>
-    void add(const std::string& key, const std::vector<T>& value)
-    {
-        addArrayInternal(key, value);
-    }
+	template<typename T>
+	void add(const std::string& key, const std::vector<T>& value)
+	{
+		addArrayInternal(key, value);
+	}
 
-    template<typename T>
-    void add(const std::string& key, const T& value)
-    {
-        addInternal(key, value);
-    }
+	template<typename T>
+	void add(const std::string& key, const T& value)
+	{
+		addInternal(key, value);
+	}
 
-    bundle* get() const
-    {
-        return handle;
-    }
-
-private:
-    void addInternal(const std::string& key, const std::string& value);
-    void addArrayInternal(const std::string& key, const std::vector<std::string>& array);
+	bundle* get() const
+	{
+		return handle;
+	}
 
 private:
-    bundle* handle;
+	void addInternal(const std::string& key, const std::string& value);
+	void addArrayInternal(const std::string& key, const std::vector<std::string>& array);
+
+private:
+	bundle* handle;
 };
 
 #endif //__DPM_BUNDLE_H__

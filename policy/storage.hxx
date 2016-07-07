@@ -24,18 +24,18 @@ namespace DevicePolicyManager {
 
 class StoragePolicy {
 public:
-    enum {
-        WIPE_INTERNAL_STORAGE = (1 << 0),
-        WIPE_EXTERNAL_STORAGE = (1 << 1)
-    };
+	enum {
+		WIPE_INTERNAL_STORAGE = (1 << 0),
+		WIPE_EXTERNAL_STORAGE = (1 << 1)
+	};
 
-    StoragePolicy(PolicyControlContext& ctxt);
-    ~StoragePolicy();
+	StoragePolicy(PolicyControlContext& ctxt);
+	~StoragePolicy();
 
 	int wipeData(int id);
 
 private:
-    PolicyControlContext& context;
+	PolicyControlContext& context;
 };
 
 } // namespace DeivcePolicyManager

@@ -28,37 +28,37 @@ namespace runtime {
 
 class PAM final {
 public:
-    PAM(PAM&&) = delete;
-    PAM(const PAM&) = delete;
-    PAM(const std::string& service, const std::string& user);
-    ~PAM();
+	PAM(PAM&&) = delete;
+	PAM(const PAM&) = delete;
+	PAM(const std::string& service, const std::string& user);
+	~PAM();
 
-    PAM& operator=(const PAM&) = delete;
-    PAM& operator=(PAM &&) = delete;
+	PAM& operator=(const PAM&) = delete;
+	PAM& operator=(PAM &&) = delete;
 
-    void setData(const std::string &name, void* data, void (*cleanup)(pam_handle_t* pamh, void* data, int error));
-    const void* getData(const std::string &name) const;
+	void setData(const std::string &name, void* data, void (*cleanup)(pam_handle_t* pamh, void* data, int error));
+	const void* getData(const std::string &name) const;
 
-    void setItem(int item, void* data);
-    const void* getItem(int item) const;
+	void setItem(int item, void* data);
+	const void* getItem(int item) const;
 
-    const std::string getUser(const std::string &prompt = "") const;
+	const std::string getUser(const std::string &prompt = "") const;
 
-    void putEnv(const std::string &name_value);
-    const std::string getEnv(const std::string &name) const;
-    const std::vector<std::string> getEnvList() const;
+	void putEnv(const std::string &name_value);
+	const std::string getEnv(const std::string &name) const;
+	const std::vector<std::string> getEnvList() const;
 
-    void syslog(const std::string &log, int priority = LOG_ERR);
+	void syslog(const std::string &log, int priority = LOG_ERR);
 
-    int authenticate(int flags);
-    int setCredential(int flags);
-    int accountManagement(int flags);
-    int changeAuthenticationToken(int flags);
-    void openSession(int flags);
-    void closeSession(int flags);
+	int authenticate(int flags);
+	int setCredential(int flags);
+	int accountManagement(int flags);
+	int changeAuthenticationToken(int flags);
+	void openSession(int flags);
+	void closeSession(int flags);
 
 private:
-    pam_handle_t* pamh;
+	pam_handle_t* pamh;
 };
 
 } // namespace runtime

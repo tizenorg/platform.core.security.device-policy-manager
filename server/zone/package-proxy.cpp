@@ -26,14 +26,14 @@
 
 namespace DevicePolicyManager {
 
-ZonePackageProxy::ZonePackageProxy(PolicyControlContext& ctx)
-    : context(ctx)
+ZonePackageProxy::ZonePackageProxy(PolicyControlContext& ctx) :
+	context(ctx)
 {
-    context.registerParametricMethod(this, "", (ZonePackageProxy::PackageInfo)(ZonePackageProxy::getPackageInfo)(std::string, std::string));
-    context.registerParametricMethod(this, "", (std::vector<std::string>)(ZonePackageProxy::getPackageList)(std::string));
+	context.registerParametricMethod(this, "", (ZonePackageProxy::PackageInfo)(ZonePackageProxy::getPackageInfo)(std::string, std::string));
+	context.registerParametricMethod(this, "", (std::vector<std::string>)(ZonePackageProxy::getPackageList)(std::string));
 
-    context.registerParametricMethod(this, "", (int)(ZonePackageProxy::install)(std::string, std::string));
-    context.registerParametricMethod(this, "", (int)(ZonePackageProxy::uninstall)(std::string, std::string));
+	context.registerParametricMethod(this, "", (int)(ZonePackageProxy::install)(std::string, std::string));
+	context.registerParametricMethod(this, "", (int)(ZonePackageProxy::uninstall)(std::string, std::string));
 }
 
 ZonePackageProxy::~ZonePackageProxy()
@@ -42,85 +42,85 @@ ZonePackageProxy::~ZonePackageProxy()
 
 ZonePackageProxy::PackageInfo ZonePackageProxy::getPackageInfo(const std::string& name, const std::string& pkgid)
 {
-    ZonePackageProxy::PackageInfo package;
-    char* locale = NULL;
+	ZonePackageProxy::PackageInfo package;
+	char* locale = NULL;
 
-    system_settings_get_value_string(SYSTEM_SETTINGS_KEY_LOCALE_LANGUAGE, &locale);
-    if (locale == NULL) {
-        locale = strdup("No locale");
-    }
+	system_settings_get_value_string(SYSTEM_SETTINGS_KEY_LOCALE_LANGUAGE, &locale);
+	if (locale == NULL) {
+		locale = strdup("No locale");
+	}
 
-    package.zone = name;
-    package.id = pkgid;
-    package.locale = locale;
+	package.zone = name;
+	package.id = pkgid;
+	package.locale = locale;
 
-    free(locale);
+	free(locale);
 
-    try {
-        runtime::User user(name);
-        ::PackageInfo pkginfo(pkgid, user.getUid());
+	try {
+		runtime::User user(name);
+		::PackageInfo pkginfo(pkgid, user.getUid());
 
-        package.type = pkginfo.getType();
-        package.icon = pkginfo.getIcon();
-        package.label = pkginfo.getLabel();
-        package.description = pkginfo.getDescription();
+		package.type = pkginfo.getType();
+		package.icon = pkginfo.getIcon();
+		package.label = pkginfo.getLabel();
+		package.description = pkginfo.getDescription();
 
-        package.author.name = pkginfo.getAuthorName();
-        package.author.email = pkginfo.getAuthorEmail();
-        package.author.href = pkginfo.getAuthorHref();
+		package.author.name = pkginfo.getAuthorName();
+		package.author.email = pkginfo.getAuthorEmail();
+		package.author.href = pkginfo.getAuthorHref();
 
-        package.version = pkginfo.getVersion();
-        package.apiVersion = pkginfo.getApiVersion();
-        package.mainAppId = pkginfo.getMainAppId();
+		package.version = pkginfo.getVersion();
+		package.apiVersion = pkginfo.getApiVersion();
+		package.mainAppId = pkginfo.getMainAppId();
 
-        package.isSystem = pkginfo.isSystem();
-        package.isRemovable = pkginfo.isRemovable();
-        package.isPreload = pkginfo.isPreload();
-    } catch (runtime::Exception& e) {
-        ERROR("Failed to retrieve package info installed in the zone");
-    }
+		package.isSystem = pkginfo.isSystem();
+		package.isRemovable = pkginfo.isRemovable();
+		package.isPreload = pkginfo.isPreload();
+	} catch (runtime::Exception& e) {
+		ERROR("Failed to retrieve package info installed in the zone");
+	}
 
-    return package;
+	return package;
 }
 
 std::vector<std::string> ZonePackageProxy::getPackageList(const std::string& name)
 {
-    try {
-        runtime::User user(name);
-        PackageManager& packman = PackageManager::instance();
-        return packman.getPackageList(user.getUid());
-    } catch (runtime::Exception& e) {
-        ERROR("Failed to retrieve package info installed in the zone");
-    }
-    return std::vector<std::string>();
+	try {
+		runtime::User user(name);
+		PackageManager& packman = PackageManager::instance();
+		return packman.getPackageList(user.getUid());
+	} catch (runtime::Exception& e) {
+		ERROR("Failed to retrieve package info installed in the zone");
+	}
+	return std::vector<std::string>();
 }
 
 
 int ZonePackageProxy::install(const std::string& name, const std::string& pkgpath)
 {
-    try {
-        runtime::User user(name);
-        PackageManager& packman = PackageManager::instance();
-        packman.installPackage(pkgpath, user.getUid());
-    } catch (runtime::Exception& e) {
-        ERROR("Failed to install package in the zone");
-        return -1;
-    }
+	try {
+		runtime::User user(name);
+		PackageManager& packman = PackageManager::instance();
+		packman.installPackage(pkgpath, user.getUid());
+	} catch (runtime::Exception& e) {
+		ERROR("Failed to install package in the zone");
+		return -1;
+	}
 
-    return 0;
+	return 0;
 }
 
 int ZonePackageProxy::uninstall(const std::string& name, const std::string& pkgid)
 {
-    try {
-        runtime::User user(name);
-        PackageManager& packman = PackageManager::instance();
-        packman.uninstallPackage(pkgid, user.getUid());
-    } catch (runtime::Exception& e) {
-        ERROR("Failed to uninstall package of pkgid in the zone");
-        return -1;
-    }
-    return 0;
+	try {
+		runtime::User user(name);
+		PackageManager& packman = PackageManager::instance();
+		packman.uninstallPackage(pkgid, user.getUid());
+	} catch (runtime::Exception& e) {
+		ERROR("Failed to uninstall package of pkgid in the zone");
+		return -1;
+	}
+	return 0;
 }
 
 ZonePackageProxy zonePackageManager(Server::instance());

@@ -17,33 +17,33 @@
 PROJECT(dpm-common)
 
 SET (COMMON_SOURCES     ${DPM_COMMON}/error.cpp
-                        ${DPM_COMMON}/process.cpp
-                        ${DPM_COMMON}/eventfd.cpp
-                        ${DPM_COMMON}/mainloop.cpp
-                        ${DPM_COMMON}/filesystem.cpp
-                        ${DPM_COMMON}/thread-pool.cpp
-                        ${DPM_COMMON}/rmi/socket.cpp
-                        ${DPM_COMMON}/rmi/client.cpp
-                        ${DPM_COMMON}/rmi/message.cpp
-                        ${DPM_COMMON}/rmi/message-composer.cpp
-                        ${DPM_COMMON}/rmi/service.cpp
-                        ${DPM_COMMON}/rmi/connection.cpp
-                        ${DPM_COMMON}/rmi/notification.cpp
-                        ${DPM_COMMON}/audit/logger.cpp
-                        ${DPM_COMMON}/audit/null-sink.cpp
-                        ${DPM_COMMON}/audit/console-sink.cpp
-                        ${DPM_COMMON}/xml/node.cpp
-                        ${DPM_COMMON}/xml/parser.cpp
-                        ${DPM_COMMON}/xml/document.cpp
-                        ${DPM_COMMON}/xml/keepblanks.cpp
-                        ${DPM_COMMON}/db/column.cpp
-                        ${DPM_COMMON}/db/statement.cpp
-                        ${DPM_COMMON}/db/connection.cpp
-                        ${DPM_COMMON}/auth/user.cpp
-                        ${DPM_COMMON}/auth/group.cpp
-                        ${DPM_COMMON}/dbus/error.cpp
-                        ${DPM_COMMON}/dbus/variant.cpp
-                        ${DPM_COMMON}/dbus/connection.cpp
+						${DPM_COMMON}/process.cpp
+						${DPM_COMMON}/eventfd.cpp
+						${DPM_COMMON}/mainloop.cpp
+						${DPM_COMMON}/filesystem.cpp
+						${DPM_COMMON}/thread-pool.cpp
+						${DPM_COMMON}/rmi/socket.cpp
+						${DPM_COMMON}/rmi/client.cpp
+						${DPM_COMMON}/rmi/message.cpp
+						${DPM_COMMON}/rmi/message-composer.cpp
+						${DPM_COMMON}/rmi/service.cpp
+						${DPM_COMMON}/rmi/connection.cpp
+						${DPM_COMMON}/rmi/notification.cpp
+						${DPM_COMMON}/audit/logger.cpp
+						${DPM_COMMON}/audit/null-sink.cpp
+						${DPM_COMMON}/audit/console-sink.cpp
+						${DPM_COMMON}/xml/node.cpp
+						${DPM_COMMON}/xml/parser.cpp
+						${DPM_COMMON}/xml/document.cpp
+						${DPM_COMMON}/xml/keepblanks.cpp
+						${DPM_COMMON}/db/column.cpp
+						${DPM_COMMON}/db/statement.cpp
+						${DPM_COMMON}/db/connection.cpp
+						${DPM_COMMON}/auth/user.cpp
+						${DPM_COMMON}/auth/group.cpp
+						${DPM_COMMON}/dbus/error.cpp
+						${DPM_COMMON}/dbus/variant.cpp
+						${DPM_COMMON}/dbus/connection.cpp
 )
 
 SET (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,noexecstack")
@@ -51,12 +51,12 @@ SET (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,noexecstack"
 ADD_LIBRARY(${PROJECT_NAME} STATIC ${COMMON_SOURCES})
 
 PKG_CHECK_MODULES(COMMON_DEPS REQUIRED  libxml-2.0
-                                        sqlite3
-                                        gio-2.0
+										sqlite3
+										gio-2.0
 )
 
 INCLUDE_DIRECTORIES(SYSTEM  ${DPM_COMMON}
-                            ${COMMON_DEPS_INCLUDE_DIRS}
+							${COMMON_DEPS_INCLUDE_DIRS}
 )
 
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${COMMON_DEPS_LIBRARIES})

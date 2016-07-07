@@ -25,55 +25,55 @@ using namespace DevicePolicyManager;
 
 EXPORT_API int dpm_zone_create(device_policy_manager_h handle, const char* name, const char* pkgname)
 {
-    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(name, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(pkgname, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(name, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(pkgname, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyContext &client = GetDevicePolicyContext(handle);
-    ZonePolicy zone = client.createPolicyInterface<ZonePolicy>();
-    return zone.createZone(name, pkgname);
+	DevicePolicyContext &client = GetDevicePolicyContext(handle);
+	ZonePolicy zone = client.createPolicyInterface<ZonePolicy>();
+	return zone.createZone(name, pkgname);
 }
 
 EXPORT_API int dpm_zone_destroy(device_policy_manager_h handle, const char* name)
 {
-    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(name, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(name, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyContext &client = GetDevicePolicyContext(handle);
-    ZonePolicy zone = client.createPolicyInterface<ZonePolicy>();
-    return zone.removeZone(name);
+	DevicePolicyContext &client = GetDevicePolicyContext(handle);
+	ZonePolicy zone = client.createPolicyInterface<ZonePolicy>();
+	return zone.removeZone(name);
 }
 
 EXPORT_API int dpm_zone_get_state(device_policy_manager_h handle, const char* name, dpm_zone_state_e *state)
 {
-    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(name, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(name, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyContext &client = GetDevicePolicyContext(handle);
-    ZonePolicy zone = client.createPolicyInterface<ZonePolicy>();
+	DevicePolicyContext &client = GetDevicePolicyContext(handle);
+	ZonePolicy zone = client.createPolicyInterface<ZonePolicy>();
 
-    int result = zone.getZoneState(name);
-    if (result == 0) {
-        return DPM_ERROR_NO_DATA;
-    }
+	int result = zone.getZoneState(name);
+	if (result == 0) {
+		return DPM_ERROR_NO_DATA;
+	}
 
-    *state = (dpm_zone_state_e)result;
-    return DPM_ERROR_NONE;
+	*state = (dpm_zone_state_e)result;
+	return DPM_ERROR_NONE;
 }
 
 EXPORT_API int dpm_zone_foreach_name(device_policy_manager_h handle, dpm_zone_state_e state,
-                                     dpm_zone_foreach_name_cb callback, void* user_data)
+									 dpm_zone_foreach_name_cb callback, void* user_data)
 {
-    RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-    RET_ON_FAILURE(callback, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(callback, DPM_ERROR_INVALID_PARAMETER);
 
-    DevicePolicyContext &client = GetDevicePolicyContext(handle);
-    ZonePolicy zone = client.createPolicyInterface<ZonePolicy>();
-    std::vector<std::string> list = zone.getZoneList(state);
-    for (const std::string& name : list) {
-        if (!callback(name.c_str(), user_data))
-            break;
-    }
+	DevicePolicyContext &client = GetDevicePolicyContext(handle);
+	ZonePolicy zone = client.createPolicyInterface<ZonePolicy>();
+	std::vector<std::string> list = zone.getZoneList(state);
+	for (const std::string& name : list) {
+		if (!callback(name.c_str(), user_data))
+			break;
+	}
 
-    return DPM_ERROR_NONE;
+	return DPM_ERROR_NONE;
 }

@@ -29,58 +29,58 @@
 #include "dbus/connection.h"
 
 Launchpad::Launchpad(const uid_t uid) :
-    user(uid)
+	user(uid)
 {
-    if (user == 0) {
-        dbus::Connection& systemDBus = dbus::Connection::getSystem();
-        const dbus::Variant& var = systemDBus.methodcall
-                                           ("org.freedesktop.login1",
-                                            "/org/freedesktop/login1",
-                                            "org.freedesktop.login1.Manager",
-                                            "ListSessions",
-                                            -1, "", "");
-        if (var) {
-            dbus::VariantIterator it;
-            var.get("(a(susso))", &it);
-            it.get("(susso)", NULL, &user, NULL, NULL, NULL);
-        }
-    }
-    if (user == 0) {
-        throw runtime::Exception("No logined user for launching app");
-    }
+	if (user == 0) {
+		dbus::Connection& systemDBus = dbus::Connection::getSystem();
+		const dbus::Variant& var = systemDBus.methodcall
+										   ("org.freedesktop.login1",
+											"/org/freedesktop/login1",
+											"org.freedesktop.login1.Manager",
+											"ListSessions",
+											-1, "", "");
+		if (var) {
+			dbus::VariantIterator it;
+			var.get("(a(susso))", &it);
+			it.get("(susso)", NULL, &user, NULL, NULL, NULL);
+		}
+	}
+	if (user == 0) {
+		throw runtime::Exception("No logined user for launching app");
+	}
 }
 
 bool Launchpad::isRunning(const std::string& appid)
 {
-    return ::aul_app_is_running_for_uid(appid.c_str(), user);
+	return ::aul_app_is_running_for_uid(appid.c_str(), user);
 }
 
 void Launchpad::launch(const std::string& appid)
 {
-    launch(appid, Bundle());
+	launch(appid, Bundle());
 }
 
 void Launchpad::launch(const std::string& appid, const Bundle& bundle)
 {
-    if (::aul_launch_app_for_uid(appid.c_str(), bundle.get(), user) < 0) {
-        throw runtime::Exception("Failed to launch app " + appid);
-    }
+	if (::aul_launch_app_for_uid(appid.c_str(), bundle.get(), user) < 0) {
+		throw runtime::Exception("Failed to launch app " + appid);
+	}
 }
 
 void Launchpad::resume(const std::string& appid)
 {
-    if (::aul_resume_app_for_uid(appid.c_str(), user) < 0) {
-        throw runtime::Exception("Failed to resume app " + appid);
-    }
+	if (::aul_resume_app_for_uid(appid.c_str(), user) < 0) {
+		throw runtime::Exception("Failed to resume app " + appid);
+	}
 }
 
 void Launchpad::terminate(const std::string& appid)
 {
-    int pid = ::aul_app_get_pid_for_uid(appid.c_str(), user);
-    if (pid > 0) {
-        if (::aul_terminate_pid_for_uid(pid, user) < 0) {
-            WARN("Failed to terminate app PID=" + std::to_string(pid));
-            ::kill(pid, SIGKILL);
-        }
-    }
+	int pid = ::aul_app_get_pid_for_uid(appid.c_str(), user);
+	if (pid > 0) {
+		if (::aul_terminate_pid_for_uid(pid, user) < 0) {
+			WARN("Failed to terminate app PID=" + std::to_string(pid));
+			::kill(pid, SIGKILL);
+		}
+	}
 }

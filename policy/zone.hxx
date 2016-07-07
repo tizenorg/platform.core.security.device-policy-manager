@@ -24,25 +24,25 @@ namespace DevicePolicyManager {
 
 class ZonePolicy {
 public:
-    enum State {
-        Locked      = 0x01,
-        Running     = 0x02,
-    };
+	enum State {
+		Locked      = 0x01,
+		Running     = 0x02,
+	};
 
-    ZonePolicy(PolicyControlContext& ctxt);
-    ~ZonePolicy();
+	ZonePolicy(PolicyControlContext& ctxt);
+	~ZonePolicy();
 
-    int createZone(const std::string& name, const std::string& setupWizardAppid);
-    int removeZone(const std::string& name);
-    int lockZone(const std::string& name);
-    int unlockZone(const std::string& name);
+	int createZone(const std::string& name, const std::string& setupWizardAppid);
+	int removeZone(const std::string& name);
+	int lockZone(const std::string& name);
+	int unlockZone(const std::string& name);
 
-    int getZoneState(const std::string& name);
+	int getZoneState(const std::string& name);
 
-    std::vector<std::string> getZoneList(int state);
+	std::vector<std::string> getZoneList(int state);
 
 private:
-    PolicyControlContext& context;
+	PolicyControlContext& context;
 };
 
 } // namespace DevicePolicyManager

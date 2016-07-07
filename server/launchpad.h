@@ -24,18 +24,18 @@
 
 class Launchpad {
 public:
-    Launchpad(const uid_t uid = 0);
-    Launchpad(const Launchpad&) = delete;
-    Launchpad(Launchpad&&) = delete;
+	Launchpad(const uid_t uid = 0);
+	Launchpad(const Launchpad&) = delete;
+	Launchpad(Launchpad&&) = delete;
 
-    void launch(const std::string& appid);
-    void launch(const std::string& appid, const Bundle& bundle);
-    void resume(const std::string& appid);
-    bool isRunning(const std::string& appid);
-    void terminate(const std::string& appid);
+	void launch(const std::string& appid);
+	void launch(const std::string& appid, const Bundle& bundle);
+	void resume(const std::string& appid);
+	bool isRunning(const std::string& appid);
+	void terminate(const std::string& appid);
 
 private:
-    uid_t user;
+	uid_t user;
 };
 
 #endif //__DPM_LAUNCHPAD_H__

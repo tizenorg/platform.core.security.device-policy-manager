@@ -21,7 +21,7 @@
 namespace rmi {
 
 Connection::Connection(Socket&& sock) :
-    socket(std::move(sock))
+	socket(std::move(sock))
 {
 }
 
@@ -31,29 +31,29 @@ Connection::~Connection() noexcept
 
 Message Connection::createMessage(unsigned int type, const std::string& target)
 {
-    return Message(type, target);
+	return Message(type, target);
 }
 
 void Connection::send(const Message& message) const
 {
-    std::lock_guard<std::mutex> lock(transmitMutex);
-    message.encode(socket);
+	std::lock_guard<std::mutex> lock(transmitMutex);
+	message.encode(socket);
 }
 
 Message Connection::dispatch() const
 {
-    Message message;
-    std::lock_guard<std::mutex> lock(receiveMutex);
+	Message message;
+	std::lock_guard<std::mutex> lock(receiveMutex);
 
-    message.decode(socket);
-    if (message.isError()) {
-        std::string exception;
-        message.disclose(exception);
+	message.decode(socket);
+	if (message.isError()) {
+		std::string exception;
+		message.disclose(exception);
 
-        throw runtime::Exception(exception);
-    }
+		throw runtime::Exception(exception);
+	}
 
-    return message;
+	return message;
 }
 
 } // namespace rmi

@@ -38,8 +38,8 @@ extern "C" {
  * @since_tizen 3.0
  */
 typedef enum {
-    WIPE_INTERNAL_STORAGE = (1 << 0), /**< Wipe internal memory. */
-    WIPE_EXTERNAL_STORAGE = (1 << 1)  /**< Wipe external memory. */
+	WIPE_INTERNAL_STORAGE = (1 << 0), /**< Wipe internal memory. */
+	WIPE_EXTERNAL_STORAGE = (1 << 1)  /**< Wipe external memory. */
 } dpm_wipe_type_e;
 
 /**

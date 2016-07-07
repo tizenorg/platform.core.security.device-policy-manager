@@ -32,28 +32,28 @@ namespace runtime {
 
 class Mainloop {
 public:
-    typedef unsigned int Event;
-    typedef std::function<void(int fd, Event event)> Callback;
+	typedef unsigned int Event;
+	typedef std::function<void(int fd, Event event)> Callback;
 
-    Mainloop();
-    ~Mainloop();
+	Mainloop();
+	~Mainloop();
 
-    void addEventSource(const int fd, const Event events, Callback&& callback);
-    void removeEventSource(const int fd);
-    bool dispatch(const int timeout);
-    void run(bool useGMainloop = false);
-    void stop();
+	void addEventSource(const int fd, const Event events, Callback&& callback);
+	void removeEventSource(const int fd);
+	bool dispatch(const int timeout);
+	void run(bool useGMainloop = false);
+	void stop();
 
 private:
-    typedef std::recursive_mutex Mutex;
+	typedef std::recursive_mutex Mutex;
 
-    std::unordered_map<int, std::shared_ptr<Callback>> callbacks;
-    Mutex mutex;
-    int pollFd;
-    std::atomic<bool> stopped;
-    runtime::EventFD wakeupSignal;
+	std::unordered_map<int, std::shared_ptr<Callback>> callbacks;
+	Mutex mutex;
+	int pollFd;
+	std::atomic<bool> stopped;
+	runtime::EventFD wakeupSignal;
 
-    void prepare();
+	void prepare();
 };
 
 } // namespace runtime

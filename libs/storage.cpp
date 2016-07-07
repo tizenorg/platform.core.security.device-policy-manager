@@ -21,7 +21,7 @@
 namespace DevicePolicyManager {
 
 StoragePolicy::StoragePolicy(PolicyControlContext& ctx) :
-    context(ctx)
+	context(ctx)
 {
 }
 

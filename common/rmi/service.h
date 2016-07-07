@@ -50,17 +50,17 @@
 
 #define registerMethod(T, P, M, ...)                                          \
 setMethodHandler<TYPEOF(M), TYPEOF(STRIP(STRIP(M)))>                          \
-                (P, STRINGIFY(TYPEOF(STRIP(M))), std::bind(&TYPEOF(STRIP(M)), T, \
-                PROTOTYPE(TYPEOF(STRIP(STRIP(M))))))
+				(P, STRINGIFY(TYPEOF(STRIP(M))), std::bind(&TYPEOF(STRIP(M)), T, \
+				PROTOTYPE(TYPEOF(STRIP(STRIP(M))))))
 
 #define registerParametricMethod(T, P, M, ...)                                \
 setMethodHandler<TYPEOF(M), TYPEOF(STRIP(STRIP(M)))>                          \
-                (P, STRINGIFY(TYPEOF(STRIP(M))), std::bind(&TYPEOF(STRIP(M)), T, \
-                PROTOTYPE(TYPEOF(STRIP(STRIP(M))))))
+				(P, STRINGIFY(TYPEOF(STRIP(M))), std::bind(&TYPEOF(STRIP(M)), T, \
+				PROTOTYPE(TYPEOF(STRIP(STRIP(M))))))
 
 #define registerNonparametricMethod(T, P, M, ...)                             \
 setMethodHandler<TYPEOF(M)>                                                   \
-                (P, STRINGIFY(TYPEOF(STRIP(M))), std::bind(&TYPEOF(STRIP(M)), T))
+				(P, STRINGIFY(TYPEOF(STRIP(M))), std::bind(&TYPEOF(STRIP(M)), T))
 
 namespace rmi {
 
@@ -69,125 +69,125 @@ typedef std::function<bool(const Credentials& cred, const std::string& privilege
 
 class Service {
 public:
-    Service(const std::string& address);
-    ~Service();
+	Service(const std::string& address);
+	~Service();
 
-    Service(const Service&) = delete;
-    Service& operator=(const Service&) = delete;
+	Service(const Service&) = delete;
+	Service& operator=(const Service&) = delete;
 
-    void start(bool useGMainloop = false);
-    void stop();
+	void start(bool useGMainloop = false);
+	void stop();
 
-    void setPrivilegeChecker(const PrivilegeChecker& checker);
-    void setNewConnectionCallback(const ConnectionCallback& callback);
-    void setCloseConnectionCallback(const ConnectionCallback& callback);
+	void setPrivilegeChecker(const PrivilegeChecker& checker);
+	void setNewConnectionCallback(const ConnectionCallback& callback);
+	void setCloseConnectionCallback(const ConnectionCallback& callback);
 
-    template<typename Type, typename... Args>
-    void setMethodHandler(const std::string& privilege, const std::string& method,
-                          const typename MethodHandler<Type, Args...>::type& handler);
+	template<typename Type, typename... Args>
+	void setMethodHandler(const std::string& privilege, const std::string& method,
+						  const typename MethodHandler<Type, Args...>::type& handler);
 
-    void createNotification(const std::string& name);
-    int subscribeNotification(const std::string& name);
-    int unsubscribeNotification(const std::string& name, const int id);
+	void createNotification(const std::string& name);
+	int subscribeNotification(const std::string& name);
+	int unsubscribeNotification(const std::string& name, const int id);
 
 	template <typename... Args>
 	void notify(const std::string& name, Args&&... args);
 
-    pid_t getPeerPid() const
-    {
-        return processingContext.credentials.pid;
-    }
+	pid_t getPeerPid() const
+	{
+		return processingContext.credentials.pid;
+	}
 
-    uid_t getPeerUid() const
-    {
-        return processingContext.credentials.uid;
-    }
+	uid_t getPeerUid() const
+	{
+		return processingContext.credentials.uid;
+	}
 
-    gid_t getPeerGid() const
-    {
-        return processingContext.credentials.gid;
-    }
+	gid_t getPeerGid() const
+	{
+		return processingContext.credentials.gid;
+	}
 
 private:
-    struct ProcessingContext {
-        ProcessingContext() = default;
-        ProcessingContext(const std::shared_ptr<Connection>& connection) :
-            credentials(connection->getPeerCredentials())
-        {
-        }
+	struct ProcessingContext {
+		ProcessingContext() = default;
+		ProcessingContext(const std::shared_ptr<Connection>& connection) :
+			credentials(connection->getPeerCredentials())
+		{
+		}
 
-        Credentials credentials;
-    };
+		Credentials credentials;
+	};
 
-    typedef std::list<std::shared_ptr<Connection>> ConnectionRegistry;
-    typedef std::function<void(const std::shared_ptr<Connection>& connection)> CallbackDispatcher;
+	typedef std::list<std::shared_ptr<Connection>> ConnectionRegistry;
+	typedef std::function<void(const std::shared_ptr<Connection>& connection)> CallbackDispatcher;
 
-    typedef std::function<Message(Message& message)> MethodDispatcher;
+	typedef std::function<Message(Message& message)> MethodDispatcher;
 
-    struct MethodContext {
-        MethodContext(const std::string& priv, MethodDispatcher&& disp) :
-            privilege(priv), dispatcher(std::move(disp))
-        {
-        }
+	struct MethodContext {
+		MethodContext(const std::string& priv, MethodDispatcher&& disp) :
+			privilege(priv), dispatcher(std::move(disp))
+		{
+		}
 
-        std::string privilege;
-        MethodDispatcher dispatcher;
-    };
+		std::string privilege;
+		MethodDispatcher dispatcher;
+	};
 
-    typedef std::unordered_map<std::string, std::shared_ptr<MethodContext>> MethodRegistry;
-    typedef std::unordered_map<std::string, Notification> NotificationRegistry;
+	typedef std::unordered_map<std::string, std::shared_ptr<MethodContext>> MethodRegistry;
+	typedef std::unordered_map<std::string, Notification> NotificationRegistry;
 
-    void onMessageProcess(const std::shared_ptr<Connection>& connection);
+	void onMessageProcess(const std::shared_ptr<Connection>& connection);
 
-    ConnectionRegistry::iterator getConnectionIterator(const int id);
+	ConnectionRegistry::iterator getConnectionIterator(const int id);
 
-    CallbackDispatcher onNewConnection;
-    CallbackDispatcher onCloseConnection;
-    PrivilegeChecker onMethodCall;
+	CallbackDispatcher onNewConnection;
+	CallbackDispatcher onCloseConnection;
+	PrivilegeChecker onMethodCall;
 
-    MethodRegistry methodRegistry;
-    NotificationRegistry notificationRegistry;
-    ConnectionRegistry connectionRegistry;
+	MethodRegistry methodRegistry;
+	NotificationRegistry notificationRegistry;
+	ConnectionRegistry connectionRegistry;
 
-    runtime::Mainloop mainloop;
-    std::string address;
+	runtime::Mainloop mainloop;
+	std::string address;
 
-    runtime::ThreadPool workqueue;
-    std::mutex stateLock;
-    std::mutex notificationLock;
-    std::mutex methodRegistryLock;
+	runtime::ThreadPool workqueue;
+	std::mutex stateLock;
+	std::mutex notificationLock;
+	std::mutex methodRegistryLock;
 
-    static thread_local ProcessingContext processingContext;
+	static thread_local ProcessingContext processingContext;
 };
 
 template<typename Type, typename... Args>
 void Service::setMethodHandler(const std::string& privilege, const std::string& method,
-                               const typename MethodHandler<Type, Args...>::type& handler)
+							   const typename MethodHandler<Type, Args...>::type& handler)
 {
-    auto dispatchMethod = [handler](Message& message) {
-        CallbackHolder<Type, Args...> callback(handler);
-        Message reply = message.createReplyMessage();
-        reply.packParameters<Type>(callback.dispatch(message));
+	auto dispatchMethod = [handler](Message& message) {
+		CallbackHolder<Type, Args...> callback(handler);
+		Message reply = message.createReplyMessage();
+		reply.packParameters<Type>(callback.dispatch(message));
 
-        return reply;
-    };
+		return reply;
+	};
 
-    std::lock_guard<std::mutex> lock(methodRegistryLock);
+	std::lock_guard<std::mutex> lock(methodRegistryLock);
 
-    if (methodRegistry.count(method)) {
-        throw runtime::Exception("Method handler already registered");
-    }
+	if (methodRegistry.count(method)) {
+		throw runtime::Exception("Method handler already registered");
+	}
 
-    methodRegistry[method] = std::make_shared<MethodContext>(privilege, dispatchMethod);
+	methodRegistry[method] = std::make_shared<MethodContext>(privilege, dispatchMethod);
 }
 
 template <typename... Args>
 void Service::notify(const std::string& name, Args&&... args)
 {
-    std::lock_guard<std::mutex> lock(notificationLock);
+	std::lock_guard<std::mutex> lock(notificationLock);
 
-    Notification& slot = notificationRegistry.at(name);
-    slot.notify(name, std::forward<Args>(args)...);
+	Notification& slot = notificationRegistry.at(name);
+	slot.notify(name, std::forward<Args>(args)...);
 }
 
 } // namespace rmi

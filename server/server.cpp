@@ -30,14 +30,14 @@ const std::string POLICY_MANAGER_ADDRESS = "/tmp/.device-policy-manager";
 
 Server::Server()
 {
-    policyStorage.reset(new PolicyStorage("/opt/etc/dpm/policy/PolicyManifest.xml"));
+	policyStorage.reset(new PolicyStorage("/opt/etc/dpm/policy/PolicyManifest.xml"));
 
-    service.reset(new rmi::Service(POLICY_MANAGER_ADDRESS));
+	service.reset(new rmi::Service(POLICY_MANAGER_ADDRESS));
 
-    service->setPrivilegeChecker(std::bind(&Server::checkPeerPrivilege, this, _1, _2));
+	service->setPrivilegeChecker(std::bind(&Server::checkPeerPrivilege, this, _1, _2));
 
-    service->registerParametricMethod(this, "", (FileDescriptor)(Server::registerNotificationSubscriber)(std::string));
-    service->registerParametricMethod(this, "", (int)(Server::unregisterNotificationSubscriber)(std::string, int));
+	service->registerParametricMethod(this, "", (FileDescriptor)(Server::registerNotificationSubscriber)(std::string));
+	service->registerParametricMethod(this, "", (int)(Server::unregisterNotificationSubscriber)(std::string, int));
 }
 
 Server::~Server()
@@ -46,88 +46,88 @@ Server::~Server()
 
 void Server::run()
 {
-    // Prepare execution environment
-    service->start(true);
+	// Prepare execution environment
+	service->start(true);
 }
 
 void Server::terminate()
 {
-    service->stop();
+	service->stop();
 }
 
 FileDescriptor Server::registerNotificationSubscriber(const std::string& name)
 {
-    return FileDescriptor(service->subscribeNotification(name), true);
+	return FileDescriptor(service->subscribeNotification(name), true);
 }
 
 int Server::unregisterNotificationSubscriber(const std::string& name, int id)
 {
-    return service->unsubscribeNotification(name, id);
+	return service->unsubscribeNotification(name, id);
 }
 
 int Server::updatePolicy(const std::string& name, const std::string& value,
-                         const std::string& event, const std::string& info)
+						 const std::string& event, const std::string& info)
 {
-    try {
-        Policy& policy = policyStorage->getPolicy(name);
-        std::string old = policy.getContent();
-        policy.setContent(value);
-        if (old != value) {
-            if (event != "") {
-                service->notify(event, info);
-            }
+	try {
+		Policy& policy = policyStorage->getPolicy(name);
+		std::string old = policy.getContent();
+		policy.setContent(value);
+		if (old != value) {
+			if (event != "") {
+				service->notify(event, info);
+			}
 
-            policyStorage->flush();
-        }
-    } catch (runtime::Exception& e) {
-        ERROR("Exception on access to policy: " + name);
-        return -1;
-    }
+			policyStorage->flush();
+		}
+	} catch (runtime::Exception& e) {
+		ERROR("Exception on access to policy: " + name);
+		return -1;
+	}
 
-    return 0;
+	return 0;
 }
 
 int Server::updatePolicy(const std::string& name, const std::string& value)
 {
-    return updatePolicy(name, value, name, value);
+	return updatePolicy(name, value, name, value);
 }
 
 std::string Server::getPolicy(const std::string& name) const
 {
-    return policyStorage->getPolicy(name).getContent();
+	return policyStorage->getPolicy(name).getContent();
 }
 
 bool Server::checkPeerPrivilege(const rmi::Credentials& cred, const std::string& privilege)
 {
-    cynara *p_cynara;
+	cynara *p_cynara;
 
-    DEBUG("Peer security: " + cred.security);
+	DEBUG("Peer security: " + cred.security);
 
-    if (privilege.empty()) {
-        return true;
-    }
+	if (privilege.empty()) {
+		return true;
+	}
 
-    if (::cynara_initialize(&p_cynara, NULL) != CYNARA_API_SUCCESS) {
-        ERROR("Failure in cynara API");
-        return false;
-    }
+	if (::cynara_initialize(&p_cynara, NULL) != CYNARA_API_SUCCESS) {
+		ERROR("Failure in cynara API");
+		return false;
+	}
 
-    if (::cynara_check(p_cynara, cred.security.c_str(), "",
-                       std::to_string(cred.uid).c_str(),
-                       privilege.c_str()) != CYNARA_API_ACCESS_ALLOWED) {
-        ::cynara_finish(p_cynara);
-        ERROR("Access denied: " + cred.security + " : " + privilege);
-        return false;
-    }
+	if (::cynara_check(p_cynara, cred.security.c_str(), "",
+					   std::to_string(cred.uid).c_str(),
+					   privilege.c_str()) != CYNARA_API_ACCESS_ALLOWED) {
+		::cynara_finish(p_cynara);
+		ERROR("Access denied: " + cred.security + " : " + privilege);
+		return false;
+	}
 
-    ::cynara_finish(p_cynara);
+	::cynara_finish(p_cynara);
 
-    return true;
+	return true;
 }
 
 Server& Server::instance()
 {
-    static Server _instance_;
+	static Server _instance_;
 
-    return _instance_;
+	return _instance_;
 }

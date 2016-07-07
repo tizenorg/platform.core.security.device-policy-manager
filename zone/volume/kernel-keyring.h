@@ -26,17 +26,17 @@ typedef int32_t KeySerial;
 
 class KernelKeyRing {
 public:
-    KernelKeyRing() = delete;
-    KernelKeyRing(const KernelKeyRing&) = delete;
-    KernelKeyRing(KernelKeyRing&&) = delete;
+	KernelKeyRing() = delete;
+	KernelKeyRing(const KernelKeyRing&) = delete;
+	KernelKeyRing(KernelKeyRing&&) = delete;
 
-    KernelKeyRing& operator=(const KernelKeyRing&) = delete;
-    KernelKeyRing& operator=(KernelKeyRing&&) = delete;
+	KernelKeyRing& operator=(const KernelKeyRing&) = delete;
+	KernelKeyRing& operator=(KernelKeyRing&&) = delete;
 
-    static KeySerial add(const char* type, const char* description, const void* payload, size_t plen, KeySerial ringid);
-    static long search(KeySerial ringid, const char* type, const char* description, KeySerial destringid);
-    static long link(KeySerial keyid, KeySerial ringid);
-    static long unlink(KeySerial keyid, KeySerial ringid);
+	static KeySerial add(const char* type, const char* description, const void* payload, size_t plen, KeySerial ringid);
+	static long search(KeySerial ringid, const char* type, const char* description, KeySerial destringid);
+	static long link(KeySerial keyid, KeySerial ringid);
+	static long unlink(KeySerial keyid, KeySerial ringid);
 };
 
 #endif //!__KERNEL_KEY_RING_H__

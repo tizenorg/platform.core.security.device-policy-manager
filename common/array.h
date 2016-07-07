@@ -25,32 +25,33 @@ namespace runtime {
 template <typename T>
 class Array final {
 public:
-    Array() = delete;
-    Array(std::vector<T> &&list) :
-        list(std::move(list)), it(this->list.begin())
-    {
-    };
-    Array(const std::vector<T> &list) :
-        list(list), it(this->list.begin())
-    {
-    };
+	Array() = delete;
+	Array(std::vector<T> &&list) :
+		list(std::move(list)), it(this->list.begin())
+	{
+	}
 
-    T *next()
-    {
-        if (it != list.end()) {
-            return &(*it++);
-        }
-        return NULL;
-    }
+	Array(const std::vector<T> &list) :
+		list(list), it(this->list.begin())
+	{
+	}
 
-    bool isEnd()
-    {
-        return it == list.end();
-    }
+	T *next()
+	{
+		if (it != list.end()) {
+			return &(*it++);
+		}
+		return NULL;
+	}
+
+	bool isEnd()
+	{
+		return it == list.end();
+	}
 
 private:
-    std::vector<T> list;
-    typename std::vector<T>::iterator it;
+	std::vector<T> list;
+	typename std::vector<T>::iterator it;
 };
 
 } // namespace runtime

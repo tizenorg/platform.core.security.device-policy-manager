@@ -22,96 +22,96 @@
 
 static int wifi_profile_change_restriction(struct testcase* tc)
 {
-    int allow = false;
-    device_policy_manager_h handle;
+	int allow = false;
+	device_policy_manager_h handle;
 
-    handle = dpm_manager_create();
-    if (handle == NULL) {
-        printf("Failed to create client handle\n");
-        return TEST_FAILED;
-    }
+	handle = dpm_manager_create();
+	if (handle == NULL) {
+		printf("Failed to create client handle\n");
+		return TEST_FAILED;
+	}
 
-    if (dpm_wifi_set_profile_change_restriction(handle, true) != 0) {
-        dpm_manager_destroy(handle);
-        return TEST_FAILED;
-    }
+	if (dpm_wifi_set_profile_change_restriction(handle, true) != 0) {
+		dpm_manager_destroy(handle);
+		return TEST_FAILED;
+	}
 
-    if (dpm_wifi_is_profile_change_restricted(handle, &allow) != DPM_ERROR_NONE) {
-        dpm_manager_destroy(handle);
-        return TEST_FAILED;
-    }
+	if (dpm_wifi_is_profile_change_restricted(handle, &allow) != DPM_ERROR_NONE) {
+		dpm_manager_destroy(handle);
+		return TEST_FAILED;
+	}
 
-    dpm_manager_destroy(handle);
-    return TEST_SUCCESSED;
+	dpm_manager_destroy(handle);
+	return TEST_SUCCESSED;
 }
 
 static int wifi_network_access_restriction(struct testcase* tc)
 {
-    int allow = false;
-    device_policy_manager_h handle;
+	int allow = false;
+	device_policy_manager_h handle;
 
-    handle = dpm_manager_create();
-    if (handle == NULL) {
-        printf("Failed to create client handle\n");
-        return TEST_FAILED;
-    }
+	handle = dpm_manager_create();
+	if (handle == NULL) {
+		printf("Failed to create client handle\n");
+		return TEST_FAILED;
+	}
 
-    if (dpm_wifi_set_network_access_restriction(handle, true) != 0) {
-        dpm_manager_destroy(handle);
-        return TEST_FAILED;
-    }
+	if (dpm_wifi_set_network_access_restriction(handle, true) != 0) {
+		dpm_manager_destroy(handle);
+		return TEST_FAILED;
+	}
 
-    if (dpm_wifi_is_network_access_restricted(handle, &allow) != DPM_ERROR_NONE) {
-        dpm_manager_destroy(handle);
-        return TEST_FAILED;
-    }
+	if (dpm_wifi_is_network_access_restricted(handle, &allow) != DPM_ERROR_NONE) {
+		dpm_manager_destroy(handle);
+		return TEST_FAILED;
+	}
 
-    dpm_manager_destroy(handle);
-    return TEST_SUCCESSED;
+	dpm_manager_destroy(handle);
+	return TEST_SUCCESSED;
 }
 
 static int wifi_blacklist(struct testcase* tc)
 {
-    device_policy_manager_h handle;
+	device_policy_manager_h handle;
 
-    handle = dpm_manager_create();
-    if (handle == NULL) {
-        printf("Failed to create client handle\n");
-        return TEST_FAILED;
-    }
+	handle = dpm_manager_create();
+	if (handle == NULL) {
+		printf("Failed to create client handle\n");
+		return TEST_FAILED;
+	}
 
-    if (dpm_wifi_add_ssid_to_blocklist(handle, "testssid") != 0) {
-        dpm_manager_destroy(handle);
-        return TEST_FAILED;
-    }
+	if (dpm_wifi_add_ssid_to_blocklist(handle, "testssid") != 0) {
+		dpm_manager_destroy(handle);
+		return TEST_FAILED;
+	}
 
-    if (dpm_wifi_remove_ssid_from_blocklist(handle, "testssid") != DPM_ERROR_NONE) {
-        dpm_manager_destroy(handle);
-        return TEST_FAILED;
-    }
+	if (dpm_wifi_remove_ssid_from_blocklist(handle, "testssid") != DPM_ERROR_NONE) {
+		dpm_manager_destroy(handle);
+		return TEST_FAILED;
+	}
 
-    dpm_manager_destroy(handle);
-    return TEST_SUCCESSED;
+	dpm_manager_destroy(handle);
+	return TEST_SUCCESSED;
 }
 
 struct testcase wifi_testcase_profile_change_restriction = {
-    .description = "wifi_testcase_profile_change_restriction",
-    .handler = wifi_profile_change_restriction
+	.description = "wifi_testcase_profile_change_restriction",
+	.handler = wifi_profile_change_restriction
 };
 
 struct testcase wifi_testcase_network_access_restriction = {
-    .description = "wifi_testcase_network_access_restriction",
-    .handler = wifi_network_access_restriction
+	.description = "wifi_testcase_network_access_restriction",
+	.handler = wifi_network_access_restriction
 };
 
 struct testcase wifi_testcase_blacklist = {
-    .description = "wifi_testcase_blacklist",
-    .handler = wifi_blacklist
+	.description = "wifi_testcase_blacklist",
+	.handler = wifi_blacklist
 };
 
 void TESTCASE_CONSTRUCTOR wifi_policy_build_testcase(void)
 {
-    testbench_populate_testcase(&wifi_testcase_blacklist);
-    testbench_populate_testcase(&wifi_testcase_network_access_restriction);
-    testbench_populate_testcase(&wifi_testcase_profile_change_restriction);
+	testbench_populate_testcase(&wifi_testcase_blacklist);
+	testbench_populate_testcase(&wifi_testcase_network_access_restriction);
+	testbench_populate_testcase(&wifi_testcase_profile_change_restriction);
 }

@@ -29,32 +29,32 @@ namespace xml {
 
 class Node {
 public:
-    typedef std::vector<Node> NodeList;
+	typedef std::vector<Node> NodeList;
 
-    explicit Node(xmlNode* node);
-    Node(Node&&);
-    Node(const Node&) = delete;
+	explicit Node(xmlNode* node);
+	Node(Node&&);
+	Node(const Node&) = delete;
 
-    ~Node();
+	~Node();
 
-    Node& operator=(const Node&) = delete;
+	Node& operator=(const Node&) = delete;
 
-    NodeList getChildren() const;
-    Node addNewChild(const std::string& name);
+	NodeList getChildren() const;
+	Node addNewChild(const std::string& name);
 
-    std::string getName() const;
-    void setName(const std::string& name);
+	std::string getName() const;
+	void setName(const std::string& name);
 
-    std::string getContent() const;
-    void setContent(const std::string& content);
+	std::string getContent() const;
+	void setContent(const std::string& content);
 
-    std::string getProp(const std::string& name) const;
-    void setProp(const std::string& name, const std::string& val);
+	std::string getProp(const std::string& name) const;
+	void setProp(const std::string& name, const std::string& val);
 
-    bool isBlank() const;
+	bool isBlank() const;
 
 private:
-    xmlNode* implementation;
+	xmlNode* implementation;
 };
 
 } // namespace xml

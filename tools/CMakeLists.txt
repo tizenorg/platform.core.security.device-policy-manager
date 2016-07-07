@@ -14,8 +14,8 @@
 # limitations under the License.
 #
 
-SET(DPM_CLI ${DPM_TOOLS}/cli)
-SET(DPM_ODE ${DPM_TOOLS}/ode)
+SET(DPM_CLI      ${DPM_TOOLS}/cli)
+SET(DPM_ODE      ${DPM_TOOLS}/ode)
 SET(DPM_SYSPOPUP ${DPM_TOOLS}/syspopup)
 
 ADD_SUBDIRECTORY(${DPM_CLI})

@@ -39,11 +39,11 @@ extern "C" {
  * @since_tizen 3.0
  */
 typedef enum {
-    DPM_PACKAGE_RESTRICTION_MODE_ALL        = 0x0F, /**< All package restriction mode */
-    DPM_PACKAGE_RESTRICTION_MODE_INSTALL    = 0x01, /**< Package install restriction */
-    DPM_PACKAGE_RESTRICTION_MODE_UNINSTALL  = 0x02, /**< Package uninstall restriction */
-    DPM_PACKAGE_RESTRICTION_MODE_REINSTALL  = 0x04, /**< Package reinstall restriction */
-    DPM_PACKAGE_RESTRICTION_MODE_MOVE       = 0x08  /**< Package move restriction */
+	DPM_PACKAGE_RESTRICTION_MODE_ALL        = 0x0F, /**< All package restriction mode */
+	DPM_PACKAGE_RESTRICTION_MODE_INSTALL    = 0x01, /**< Package install restriction */
+	DPM_PACKAGE_RESTRICTION_MODE_UNINSTALL  = 0x02, /**< Package uninstall restriction */
+	DPM_PACKAGE_RESTRICTION_MODE_REINSTALL  = 0x04, /**< Package reinstall restriction */
+	DPM_PACKAGE_RESTRICTION_MODE_MOVE       = 0x08  /**< Package move restriction */
 } dpm_package_restriction_mode_e;
 
 /**

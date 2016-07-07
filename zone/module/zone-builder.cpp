@@ -26,9 +26,9 @@
 #include "filesystem.h"
 
 ZoneBuilder::ZoneBuilder(const runtime::User& user, const std::string& manifestPath) :
-    name(user.getName()), uid(user.getUid()), gid(user.getGid())
+	name(user.getName()), uid(user.getUid()), gid(user.getGid())
 {
-    manifest.reset(xml::Parser::parseFile(manifestPath));
+	manifest.reset(xml::Parser::parseFile(manifestPath));
 }
 
 ZoneBuilder::~ZoneBuilder()
@@ -36,41 +36,41 @@ ZoneBuilder::~ZoneBuilder()
 }
 
 void ZoneBuilder::bindFilesystemNode(const std::string& source, const std::string& target,
-                                     const std::string& type, const std::string& options,
-                                     bool create)
+									 const std::string& type, const std::string& options,
+									 bool create)
 {
-    if (create) {
-        runtime::File dir(target);
-        if (!dir.exists()) {
-            dir.makeDirectory(true, uid, gid);
-        }
-    }
+	if (create) {
+		runtime::File dir(target);
+		if (!dir.exists()) {
+			dir.makeDirectory(true, uid, gid);
+		}
+	}
 
-    runtime::Mount::mountEntry(source, target, type, options);
+	runtime::Mount::mountEntry(source, target, type, options);
 }
 
 void ZoneBuilder::containerize(bool create)
 {
-    int nsFlags = CLONE_NEWIPC | CLONE_NEWNS;
+	int nsFlags = CLONE_NEWIPC | CLONE_NEWNS;
 
-    if (::unshare(nsFlags)) {
-        throw runtime::Exception("Failed to unshare namespace");
-    }
+	if (::unshare(nsFlags)) {
+		throw runtime::Exception("Failed to unshare namespace");
+	}
 
-    if (::mount(NULL, "/", NULL, MS_SLAVE | MS_REC, NULL) == -1) {
-        throw runtime::Exception("Failed to mount root filesystem");
-    }
+	if (::mount(NULL, "/", NULL, MS_SLAVE | MS_REC, NULL) == -1) {
+		throw runtime::Exception("Failed to mount root filesystem");
+	}
 
-    xml::Node::NodeList entries = manifest->evaluate("/manifest/filesystem/entry");
-    for (const xml::Node& entry : entries) {
-        bindFilesystemNode(entry.getProp("source"), entry.getProp("target"),
-                           entry.getProp("type"), entry.getProp("options"));
-    }
+	xml::Node::NodeList entries = manifest->evaluate("/manifest/filesystem/entry");
+	for (const xml::Node& entry : entries) {
+		bindFilesystemNode(entry.getProp("source"), entry.getProp("target"),
+						   entry.getProp("type"), entry.getProp("options"));
+	}
 
-    bindFilesystemNode("/home/" + name,
-                       "/home/" + name + "/.zone/" + name,
-                       "none", "rw,bind");
+	bindFilesystemNode("/home/" + name,
+					   "/home/" + name + "/.zone/" + name,
+					   "none", "rw,bind");
 
-    bindFilesystemNode("/home/" + name + "/.zone", "/home",
-                       "none", "rw,rbind");
+	bindFilesystemNode("/home/" + name + "/.zone", "/home",
+					   "none", "rw,rbind");
 }

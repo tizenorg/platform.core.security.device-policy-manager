@@ -23,33 +23,33 @@
 
 #define VISIT_ELEMENT(elem) v.visit(#elem, elem)
 
-#define REFLECTABLE(...)				\
-template<typename V>					\
-void accept(V v)					\
-{							\
-	FOR_EACH_VAR_ARGS(VISIT_ELEMENT, __VA_ARGS__);	\
-}							\
-template<typename V>					\
-void accept(V v) const					\
-{							\
-	FOR_EACH_VAR_ARGS(VISIT_ELEMENT, __VA_ARGS__);	\
+#define REFLECTABLE(...)                            \
+template<typename V>                                \
+void accept(V v)                                    \
+{                                                   \
+	FOR_EACH_VAR_ARGS(VISIT_ELEMENT, __VA_ARGS__);  \
+}                                                   \
+template<typename V>                                \
+void accept(V v) const                              \
+{                                                   \
+	FOR_EACH_VAR_ARGS(VISIT_ELEMENT, __VA_ARGS__);  \
 }
 
-#define NO_REFLECTABLE_PROPERTY				\
-	template<typename V>				\
+#define NO_REFLECTABLE_PROPERTY \
+	template<typename V>        \
 	static void accept(V) {}
 
 template<typename T>
 struct ReflectionTraitChecker {
-    struct Visitor {};
+	struct Visitor {};
 
-    template <typename C> static std::true_type
-    test(decltype(std::declval<C>().template accept(Visitor()))*);
+	template <typename C> static std::true_type
+	test(decltype(std::declval<C>().template accept(Visitor()))*);
 
-    template <typename C> static std::false_type
-    test(...);
+	template <typename C> static std::false_type
+	test(...);
 
-    static constexpr bool value = std::is_same<decltype(test<T>(0)), std::true_type>::value;
+	static constexpr bool value = std::is_same<decltype(test<T>(0)), std::true_type>::value;
 };
 
 template<typename T>

@@ -34,68 +34,68 @@
 
 std::string buildZoneManifestPath(const std::string& name)
 {
-    return ZONE_MANIFEST_DIR + name + ".xml";
+	return ZONE_MANIFEST_DIR + name + ".xml";
 }
 
 std::string getZoneName(pam_handle_t* handle)
 {
-    const void* retItem;
-    int error = ::pam_get_item(handle, PAM_USER, &retItem);
-    if (error != PAM_SUCCESS) {
-        throw runtime::Exception("Failed to get user");
-    }
+	const void* retItem;
+	int error = ::pam_get_item(handle, PAM_USER, &retItem);
+	if (error != PAM_SUCCESS) {
+		throw runtime::Exception("Failed to get user");
+	}
 
-    return static_cast<const char*>(retItem);
+	return static_cast<const char*>(retItem);
 }
 
 void openZoneSession(const std::string& name)
 {
-    auto sessionBuilder = [](const runtime::User& user) {
-        ZoneBuilder builder(user, buildZoneManifestPath(user.getName()));
-        builder.containerize();
-    };
+	auto sessionBuilder = [](const runtime::User& user) {
+		ZoneBuilder builder(user, buildZoneManifestPath(user.getName()));
+		builder.containerize();
+	};
 
-    createSession(runtime::User(name), sessionBuilder);
+	createSession(runtime::User(name), sessionBuilder);
 }
 
 void closeZoneSession(const std::string& name)
 {
-    destroySession(runtime::User(name));
+	destroySession(runtime::User(name));
 }
 
 extern "C" {
 PAM_EXTERN  __attribute__((visibility("default")))
 int pam_sm_open_session(pam_handle_t* pamh, int flags, int argc, const char* argv[])
 {
-    try {
-        std::string name = getZoneName(pamh);
-        ZoneGuard zoneGuard(name);
-        zoneGuard.wait();
+	try {
+		std::string name = getZoneName(pamh);
+		ZoneGuard zoneGuard(name);
+		zoneGuard.wait();
 
-        openZoneSession(name);
-    } catch (runtime::Exception& e) {
-        ::pam_syslog(pamh, LOG_ERR, "%s", e.what());
-        return PAM_SESSION_ERR;
-    }
+		openZoneSession(name);
+	} catch (runtime::Exception& e) {
+		::pam_syslog(pamh, LOG_ERR, "%s", e.what());
+		return PAM_SESSION_ERR;
+	}
 
-    return PAM_SUCCESS;
+	return PAM_SUCCESS;
 }
 
 PAM_EXTERN  __attribute__((visibility("default")))
 int pam_sm_close_session(pam_handle_t* pamh, int flags, int argc, const char* argv[])
 {
-    try {
-        std::string name = getZoneName(pamh);
-        ZoneGuard zoneGuard(name);
-        zoneGuard.wait();
+	try {
+		std::string name = getZoneName(pamh);
+		ZoneGuard zoneGuard(name);
+		zoneGuard.wait();
 
-        closeZoneSession(name);
-    } catch (runtime::Exception& e) {
-        ::pam_syslog(pamh, LOG_ERR, "%s", e.what());
-        return PAM_SESSION_ERR;
-    }
+		closeZoneSession(name);
+	} catch (runtime::Exception& e) {
+		::pam_syslog(pamh, LOG_ERR, "%s", e.what());
+		return PAM_SESSION_ERR;
+	}
 
-    return PAM_SUCCESS;
+	return PAM_SUCCESS;
 }
 
 #ifdef PAM_MODULE_ENTRY

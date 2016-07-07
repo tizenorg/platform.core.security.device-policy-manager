@@ -19,7 +19,7 @@
 namespace DevicePolicyManager {
 
 ZoneAppProxy::ZoneAppProxy(PolicyControlContext& ctx)
-    : context(ctx)
+	: context(ctx)
 {
 }
 
@@ -29,78 +29,78 @@ ZoneAppProxy::~ZoneAppProxy()
 
 ZoneAppProxy::AppInfo ZoneAppProxy::getAppInfo(const std::string& name, const std::string& appid)
 {
-    try {
-        return context->methodCall<ZoneAppProxy::AppInfo>("ZoneAppProxy::getAppInfo", name, appid);
-    } catch (runtime::Exception& e) {}
-    return ZoneAppProxy::AppInfo();
+	try {
+		return context->methodCall<ZoneAppProxy::AppInfo>("ZoneAppProxy::getAppInfo", name, appid);
+	} catch (runtime::Exception& e) {}
+	return ZoneAppProxy::AppInfo();
 }
 
 int ZoneAppProxy::createIterator(const std::string& zone)
 {
-    try {
-        return context->methodCall<int>("ZoneAppProxy::createIterator", zone);
-    } catch (runtime::Exception& e) {}
-    return -1;
+	try {
+		return context->methodCall<int>("ZoneAppProxy::createIterator", zone);
+	} catch (runtime::Exception& e) {}
+	return -1;
 }
 
 ZoneAppProxy::AppInfo ZoneAppProxy::getIteratorValue(int iterator)
 {
-    try {
-        return context->methodCall<ZoneAppProxy::AppInfo>("ZoneAppProxy::getIteratorValue", iterator);
-    } catch (runtime::Exception& e) {}
-    return ZoneAppProxy::AppInfo();
+	try {
+		return context->methodCall<ZoneAppProxy::AppInfo>("ZoneAppProxy::getIteratorValue", iterator);
+	} catch (runtime::Exception& e) {}
+	return ZoneAppProxy::AppInfo();
 }
 
 bool ZoneAppProxy::nextIterator(int iterator)
 {
-    try {
-        return context->methodCall<bool>("ZoneAppProxy::nextIterator", iterator);
-    } catch (runtime::Exception& e) {}
-    return false;
+	try {
+		return context->methodCall<bool>("ZoneAppProxy::nextIterator", iterator);
+	} catch (runtime::Exception& e) {}
+	return false;
 }
 
 int ZoneAppProxy::destroyIterator(int iterator)
 {
-    try {
-        return context->methodCall<int>("ZoneAppProxy::destroyIterator", iterator);
-    } catch (runtime::Exception& e) {}
-    return -1;
+	try {
+		return context->methodCall<int>("ZoneAppProxy::destroyIterator", iterator);
+	} catch (runtime::Exception& e) {}
+	return -1;
 }
 
 int ZoneAppProxy::launch(const std::string& name, const ZoneAppProxy::Bundle& bundle)
 {
-    try {
-        return context->methodCall<int>("ZoneAppProxy::launch", name, bundle);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<int>("ZoneAppProxy::launch", name, bundle);
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 
 int ZoneAppProxy::resume(const std::string& name, const std::string& appid)
 {
-    try {
-        return context->methodCall<int>("ZoneAppProxy::resume", name, appid);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<int>("ZoneAppProxy::resume", name, appid);
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 
 int ZoneAppProxy::terminate(const std::string& name, const std::string& appid)
 {
-    try {
-        return context->methodCall<int>("ZoneAppProxy::terminate", name, appid);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<int>("ZoneAppProxy::terminate", name, appid);
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 
 bool ZoneAppProxy::isRunning(const std::string& name, const std::string& appid)
 {
-    try {
-        return context->methodCall<bool>("ZoneAppProxy::isRunning", name, appid);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<bool>("ZoneAppProxy::isRunning", name, appid);
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 
 } // namespace DevicePolicyManager

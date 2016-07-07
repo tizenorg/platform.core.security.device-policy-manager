@@ -32,18 +32,18 @@
 namespace DevicePolicyManager {
 
 ApplicationPolicy::ApplicationPolicy(PolicyControlContext& ctxt) :
-    context(ctxt)
+	context(ctxt)
 {
-    context.registerNonparametricMethod(this, "", (int)(ApplicationPolicy::getModeRestriction)());
-    context.registerParametricMethod(this, "", (int)(ApplicationPolicy::setModeRestriction)(int));
-    context.registerParametricMethod(this, "", (int)(ApplicationPolicy::unsetModeRestriction)(int));
+	context.registerNonparametricMethod(this, "", (int)(ApplicationPolicy::getModeRestriction)());
+	context.registerParametricMethod(this, "", (int)(ApplicationPolicy::setModeRestriction)(int));
+	context.registerParametricMethod(this, "", (int)(ApplicationPolicy::unsetModeRestriction)(int));
 
-    context.registerParametricMethod(this, "", (int)(ApplicationPolicy::addPrivilegeToBlacklist)(int, std::string));
-    context.registerParametricMethod(this, "", (int)(ApplicationPolicy::removePrivilegeFromBlacklist)(int, std::string));
-    context.registerParametricMethod(this, "", (int)(ApplicationPolicy::checkPrivilegeIsBlacklisted)(int, std::string));
+	context.registerParametricMethod(this, "", (int)(ApplicationPolicy::addPrivilegeToBlacklist)(int, std::string));
+	context.registerParametricMethod(this, "", (int)(ApplicationPolicy::removePrivilegeFromBlacklist)(int, std::string));
+	context.registerParametricMethod(this, "", (int)(ApplicationPolicy::checkPrivilegeIsBlacklisted)(int, std::string));
 
-    context.registerParametricMethod(this, "", (int)(ApplicationPolicy::installPackage)(std::string));
-    context.registerParametricMethod(this, "", (int)(ApplicationPolicy::uninstallPackage)(std::string));
+	context.registerParametricMethod(this, "", (int)(ApplicationPolicy::installPackage)(std::string));
+	context.registerParametricMethod(this, "", (int)(ApplicationPolicy::uninstallPackage)(std::string));
 }
 
 ApplicationPolicy::~ApplicationPolicy()
@@ -52,115 +52,115 @@ ApplicationPolicy::~ApplicationPolicy()
 
 int ApplicationPolicy::installPackage(const std::string& pkgpath)
 {
-    try {
-        PackageManager& packman = PackageManager::instance();
-        packman.installPackage(pkgpath, context.getPeerUid());
-    } catch (runtime::Exception& e) {
-        ERROR("Exception on package installation: " + pkgpath);
-        return -1;
-    }
+	try {
+		PackageManager& packman = PackageManager::instance();
+		packman.installPackage(pkgpath, context.getPeerUid());
+	} catch (runtime::Exception& e) {
+		ERROR("Exception on package installation: " + pkgpath);
+		return -1;
+	}
 
-    return 0;
+	return 0;
 }
 
 int ApplicationPolicy::uninstallPackage(const std::string& pkgid)
 {
-    try {
-        PackageManager& packman = PackageManager::instance();
-        packman.uninstallPackage(pkgid, context.getPeerUid());
-    } catch (runtime::Exception& e) {
-        ERROR("Exception on package uninstallation: " + pkgid);
-        return -1;
-    }
+	try {
+		PackageManager& packman = PackageManager::instance();
+		packman.uninstallPackage(pkgid, context.getPeerUid());
+	} catch (runtime::Exception& e) {
+		ERROR("Exception on package uninstallation: " + pkgid);
+		return -1;
+	}
 
-    return 0;
+	return 0;
 }
 
 int ApplicationPolicy::setModeRestriction(int mode)
 {
-    try {
-        PackageManager& packman = PackageManager::instance();
-        packman.setModeRestriction(mode, context.getPeerUid());
-    } catch (runtime::Exception& e) {
-        ERROR("Failed to set mode restriction");
-        return -1;
-    }
+	try {
+		PackageManager& packman = PackageManager::instance();
+		packman.setModeRestriction(mode, context.getPeerUid());
+	} catch (runtime::Exception& e) {
+		ERROR("Failed to set mode restriction");
+		return -1;
+	}
 
-    return 0;
+	return 0;
 }
 
 int ApplicationPolicy::unsetModeRestriction(int mode)
 {
-    try {
-        PackageManager& packman = PackageManager::instance();
-        packman.unsetModeRestriction(mode, context.getPeerUid());
-    } catch (runtime::Exception& e) {
-        ERROR("Failed to unset mode restriction");
-        return -1;
-    }
+	try {
+		PackageManager& packman = PackageManager::instance();
+		packman.unsetModeRestriction(mode, context.getPeerUid());
+	} catch (runtime::Exception& e) {
+		ERROR("Failed to unset mode restriction");
+		return -1;
+	}
 
-    return 0;
+	return 0;
 }
 
 int ApplicationPolicy::getModeRestriction()
 {
-    try {
-        PackageManager& packman = PackageManager::instance();
-        return packman.getModeRestriction(context.getPeerUid());
-    } catch (runtime::Exception& e) {
-        ERROR("Failed to get mode restriction");
-        return -1;
-    }
+	try {
+		PackageManager& packman = PackageManager::instance();
+		return packman.getModeRestriction(context.getPeerUid());
+	} catch (runtime::Exception& e) {
+		ERROR("Failed to get mode restriction");
+		return -1;
+	}
 }
 
 int ApplicationPolicy::addPrivilegeToBlacklist(int type, const std::string& privilege)
 {
-    GList* privilegeList = NULL;
-    privilegeList = g_list_append(privilegeList, const_cast<char*>(privilege.c_str()));
-    privilege_manager_package_type_e pkgType = type ? PRVMGR_PACKAGE_TYPE_CORE : PRVMGR_PACKAGE_TYPE_WRT;
-    int ret = privilege_manager_set_black_list(context.getPeerUid(), pkgType, privilegeList);
-    g_list_free(privilegeList);
-    if (ret !=PRVMGR_ERR_NONE) {
-        return -1;
-    }
+	GList* privilegeList = NULL;
+	privilegeList = g_list_append(privilegeList, const_cast<char*>(privilege.c_str()));
+	privilege_manager_package_type_e pkgType = type ? PRVMGR_PACKAGE_TYPE_CORE : PRVMGR_PACKAGE_TYPE_WRT;
+	int ret = privilege_manager_set_black_list(context.getPeerUid(), pkgType, privilegeList);
+	g_list_free(privilegeList);
+	if (ret !=PRVMGR_ERR_NONE) {
+		return -1;
+	}
 
-    return 0;
+	return 0;
 }
 
 int ApplicationPolicy::removePrivilegeFromBlacklist(int type, const std::string& privilege)
 {
-    GList* privilegeList = NULL;
-    privilegeList = g_list_append(privilegeList, const_cast<char*>(privilege.c_str()));
+	GList* privilegeList = NULL;
+	privilegeList = g_list_append(privilegeList, const_cast<char*>(privilege.c_str()));
 
-    privilege_manager_package_type_e pkgType = type ? PRVMGR_PACKAGE_TYPE_CORE : PRVMGR_PACKAGE_TYPE_WRT;
-    int ret = privilege_manager_unset_black_list(context.getPeerUid(), pkgType, privilegeList);
-    g_list_free(privilegeList);
-    if (ret != PRVMGR_ERR_NONE) {
-        return -1;
-    }
+	privilege_manager_package_type_e pkgType = type ? PRVMGR_PACKAGE_TYPE_CORE : PRVMGR_PACKAGE_TYPE_WRT;
+	int ret = privilege_manager_unset_black_list(context.getPeerUid(), pkgType, privilegeList);
+	g_list_free(privilegeList);
+	if (ret != PRVMGR_ERR_NONE) {
+		return -1;
+	}
 
-    return 0;
+	return 0;
 }
 
 int ApplicationPolicy::checkPrivilegeIsBlacklisted(int type, const std::string& privilege)
 {
-    GList* blacklist = NULL;
+	GList* blacklist = NULL;
 
-    privilege_manager_package_type_e pkgType = type ? PRVMGR_PACKAGE_TYPE_CORE : PRVMGR_PACKAGE_TYPE_WRT;
-    int ret = privilege_info_get_black_list(context.getPeerUid(), pkgType, &blacklist);
-    if (ret != PRVMGR_ERR_NONE) {
-        return -1;
-    }
+	privilege_manager_package_type_e pkgType = type ? PRVMGR_PACKAGE_TYPE_CORE : PRVMGR_PACKAGE_TYPE_WRT;
+	int ret = privilege_info_get_black_list(context.getPeerUid(), pkgType, &blacklist);
+	if (ret != PRVMGR_ERR_NONE) {
+		return -1;
+	}
 
-    for (GList* l = blacklist; l != NULL; l = l->next) {
-        char *name = (char *)l->data;
-        if (privilege == name) {
-            g_list_free(blacklist);
-            return true;
-        }
-    }
-    g_list_free(blacklist);
-    return false;
+	for (GList* l = blacklist; l != NULL; l = l->next) {
+		char *name = (char *)l->data;
+		if (privilege == name) {
+			g_list_free(blacklist);
+			return true;
+		}
+	}
+	g_list_free(blacklist);
+	return false;
 }
 
 ApplicationPolicy applicationPolicy(Server::instance());

@@ -24,20 +24,20 @@
 #include "dbus/connection.h"
 
 #define PULSEAUDIO_LOGIN_INTERFACE          \
-    "org.pulseaudio.Server",                \
-    "/org/pulseaudio/StreamManager",        \
-    "org.pulseaudio.StreamManager"
+	"org.pulseaudio.Server",                \
+	"/org/pulseaudio/StreamManager",        \
+	"org.pulseaudio.StreamManager"
 
 #define DEVICED_SYSNOTI_INTERFACE           \
-    "org.tizen.system.deviced",             \
-    "/Org/Tizen/System/DeviceD/SysNoti",    \
-    "org.tizen.system.deviced.SysNoti",     \
-    "control"
+	"org.tizen.system.deviced",             \
+	"/Org/Tizen/System/DeviceD/SysNoti",    \
+	"org.tizen.system.deviced.SysNoti",     \
+	"control"
 
 #define MOBILEAP_INTERFACE                  \
-    "org.tizen.MobileapAgent",              \
-    "/MobileapAgent",                       \
-    "org.tizen.tethering"
+	"org.tizen.MobileapAgent",              \
+	"/MobileapAgent",                       \
+	"org.tizen.tethering"
 
 
 namespace DevicePolicyManager {
@@ -53,8 +53,8 @@ RestrictionPolicy::RestrictionPolicy(PolicyControlContext& ctxt) :
 	context.registerNonparametricMethod(this, "", (int)(RestrictionPolicy::getClipboardState));
 	context.registerParametricMethod(this, DPM_PRIVILEGE_DEBUGGING, (int)(RestrictionPolicy::setUsbDebuggingState)(int));
 	context.registerNonparametricMethod(this, "", (int)(RestrictionPolicy::getUsbDebuggingState));
-    context.registerParametricMethod(this, DPM_PRIVILEGE_USB, (int)(RestrictionPolicy::setUsbTetheringState)(int));
-    context.registerNonparametricMethod(this, "", (int)(RestrictionPolicy::getUsbTetheringState));
+	context.registerParametricMethod(this, DPM_PRIVILEGE_USB, (int)(RestrictionPolicy::setUsbTetheringState)(int));
+	context.registerNonparametricMethod(this, "", (int)(RestrictionPolicy::getUsbTetheringState));
 	context.registerParametricMethod(this, DPM_PRIVILEGE_STORAGE, (int)(RestrictionPolicy::setExternalStorageState)(int));
 	context.registerNonparametricMethod(this, "", (int)(RestrictionPolicy::getExternalStorageState));
 	context.registerParametricMethod(this, DPM_PRIVILEGE_EMAIL, (int)(RestrictionPolicy::setPopImapEmailState)(int));
@@ -70,10 +70,10 @@ RestrictionPolicy::RestrictionPolicy(PolicyControlContext& ctxt) :
 	context.createNotification("microphone");
 	context.createNotification("settings-changes");
 	context.createNotification("usb-debugging");
-    context.createNotification("usb-tethering");
-    context.createNotification("popimap-email");
-    context.createNotification("messaging");
-    context.createNotification("browser");
+	context.createNotification("usb-tethering");
+	context.createNotification("popimap-email");
+	context.createNotification("messaging");
+	context.createNotification("browser");
 }
 
 RestrictionPolicy::~RestrictionPolicy()
@@ -82,143 +82,143 @@ RestrictionPolicy::~RestrictionPolicy()
 
 int RestrictionPolicy::setCameraState(int enable)
 {
-    return SetPolicyAllowed(context, "camera", enable);
+	return SetPolicyAllowed(context, "camera", enable);
 }
 
 int RestrictionPolicy::getCameraState()
 {
-    return IsPolicyAllowed(context, "camera");
+	return IsPolicyAllowed(context, "camera");
 }
 
 int RestrictionPolicy::setMicrophoneState(int enable)
 {
-    char *result = NULL;
-    try {
-        dbus::Connection &systemDBus = dbus::Connection::getSystem();
-        systemDBus.methodcall(PULSEAUDIO_LOGIN_INTERFACE,
-                              "UpdateRestriction",
-                              -1,
-                              "(s)",
-                              "(su)",
-                              "block_recording_media",
-                              enable).get("(s)", &result);
-    } catch (runtime::Exception& e) {
-        ERROR("Failed to enforce location policy");
-        return -1;
-    }
+	char *result = NULL;
+	try {
+		dbus::Connection &systemDBus = dbus::Connection::getSystem();
+		systemDBus.methodcall(PULSEAUDIO_LOGIN_INTERFACE,
+							  "UpdateRestriction",
+							  -1,
+							  "(s)",
+							  "(su)",
+							  "block_recording_media",
+							  enable).get("(s)", &result);
+	} catch (runtime::Exception& e) {
+		ERROR("Failed to enforce location policy");
+		return -1;
+	}
 
-    if (strcmp(result, "STREAM_MANAGER_RETURN_OK") == 0) {
-        return SetPolicyAllowed(context, "microphone", enable);
-    }
+	if (strcmp(result, "STREAM_MANAGER_RETURN_OK") == 0) {
+		return SetPolicyAllowed(context, "microphone", enable);
+	}
 
-    return -1;
+	return -1;
 }
 
 int RestrictionPolicy::getMicrophoneState()
 {
-    return IsPolicyAllowed(context, "microphone");
+	return IsPolicyAllowed(context, "microphone");
 }
 
 int RestrictionPolicy::setClipboardState(int enable)
 {
-    return SetPolicyAllowed(context, "clipboard", enable);
+	return SetPolicyAllowed(context, "clipboard", enable);
 }
 
 int RestrictionPolicy::getClipboardState()
 {
-    return IsPolicyAllowed(context, "clipboard");
+	return IsPolicyAllowed(context, "clipboard");
 }
 
 int RestrictionPolicy::setUsbDebuggingState(int enable)
 {
-    return SetPolicyAllowed(context, "usb-debugging", enable);
+	return SetPolicyAllowed(context, "usb-debugging", enable);
 }
 
 int RestrictionPolicy::getUsbDebuggingState()
 {
-    return IsPolicyAllowed(context, "usb-debugging");
+	return IsPolicyAllowed(context, "usb-debugging");
 }
 
 int RestrictionPolicy::setUsbTetheringState(bool enable)
 {
-    try {
-        dbus::Connection &systemDBus = dbus::Connection::getSystem();
-        systemDBus.methodcall(MOBILEAP_INTERFACE,
-                              "change_policy",
-                              -1,
-                              "",
-                              "(sb)",
-                              "usb-tethering",
-                              enable);
-    } catch (runtime::Exception& e) {
-        ERROR("Failed to change USB tethering state");
-        return -1;
-    }
+	try {
+		dbus::Connection &systemDBus = dbus::Connection::getSystem();
+		systemDBus.methodcall(MOBILEAP_INTERFACE,
+							  "change_policy",
+							  -1,
+							  "",
+							  "(sb)",
+							  "usb-tethering",
+							  enable);
+	} catch (runtime::Exception& e) {
+		ERROR("Failed to change USB tethering state");
+		return -1;
+	}
 
-    return SetPolicyAllowed(context, "usb-tethering", enable);
+	return SetPolicyAllowed(context, "usb-tethering", enable);
 }
 
 bool RestrictionPolicy::getUsbTetheringState()
 {
-    return IsPolicyAllowed(context, "usb-tethering");
+	return IsPolicyAllowed(context, "usb-tethering");
 }
 
 int RestrictionPolicy::setExternalStorageState(int enable)
 {
-    int ret;
-    try {
-        std::string pid(std::to_string(::getpid()));
-        std::string state(std::to_string(enable));
+	int ret;
+	try {
+		std::string pid(std::to_string(::getpid()));
+		std::string state(std::to_string(enable));
 
-        dbus::Connection &systemDBus = dbus::Connection::getSystem();
-        systemDBus.methodcall(DEVICED_SYSNOTI_INTERFACE,
-                              -1, "(i)", "(sisss)",
-                              "control", 3, pid.c_str(),"2", state.c_str()).get("(i)", &ret);
-    } catch(runtime::Exception& e) {
-        ERROR("Failed to enforce external storage policy");
-        return -1;
-    }
+		dbus::Connection &systemDBus = dbus::Connection::getSystem();
+		systemDBus.methodcall(DEVICED_SYSNOTI_INTERFACE,
+							  -1, "(i)", "(sisss)",
+							  "control", 3, pid.c_str(), "2", state.c_str()).get("(i)", &ret);
+	} catch(runtime::Exception& e) {
+		ERROR("Failed to enforce external storage policy");
+		return -1;
+	}
 
-    if (ret == 0) {
-        return SetPolicyAllowed(context, "external-storage", enable);
-    }
+	if (ret == 0) {
+		return SetPolicyAllowed(context, "external-storage", enable);
+	}
 
-    return -1;
+	return -1;
 }
 
 int RestrictionPolicy::getExternalStorageState()
 {
-    return IsPolicyAllowed(context, "external-storage");
+	return IsPolicyAllowed(context, "external-storage");
 }
 
 int RestrictionPolicy::setPopImapEmailState(int enable)
 {
-    return SetPolicyAllowed(context, "popimap-email", enable);
+	return SetPolicyAllowed(context, "popimap-email", enable);
 }
 
 int RestrictionPolicy::getPopImapEmailState()
 {
-    return IsPolicyAllowed(context, "popimap-email");
+	return IsPolicyAllowed(context, "popimap-email");
 }
 
 int RestrictionPolicy::setMessagingState(int enable)
 {
-    return SetPolicyAllowed(context, "messaging", enable);
+	return SetPolicyAllowed(context, "messaging", enable);
 }
 
 int RestrictionPolicy::getMessagingState()
 {
-    return IsPolicyAllowed(context, "messaging");
+	return IsPolicyAllowed(context, "messaging");
 }
 
 int RestrictionPolicy::setBrowserState(int enable)
 {
-    return SetPolicyAllowed(context, "browser", enable);
+	return SetPolicyAllowed(context, "browser", enable);
 }
 
 int RestrictionPolicy::getBrowserState()
 {
-    return IsPolicyAllowed(context, "browser");
+	return IsPolicyAllowed(context, "browser");
 }
 
 RestrictionPolicy restrictionPolicy(Server::instance());

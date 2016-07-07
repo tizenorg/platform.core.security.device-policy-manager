@@ -15,18 +15,18 @@
 #
 
 SET(POLICY      ${POLICY}
-                bluetooth.cpp
-                location.cpp
-                password.cpp
-                zone.cpp
-                zone/zone.cpp
-                zone/app-proxy.cpp
-                zone/package-proxy.cpp
+				bluetooth.cpp
+				location.cpp
+				password.cpp
+				zone.cpp
+				zone/zone.cpp
+				zone/app-proxy.cpp
+				zone/package-proxy.cpp
 )
 
 SET(DEPENDENCY  ${DEPENDENCY}
-                capi-location-manager
-                capi-network-bluetooth
-                auth-fw-admin
-                bluetooth-api
+				capi-location-manager
+				capi-network-bluetooth
+				auth-fw-admin
+				bluetooth-api
 )

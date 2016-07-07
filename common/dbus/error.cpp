@@ -19,35 +19,35 @@
 namespace dbus {
 
 Error::Error() :
-    error(nullptr)
+	error(nullptr)
 {
 }
 
 Error::~Error()
 {
-    if (error) {
-        g_error_free(error);
-    }
+	if (error) {
+		g_error_free(error);
+	}
 }
 
 GError** Error::operator& ()
 {
-    return &error;
+	return &error;
 }
 
 const GError* Error::operator-> () const
 {
-        return error;
+	return error;
 }
 
 Error::operator bool () const
 {
-    return error != nullptr;
+	return error != nullptr;
 }
 
 std::ostream& operator<<(std::ostream& os, const Error& e)
 {
-    return os << e->message;
+	return os << e->message;
 }
 
 } // namespace dbus

@@ -19,17 +19,17 @@
 
 class KeyManager {
 public:
-    KeyManager() = delete;
-    KeyManager(const KeyManager&) = delete;
-    KeyManager(KeyManager&&) = delete;
+	KeyManager() = delete;
+	KeyManager(const KeyManager&) = delete;
+	KeyManager(KeyManager&&) = delete;
 
-    KeyManager& operator=(const KeyManager&) = delete;
-    KeyManager& operator=(KeyManager&&) = delete;
+	KeyManager& operator=(const KeyManager&) = delete;
+	KeyManager& operator=(KeyManager&&) = delete;
 
-    static bool isKeyExist(const std::string& keyName);
-    static void addKey(const std::string& keyName, const std::string& data);
-    static std::string getKey(const std::string& keyName);
-    static void removeKey(const std::string& keyName);
+	static bool isKeyExist(const std::string& keyName);
+	static void addKey(const std::string& keyName, const std::string& data);
+	static std::string getKey(const std::string& keyName);
+	static void removeKey(const std::string& keyName);
 };
 
 #endif //!__ZONE_KEY_MANAGER_H__*/

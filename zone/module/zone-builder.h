@@ -27,20 +27,20 @@
 
 class ZoneBuilder {
 public:
-    ZoneBuilder(const runtime::User& user, const std::string& manifestPath);
-    virtual ~ZoneBuilder();
+	ZoneBuilder(const runtime::User& user, const std::string& manifestPath);
+	virtual ~ZoneBuilder();
 
-    void containerize(bool create = true);
+	void containerize(bool create = true);
 
 protected:
-    void bindFilesystemNode(const std::string& source, const std::string& target,
-                            const std::string& type, const std::string& options,
-                            bool create = true);
+	void bindFilesystemNode(const std::string& source, const std::string& target,
+							const std::string& type, const std::string& options,
+							bool create = true);
 private:
-    std::string name;
-    uid_t uid;
-    gid_t gid;
-    std::unique_ptr<xml::Document> manifest;
+	std::string name;
+	uid_t uid;
+	gid_t gid;
+	std::unique_ptr<xml::Document> manifest;
 };
 
  #endif //!__ZONE_BUILDER_H__

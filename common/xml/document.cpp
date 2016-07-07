@@ -25,110 +25,110 @@
 namespace xml {
 
 Document::Document(const std::string& root, const std::string& version) :
-    implementation(xmlNewDoc((const xmlChar*)version.c_str()))
+	implementation(xmlNewDoc((const xmlChar*)version.c_str()))
 {
-    if (implementation == nullptr) {
-        throw runtime::Exception("Failed to create document");
-    }
+	if (implementation == nullptr) {
+		throw runtime::Exception("Failed to create document");
+	}
 
-    implementation->_private = this;
+	implementation->_private = this;
 
-    xmlNode* rootPtr = xmlNewNode(NULL, xmlStrdup((const xmlChar*)root.c_str()));
-    xmlDocSetRootElement(implementation, rootPtr);
+	xmlNode* rootPtr = xmlNewNode(NULL, xmlStrdup((const xmlChar*)root.c_str()));
+	xmlDocSetRootElement(implementation, rootPtr);
 
-    rootNode = new Node(rootPtr);
+	rootNode = new Node(rootPtr);
 }
 
 Document::Document(xmlDoc* doc)
-    : implementation(doc)
+	: implementation(doc)
 {
-    implementation->_private = this;
+	implementation->_private = this;
 
-    rootNode = new Node(xmlDocGetRootElement(implementation));
+	rootNode = new Node(xmlDocGetRootElement(implementation));
 }
 
 Document::~Document()
 {
-    if (rootNode != nullptr) {
-        delete rootNode;
-    }
+	if (rootNode != nullptr) {
+		delete rootNode;
+	}
 
-    xmlFreeDoc(implementation);
+	xmlFreeDoc(implementation);
 }
 
 Node& Document::getRootNode()
 {
-    if (rootNode == nullptr) {
-        throw runtime::Exception("Empty document");
-    }
+	if (rootNode == nullptr) {
+		throw runtime::Exception("Empty document");
+	}
 
-    return *rootNode;
+	return *rootNode;
 }
 
 Node::NodeList Document::evaluate(const std::string& xpath)
 {
-    auto ctxt = xmlXPathNewContext(implementation);
-    if (ctxt == nullptr) {
-        throw runtime::Exception("Failed to create XPath context for " + xpath);
-    }
+	auto ctxt = xmlXPathNewContext(implementation);
+	if (ctxt == nullptr) {
+		throw runtime::Exception("Failed to create XPath context for " + xpath);
+	}
 
-    auto result = xmlXPathEval((const xmlChar*)xpath.c_str(), ctxt);
-    if (result == nullptr) {
-        xmlXPathFreeContext(ctxt);
-        throw runtime::Exception("Invalid XPath: " + xpath);
-    }
+	auto result = xmlXPathEval((const xmlChar*)xpath.c_str(), ctxt);
+	if (result == nullptr) {
+		xmlXPathFreeContext(ctxt);
+		throw runtime::Exception("Invalid XPath: " + xpath);
+	}
 
-    if (result ->type != XPATH_NODESET) {
-        xmlXPathFreeObject(result);
-        xmlXPathFreeContext(ctxt);
+	if (result ->type != XPATH_NODESET) {
+		xmlXPathFreeObject(result);
+		xmlXPathFreeContext(ctxt);
 
-        throw runtime::Exception("Only nodeset result types are supported");
-    }
+		throw runtime::Exception("Only nodeset result types are supported");
+	}
 
-    auto nodeset = result->nodesetval;
+	auto nodeset = result->nodesetval;
 
-    Node::NodeList nodes;
-    if ((nodeset == nullptr) || (xmlXPathNodeSetIsEmpty(nodeset))) {
-        xmlXPathFreeContext(ctxt);
-        return nodes;
-    }
+	Node::NodeList nodes;
+	if ((nodeset == nullptr) || (xmlXPathNodeSetIsEmpty(nodeset))) {
+		xmlXPathFreeContext(ctxt);
+		return nodes;
+	}
 
-    const int count = xmlXPathNodeSetGetLength(nodeset);
+	const int count = xmlXPathNodeSetGetLength(nodeset);
 
-    nodes.reserve(count);
-    for (int i = 0; i != count; i++) {
-        auto cnode = xmlXPathNodeSetItem(nodeset, i);
-        if (!cnode) {
-            continue;
-        }
+	nodes.reserve(count);
+	for (int i = 0; i != count; i++) {
+		auto cnode = xmlXPathNodeSetItem(nodeset, i);
+		if (!cnode) {
+			continue;
+		}
 
-        if (cnode->type == XML_NAMESPACE_DECL) {
-            continue;
-        }
+		if (cnode->type == XML_NAMESPACE_DECL) {
+			continue;
+		}
 
-        nodes.emplace_back(cnode);
-    }
+		nodes.emplace_back(cnode);
+	}
 
-    xmlXPathFreeObject(result);
-    xmlXPathFreeContext(ctxt);
+	xmlXPathFreeObject(result);
+	xmlXPathFreeContext(ctxt);
 
-    return nodes;
+	return nodes;
 }
 
 void Document::write(const std::string& filename, const std::string& encoding, bool formatted)
 {
-    KeepBlanks keepBlanks(KeepBlanks::Default);
-    xmlIndentTreeOutput = formatted;
+	KeepBlanks keepBlanks(KeepBlanks::Default);
+	xmlIndentTreeOutput = formatted;
 
-    xmlResetLastError();
+	xmlResetLastError();
 
-    const int result = xmlSaveFormatFileEnc(filename.c_str(),
-                                            implementation,
-                                            encoding.c_str(),
-                                            formatted);
-    if (result == 0) {
-        throw runtime::Exception("Failed to write XML document");
-    }
+	const int result = xmlSaveFormatFileEnc(filename.c_str(),
+											implementation,
+											encoding.c_str(),
+											formatted);
+	if (result == 0) {
+		throw runtime::Exception("Failed to write XML document");
+	}
 }
 
 } // namespace xml

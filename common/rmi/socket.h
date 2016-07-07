@@ -23,49 +23,49 @@ namespace rmi {
 
 class SocketException: public runtime::Exception {
 public:
-    SocketException(const std::string& msg) : runtime::Exception(msg) {}
+	SocketException(const std::string& msg) : runtime::Exception(msg) {}
 };
 
 struct Credentials {
-    pid_t pid;
-    uid_t uid;
-    gid_t gid;
-    std::string security;
+	pid_t pid;
+	uid_t uid;
+	gid_t gid;
+	std::string security;
 };
 
 class Socket {
 public:
-    explicit Socket(int socketFd = -1, bool autoclose = true);
-    Socket(Socket&& socket) noexcept;
-    ~Socket() noexcept;
+	explicit Socket(int socketFd = -1, bool autoclose = true);
+	Socket(Socket&& socket) noexcept;
+	~Socket() noexcept;
 
-    Socket(const Socket&) = delete;
-    Socket& operator=(const Socket&) = delete;
-    Socket& operator=(Socket&) = delete;
+	Socket(const Socket&) = delete;
+	Socket& operator=(const Socket&) = delete;
+	Socket& operator=(Socket&) = delete;
 
-    Socket accept();
-    int getFd() const;
-    Credentials getPeerCredentials() const;
+	Socket accept();
+	int getFd() const;
+	Credentials getPeerCredentials() const;
 
-    void write(const void* buffer, const size_t size) const;
-    void read(void* buffer, const size_t size) const;
+	void write(const void* buffer, const size_t size) const;
+	void read(void* buffer, const size_t size) const;
 
-    void sendFileDescriptors(const int* fds, const size_t nr) const;
-    void receiveFileDescriptors(int* fds, const size_t nr) const;
+	void sendFileDescriptors(const int* fds, const size_t nr) const;
+	void receiveFileDescriptors(int* fds, const size_t nr) const;
 
-    static Socket create(const std::string& path);
-    static Socket connect(const std::string& path);
+	static Socket create(const std::string& path);
+	static Socket connect(const std::string& path);
 
 private:
-    static int createRegularSocket(const std::string& path);
+	static int createRegularSocket(const std::string& path);
 
 #ifdef USE_SYSTEMD_SOCKET_ACTIVATION
-    static int createSystemdSocket(const std::string& path);
+	static int createSystemdSocket(const std::string& path);
 #endif
 
 private:
-    int socketFd;
-    bool autoClose;
+	int socketFd;
+	bool autoClose;
 };
 
 } // namespace rmi

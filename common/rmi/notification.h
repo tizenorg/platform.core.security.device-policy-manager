@@ -35,13 +35,13 @@ typedef std::pair<int, int> SubscriptionId;
 
 class Notification {
 public:
-    Notification();
+	Notification();
 	Notification(const std::string& name);
-    Notification(const Notification&) = default;
-    Notification(Notification&&);
+	Notification(const Notification&) = default;
+	Notification(Notification&&);
 
-    SubscriptionId createSubscriber();
-    int removeSubscriber(const int id);
+	SubscriptionId createSubscriber();
+	int removeSubscriber(const int id);
 
 	template<typename... Args>
 	void notify(Args&&... args);
@@ -49,7 +49,7 @@ public:
 private:
 	std::string signalName;
 	std::list<std::shared_ptr<Socket>> subscribers;
-    std::mutex subscriberLock;
+	std::mutex subscriberLock;
 };
 
 template<typename... Args>
@@ -58,15 +58,15 @@ void Notification::notify(Args&&... args)
 	Message msg(Message::Signal, signalName);
 	msg.packParameters(std::forward<Args>(args)...);
 
-    std::lock_guard<std::mutex> lock(subscriberLock);
+	std::lock_guard<std::mutex> lock(subscriberLock);
 
-    for (const std::shared_ptr<Socket>& subscriber : subscribers) {
-        try {
-            msg.encode(*subscriber);
-        } catch (runtime::Exception& e) {
-            ERROR(e.what());
-        }
-    }
+	for (const std::shared_ptr<Socket>& subscriber : subscribers) {
+		try {
+			msg.encode(*subscriber);
+		} catch (runtime::Exception& e) {
+			ERROR(e.what());
+		}
+	}
 }
 
 } // namespae rmi

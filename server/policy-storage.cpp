@@ -31,28 +31,28 @@ const std::string defaultPolicyTemplate = CONF_PATH "/policy/PolicyManifest.xml"
 }
 
 PolicyStorage::PolicyStorage(const std::string& path, bool create) :
-    location(path),
-    data(nullptr)
+	location(path),
+	data(nullptr)
 {
-    std::string& source = location;
-    if (create) {
-        struct stat st;
-        if ((stat(location.c_str(), &st) == -1)) {
-            if (errno == ENOENT) {
-                source = defaultPolicyTemplate;
-            } else {
-                throw runtime::Exception(runtime::GetSystemErrorMessage());
-            }
-        }
-    }
+	std::string& source = location;
+	if (create) {
+		struct stat st;
+		if ((stat(location.c_str(), &st) == -1)) {
+			if (errno == ENOENT) {
+				source = defaultPolicyTemplate;
+			} else {
+				throw runtime::Exception(runtime::GetSystemErrorMessage());
+			}
+		}
+	}
 
-    data = std::unique_ptr<xml::Document>(xml::Parser::parseFile(source));
-    xml::Node::NodeList nodes = data->evaluate("/manifest/policy-group/policy");
-    xml::Node::NodeList::iterator it = nodes.begin();
-    while (it != nodes.end()) {
-        policyMap.emplace(it->getProp("name"), std::move(*it));
-        ++it;
-    }
+	data = std::unique_ptr<xml::Document>(xml::Parser::parseFile(source));
+	xml::Node::NodeList nodes = data->evaluate("/manifest/policy-group/policy");
+	xml::Node::NodeList::iterator it = nodes.begin();
+	while (it != nodes.end()) {
+		policyMap.emplace(it->getProp("name"), std::move(*it));
+		++it;
+	}
 }
 
 PolicyStorage::~PolicyStorage()
@@ -61,14 +61,14 @@ PolicyStorage::~PolicyStorage()
 
 Policy& PolicyStorage::getPolicy(const std::string& name)
 {
-    if (policyMap.count(name) == 0) {
-        throw runtime::Exception("Failed to find policy");
-    }
+	if (policyMap.count(name) == 0) {
+		throw runtime::Exception("Failed to find policy");
+	}
 
-    return policyMap.at(name);
+	return policyMap.at(name);
 }
 
 void PolicyStorage::flush()
 {
-    data->write(location, "UTF-8", true);
+	data->write(location, "UTF-8", true);
 }

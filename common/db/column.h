@@ -27,51 +27,51 @@ namespace database {
 
 class Column {
 public:
-    Column(const Statement& stmt, int idx);
-    virtual ~Column() noexcept;
+	Column(const Statement& stmt, int idx);
+	virtual ~Column() noexcept;
 
-    std::string getName() const;
-    sqlite3_int64 getInt64() const;
-    const char* getText() const;
-    double getDouble() const;
-    const void* getBlob() const;
-    int getInt() const;
-    int getType() const;
-    int getBytes() const;
+	std::string getName() const;
+	sqlite3_int64 getInt64() const;
+	const char* getText() const;
+	double getDouble() const;
+	const void* getBlob() const;
+	int getInt() const;
+	int getType() const;
+	int getBytes() const;
 
-    inline int size() const
-    {
-        return getBytes();
-    }
+	inline int size() const
+	{
+		return getBytes();
+	}
 
-    inline operator int() const
-    {
-        return getInt();
-    }
+	inline operator int() const
+	{
+		return getInt();
+	}
 
-    inline operator sqlite3_int64() const
-    {
-        return getInt64();
-    }
+	inline operator sqlite3_int64() const
+	{
+		return getInt64();
+	}
 
-    inline operator double() const
-    {
-        return getDouble();
-    }
+	inline operator double() const
+	{
+		return getDouble();
+	}
 
-    inline operator const char*() const
-    {
-        return getText();
-    }
+	inline operator const char*() const
+	{
+		return getText();
+	}
 
-    inline operator const void*() const
-    {
-        return getBlob();
-    }
+	inline operator const void*() const
+	{
+		return getBlob();
+	}
 
 private:
-    sqlite3_stmt* statement;
-    int index;
+	sqlite3_stmt* statement;
+	int index;
 };
 
 } // namespace database

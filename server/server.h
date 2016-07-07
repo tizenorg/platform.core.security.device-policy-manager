@@ -28,61 +28,61 @@
 
 class Server {
 public:
-    void run();
-    void terminate();
+	void run();
+	void terminate();
 
-    template<typename Type, typename... Args>
-    void setMethodHandler(const std::string& privilege, const std::string& method,
-                          const typename rmi::MethodHandler<Type, Args...>::type& handler)
-    {
-        service->setMethodHandler<Type, Args...>(privilege, method, handler);
-    }
+	template<typename Type, typename... Args>
+	void setMethodHandler(const std::string& privilege, const std::string& method,
+						  const typename rmi::MethodHandler<Type, Args...>::type& handler)
+	{
+		service->setMethodHandler<Type, Args...>(privilege, method, handler);
+	}
 
-    template <typename... Args>
+	template <typename... Args>
 	void notify(const std::string& name, Args&&... args)
-    {
-        service->notify<Args...>(name, std::forward<Args>(args)...);
-    }
+	{
+		service->notify<Args...>(name, std::forward<Args>(args)...);
+	}
 
-    uid_t getPeerUid() const
-    {
-        return service->getPeerUid();
-    }
+	uid_t getPeerUid() const
+	{
+		return service->getPeerUid();
+	}
 
-    gid_t getPeerGid() const
-    {
-        return service->getPeerGid();
-    }
+	gid_t getPeerGid() const
+	{
+		return service->getPeerGid();
+	}
 
-    pid_t getPeerPid() const
-    {
-        return service->getPeerPid();
-    }
+	pid_t getPeerPid() const
+	{
+		return service->getPeerPid();
+	}
 
-    void createNotification(const std::string& name)
-    {
-        service->createNotification(name);
-    }
+	void createNotification(const std::string& name)
+	{
+		service->createNotification(name);
+	}
 
-    int updatePolicy(const std::string& name, const std::string& value);
-    int updatePolicy(const std::string& name, const std::string& value,
-                     const std::string& event, const std::string& info);
-    std::string getPolicy(const std::string& name) const;
+	int updatePolicy(const std::string& name, const std::string& value);
+	int updatePolicy(const std::string& name, const std::string& value,
+					 const std::string& event, const std::string& info);
+	std::string getPolicy(const std::string& name) const;
 
-    FileDescriptor registerNotificationSubscriber(const std::string& name);
-    int unregisterNotificationSubscriber(const std::string& name, int id);
+	FileDescriptor registerNotificationSubscriber(const std::string& name);
+	int unregisterNotificationSubscriber(const std::string& name, int id);
 
-    bool checkPeerPrivilege(const rmi::Credentials& cred, const std::string& privilege);
+	bool checkPeerPrivilege(const rmi::Credentials& cred, const std::string& privilege);
 
-    static Server& instance();
+	static Server& instance();
 
 private:
-    Server();
-    ~Server();
+	Server();
+	~Server();
 
-    std::string securityLabel;
-    std::unique_ptr<PolicyStorage> policyStorage;
-    std::unique_ptr<rmi::Service> service;
+	std::string securityLabel;
+	std::unique_ptr<PolicyStorage> policyStorage;
+	std::unique_ptr<rmi::Service> service;
 };
 
 #endif //__DPM_SERVER_H__

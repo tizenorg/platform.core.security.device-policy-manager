@@ -14,10 +14,10 @@
 # limitations under the License.
 #
 
-SET(ZONE_MODULE		  ${DPM_ZONE}/module)
-SET(ZONE_LIBS		  ${DPM_ZONE}/libs)
-SET(ZONE_CLI		  ${DPM_ZONE}/cli)
-SET(ZONE_VOLUME           ${DPM_ZONE}/volume)
+SET(ZONE_MODULE  ${DPM_ZONE}/module)
+SET(ZONE_LIBS    ${DPM_ZONE}/libs)
+SET(ZONE_CLI     ${DPM_ZONE}/cli)
+SET(ZONE_VOLUME  ${DPM_ZONE}/volume)
 
 ADD_SUBDIRECTORY(${ZONE_MODULE})
 ADD_SUBDIRECTORY(${ZONE_LIBS})

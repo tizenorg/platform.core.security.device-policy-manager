@@ -19,48 +19,48 @@
 namespace rmi {
 
 Client::Client(const std::string& path) :
-    address(path)
+	address(path)
 {
 }
 
 Client::~Client()
 {
-    disconnect();
+	disconnect();
 }
 
 void Client::connect()
 {
-    connection = std::make_shared<Connection>(Socket::connect(address));
+	connection = std::make_shared<Connection>(Socket::connect(address));
 
-    dispatcher = std::thread([this] { mainloop.run(); });
+	dispatcher = std::thread([this] { mainloop.run(); });
 }
 
 int Client::unsubscribe(const std::string& provider, int id)
 {
-    // file descriptor(id) is automatically closed when mainloop callback is destroyed.
-    mainloop.removeEventSource(id);
-    return 0;
+	// file descriptor(id) is automatically closed when mainloop callback is destroyed.
+	mainloop.removeEventSource(id);
+	return 0;
 }
 
 int Client::subscribe(const std::string& provider, const std::string& name)
 {
-    Message request = connection->createMessage(Message::MethodCall, provider);
-    request.packParameters(name);
-    connection->send(request);
+	Message request = connection->createMessage(Message::MethodCall, provider);
+	request.packParameters(name);
+	connection->send(request);
 
-    FileDescriptor response;
-    Message reply = connection->dispatch();
-    reply.disclose(response);
+	FileDescriptor response;
+	Message reply = connection->dispatch();
+	reply.disclose(response);
 
-    return response.fileDescriptor;
+	return response.fileDescriptor;
 }
 
 void Client::disconnect()
 {
-    mainloop.stop();
-    if (dispatcher.joinable()) {
-        dispatcher.join();
-    }
+	mainloop.stop();
+	if (dispatcher.joinable()) {
+		dispatcher.join();
+	}
 }
 
 } // namespace rmi

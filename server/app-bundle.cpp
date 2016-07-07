@@ -21,32 +21,32 @@
 #include "audit/logger.h"
 
 Bundle::Bundle() :
-    handle(nullptr)
+	handle(nullptr)
 {
-    handle = ::bundle_create();
-    if (handle == nullptr) {
-        throw runtime::Exception("Failed to create bundle");
-    }
+	handle = ::bundle_create();
+	if (handle == nullptr) {
+		throw runtime::Exception("Failed to create bundle");
+	}
 }
 
 Bundle::~Bundle()
 {
-    ::bundle_free(handle);
+	::bundle_free(handle);
 }
 
 void Bundle::addInternal(const std::string& key, const std::string& value)
 {
-    ::bundle_add_str(handle, key.c_str(), value.c_str());
+	::bundle_add_str(handle, key.c_str(), value.c_str());
 }
 
 void Bundle::addArrayInternal(const std::string& key, const std::vector<std::string>& array)
 {
-    std::unique_ptr<const char*[]> arrayptr(new const char*[array.size()]);
+	std::unique_ptr<const char*[]> arrayptr(new const char*[array.size()]);
 
-    int index = 0;
-    for (const std::string& data : array) {
-        arrayptr.get()[index++] = data.c_str();
-    }
+	int index = 0;
+	for (const std::string& data : array) {
+		arrayptr.get()[index++] = data.c_str();
+	}
 
-    ::bundle_add_str_array(handle, key.c_str(), arrayptr.get(), array.size());
+	::bundle_add_str_array(handle, key.c_str(), arrayptr.get(), array.size());
 }
