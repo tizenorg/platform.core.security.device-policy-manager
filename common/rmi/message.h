@@ -34,207 +34,207 @@ namespace rmi {
 
 class Message {
 public:
-    enum Type {
-        Invalid,
-        MethodCall,
-        Reply,
-        Error,
-        Signal
-    };
+	enum Type {
+		Invalid,
+		MethodCall,
+		Reply,
+		Error,
+		Signal
+	};
 
-    Message();
-    Message(unsigned int id, unsigned int type, const std::string&);
-    Message(unsigned int type, const std::string&);
-    Message(const Message& rhs);
-    Message(Message&& rhs);
+	Message();
+	Message(unsigned int id, unsigned int type, const std::string&);
+	Message(unsigned int type, const std::string&);
+	Message(const Message& rhs);
+	Message(Message&& rhs);
 
-    ~Message();
+	~Message();
 
-    Message& operator=(const Message& rhs);
-    Message& operator=(Message&& rhs);
+	Message& operator=(const Message& rhs);
+	Message& operator=(Message&& rhs);
 
-    // [TBD] Take arguments
-    Message createReplyMessage() const;
-    Message createErrorMessage(const std::string& message) const;
+	// [TBD] Take arguments
+	Message createReplyMessage() const;
+	Message createErrorMessage(const std::string& message) const;
 
-    unsigned int id() const
-    {
-        return signature.id;
-    }
+	unsigned int id() const
+	{
+		return signature.id;
+	}
 
-    unsigned int type() const
-    {
-        return signature.type;
-    }
+	unsigned int type() const
+	{
+		return signature.type;
+	}
 
-    const std::string& target() const
-    {
-        return signature.target;
-    }
+	const std::string& target() const
+	{
+		return signature.target;
+	}
 
-    bool isInvalid() const
-    {
-        return type() == Invalid;
-    }
+	bool isInvalid() const
+	{
+		return type() == Invalid;
+	}
 
-    bool isError() const
-    {
-        return type() == Error;
-    }
+	bool isError() const
+	{
+		return type() == Error;
+	}
 
-    bool isMethodCall() const
-    {
-        return type() == MethodCall;
-    }
+	bool isMethodCall() const
+	{
+		return type() == MethodCall;
+	}
 
-    bool isSignal() const
-    {
-        return type() == Signal;
-    }
+	bool isSignal() const
+	{
+		return type() == Signal;
+	}
 
-    bool isReply() const
-    {
-        return type() == Reply;
-    }
+	bool isReply() const
+	{
+		return type() == Reply;
+	}
 
-    template<typename T>
-    void encode(const T& device) const;
+	template<typename T>
+	void encode(const T& device) const;
 
-    template<typename T>
-    void decode(const T& device);
+	template<typename T>
+	void decode(const T& device);
 
-    void packParameters()
-    {
-    }
+	void packParameters()
+	{
+	}
 
-    template<typename F>
-    void packParameters(F&& arg);
+	template<typename F>
+	void packParameters(F&& arg);
 
-    template<typename F, typename...R>
-    void packParameters(F&& first, R&&... rest);
+	template<typename F, typename...R>
+	void packParameters(F&& first, R&&... rest);
 
-    void unpackParameters()
-    {
-    }
+	void unpackParameters()
+	{
+	}
 
-    template<typename F>
-    void unpackParameters(F& arg);
+	template<typename F>
+	void unpackParameters(F& arg);
 
-    template<typename F, typename... R>
-    void unpackParameters(F& first, R&... rest);
+	template<typename F, typename... R>
+	void unpackParameters(F& first, R&... rest);
 
-    template<typename DataType>
-    void enclose(DataType&& data);
+	template<typename DataType>
+	void enclose(DataType&& data);
 
-    template<typename DataType>
-    void disclose(DataType& data);
+	template<typename DataType>
+	void disclose(DataType& data);
 
 private:
-    struct MessageHeader {
-        unsigned int id;    // Unique message id
-        unsigned int type;  // Mesage type
-        size_t length;// Total message length except MessageHeader itself
-        size_t ancillary;
-    };
+	struct MessageHeader {
+		unsigned int id;    // Unique message id
+		unsigned int type;  // Mesage type
+		size_t length;// Total message length except MessageHeader itself
+		size_t ancillary;
+	};
 
-    struct MessageSignature {
-        unsigned int id;
-        unsigned int type;
-        std::string target;
+	struct MessageSignature {
+		unsigned int id;
+		unsigned int type;
+		std::string target;
 
-        REFLECTABLE(
-            id,
-            type,
-            target
-        )
-    };
+		REFLECTABLE(
+			id,
+			type,
+			target
+		)
+	};
 
-    MessageSignature signature;
-    MessageComposer buffer;
-    std::deque<FileDescriptor> fileDescriptors;
+	MessageSignature signature;
+	MessageComposer buffer;
+	std::deque<FileDescriptor> fileDescriptors;
 
-    static std::atomic<unsigned int> sequence;
+	static std::atomic<unsigned int> sequence;
 };
 
 template<typename F>
 void Message::packParameters(F&& arg)
 {
-    enclose<F>(std::forward<F>(arg));
+	enclose<F>(std::forward<F>(arg));
 }
 
 template<typename F, typename...R>
 void Message::packParameters(F&& first, R&&... rest)
 {
-    packParameters(std::forward<F>(first));
-    packParameters(std::forward<R>(rest)...);
+	packParameters(std::forward<F>(first));
+	packParameters(std::forward<R>(rest)...);
 }
 
 template<typename F>
 void Message::unpackParameters(F& arg)
 {
-    disclose<F>(arg);
+	disclose<F>(arg);
 }
 
 template<typename F, typename... R>
 void Message::unpackParameters(F& first, R&... rest)
 {
-    unpackParameters(first);
-    unpackParameters(rest...);
+	unpackParameters(first);
+	unpackParameters(rest...);
 }
 
 template<typename DataType>
 void Message::enclose(DataType&& data)
 {
-    runtime::Serializer<MessageComposer> serializer(buffer);
-    runtime::SerializableArgument<DataType> arg(std::forward<DataType>(data));
-    arg.accept(serializer);
+	runtime::Serializer<MessageComposer> serializer(buffer);
+	runtime::SerializableArgument<DataType> arg(std::forward<DataType>(data));
+	arg.accept(serializer);
 }
 
 template<typename DataType>
 void Message::disclose(DataType& data)
 {
-    runtime::Deserializer<MessageComposer> deserializer(buffer);
-    runtime::DeserializableArgument<DataType> arg(data);
-    arg.accept(deserializer);
+	runtime::Deserializer<MessageComposer> deserializer(buffer);
+	runtime::DeserializableArgument<DataType> arg(data);
+	arg.accept(deserializer);
 }
 
 template<typename T>
 void Message::encode(const T& device) const
 {
-    MessageHeader header = {
-        signature.id,
-        signature.type,
-        buffer.size(),
-        fileDescriptors.size()
-    };
+	MessageHeader header = {
+		signature.id,
+		signature.type,
+		buffer.size(),
+		fileDescriptors.size()
+	};
 
-    device.write(&header, sizeof(header));
-    device.write(buffer.begin(), header.length);
+	device.write(&header, sizeof(header));
+	device.write(buffer.begin(), header.length);
 
-    int i = 0, fds[fileDescriptors.size()];
-    for (const FileDescriptor& fd : fileDescriptors) {
-        fds[i++] = fd.fileDescriptor;
-    }
+	int i = 0, fds[fileDescriptors.size()];
+	for (const FileDescriptor& fd : fileDescriptors) {
+		fds[i++] = fd.fileDescriptor;
+	}
 
-    device.sendFileDescriptors(fds, fileDescriptors.size());
+	device.sendFileDescriptors(fds, fileDescriptors.size());
 }
 
 template<typename T>
 void Message::decode(const T& device)
 {
-    MessageHeader header;
-    device.read(&header, sizeof(header));
-    device.read(buffer.begin(), header.length);
-    buffer.reserve(header.length);
+	MessageHeader header;
+	device.read(&header, sizeof(header));
+	device.read(buffer.begin(), header.length);
+	buffer.reserve(header.length);
 
-    int fds[header.ancillary];
+	int fds[header.ancillary];
 
-    device.receiveFileDescriptors(fds, header.ancillary);
-    for (unsigned int i = 0; i < header.ancillary; i++) {
-        fileDescriptors.emplace_back(FileDescriptor(fds[i]));
-    }
+	device.receiveFileDescriptors(fds, header.ancillary);
+	for (unsigned int i = 0; i < header.ancillary; i++) {
+		fileDescriptors.emplace_back(FileDescriptor(fds[i]));
+	}
 
-    disclose(signature);
+	disclose(signature);
 }
 
 template<> void Message::enclose(FileDescriptor&& fd);

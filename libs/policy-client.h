@@ -28,34 +28,34 @@ typedef std::function<void(const char*, const char*, void*)> SignalListener;
 
 class DevicePolicyContext {
 public:
-    typedef std::unique_ptr<rmi::Client> PolicyControlContext;
+	typedef std::unique_ptr<rmi::Client> PolicyControlContext;
 
-    DevicePolicyContext() noexcept;
-    ~DevicePolicyContext() noexcept;
+	DevicePolicyContext() noexcept;
+	~DevicePolicyContext() noexcept;
 
-    int connect() noexcept;
-    int connect(const std::string& address) noexcept;
-    void disconnect() noexcept;
+	int connect() noexcept;
+	int connect(const std::string& address) noexcept;
+	void disconnect() noexcept;
 
-    int subscribePolicyChange(const std::string& name, const PolicyChangeListener& listener, void* data);
-    int unsubscribePolicyChange(int subscriberId);
+	int subscribePolicyChange(const std::string& name, const PolicyChangeListener& listener, void* data);
+	int unsubscribePolicyChange(int subscriberId);
 
-    int subscribeSignal(const std::string& name, const SignalListener& listener, void* data);
-    int unsubscribeSignal(int subscriberId);
+	int subscribeSignal(const std::string& name, const SignalListener& listener, void* data);
+	int unsubscribeSignal(int subscriberId);
 
-    template<typename Policy, typename... Args>
-    Policy createPolicyInterface(Args&&... args) noexcept
-    {
-        return Policy(getPolicyControlContext(), std::forward<Args>(args)...);
-    }
+	template<typename Policy, typename... Args>
+	Policy createPolicyInterface(Args&&... args) noexcept
+	{
+		return Policy(getPolicyControlContext(), std::forward<Args>(args)...);
+	}
 
 private:
-    PolicyControlContext& getPolicyControlContext()
-    {
-        return client;
-    }
+	PolicyControlContext& getPolicyControlContext()
+	{
+		return client;
+	}
 
-    PolicyControlContext client;
+	PolicyControlContext client;
 };
 
 DevicePolicyContext& GetDevicePolicyContext(void* handle);

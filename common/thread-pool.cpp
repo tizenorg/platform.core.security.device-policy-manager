@@ -26,53 +26,53 @@
 namespace runtime {
 
 ThreadPool::ThreadPool(size_t threads)
-    : stop(false)
+	: stop(false)
 {
-    for (size_t i = 0; i < threads; i++) {
-       workers.emplace_back([this] {
-            while (true) {
-                std::function<void()> task;
+	for (size_t i = 0; i < threads; i++) {
+	   workers.emplace_back([this] {
+			while (true) {
+				std::function<void()> task;
 
-                __BEGIN_CRITICAL__
-                condition.wait(lock, [this]{ return stop || !tasks.empty();});
-                if (stop && tasks.empty()) {
-                    return;
-                }
+				__BEGIN_CRITICAL__
+				condition.wait(lock, [this]{ return stop || !tasks.empty();});
+				if (stop && tasks.empty()) {
+					return;
+				}
 
-                task = std::move(tasks.front());
-                tasks.pop_front();
-                __END_CRITICAL__
+				task = std::move(tasks.front());
+				tasks.pop_front();
+				__END_CRITICAL__
 
-                task();
-            }
-        });
-    }
+				task();
+			}
+		});
+	}
 }
 
 ThreadPool::~ThreadPool()
 {
-    __BEGIN_CRITICAL__
-    stop = true;
-    __END_CRITICAL__
+	__BEGIN_CRITICAL__
+	stop = true;
+	__END_CRITICAL__
 
-    condition.notify_all();
+	condition.notify_all();
 
-    for (std::thread &worker: workers) {
-        if (worker.joinable()) {
-            worker.join();
-        }
-    }
+	for (std::thread &worker: workers) {
+		if (worker.joinable()) {
+			worker.join();
+		}
+	}
 }
 
 void ThreadPool::submit(std::function<void()>&& task)
 {
-    __BEGIN_CRITICAL__
-    if (!stop) {
-        tasks.push_back(std::move(task));
-    }
-    __END_CRITICAL__
+	__BEGIN_CRITICAL__
+	if (!stop) {
+		tasks.push_back(std::move(task));
+	}
+	__END_CRITICAL__
 
-    condition.notify_one();
+	condition.notify_one();
 }
 
 } // namespace runtime

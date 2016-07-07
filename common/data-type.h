@@ -23,61 +23,61 @@
 #include "reflection.h"
 
 struct Void {
-    NO_REFLECTABLE_PROPERTY
+	NO_REFLECTABLE_PROPERTY
 };
 
 struct String {
-    String() = default;
-    String(const String& str) : value(str.value) {}
-    String(String&& str) : value(std::move(str.value)) {}
+	String() = default;
+	String(const String& str) : value(str.value) {}
+	String(String&& str) : value(std::move(str.value)) {}
 
-    String(const char* str) : value(str) {}
-    String(const std::string& str) : value(str) {}
+	String(const char* str) : value(str) {}
+	String(const std::string& str) : value(str) {}
 
-    String& operator=(const String& str)
-    {
-        if (this != &str) {
-            value = str.value;
-        }
+	String& operator=(const String& str)
+	{
+		if (this != &str) {
+			value = str.value;
+		}
 
-        return *this;
-    }
+		return *this;
+	}
 
-    String& operator=(String&& str)
-    {
-        if (this != &str) {
-            value = std::move(str.value);
-        }
-        return *this;
-    }
+	String& operator=(String&& str)
+	{
+		if (this != &str) {
+			value = std::move(str.value);
+		}
+		return *this;
+	}
 
-    std::string value;
-    REFLECTABLE(value)
+	std::string value;
+	REFLECTABLE(value)
 };
 
 struct StringPair {
-    std::string first;
-    std::string second;
-    REFLECTABLE(first, second)
+	std::string first;
+	std::string second;
+	REFLECTABLE(first, second)
 };
 
 struct Status {
-    Status() : code(0) {}
-    Status(int v) : code(v) {}
+	Status() : code(0) {}
+	Status(int v) : code(v) {}
 
-    operator int() const
-    {
-        return code;
-    }
+	operator int() const
+	{
+		return code;
+	}
 
-    int code;
-    REFLECTABLE(code)
+	int code;
+	REFLECTABLE(code)
 };
 
 template<typename T>
 struct Vector {
-    std::vector<T> value;
-    REFLECTABLE(value)
+	std::vector<T> value;
+	REFLECTABLE(value)
 };
 
 #endif //!__RUNTIME_DATA_TYPE_H__

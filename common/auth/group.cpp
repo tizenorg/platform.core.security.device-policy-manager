@@ -14,15 +14,14 @@
  *  limitations under the License
  */
 
-
-#include <regex>
-#include <memory>
-
 #include <grp.h>
 #include <gshadow.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+
+#include <regex>
+#include <memory>
 
 #include "group.h"
 #include "shadow.h"
@@ -31,52 +30,52 @@
 namespace runtime {
 
 Group::Group(const Group& group) :
-    name(group.name), gid(group.gid)
+	name(group.name), gid(group.gid)
 {
 }
 
 Group::Group(const std::string& group)
 {
-    struct group grp, *result;
-    int bufsize;
+	struct group grp, *result;
+	int bufsize;
 
-    bufsize = sysconf(_SC_GETGR_R_SIZE_MAX);
-    if (bufsize == -1)
-        bufsize = 16384;
+	bufsize = sysconf(_SC_GETGR_R_SIZE_MAX);
+	if (bufsize == -1)
+		bufsize = 16384;
 
-    std::unique_ptr<char[]> buf(new char[bufsize]);
+	std::unique_ptr<char[]> buf(new char[bufsize]);
 
-    ::getgrnam_r(group.c_str(), &grp, buf.get(), bufsize, &result);
-    if (result == NULL) {
-        throw runtime::Exception("Group doesn't exist");
-    }
+	::getgrnam_r(group.c_str(), &grp, buf.get(), bufsize, &result);
+	if (result == NULL) {
+		throw runtime::Exception("Group doesn't exist");
+	}
 
-    name = result->gr_name;
-    gid = result->gr_gid;
+	name = result->gr_name;
+	gid = result->gr_gid;
 }
 
 Group::Group(const gid_t group)
 {
-    struct group grp, *result;
-    int bufsize;
+	struct group grp, *result;
+	int bufsize;
 
-    bufsize = sysconf(_SC_GETGR_R_SIZE_MAX);
-    if (bufsize == -1)
-        bufsize = 16384;
+	bufsize = sysconf(_SC_GETGR_R_SIZE_MAX);
+	if (bufsize == -1)
+		bufsize = 16384;
 
-    std::unique_ptr<char[]> buf(new char[bufsize]);
+	std::unique_ptr<char[]> buf(new char[bufsize]);
 
-    ::getgrgid_r(group, &grp, buf.get(), bufsize, &result);
-    if (result == NULL) {
-        throw runtime::Exception("Group doesn't exist");
-    }
+	::getgrgid_r(group, &grp, buf.get(), bufsize, &result);
+	if (result == NULL) {
+		throw runtime::Exception("Group doesn't exist");
+	}
 
-    name = result->gr_name;
-    gid = result->gr_gid;
+	name = result->gr_name;
+	gid = result->gr_gid;
 }
 
 Group::Group() :
-    Group(::getgid())
+	Group(::getgid())
 {
 }
 

@@ -13,12 +13,13 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License
  */
-#include <regex>
-#include <algorithm>
 
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/inotify.h>
+
+#include <regex>
+#include <algorithm>
 
 #include <tzplatform_config.h>
 
@@ -44,33 +45,33 @@ std::regex zoneNamePattern(NAME_PATTERN);
 }
 
 bool isAllowedName(const std::string& name) {
-    if (!std::regex_match(name, zoneNamePattern)) {
-        return false;
-    }
+	if (!std::regex_match(name, zoneNamePattern)) {
+		return false;
+	}
 
-    bool exists = false;
-    try {
-        runtime::User user(name);
-        exists = true;
-    } catch (runtime::Exception& e) {}
+	bool exists = false;
+	try {
+		runtime::User user(name);
+		exists = true;
+	} catch (runtime::Exception& e) {}
 
-    return !exists;
+	return !exists;
 }
 
 }
 
-ZonePolicy::ZonePolicy(PolicyControlContext& ctx)
-    : context(ctx)
+ZonePolicy::ZonePolicy(PolicyControlContext& ctx) :
+	context(ctx)
 {
-    context.registerParametricMethod(this, DPM_PRIVILEGE_ZONE, (int)(ZonePolicy::createZone)(std::string, std::string));
-    context.registerParametricMethod(this, DPM_PRIVILEGE_ZONE, (int)(ZonePolicy::removeZone)(std::string));
-    context.registerParametricMethod(this, DPM_PRIVILEGE_ZONE, (int)(ZonePolicy::lockZone)(std::string));
-    context.registerParametricMethod(this, DPM_PRIVILEGE_ZONE, (int)(ZonePolicy::unlockZone)(std::string));
-    context.registerParametricMethod(this, "", (int)(ZonePolicy::getZoneState)(std::string));
-    context.registerParametricMethod(this, "", (std::vector<std::string>)(ZonePolicy::getZoneList)(int));
+	context.registerParametricMethod(this, DPM_PRIVILEGE_ZONE, (int)(ZonePolicy::createZone)(std::string, std::string));
+	context.registerParametricMethod(this, DPM_PRIVILEGE_ZONE, (int)(ZonePolicy::removeZone)(std::string));
+	context.registerParametricMethod(this, DPM_PRIVILEGE_ZONE, (int)(ZonePolicy::lockZone)(std::string));
+	context.registerParametricMethod(this, DPM_PRIVILEGE_ZONE, (int)(ZonePolicy::unlockZone)(std::string));
+	context.registerParametricMethod(this, "", (int)(ZonePolicy::getZoneState)(std::string));
+	context.registerParametricMethod(this, "", (std::vector<std::string>)(ZonePolicy::getZoneList)(int));
 
-    context.createNotification("ZonePolicy::created");
-    context.createNotification("ZonePolicy::removed");
+	context.createNotification("ZonePolicy::created");
+	context.createNotification("ZonePolicy::removed");
 }
 
 ZonePolicy::~ZonePolicy()
@@ -80,54 +81,54 @@ ZonePolicy::~ZonePolicy()
 
 int ZonePolicy::createZone(const std::string& name, const std::string& setupWizAppid)
 {
-    if (!std::regex_match(name, zoneNamePattern)) {
-        return -1;
-    }
+	if (!std::regex_match(name, zoneNamePattern)) {
+		return -1;
+	}
 
-    if (!isAllowedName(name)) {
-        return -1;
-    }
+	if (!isAllowedName(name)) {
+		return -1;
+	}
 
-    try {
-        std::vector<std::string> data = {"app-id", "org.tizen.krate-setup-wizard",
-                                         "mode", "create",
-                                         "zone", name};
-        Bundle bundle;
-        bundle.add("id", "zone-create");
-        bundle.add("user-data", data);
+	try {
+		std::vector<std::string> data = {"app-id", "org.tizen.krate-setup-wizard",
+										 "mode", "create",
+										 "zone", name};
+		Bundle bundle;
+		bundle.add("id", "zone-create");
+		bundle.add("user-data", data);
 
-        Launchpad launchpad(context.getPeerUid());
-        launchpad.launch("org.tizen.dpm-syspopup", bundle);
-    } catch (runtime::Exception& e) {
-        ERROR(e.what());
-        return -1;
-    }
+		Launchpad launchpad(context.getPeerUid());
+		launchpad.launch("org.tizen.dpm-syspopup", bundle);
+	} catch (runtime::Exception& e) {
+		ERROR(e.what());
+		return -1;
+	}
 
-    return 0;
+	return 0;
 }
 
 int ZonePolicy::removeZone(const std::string& name)
 {
-    if (getZoneState(name) == 0) {
-        return -1;
-    }
+	if (getZoneState(name) == 0) {
+		return -1;
+	}
 
-    try {
-        std::vector<std::string> data = {"app-id", "org.tizen.krate-setup-wizard",
-                                         "mode", "remove",
-                                         "zone", name};
-        Bundle bundle;
-        bundle.add("id", "zone-remove");
-        bundle.add("user-data", data);
+	try {
+		std::vector<std::string> data = {"app-id", "org.tizen.krate-setup-wizard",
+										 "mode", "remove",
+										 "zone", name};
+		Bundle bundle;
+		bundle.add("id", "zone-remove");
+		bundle.add("user-data", data);
 
-        Launchpad launchpad(context.getPeerUid());
-        launchpad.launch("org.tizen.dpm-syspopup", bundle);
-    } catch (runtime::Exception& e) {
-        ERROR(e.what());
-        return -1;
-    }
+		Launchpad launchpad(context.getPeerUid());
+		launchpad.launch("org.tizen.dpm-syspopup", bundle);
+	} catch (runtime::Exception& e) {
+		ERROR(e.what());
+		return -1;
+	}
 
-    return 0;
+	return 0;
 }
 
 /* [TBD] remove dependency with zoneManager like this */
@@ -135,22 +136,22 @@ extern ZoneManager zoneManager;
 
 int ZonePolicy::lockZone(const std::string& name)
 {
-    return zoneManager.lockZone(name);
+	return zoneManager.lockZone(name);
 }
 
 int ZonePolicy::unlockZone(const std::string& name)
 {
-    return zoneManager.unlockZone(name);
+	return zoneManager.unlockZone(name);
 }
 
 int ZonePolicy::getZoneState(const std::string& name)
 {
-    return zoneManager.getZoneState(name);
+	return zoneManager.getZoneState(name);
 }
 
 std::vector<std::string> ZonePolicy::getZoneList(int state)
 {
-    return zoneManager.getZoneList(state);
+	return zoneManager.getZoneList(state);
 }
 
 ZonePolicy zonePolicy(Server::instance());

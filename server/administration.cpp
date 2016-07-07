@@ -22,10 +22,10 @@
 namespace DevicePolicyManager {
 
 AdministrationPolicy::AdministrationPolicy(PolicyControlContext& ctx) :
-    context(ctx)
+	context(ctx)
 {
-    context.registerParametricMethod(this, "", (int)(AdministrationPolicy::registerPolicyClient)(std::string));
-    context.registerParametricMethod(this, "", (int)(AdministrationPolicy::deregisterPolicyClient)(std::string));
+	context.registerParametricMethod(this, "", (int)(AdministrationPolicy::registerPolicyClient)(std::string));
+	context.registerParametricMethod(this, "", (int)(AdministrationPolicy::deregisterPolicyClient)(std::string));
 }
 
 AdministrationPolicy::~AdministrationPolicy()
@@ -34,30 +34,30 @@ AdministrationPolicy::~AdministrationPolicy()
 
 int AdministrationPolicy::registerPolicyClient(const std::string& name)
 {
-    ClientManager& manager = ClientManager::instance();
+	ClientManager& manager = ClientManager::instance();
 
-    try {
-        manager.registerClient(name);
-    } catch (runtime::Exception& e) {
-        ERROR("Failed to register policy client");
-        return -1;
-    }
+	try {
+		manager.registerClient(name);
+	} catch (runtime::Exception& e) {
+		ERROR("Failed to register policy client");
+		return -1;
+	}
 
-    return 0;
+	return 0;
 }
 
 int AdministrationPolicy::deregisterPolicyClient(const std::string& name)
 {
-    ClientManager& manager = ClientManager::instance();
+	ClientManager& manager = ClientManager::instance();
 
-    try {
-        manager.deregisterClient(name);
-    } catch (runtime::Exception& e) {
-        ERROR("Failed to deregister policy client");
-        return -1;
-    }
+	try {
+		manager.deregisterClient(name);
+	} catch (runtime::Exception& e) {
+		ERROR("Failed to deregister policy client");
+		return -1;
+	}
 
-    return 0;
+	return 0;
 }
 
 AdministrationPolicy adminPolicy(Server::instance());

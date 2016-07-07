@@ -18,8 +18,8 @@
 
 namespace DevicePolicyManager {
 
-ZoneManager::ZoneManager(PolicyControlContext& ctx)
-    : context(ctx)
+ZoneManager::ZoneManager(PolicyControlContext& ctx) :
+	context(ctx)
 {
 }
 
@@ -29,66 +29,66 @@ ZoneManager::~ZoneManager()
 
 int ZoneManager::createZone(const std::string& name, const std::string& setupWizAppid)
 {
-    try {
-        return context->methodCall<int>("ZoneManager::createZone", name, setupWizAppid);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<int>("ZoneManager::createZone", name, setupWizAppid);
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 
 int ZoneManager::removeZone(const std::string& name)
 {
-    try {
-        return context->methodCall<int>("ZoneManager::removeZone", name);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<int>("ZoneManager::removeZone", name);
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 
 int ZoneManager::lockZone(const std::string& name)
 {
-    try {
-        return context->methodCall<int>("ZoneManager::lockZone", name);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<int>("ZoneManager::lockZone", name);
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 
 int ZoneManager::unlockZone(const std::string& name)
 {
-    try {
-        return context->methodCall<int>("ZoneManager::unlockZone", name);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<int>("ZoneManager::unlockZone", name);
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 
 int ZoneManager::getZoneState(const std::string& name)
 {
-    try {
-        return context->methodCall<int>("ZoneManager::getZoneState", name);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<int>("ZoneManager::getZoneState", name);
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 
 std::vector<std::string> ZoneManager::getZoneList(int state)
 {
-    std::vector<std::string> empty;
-    try {
-        return context->methodCall<std::vector<std::string>>("ZoneManager::getZoneList", state);
-    } catch (runtime::Exception& e) {
-        return empty;
-    }
+	std::vector<std::string> empty;
+	try {
+		return context->methodCall<std::vector<std::string>>("ZoneManager::getZoneList", state);
+	} catch (runtime::Exception& e) {
+		return empty;
+	}
 }
 
 int ZoneManager::resetZonePassword(const std::string& name, const std::string& newPassword)
 {
-    try {
-        return context->methodCall<int>("ZoneManager::resetZonePassword", name, newPassword);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<int>("ZoneManager::resetZonePassword", name, newPassword);
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 
 } // namespace DevicePolicyManager

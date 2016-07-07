@@ -190,7 +190,7 @@ int transformQualityFromDPMToAuth(const int dpm_quality, password_quality_type &
 } // namespace
 
 PasswordPolicy::PasswordPolicy(PolicyControlContext &ctxt) :
-    __context(ctxt)
+	__context(ctxt)
 {
 	ctxt.registerParametricMethod(this, DPM_PRIVILEGE_PASSWORD, (int)(PasswordPolicy::setPasswordPolicyQuality)(int));
 	ctxt.registerNonparametricMethod(this, "", (int)(PasswordPolicy::getPasswordPolicyQuality));

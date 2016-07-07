@@ -20,7 +20,7 @@
 namespace DevicePolicyManager {
 
 SecurityPolicy::SecurityPolicy(PolicyControlContext& ctxt) :
-    context(ctxt)
+	context(ctxt)
 {
 }
 
@@ -30,47 +30,47 @@ SecurityPolicy::~SecurityPolicy()
 
 int SecurityPolicy::lockoutScreen()
 {
-    try {
-        return context->methodCall<int>("SecurityPolicy::lockoutScreen");
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<int>("SecurityPolicy::lockoutScreen");
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 
 int SecurityPolicy::setInternalStorageEncryption(bool encrypt)
 {
-    try {
-        return context->methodCall<int>("SecurityPolicy::setInternalStorageEncryption", encrypt);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<int>("SecurityPolicy::setInternalStorageEncryption", encrypt);
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 
 int SecurityPolicy::isInternalStorageEncrypted()
 {
-    try {
-        return context->methodCall<int>("SecurityPolicy::isInternalStorageEncrypted");
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<int>("SecurityPolicy::isInternalStorageEncrypted");
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 
 int SecurityPolicy::setExternalStorageEncryption(bool encrypt)
 {
-    try {
-        return context->methodCall<int>("SecurityPolicy::setExternalStorageEncryption", encrypt);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<int>("SecurityPolicy::setExternalStorageEncryption", encrypt);
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 
 int SecurityPolicy::isExternalStorageEncrypted()
 {
-    try {
-        return context->methodCall<int>("SecurityPolicy::isExternalStorageEncrypted");
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<int>("SecurityPolicy::isExternalStorageEncrypted");
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 
 } // namespace DevicePolicyManager

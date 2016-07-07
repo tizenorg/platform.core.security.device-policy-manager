@@ -28,21 +28,20 @@ namespace runtime {
 
 class ThreadPool {
 public:
-    ThreadPool(size_t threads);
-    ~ThreadPool();
+	ThreadPool(size_t threads);
+	~ThreadPool();
 
-    void submit(std::function<void()>&& task);
+	void submit(std::function<void()>&& task);
 
 private:
-    std::vector<std::thread> workers;
-    std::deque<std::function<void()>> tasks;
+	std::vector<std::thread> workers;
+	std::deque<std::function<void()>> tasks;
 
-    std::mutex queueMutex;
-    std::condition_variable condition;
-    bool stop;
+	std::mutex queueMutex;
+	std::condition_variable condition;
+	bool stop;
 };
 
 } // namespace runtime
 
 #endif //__RUNTIME_THREAD_POOL_H__
-

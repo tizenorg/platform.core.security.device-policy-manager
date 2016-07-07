@@ -24,27 +24,27 @@ namespace DevicePolicyManager {
 
 class ZoneManager {
 public:
-    enum State {
-        Locked      = 0x01,
-        Running     = 0x02,
-    };
+	enum State {
+		Locked      = 0x01,
+		Running     = 0x02,
+	};
 
-    ZoneManager(PolicyControlContext& ctxt);
-    ~ZoneManager();
+	ZoneManager(PolicyControlContext& ctxt);
+	~ZoneManager();
 
-    int createZone(const std::string& name, const std::string& manifest);
-    int removeZone(const std::string& name);
-    int lockZone(const std::string& name);
-    int unlockZone(const std::string& name);
+	int createZone(const std::string& name, const std::string& manifest);
+	int removeZone(const std::string& name);
+	int lockZone(const std::string& name);
+	int unlockZone(const std::string& name);
 
-    int getZoneState(const std::string& name);
+	int getZoneState(const std::string& name);
 
-    std::vector<std::string> getZoneList(int state);
+	std::vector<std::string> getZoneList(int state);
 
-    int resetZonePassword(const std::string& name, const std::string& newPassword);
+	int resetZonePassword(const std::string& name, const std::string& newPassword);
 
 private:
-    PolicyControlContext& context;
+	PolicyControlContext& context;
 };
 
 } // namespace DevicePolicyManager

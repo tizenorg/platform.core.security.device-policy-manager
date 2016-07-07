@@ -50,16 +50,16 @@ extern "C" {
  * @since_tizen 3.0
  */
 typedef enum {
-    ZONE_ERROR_NONE                 = TIZEN_ERROR_NONE,                 /**< The operation was successful */
-    ZONE_ERROR_INVALID_PARAMETER    = TIZEN_ERROR_INVALID_PARAMETER,    /**< Invalid parameter */
-    ZONE_ERROR_CONNECTION_REFUSED   = TIZEN_ERROR_CONNECTION_REFUSED,   /**< Connection refused */
-    ZONE_ERROR_TIMED_OUT            = TIZEN_ERROR_TIMED_OUT,            /**< Time out */
-    ZONE_ERROR_PERMISSION_DENIED    = TIZEN_ERROR_PERMISSION_DENIED,    /**< Access privilege is not sufficient */
-    ZONE_ERROR_NOT_SUPPORTED        = TIZEN_ERROR_NOT_SUPPORTED,        /**< Operation is not supported */
-    ZONE_ERROR_NO_SUCH_FILE         = TIZEN_ERROR_NO_SUCH_FILE,         /**< No such file or directory */
-    ZONE_ERROR_FILE_EXISTS          = TIZEN_ERROR_FILE_EXISTS,          /**< File exists */
-    ZONE_ERROR_OUT_OF_MEMORY        = TIZEN_ERROR_OUT_OF_MEMORY,        /**< Out of memory */
-    ZONE_ERROR_NO_DATA              = TIZEN_ERROR_NO_DATA               /**< No Data */
+	ZONE_ERROR_NONE                 = TIZEN_ERROR_NONE,                 /**< The operation was successful */
+	ZONE_ERROR_INVALID_PARAMETER    = TIZEN_ERROR_INVALID_PARAMETER,    /**< Invalid parameter */
+	ZONE_ERROR_CONNECTION_REFUSED   = TIZEN_ERROR_CONNECTION_REFUSED,   /**< Connection refused */
+	ZONE_ERROR_TIMED_OUT            = TIZEN_ERROR_TIMED_OUT,            /**< Time out */
+	ZONE_ERROR_PERMISSION_DENIED    = TIZEN_ERROR_PERMISSION_DENIED,    /**< Access privilege is not sufficient */
+	ZONE_ERROR_NOT_SUPPORTED        = TIZEN_ERROR_NOT_SUPPORTED,        /**< Operation is not supported */
+	ZONE_ERROR_NO_SUCH_FILE         = TIZEN_ERROR_NO_SUCH_FILE,         /**< No such file or directory */
+	ZONE_ERROR_FILE_EXISTS          = TIZEN_ERROR_FILE_EXISTS,          /**< File exists */
+	ZONE_ERROR_OUT_OF_MEMORY        = TIZEN_ERROR_OUT_OF_MEMORY,        /**< Out of memory */
+	ZONE_ERROR_NO_DATA              = TIZEN_ERROR_NO_DATA               /**< No Data */
 } zone_error_type_e;
 
 /**
@@ -140,9 +140,9 @@ typedef void(*zone_event_cb)(const char* name, const char* object, void* user_da
  * @see         zone_manager_remove_event_cb()
  */
 ZONE_API int zone_manager_add_event_cb(zone_manager_h handle,
-                                      const char* event,
-                                      zone_event_cb callback, void* user_data,
-                                      int* id);
+									  const char* event,
+									  zone_event_cb callback, void* user_data,
+									  int* id);
 
 /**
  * @brief       Removes zone event callback.
@@ -213,9 +213,9 @@ ZONE_API int zone_manager_destroy_zone(zone_manager_h handle, const char* name);
  * @since_tizen 3.0
  */
 typedef enum {
-    ZONE_STATE_LOCKED       = 0x01,  /**< Zone has been defined, but it can not start. */
-    ZONE_STATE_RUNNING      = 0x02, /**< Zone has been started. */
-    ZONE_STATE_ALL          = 0xff  /**< This presents all of the state  */
+	ZONE_STATE_LOCKED       = 0x01,  /**< Zone has been defined, but it can not start. */
+	ZONE_STATE_RUNNING      = 0x02, /**< Zone has been started. */
+	ZONE_STATE_ALL          = 0xff  /**< This presents all of the state  */
 } zone_state_e;
 
 /**
@@ -269,9 +269,9 @@ typedef bool(*zone_manager_foreach_cb)(const char* name, void* user_data);
  * @see         zone_manager_destroy_zone()
  */
 ZONE_API int zone_manager_foreach_name(zone_manager_h handle,
-                                       zone_state_e state,
-                                       zone_manager_foreach_cb callback,
-                                       void* user_data);
+									   zone_state_e state,
+									   zone_manager_foreach_cb callback,
+									   void* user_data);
 
 /**
  * @brief       Reset password for the zone.

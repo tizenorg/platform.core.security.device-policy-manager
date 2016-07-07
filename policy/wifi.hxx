@@ -28,8 +28,8 @@ namespace DevicePolicyManager {
 
 class WifiPolicy {
 public:
-    WifiPolicy(PolicyControlContext& ctxt);
-    ~WifiPolicy(void);
+	WifiPolicy(PolicyControlContext& ctxt);
+	~WifiPolicy(void);
 
 	int setState(bool enable);
 	bool getState();
@@ -37,17 +37,17 @@ public:
 	int setHotspotState(bool enable);
 	bool getHotspotState();
 
-    int setProfileChangeRestriction(bool restrict);
-    bool isProfileChangeRestricted(void);
+	int setProfileChangeRestriction(bool restrict);
+	bool isProfileChangeRestricted(void);
 
-    int setNetworkAccessRestriction(bool restrict);
-    bool isNetworkAccessRestricted(void);
+	int setNetworkAccessRestriction(bool restrict);
+	bool isNetworkAccessRestricted(void);
 
-    int addSsidToBlocklist(const std::string& ssid);
-    int removeSsidFromBlocklist(const std::string& ssid);
+	int addSsidToBlocklist(const std::string& ssid);
+	int removeSsidFromBlocklist(const std::string& ssid);
 
 private:
-    PolicyControlContext& context;
+	PolicyControlContext& context;
 };
 
 } // namespace DevicePolicyManager

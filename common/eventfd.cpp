@@ -27,33 +27,33 @@ namespace runtime {
 
 EventFD::EventFD(unsigned int initval, int flags)
 {
-    fd = ::eventfd(initval, flags);
-    if (fd == -1) {
-        throw runtime::Exception(runtime::GetSystemErrorMessage());
-    }
+	fd = ::eventfd(initval, flags);
+	if (fd == -1) {
+		throw runtime::Exception(runtime::GetSystemErrorMessage());
+	}
 }
 
 EventFD::~EventFD()
 {
-    if (fd != -1) {
-        ::close(fd);
-    }
+	if (fd != -1) {
+		::close(fd);
+	}
 }
 
 void EventFD::send()
 {
-    const std::uint64_t val = 1;
-    if (::write(fd, &val, sizeof(val)) == -1) {
-        throw runtime::Exception(runtime::GetSystemErrorMessage());
-    }
+	const std::uint64_t val = 1;
+	if (::write(fd, &val, sizeof(val)) == -1) {
+		throw runtime::Exception(runtime::GetSystemErrorMessage());
+	}
 }
 
 void EventFD::receive()
 {
-    std::uint64_t val;
-    if (::read(fd, &val, sizeof(val)) == -1) {
-        throw runtime::Exception(runtime::GetSystemErrorMessage());
-    }
+	std::uint64_t val;
+	if (::read(fd, &val, sizeof(val)) == -1) {
+		throw runtime::Exception(runtime::GetSystemErrorMessage());
+	}
 }
 
 } // namespace runtime

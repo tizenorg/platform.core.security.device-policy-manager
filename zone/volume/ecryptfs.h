@@ -55,52 +55,52 @@ struct ecryptfs_session_key {
 #define ECRYPTFS_USERSPACE_SHOULD_TRY_TO_ENCRYPT    0x00000002
 #define ECRYPTFS_CONTAINS_DECRYPTED_KEY             0x00000004
 #define ECRYPTFS_CONTAINS_ENCRYPTED_KEY             0x00000008
-    int32_t flags;
-    int32_t encrypted_key_size;
-    int32_t decrypted_key_size;
-    u_int8_t encrypted_key[ECRYPTFS_MAX_ENCRYPTED_KEY_BYTES];
-    u_int8_t decrypted_key[ECRYPTFS_MAX_KEY_HEX];
+	int32_t flags;
+	int32_t encrypted_key_size;
+	int32_t decrypted_key_size;
+	u_int8_t encrypted_key[ECRYPTFS_MAX_ENCRYPTED_KEY_BYTES];
+	u_int8_t decrypted_key[ECRYPTFS_MAX_KEY_HEX];
 };
 
 struct ecryptfs_password {
-    int32_t password_bytes;
-    int32_t hash_algo;
-    int32_t hash_iterations;
-    int32_t session_key_encryption_key_bytes;
+	int32_t password_bytes;
+	int32_t hash_algo;
+	int32_t hash_iterations;
+	int32_t session_key_encryption_key_bytes;
 #define ECRYPTFS_PERSISTENT_PASSWORD                0x01
 #define ECRYPTFS_SESSION_KEY_ENCRYPTION_KEY_SET     0x02
-    u_int32_t flags;
-    /* Iterated-hash concatenation of salt and passphrase */
-    u_int8_t session_key_encryption_key[ECRYPTFS_MAX_KEY_HEX];
-    u_int8_t signature[ECRYPTFS_PASSWORD_SIG_SIZE + 1];
-    /* Always in expanded hex */
-    u_int8_t salt[ECRYPTFS_MAX_SALT_SIZE];
+	u_int32_t flags;
+	/* Iterated-hash concatenation of salt and passphrase */
+	u_int8_t session_key_encryption_key[ECRYPTFS_MAX_KEY_HEX];
+	u_int8_t signature[ECRYPTFS_PASSWORD_SIG_SIZE + 1];
+	/* Always in expanded hex */
+	u_int8_t salt[ECRYPTFS_MAX_SALT_SIZE];
 };
 
 enum ecryptfs_token_types {
-    ECRYPTFS_PASSWORD,
-    ECRYPTFS_PRIVATE_KEY
+	ECRYPTFS_PASSWORD,
+	ECRYPTFS_PRIVATE_KEY
 };
 
 struct ecryptfs_private_key {
-    u_int32_t key_size;
-    u_int32_t data_len;
-    u_int8_t signature[ECRYPTFS_PASSWORD_SIG_SIZE + 1];
-    char pki_type[ECRYPTFS_MAX_PKI_NAME_BYTES + 1];
-    u_int8_t data[];
+	u_int32_t key_size;
+	u_int32_t data_len;
+	u_int8_t signature[ECRYPTFS_PASSWORD_SIG_SIZE + 1];
+	char pki_type[ECRYPTFS_MAX_PKI_NAME_BYTES + 1];
+	u_int8_t data[];
 };
 
 struct ecryptfs_auth_tok {
-    u_int16_t version; /* 8-bit major and 8-bit minor */
-    u_int16_t token_type;
+	u_int16_t version; /* 8-bit major and 8-bit minor */
+	u_int16_t token_type;
 #define ECRYPTFS_ENCRYPT_ONLY                       0x00000001
-    u_int32_t flags;
-    struct ecryptfs_session_key session_key;
-    u_int8_t reserved[32];
-    union {
-        struct ecryptfs_password password;
-        struct ecryptfs_private_key private_key;
-    } token;
+	u_int32_t flags;
+	struct ecryptfs_session_key session_key;
+	u_int8_t reserved[32];
+	union {
+		struct ecryptfs_password password;
+		struct ecryptfs_private_key private_key;
+	} token;
 }  __attribute__((packed));
 
 typedef struct ecryptfs_auth_tok ecryptfs_payload;

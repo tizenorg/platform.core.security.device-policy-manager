@@ -30,19 +30,19 @@ namespace xml {
 
 class Document {
 public:
-    Document(const std::string& root, const std::string& version = XML_DEFAULT_VERSION);
-    Document(xmlDoc* doc);
+	Document(const std::string& root, const std::string& version = XML_DEFAULT_VERSION);
+	Document(xmlDoc* doc);
 
-    ~Document();
+	~Document();
 
-    Node& getRootNode();
+	Node& getRootNode();
 
-    Node::NodeList evaluate(const std::string& xpath);
-    void write(const std::string& filename, const std::string& encoding, bool formatted);
+	Node::NodeList evaluate(const std::string& xpath);
+	void write(const std::string& filename, const std::string& encoding, bool formatted);
 
 private:
-    Node* rootNode;
-    xmlDoc* implementation;
+	Node* rootNode;
+	xmlDoc* implementation;
 };
 
 } // namespace xml

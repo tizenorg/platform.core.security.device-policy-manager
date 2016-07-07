@@ -31,78 +31,78 @@ namespace rmi {
 
 class Client {
 public:
-    Client(const std::string& address);
-    ~Client();
+	Client(const std::string& address);
+	~Client();
 
-    Client(const Client&) = delete;
-    Client& operator=(const Client&) = delete;
+	Client(const Client&) = delete;
+	Client& operator=(const Client&) = delete;
 
-    void connect();
-    void disconnect();
+	void connect();
+	void disconnect();
 
-    int subscribe(const std::string& provider, const std::string& name);
+	int subscribe(const std::string& provider, const std::string& name);
 
-    template<typename... Args>
-    int subscribe(const std::string& provider, const std::string& name,
-                  const typename MethodHandler<void, Args...>::type& handler);
+	template<typename... Args>
+	int subscribe(const std::string& provider, const std::string& name,
+				  const typename MethodHandler<void, Args...>::type& handler);
 
-    int unsubscribe(const std::string& provider, int handle);
+	int unsubscribe(const std::string& provider, int handle);
 
-    template<typename Type, typename... Args>
-    Type methodCall(const std::string& method, Args&&... args);
+	template<typename Type, typename... Args>
+	Type methodCall(const std::string& method, Args&&... args);
 
 private:
-    std::string address;
-    std::shared_ptr<Connection> connection;
-    runtime::Mainloop mainloop;
-    std::thread dispatcher;
+	std::string address;
+	std::shared_ptr<Connection> connection;
+	runtime::Mainloop mainloop;
+	std::thread dispatcher;
 };
 
 template<typename... Args>
 int Client::subscribe(const std::string& provider, const std::string& name,
-                      const typename MethodHandler<void, Args...>::type& handler)
+					  const typename MethodHandler<void, Args...>::type& handler)
 {
-    int id = subscribe(provider, name);
-    if (id < 0) {
-        return -1;
-    }
+	int id = subscribe(provider, name);
+	if (id < 0) {
+		return -1;
+	}
 
-    std::shared_ptr<Socket> transport = std::make_shared<Socket>(id);
+	std::shared_ptr<Socket> transport = std::make_shared<Socket>(id);
 
-    auto callback = [handler, transport, this](int fd, runtime::Mainloop::Event event) {
-        if ((event & EPOLLHUP) || (event & EPOLLRDHUP)) {
-            mainloop.removeEventSource(fd);
-            return;
-        }
+	auto callback = [handler, transport, this](int fd, runtime::Mainloop::Event event) {
+		if ((event & EPOLLHUP) || (event & EPOLLRDHUP)) {
+			mainloop.removeEventSource(fd);
+			return;
+		}
 
-        try {
-            Message msg;
-            msg.decode(*transport);
+		try {
+			Message msg;
+			msg.decode(*transport);
 
-            CallbackHolder<void, Args...> callback(handler);
-            callback.dispatch(msg);
-        } catch (std::exception& e) {
-            std::cout << e.what() << std::endl;
-        }
-    };
+			CallbackHolder<void, Args...> callback(handler);
+			callback.dispatch(msg);
+		} catch (std::exception& e) {
+			std::cout << e.what() << std::endl;
+		}
+	};
 
-    mainloop.addEventSource(id, EPOLLIN | EPOLLHUP | EPOLLRDHUP, callback);
+	mainloop.addEventSource(id, EPOLLIN | EPOLLHUP | EPOLLRDHUP, callback);
 
-    return id;
+	return id;
 }
 
 template<typename Type, typename... Args>
 Type Client::methodCall(const std::string& method, Args&&... args)
 {
-    Message request = connection->createMessage(Message::MethodCall, method);
-    request.packParameters(std::forward<Args>(args)...);
-    connection->send(request);
+	Message request = connection->createMessage(Message::MethodCall, method);
+	request.packParameters(std::forward<Args>(args)...);
+	connection->send(request);
 
-    Type response;
-    Message reply = connection->dispatch();
-    reply.disclose<Type>(response);
+	Type response;
+	Message reply = connection->dispatch();
+	reply.disclose<Type>(response);
 
-    return response;
+	return response;
 }
 
 } // namespace rmi

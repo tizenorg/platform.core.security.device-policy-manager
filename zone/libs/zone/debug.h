@@ -18,9 +18,9 @@
 #define __CAPI_ZONE_ASSERT_H__
 
 #define RET_ON_FAILURE(cond, ret) \
-        { \
-            if (!(cond)) \
-                return (ret); \
-        }
+{                                 \
+	if (!(cond))                  \
+		return (ret);             \
+}
 
 #endif //! __CAPI_ZONE_ASSERT_H__

@@ -17,7 +17,7 @@
 #include "policy.h"
 
 Policy::Policy(xml::Node&& node) :
-    data(std::move(node))
+	data(std::move(node))
 {
-    updateLock.reset(new std::mutex());
+	updateLock.reset(new std::mutex());
 }

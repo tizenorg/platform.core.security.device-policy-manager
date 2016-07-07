@@ -231,12 +231,12 @@ static void set_icon(appdata_s* ad, int type, char* part)
 		evas_object_size_hint_weight_set(icon_check, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 
 		ret = elm_layout_content_set(ad->dpm_encryption_layout, part, icon_check);
-		if (!ret){
+		if (!ret) {
 			dlog_print(DLOG_ERROR, LOG_TAG, "elm_layout_content_set failed");
 			return;
 		}
 		evas_object_show(icon_check);
-	} else if (type == ICON_BAR){
+	} else if (type == ICON_BAR) {
 		icon_bar = elm_image_add(ad->dpm_encryption_layout);
 		if (icon_bar == NULL) {
 			dlog_print(DLOG_ERROR, LOG_TAG, "elm_image_add failed");
@@ -248,7 +248,7 @@ static void set_icon(appdata_s* ad, int type, char* part)
 		evas_object_size_hint_weight_set(icon_bar, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 
 		ret = elm_layout_content_set(ad->dpm_encryption_layout, part, icon_bar);
-		if (!ret){
+		if (!ret) {
 			dlog_print(DLOG_ERROR, LOG_TAG, "elm_layout_content_set failed");
 			return;
 		}

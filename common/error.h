@@ -23,9 +23,9 @@ namespace runtime {
 
 class Error {
 public:
-    static std::string message();
-    static std::string message(int errorCode);
-    static int lastErrorCode();
+	static std::string message();
+	static std::string message(int errorCode);
+	static int lastErrorCode();
 };
 
 std::string GetSystemErrorMessage();

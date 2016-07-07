@@ -29,44 +29,44 @@ Notification::Notification()
 }
 
 Notification::Notification(const std::string& name) :
-    signalName(name)
+	signalName(name)
 {
 }
 
 Notification::Notification(Notification&& rhs) :
-    signalName(std::move(rhs.signalName)),
-    subscribers(std::move(rhs.subscribers))
+	signalName(std::move(rhs.signalName)),
+	subscribers(std::move(rhs.subscribers))
 {
 }
 
 SubscriptionId Notification::createSubscriber()
 {
-    int fds[2] = {-1, -1};
-    if (::socketpair(AF_UNIX, SOCK_STREAM, 0, fds) == -1) {
-        throw runtime::Exception("Failed to create socket pair");
-    }
+	int fds[2] = {-1, -1};
+	if (::socketpair(AF_UNIX, SOCK_STREAM, 0, fds) == -1) {
+		throw runtime::Exception("Failed to create socket pair");
+	}
 
-    std::lock_guard<std::mutex> lock(subscriberLock);
+	std::lock_guard<std::mutex> lock(subscriberLock);
 	subscribers.push_back(std::make_shared<Socket>(fds[0]));
 
-    return SubscriptionId(fds[0], fds[1]);
+	return SubscriptionId(fds[0], fds[1]);
 }
 
 int Notification::removeSubscriber(const int id)
 {
-    std::lock_guard<std::mutex> lock(subscriberLock);
+	std::lock_guard<std::mutex> lock(subscriberLock);
 
-    std::list<std::shared_ptr<Socket>>::iterator it = subscribers.begin();
+	std::list<std::shared_ptr<Socket>>::iterator it = subscribers.begin();
 
-    while (it != subscribers.end()) {
-       if ((*it)->getFd() == id) {
-            subscribers.erase(it);
-            return 0;
-       }
-       ++it;
-    }
+	while (it != subscribers.end()) {
+	   if ((*it)->getFd() == id) {
+			subscribers.erase(it);
+			return 0;
+	   }
+	   ++it;
+	}
 
-    return -1;
+	return -1;
 }
 
 } // namespace rmi

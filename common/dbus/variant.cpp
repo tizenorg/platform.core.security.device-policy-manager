@@ -18,104 +18,104 @@
 namespace dbus {
 
 Variant::Variant(GVariant* var) :
-    variant(var)
+	variant(var)
 {
 }
 
 Variant::Variant(Variant&& var) :
-    variant(var.variant)
+	variant(var.variant)
 {
-    var.variant = nullptr;
+	var.variant = nullptr;
 }
 
 Variant::Variant() :
-    variant(nullptr)
+	variant(nullptr)
 {
 }
 
 Variant::~Variant()
 {
-    if (variant) {
-        g_variant_unref(variant);
-    }
+	if (variant) {
+		g_variant_unref(variant);
+	}
 }
 
 Variant& Variant::operator=(GVariant* var)
 {
-    variant = var;
-    return *this;
+	variant = var;
+	return *this;
 }
 
 Variant::operator bool () const
 {
-    return variant != nullptr;
+	return variant != nullptr;
 }
 
 void Variant::get(const std::string& format, ...) const
 {
-    va_list ap;
+	va_list ap;
 
-    va_start(ap, format);
-    g_variant_get_va(variant, format.c_str(), NULL, &ap);
-    va_end(ap);
+	va_start(ap, format);
+	g_variant_get_va(variant, format.c_str(), NULL, &ap);
+	va_end(ap);
 }
 
 
 VariantIterator::VariantIterator(GVariantIter* it) :
-    iterator(it)
+	iterator(it)
 {
 }
 
 VariantIterator::VariantIterator(VariantIterator&& it) :
-    iterator(it.iterator)
+	iterator(it.iterator)
 {
-    it.iterator = nullptr;
+	it.iterator = nullptr;
 }
 
 VariantIterator::VariantIterator() :
-    iterator(nullptr)
+	iterator(nullptr)
 {
 }
 
 VariantIterator::~VariantIterator()
 {
-    if (iterator) {
-        g_variant_iter_free(iterator);
-    }
+	if (iterator) {
+		g_variant_iter_free(iterator);
+	}
 }
 
 VariantIterator& VariantIterator::operator=(GVariantIter* it)
 {
-    iterator = it;
-    return *this;
+	iterator = it;
+	return *this;
 }
 
 VariantIterator::operator bool () const
 {
-    return iterator != nullptr;
+	return iterator != nullptr;
 }
 
 GVariantIter** VariantIterator::operator & ()
 {
-    return &iterator;
+	return &iterator;
 }
 
 bool VariantIterator::get(const std::string& format, ...) const
 {
-    GVariant *var;
-    va_list ap;
-    var = g_variant_iter_next_value(iterator);
-    if (var == NULL) {
-        return false;
-    }
+	GVariant *var;
+	va_list ap;
+	var = g_variant_iter_next_value(iterator);
+	if (var == NULL) {
+		return false;
+	}
 
-    va_start(ap, format);
-    g_variant_get_va(var, format.c_str(), NULL, &ap);
-    va_end(ap);
+	va_start(ap, format);
+	g_variant_get_va(var, format.c_str(), NULL, &ap);
+	va_end(ap);
 
-    g_variant_unref(var);
+	g_variant_unref(var);
 
-    return true;
+	return true;
 }
 
 } // namespace dbus

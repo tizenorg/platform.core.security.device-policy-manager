@@ -29,18 +29,18 @@ namespace DevicePolicyManager {
 
 class SecurityPolicy {
 public:
-    SecurityPolicy(PolicyControlContext& ctxt);
-    ~SecurityPolicy();
+	SecurityPolicy(PolicyControlContext& ctxt);
+	~SecurityPolicy();
 
-    int lockoutScreen();
-    int wipeData(const int id);
-    int setInternalStorageEncryption(bool encrypt);
-    int isInternalStorageEncrypted();
-    int setExternalStorageEncryption(bool encrypt);
-    int isExternalStorageEncrypted();
+	int lockoutScreen();
+	int wipeData(const int id);
+	int setInternalStorageEncryption(bool encrypt);
+	int isInternalStorageEncrypted();
+	int setExternalStorageEncryption(bool encrypt);
+	int isExternalStorageEncrypted();
 
 private:
-    PolicyControlContext& context;
+	PolicyControlContext& context;
 };
 
 } // namespace DevicePolicyManager

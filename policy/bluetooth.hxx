@@ -29,32 +29,32 @@ namespace DevicePolicyManager {
 
 class BluetoothPolicy {
 public:
-    BluetoothPolicy(PolicyControlContext& ctxt);
-    ~BluetoothPolicy();
+	BluetoothPolicy(PolicyControlContext& ctxt);
+	~BluetoothPolicy();
 
-    // for restriction CPIs
-    int setModeChangeState(const bool enable);
-    bool getModeChangeState();
-    int setDesktopConnectivityState(const bool enable);
-    bool getDesktopConnectivityState();
-    int setTetheringState(bool enable);
-    bool getTetheringState();
-    int setPairingState(const bool enable);
-    bool getPairingState();
+	// for restriction CPIs
+	int setModeChangeState(const bool enable);
+	bool getModeChangeState();
+	int setDesktopConnectivityState(const bool enable);
+	bool getDesktopConnectivityState();
+	int setTetheringState(bool enable);
+	bool getTetheringState();
+	int setPairingState(const bool enable);
+	bool getPairingState();
 
-    // for bluetooth CAPIs
-    int addDeviceToBlacklist(const std::string& mac);
-    int removeDeviceFromBlacklist(const std::string& mac);
-    int setDeviceRestriction(const bool enable);
-    bool isDeviceRestricted();
+	// for bluetooth CAPIs
+	int addDeviceToBlacklist(const std::string& mac);
+	int removeDeviceFromBlacklist(const std::string& mac);
+	int setDeviceRestriction(const bool enable);
+	bool isDeviceRestricted();
 
-    int addUuidToBlacklist(const std::string& uuid);
-    int removeUuidFromBlacklist(const std::string& uuid);
-    int setUuidRestriction(const bool enable);
-    bool isUuidRestricted();
+	int addUuidToBlacklist(const std::string& uuid);
+	int removeUuidFromBlacklist(const std::string& uuid);
+	int setUuidRestriction(const bool enable);
+	bool isUuidRestricted();
 
 private:
-    PolicyControlContext& context;
+	PolicyControlContext& context;
 };
 
 } // namespace DevicePolicyManager

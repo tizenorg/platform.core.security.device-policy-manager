@@ -28,32 +28,32 @@ namespace rmi {
 
 class Connection {
 public:
-    Connection(Socket&& sock);
-    Connection(const Connection&) = delete;
-    ~Connection() noexcept;
+	Connection(Socket&& sock);
+	Connection(const Connection&) = delete;
+	~Connection() noexcept;
 
-    Connection& operator=(const Connection&) = delete;
-    Connection& operator=(Connection&) = delete;
+	Connection& operator=(const Connection&) = delete;
+	Connection& operator=(Connection&) = delete;
 
-    Message createMessage(unsigned int type, const std::string& target);
+	Message createMessage(unsigned int type, const std::string& target);
 
-    void send(const Message& message) const;
-    Message dispatch() const;
+	void send(const Message& message) const;
+	Message dispatch() const;
 
-    int getFd() const
-    {
-        return socket.getFd();
-    }
+	int getFd() const
+	{
+		return socket.getFd();
+	}
 
-    Credentials getPeerCredentials() const
-    {
-        return socket.getPeerCredentials();
-    }
+	Credentials getPeerCredentials() const
+	{
+		return socket.getPeerCredentials();
+	}
 
 private:
-    Socket socket;
-    mutable std::mutex receiveMutex;
-    mutable std::mutex transmitMutex;
+	Socket socket;
+	mutable std::mutex receiveMutex;
+	mutable std::mutex transmitMutex;
 };
 
 } // namespace rmi

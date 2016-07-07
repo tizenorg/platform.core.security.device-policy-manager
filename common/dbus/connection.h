@@ -28,47 +28,47 @@ namespace dbus {
 
 class Connection {
 public:
-    typedef unsigned int subscriptionId;
-    typedef std::function<void(Variant)> signalCallback;
+	typedef unsigned int subscriptionId;
+	typedef std::function<void(Variant)> signalCallback;
 
-    Connection() = delete;
-    Connection(const Connection&) = delete;
-    Connection(Connection&&);
-    ~Connection();
+	Connection() = delete;
+	Connection(const Connection&) = delete;
+	Connection(Connection&&);
+	~Connection();
 
-    Connection& operator=(const Connection&) = delete;
+	Connection& operator=(const Connection&) = delete;
 
-    static Connection& getSystem();
+	static Connection& getSystem();
 
-    void emitSignal(const std::string& busName,
-                    const std::string& object,
-                    const std::string& interface,
-                    const std::string& name,
-                    const std::string& paramType,
-                    ...);
+	void emitSignal(const std::string& busName,
+					const std::string& object,
+					const std::string& interface,
+					const std::string& name,
+					const std::string& paramType,
+					...);
 
-    subscriptionId subscribeSignal(const std::string& sender,
-                                   const std::string& interface,
-                                   const std::string& object,
-                                   const std::string& member,
-                                   const signalCallback callback);
+	subscriptionId subscribeSignal(const std::string& sender,
+								   const std::string& interface,
+								   const std::string& object,
+								   const std::string& member,
+								   const signalCallback callback);
 
 
-    void unsubscribeSignal(subscriptionId id);
+	void unsubscribeSignal(subscriptionId id);
 
-    const Variant methodcall(const std::string& busName,
-                             const std::string& object,
-                             const std::string& interface,
-                             const std::string& method,
-                             int timeout,
-                             const std::string& replyType,
-                             const std::string& paramType,
-                             ...);
+	const Variant methodcall(const std::string& busName,
+							 const std::string& object,
+							 const std::string& interface,
+							 const std::string& method,
+							 int timeout,
+							 const std::string& replyType,
+							 const std::string& paramType,
+							 ...);
 
 private:
-    Connection(const std::string& address);
+	Connection(const std::string& address);
 
-    GDBusConnection* connection;
+	GDBusConnection* connection;
 };
 
 } // namespace dbus

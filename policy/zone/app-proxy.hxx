@@ -28,63 +28,63 @@ namespace DevicePolicyManager {
 
 class ZoneAppProxy {
 public:
-    ZoneAppProxy(PolicyControlContext& ctxt);
-    ~ZoneAppProxy();
+	ZoneAppProxy(PolicyControlContext& ctxt);
+	~ZoneAppProxy();
 
-    //application information
-    struct AppInfo {
-        std::string zone;
-        std::string id;
-        std::string locale;
-        std::string package;
-        std::string type;
-        std::string icon;
-        std::string label;
-        int componentType;
-        bool isNoDisplayed;
-        bool isTaskManaged;
+	//application information
+	struct AppInfo {
+		std::string zone;
+		std::string id;
+		std::string locale;
+		std::string package;
+		std::string type;
+		std::string icon;
+		std::string label;
+		int componentType;
+		bool isNoDisplayed;
+		bool isTaskManaged;
 
-        REFLECTABLE
-        (
-            zone, id, locale, package, type, icon, label,
-            componentType, isNoDisplayed, isTaskManaged
-        );
-    };
+		REFLECTABLE
+		(
+			zone, id, locale, package, type, icon, label,
+			componentType, isNoDisplayed, isTaskManaged
+		);
+	};
 
-    AppInfo getAppInfo(const std::string& name, const std::string& appid);
+	AppInfo getAppInfo(const std::string& name, const std::string& appid);
 
-    int createIterator(const std::string& name);
-    AppInfo getIteratorValue(int iterator);
-    bool nextIterator(int iterator);
-    int destroyIterator(int iterator);
+	int createIterator(const std::string& name);
+	AppInfo getIteratorValue(int iterator);
+	bool nextIterator(int iterator);
+	int destroyIterator(int iterator);
 
-    //application bundle
-    struct Bundle {
-        std::string operation;
-        std::string uri;
-        std::string mime;
-        std::string category;
-        std::string appId;
-        struct Extra {
-            std::string key;
-            std::vector<std::string> value;
-            REFLECTABLE(key, value);
-        };
-        std::vector<Extra> extraData;
+	//application bundle
+	struct Bundle {
+		std::string operation;
+		std::string uri;
+		std::string mime;
+		std::string category;
+		std::string appId;
+		struct Extra {
+			std::string key;
+			std::vector<std::string> value;
+			REFLECTABLE(key, value);
+		};
+		std::vector<Extra> extraData;
 
-        REFLECTABLE
-        (
-            operation, uri, mime, category, appId, extraData
-        );
-    };
+		REFLECTABLE
+		(
+			operation, uri, mime, category, appId, extraData
+		);
+	};
 
-    int launch(const std::string& name, const Bundle& bundle);
-    int resume(const std::string& name, const std::string& appid);
-    int terminate(const std::string& name, const std::string& appid);
-    bool isRunning(const std::string& name, const std::string& appid);
+	int launch(const std::string& name, const Bundle& bundle);
+	int resume(const std::string& name, const std::string& appid);
+	int terminate(const std::string& name, const std::string& appid);
+	bool isRunning(const std::string& name, const std::string& appid);
 
 private:
-    PolicyControlContext& context;
+	PolicyControlContext& context;
 };
 
 } // namespace DevicePolicyManager

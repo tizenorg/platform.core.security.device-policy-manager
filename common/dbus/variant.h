@@ -24,34 +24,34 @@ namespace dbus {
 
 class Variant {
 public:
-    Variant(GVariant* var);
-    Variant(Variant&& var);
-    Variant();
-    ~Variant();
+	Variant(GVariant* var);
+	Variant(Variant&& var);
+	Variant();
+	~Variant();
 
-    Variant& operator=(GVariant* var);
-    operator bool () const;
-    GVariant* operator & ();
+	Variant& operator=(GVariant* var);
+	operator bool () const;
+	GVariant* operator & ();
 
-    void get(const std::string& format, ...) const;
+	void get(const std::string& format, ...) const;
 private:
-    GVariant* variant;
+	GVariant* variant;
 };
 
 class VariantIterator {
 public:
-    VariantIterator(GVariantIter* it);
-    VariantIterator(VariantIterator&& it);
-    VariantIterator();
-    ~VariantIterator();
+	VariantIterator(GVariantIter* it);
+	VariantIterator(VariantIterator&& it);
+	VariantIterator();
+	~VariantIterator();
 
-    VariantIterator& operator=(GVariantIter* it);
-    operator bool () const;
-    GVariantIter** operator & ();
+	VariantIterator& operator=(GVariantIter* it);
+	operator bool () const;
+	GVariantIter** operator & ();
 
-    bool get(const std::string& format, ...) const;
+	bool get(const std::string& format, ...) const;
 private:
-    GVariantIter* iterator;
+	GVariantIter* iterator;
 };
 
 

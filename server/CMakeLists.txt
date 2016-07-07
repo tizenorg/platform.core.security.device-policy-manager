@@ -54,8 +54,8 @@ SET(DEPENDENCY		glib-2.0
 					capi-network-bluetooth
 					notification
 					libgum
-                    cynara-client
-                    cynara-session
+					cynara-client
+					cynara-session
 )
 
 INCLUDE("${TIZEN_PROFILE_NAME}.cmake")
@@ -72,9 +72,9 @@ SET_TARGET_PROPERTIES(${TARGET} PROPERTIES COMPILE_FLAGS "-fPIE")
 SET_TARGET_PROPERTIES(${TARGET} PROPERTIES LINK_FLAGS "-pie")
 
 TARGET_COMPILE_DEFINITIONS(${TARGET} PRIVATE
-    CONF_PATH="${CONF_INSTALL_DIR}"
-    DATA_PATH="${DATA_INSTALL_DIR}"
-    DB_PATH="${DB_INSTALL_DIR}"
+	CONF_PATH="${CONF_INSTALL_DIR}"
+	DATA_PATH="${DATA_INSTALL_DIR}"
+	DB_PATH="${DB_INSTALL_DIR}"
 )
 
 CONFIGURE_FILE(systemd/device-policy-manager.service.in systemd/device-policy-manager.service)

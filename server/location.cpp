@@ -25,7 +25,7 @@
 namespace DevicePolicyManager {
 
 LocationPolicy::LocationPolicy(PolicyControlContext& ctxt) :
-    context(ctxt)
+	context(ctxt)
 {
 	context.registerParametricMethod(this, DPM_PRIVILEGE_LOCATION, (int)(LocationPolicy::setLocationState)(int));
 	context.registerNonparametricMethod(this, "", (int)(LocationPolicy::getLocationState));
@@ -39,15 +39,15 @@ LocationPolicy::~LocationPolicy()
 
 int LocationPolicy::setLocationState(int enable)
 {
-    if (location_manager_enable_restriction(!enable) != LOCATIONS_ERROR_NONE)
-	    return -1;
+	if (location_manager_enable_restriction(!enable) != LOCATIONS_ERROR_NONE)
+		return -1;
 
-    return SetPolicyAllowed(context, "location", enable);
+	return SetPolicyAllowed(context, "location", enable);
 }
 
 int LocationPolicy::getLocationState()
 {
-    return IsPolicyAllowed(context, "location");
+	return IsPolicyAllowed(context, "location");
 }
 
 LocationPolicy locationPolicy(Server::instance());

@@ -28,60 +28,51 @@ static int restriction_##__name__(struct testcase *tc)                 \
 {                                                                      \
 	device_policy_manager_h handle;                                    \
 	int state, enable = false;                                         \
-                                                                       \
 	handle = dpm_manager_create();                                     \
 	if (handle == NULL) {                                              \
 		printf("Failed to create client handle\n");                    \
 		return TEST_FAILED;                                            \
 	}                                                                  \
-                                                                       \
-    if (dpm_restriction_get_##__name__##_state(NULL, &state) == 0) {   \
+	if (dpm_restriction_get_##__name__##_state(NULL, &state) == 0) {   \
 		printf("NULL handle test in getter failed\n");                 \
 		dpm_context_destroy(handle);                                   \
 		return TEST_FAILED;                                            \
-    }                                                                  \
-                                                                       \
-    if (dpm_restriction_get_##__name__##_state(handle, NULL) == 0) {   \
+	}                                                                  \
+	if (dpm_restriction_get_##__name__##_state(handle, NULL) == 0) {   \
 		printf("NULL param test failed\n");                            \
 		dpm_context_destroy(handle);                                   \
 		return TEST_FAILED;                                            \
-    }                                                                  \
-                                                                       \
-    if (dpm_restriction_set_##__name__##_state(NULL, false) == 0) {    \
+	}                                                                  \
+	if (dpm_restriction_set_##__name__##_state(NULL, false) == 0) {    \
 		printf("NULL handle test in setter failed\n");                 \
 		dpm_context_destroy(handle);                                   \
 		return TEST_FAILED;                                            \
-    }                                                                  \
-                                                                       \
-    if (dpm_restriction_get_##__name__##_state(handle, &state) != 0) { \
+	}                                                                  \
+	if (dpm_restriction_get_##__name__##_state(handle, &state) != 0) { \
 		printf("Policy query failed\n");                               \
 		dpm_context_destroy(handle);                                   \
 		return TEST_FAILED;                                            \
-    }                                                                  \
-    enable = !state;                                                   \
+	}                                                                  \
+	enable = !state;                                                   \
 	if (dpm_restriction_set_##__name__##_state(handle, enable) != 0) { \
 		printf("Policy enforce failed\n");                             \
 		dpm_context_destroy(handle);                                   \
 		return TEST_FAILED;                                            \
 	}                                                                  \
-                                                                       \
 	dpm_restriction_get_##__name__##_state(handle, &enable);           \
 	if (enable != !state) {                                            \
 		printf("Policy check failed\n");                               \
 		dpm_context_destroy(handle);                                   \
 		return TEST_FAILED;                                            \
 	}                                                                  \
-                                                                       \
 	if (dpm_restriction_set_##__name__##_state(handle, state) != 0) {  \
 		printf("Policy recovery failed\n");                            \
 		dpm_context_destroy(handle);                                   \
 		return TEST_FAILED;                                            \
 	}                                                                  \
-                                                                       \
 	dpm_context_destroy(handle);                                       \
 	return TEST_SUCCESSED;                                             \
 }                                                                      \
-                                                                       \
 struct testcase restriction_testcase_##__name__ = {                    \
 	.description = STRINGIFY(__name__),                                \
 	.handler = restriction_##__name__                                  \
@@ -112,14 +103,14 @@ void TESTCASE_CONSTRUCTOR restriction_policy_build_testcase(void)
 	testbench_populate_testcase(&restriction_testcase_location);
 	testbench_populate_testcase(&restriction_testcase_microphone);
 	testbench_populate_testcase(&restriction_testcase_camera);
-    testbench_populate_testcase(&restriction_testcase_wifi);
-    testbench_populate_testcase(&restriction_testcase_wifi_hotspot);
-    testbench_populate_testcase(&restriction_testcase_bluetooth_tethering);
-    testbench_populate_testcase(&restriction_testcase_usb_tethering);
-    testbench_populate_testcase(&restriction_testcase_bluetooth_mode_change);
-    testbench_populate_testcase(&restriction_testcase_bluetooth_desktop_connectivity);
-    testbench_populate_testcase(&restriction_testcase_bluetooth_pairing);
-    testbench_populate_testcase(&restriction_testcase_messaging);
-    testbench_populate_testcase(&restriction_testcase_popimap_email);
-    testbench_populate_testcase(&restriction_testcase_browser);
+	testbench_populate_testcase(&restriction_testcase_wifi);
+	testbench_populate_testcase(&restriction_testcase_wifi_hotspot);
+	testbench_populate_testcase(&restriction_testcase_bluetooth_tethering);
+	testbench_populate_testcase(&restriction_testcase_usb_tethering);
+	testbench_populate_testcase(&restriction_testcase_bluetooth_mode_change);
+	testbench_populate_testcase(&restriction_testcase_bluetooth_desktop_connectivity);
+	testbench_populate_testcase(&restriction_testcase_bluetooth_pairing);
+	testbench_populate_testcase(&restriction_testcase_messaging);
+	testbench_populate_testcase(&restriction_testcase_popimap_email);
+	testbench_populate_testcase(&restriction_testcase_browser);
 }

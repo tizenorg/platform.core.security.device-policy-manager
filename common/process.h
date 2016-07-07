@@ -24,30 +24,30 @@ namespace runtime {
 
 class Process {
 public:
-    typedef pid_t Pid;
+	typedef pid_t Pid;
 
-    Process(const std::string& prog);
-    Process(const std::string& prog, const std::vector<std::string>& args);
-    Process(const Process& proc) = delete;
+	Process(const std::string& prog);
+	Process(const std::string& prog, const std::vector<std::string>& args);
+	Process(const Process& proc) = delete;
 
-    ~Process();
+	~Process();
 
-    Process& operator=(const Process& proc) = delete;
+	Process& operator=(const Process& proc) = delete;
 
-    int execute();
-    int start();
-    int waitForFinished();
-    int waitForStarted();
-    void terminate();
-    void kill();
+	int execute();
+	int start();
+	int waitForFinished();
+	int waitForStarted();
+	void terminate();
+	void kill();
 
-    bool isRunning() const;
+	bool isRunning() const;
 
 private:
-    int status;
-    Pid pid;
-    std::string program;
-    std::vector<std::string> args;
+	int status;
+	Pid pid;
+	std::string program;
+	std::vector<std::string> args;
 };
 
 } // namespace runtime
