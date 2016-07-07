@@ -16,7 +16,7 @@
 
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <sys/inotify.h>
+#include <sys/mount.h>
 
 #include <algorithm>
 
@@ -572,16 +572,17 @@ int ZoneManager::removeZone(const std::string& name)
 		return -1;
 	}
 
-	try {
-		runtime::File manifest(ZONE_MANIFEST_DIR + name + ".xml");
-		manifest.remove();
-	}  catch (runtime::Exception& e) {
-		return -1;
-	}
-
 	auto remove = [name, this] {
+		//wait for zone session close
+		sleep(1);
+
 		try {
 			runtime::User user(name);
+
+	        //umount TZ_USER_CONTENT
+			::tzplatform_set_user(user.getUid());
+			::umount2(::tzplatform_getenv(TZ_USER_CONTENT), MNT_FORCE);
+			::tzplatform_reset_user();
 
 			//remove zone user
 			GumUser *guser = gum_user_get_sync(user.getUid(), FALSE);
@@ -589,7 +590,7 @@ int ZoneManager::removeZone(const std::string& name)
 			g_object_unref(guser);
 
 			if (!ret) {
-				throw runtime::Exception("Failed to remove user (" + name + ") by gumd");
+				throw runtime::Exception("Failed to remove user " + name + "(" + std::to_string(user.getUid()) + ") by gumd");
 			}
 
 			for (std::vector<std::string>::iterator it = createdZoneList.begin();
