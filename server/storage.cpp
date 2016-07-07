@@ -117,7 +117,7 @@ int StoragePolicy::wipeData(int id)
 	auto worker = [id]() {
 		if (id & WIPE_INTERNAL_STORAGE) {
 			runtime::Process proc(PROG_FACTORY_RESET);
-			if (proc.execute() != 0) {
+			if (proc.execute() == -1) {
 				ERROR("Failed to launch factory-reset");
 				return -1;
 			}

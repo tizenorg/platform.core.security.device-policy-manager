@@ -33,19 +33,11 @@ public:
 
 	Connection() = delete;
 	Connection(const Connection&) = delete;
-	Connection(Connection&&);
 	~Connection();
 
 	Connection& operator=(const Connection&) = delete;
 
 	static Connection& getSystem();
-
-	void emitSignal(const std::string& busName,
-					const std::string& object,
-					const std::string& interface,
-					const std::string& name,
-					const std::string& paramType,
-					...);
 
 	subscriptionId subscribeSignal(const std::string& sender,
 								   const std::string& interface,

@@ -20,11 +20,6 @@
 int main(int /*argc*/, char** /*argv*/)
 {
 	audit::Logger::setLogLevel(audit::LogLevel::Trace);
-	TRACE("Trace");
-	INFO("Info");
-	DEBUG("Debug");
-	WARN("Warning");
-	ERROR("Error");
 	testbench::Testbench::runAllTestSuites();
 
 	return 0;
