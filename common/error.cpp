@@ -24,28 +24,28 @@ namespace runtime {
 
 int Error::lastErrorCode()
 {
-    return errno;
+	return errno;
 }
 
 std::string Error::message(int errorCode)
 {
-    char errmsg[256];
-    return ::strerror_r(errorCode, errmsg, sizeof(errmsg));
+	char errmsg[256];
+	return ::strerror_r(errorCode, errmsg, sizeof(errmsg));
 }
 
 std::string Error::message()
 {
-    return message(lastErrorCode());
+	return message(lastErrorCode());
 }
 
 std::string GetSystemErrorMessage(int errorCode)
 {
-    return Error::message(errorCode);
+	return Error::message(errorCode);
 }
 
 std::string GetSystemErrorMessage()
 {
-    return Error::message();
+	return Error::message();
 }
 
 } // namespace runtime

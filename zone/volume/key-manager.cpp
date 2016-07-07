@@ -34,52 +34,52 @@ const std::string ckmcIdSeperator = ckmc_owner_id_separator;
 
 bool KeyManager::isKeyExist(const std::string& keyName)
 {
-    int ret;
-    ckmc_raw_buffer_s* keyData = NULL;
-    std::string ckmAlias = addAliasPrefix(keyName);
+	int ret;
+	ckmc_raw_buffer_s* keyData = NULL;
+	std::string ckmAlias = addAliasPrefix(keyName);
 
-    ret = ::ckmc_get_data(ckmAlias.c_str(), NULL, &keyData);
-    ::ckmc_buffer_free(keyData);
+	ret = ::ckmc_get_data(ckmAlias.c_str(), NULL, &keyData);
+	::ckmc_buffer_free(keyData);
 
-    return (ret != CKMC_ERROR_DB_ALIAS_UNKNOWN);
+	return (ret != CKMC_ERROR_DB_ALIAS_UNKNOWN);
 }
 
 void KeyManager::addKey(const std::string& keyName, const std::string& data)
 {
-    int ret;
-    const std::string ckmAlias = addAliasPrefix(keyName);
-    ckmc_raw_buffer_s keyData;
-    ckmc_policy_s keyPolicy;
+	int ret;
+	const std::string ckmAlias = addAliasPrefix(keyName);
+	ckmc_raw_buffer_s keyData;
+	ckmc_policy_s keyPolicy;
 
-    keyData.data = (unsigned char*)data.c_str();
-    keyData.size = data.size();
+	keyData.data = (unsigned char*)data.c_str();
+	keyData.size = data.size();
 
-    keyPolicy.password = NULL;
-    keyPolicy.extractable = true;
+	keyPolicy.password = NULL;
+	keyPolicy.extractable = true;
 
-    ret = ::ckmc_save_data(ckmAlias.c_str(), keyData, keyPolicy);
-    if (ret != 0) {
-        throw runtime::Exception("Failed to add key data");
-    }
+	ret = ::ckmc_save_data(ckmAlias.c_str(), keyData, keyPolicy);
+	if (ret != 0) {
+		throw runtime::Exception("Failed to add key data");
+	}
 }
 
 std::string KeyManager::getKey(const std::string& keyName)
 {
-    int ret;
-    const std::string ckmAlias = addAliasPrefix(keyName);
-    ckmc_raw_buffer_s* keyData;
-    std::string result;
+	int ret;
+	const std::string ckmAlias = addAliasPrefix(keyName);
+	ckmc_raw_buffer_s* keyData;
+	std::string result;
 
-    ret = ::ckmc_get_data(ckmAlias.c_str(), NULL, &keyData);
-    if (ret != CKMC_ERROR_NONE) {
-        throw runtime::Exception("Failed to get key data");
-    }
+	ret = ::ckmc_get_data(ckmAlias.c_str(), NULL, &keyData);
+	if (ret != CKMC_ERROR_NONE) {
+		throw runtime::Exception("Failed to get key data");
+	}
 
-    result = std::string(reinterpret_cast<char*>(keyData->data), keyData->size);
+	result = std::string(reinterpret_cast<char*>(keyData->data), keyData->size);
 
-    ::ckmc_buffer_free(keyData);
+	::ckmc_buffer_free(keyData);
 
-    return result;
+	return result;
 }
 
 void KeyManager::removeKey(const std::string& keyName)

@@ -17,9 +17,10 @@
 #ifndef __RUNTIME_USER_H__
 #define __RUNTIME_USER_H__
 
-#include <string>
 #include <limits.h>
 #include <sys/types.h>
+
+#include <string>
 
 #ifndef INVALID_UID
 #define INVALID_UID             UINT_MAX
@@ -29,30 +30,30 @@ namespace runtime  {
 
 class User final {
 public:
-    User(const std::string& name);
-    User(const uid_t user);
-    User(const User& user);
-    User();
+	User(const std::string& name);
+	User(const uid_t user);
+	User(const User& user);
+	User();
 
-    const std::string& getName() const
-    {
-        return name;
-    }
+	const std::string& getName() const
+	{
+		return name;
+	}
 
-    uid_t getUid() const
-    {
-        return uid;
-    }
+	uid_t getUid() const
+	{
+		return uid;
+	}
 
-    gid_t getGid() const
-    {
-        return gid;
-    }
+	gid_t getGid() const
+	{
+		return gid;
+	}
 
 private:
-    std::string name;
-    uid_t uid;
-    gid_t gid;
+	std::string name;
+	uid_t uid;
+	gid_t gid;
 };
 
 } // namespace runtime

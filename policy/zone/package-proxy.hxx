@@ -28,47 +28,47 @@ namespace DevicePolicyManager {
 
 class ZonePackageProxy {
 public:
-    ZonePackageProxy(PolicyControlContext& ctxt);
-    ~ZonePackageProxy();
+	ZonePackageProxy(PolicyControlContext& ctxt);
+	~ZonePackageProxy();
 
-    //package information
-    struct PackageInfo {
-        std::string zone;
-        std::string id;
-        std::string locale;
-        std::string type;
-        std::string icon;
-        std::string label;
-        std::string description;
-        struct {
-            std::string name;
-            std::string email;
-            std::string href;
-            REFLECTABLE(name, email, href);
-        } author;
-        std::string version;
-        std::string apiVersion;
-        std::string mainAppId;
-        bool isSystem;
-        bool isRemovable;
-        bool isPreload;
+	//package information
+	struct PackageInfo {
+		std::string zone;
+		std::string id;
+		std::string locale;
+		std::string type;
+		std::string icon;
+		std::string label;
+		std::string description;
+		struct {
+			std::string name;
+			std::string email;
+			std::string href;
+			REFLECTABLE(name, email, href);
+		} author;
+		std::string version;
+		std::string apiVersion;
+		std::string mainAppId;
+		bool isSystem;
+		bool isRemovable;
+		bool isPreload;
 
-        REFLECTABLE
-        (
-            zone, id, locale, type, icon, label, description, author,
-            version, apiVersion, mainAppId, isSystem, isRemovable, isPreload
-        );
-    };
+		REFLECTABLE
+		(
+			zone, id, locale, type, icon, label, description, author,
+			version, apiVersion, mainAppId, isSystem, isRemovable, isPreload
+		);
+	};
 
-    PackageInfo getPackageInfo(const std::string& name, const std::string& pkgid);
-    std::vector<std::string> getPackageList(const std::string& name);
+	PackageInfo getPackageInfo(const std::string& name, const std::string& pkgid);
+	std::vector<std::string> getPackageList(const std::string& name);
 
-    //package manager request
-    int install(const std::string& name, const std::string& pkgpath);
-    int uninstall(const std::string& name, const std::string& pkgid);
+	//package manager request
+	int install(const std::string& name, const std::string& pkgpath);
+	int uninstall(const std::string& name, const std::string& pkgid);
 
 private:
-    PolicyControlContext& context;
+	PolicyControlContext& context;
 };
 
 } // namespace DevicePolicyManager

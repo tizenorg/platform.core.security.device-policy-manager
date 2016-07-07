@@ -25,7 +25,7 @@ namespace audit {
 
 class NullLogSink : public LogSink {
 public:
-    void sink(const std::string& message) override;
+	void sink(const std::string& message) override;
 };
 
 } // namespace audit

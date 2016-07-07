@@ -29,20 +29,20 @@
 
 class PolicyStorage {
 public:
-    PolicyStorage(const std::string& path, bool create = true);
-    ~PolicyStorage();
+	PolicyStorage(const std::string& path, bool create = true);
+	~PolicyStorage();
 
-    PolicyStorage(const PolicyStorage&) = delete;
-    PolicyStorage& operator=(const PolicyStorage&) = delete;
+	PolicyStorage(const PolicyStorage&) = delete;
+	PolicyStorage& operator=(const PolicyStorage&) = delete;
 
-    Policy& getPolicy(const std::string& name);
+	Policy& getPolicy(const std::string& name);
 
-    void flush();
+	void flush();
 
 private:
-    std::string location;
-    std::unique_ptr<xml::Document> data;
-    std::unordered_map<std::string, Policy> policyMap;
+	std::string location;
+	std::unique_ptr<xml::Document> data;
+	std::unordered_map<std::string, Policy> policyMap;
 };
 
 #endif //__DPM_POLICY_STORAGE_H__

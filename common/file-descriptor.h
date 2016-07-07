@@ -22,44 +22,43 @@
 #include <iostream>
 
 struct FileDescriptor {
-    FileDescriptor(int fd = -1, bool autoclose = false) :
-        fileDescriptor(fd),
-        autoClose(autoclose)
-    {
-    }
+	FileDescriptor(int fd = -1, bool autoclose = false) :
+		fileDescriptor(fd), autoClose(autoclose)
+	{
+	}
 
-    FileDescriptor(const FileDescriptor&) = delete;
-    FileDescriptor(FileDescriptor&& rhs) :
-        fileDescriptor(rhs.fileDescriptor),
-        autoClose(rhs.autoClose)
-    {
-        rhs.fileDescriptor = -1;
-    }
+	FileDescriptor(const FileDescriptor&) = delete;
+	FileDescriptor(FileDescriptor&& rhs) :
+		fileDescriptor(rhs.fileDescriptor),
+		autoClose(rhs.autoClose)
+	{
+		rhs.fileDescriptor = -1;
+	}
 
-    ~FileDescriptor() {
-        if ((fileDescriptor != -1) && (autoClose == true)) {
-            ::close(fileDescriptor);
-        }
-    }
+	~FileDescriptor() {
+		if ((fileDescriptor != -1) && (autoClose == true)) {
+			::close(fileDescriptor);
+		}
+	}
 
-    FileDescriptor& operator=(const int fd) {
-        fileDescriptor = fd;
-        autoClose = false;
-        return *this;
-    }
+	FileDescriptor& operator=(const int fd) {
+		fileDescriptor = fd;
+		autoClose = false;
+		return *this;
+	}
 
-    FileDescriptor& operator=(FileDescriptor&& rhs) {
-        if (this != &rhs) {
-            fileDescriptor = rhs.fileDescriptor;
-            autoClose = rhs.autoClose;
-            rhs.fileDescriptor = -1;
-        }
+	FileDescriptor& operator=(FileDescriptor&& rhs) {
+		if (this != &rhs) {
+			fileDescriptor = rhs.fileDescriptor;
+			autoClose = rhs.autoClose;
+			rhs.fileDescriptor = -1;
+		}
 
-        return *this;
-    }
+		return *this;
+	}
 
-    int fileDescriptor;
-    bool autoClose;
+	int fileDescriptor;
+	bool autoClose;
 };
 
 #endif //__RUNTIME_FILE_DESCRIPTOR_H__

@@ -66,15 +66,15 @@ typedef void* device_policy_manager_h;
  * @since_tizen 3.0
  */
 typedef enum {
-    DPM_ERROR_NONE                 = TIZEN_ERROR_NONE,                 /**< The operation was successful */
-    DPM_ERROR_INVALID_PARAMETER    = TIZEN_ERROR_INVALID_PARAMETER,    /**< Invalid parameter */
-    DPM_ERROR_CONNECTION_REFUSED   = TIZEN_ERROR_CONNECTION_REFUSED,   /**< Connection refused */
-    DPM_ERROR_TIMED_OUT            = TIZEN_ERROR_TIMED_OUT,            /**< Time out */
-    DPM_ERROR_PERMISSION_DENIED    = TIZEN_ERROR_PERMISSION_DENIED,    /**< Access privilege is not sufficient */
-    DPM_ERROR_NOT_PERMITTED        = TIZEN_ERROR_NOT_PERMITTED,        /**< Operation not permitted */
-    DPM_ERROR_FILE_EXISTS          = TIZEN_ERROR_FILE_EXISTS,          /**< File exists */
-    DPM_ERROR_OUT_OF_MEMORY        = TIZEN_ERROR_OUT_OF_MEMORY,        /**< Out of memory */
-    DPM_ERROR_NO_DATA              = TIZEN_ERROR_NO_DATA               /**< No Data */
+	DPM_ERROR_NONE                 = TIZEN_ERROR_NONE,                 /**< The operation was successful */
+	DPM_ERROR_INVALID_PARAMETER    = TIZEN_ERROR_INVALID_PARAMETER,    /**< Invalid parameter */
+	DPM_ERROR_CONNECTION_REFUSED   = TIZEN_ERROR_CONNECTION_REFUSED,   /**< Connection refused */
+	DPM_ERROR_TIMED_OUT            = TIZEN_ERROR_TIMED_OUT,            /**< Time out */
+	DPM_ERROR_PERMISSION_DENIED    = TIZEN_ERROR_PERMISSION_DENIED,    /**< Access privilege is not sufficient */
+	DPM_ERROR_NOT_PERMITTED        = TIZEN_ERROR_NOT_PERMITTED,        /**< Operation not permitted */
+	DPM_ERROR_FILE_EXISTS          = TIZEN_ERROR_FILE_EXISTS,          /**< File exists */
+	DPM_ERROR_OUT_OF_MEMORY        = TIZEN_ERROR_OUT_OF_MEMORY,        /**< Out of memory */
+	DPM_ERROR_NO_DATA              = TIZEN_ERROR_NO_DATA               /**< No Data */
 } dpm_error_type_e;
 
 /**
@@ -133,10 +133,10 @@ int dpm_manager_destroy(device_policy_manager_h handle);
  * @see         dpm_remove_policy_changed_cb()
  */
 int dpm_add_policy_changed_cb(device_policy_manager_h handle,
-                              const char* name,
-                              dpm_policy_changed_cb callback,
-                              void* user_data,
-                              int* id);
+							  const char* name,
+							  dpm_policy_changed_cb callback,
+							  void* user_data,
+							  int* id);
 /**
  * @brief       Removes policy change callback from the device policy
  *              manager.
@@ -188,7 +188,7 @@ typedef void(*dpm_signal_cb)(const char* name, const char* object, void *user_da
  * @see         dpm_remove_signal_cb()
  */
 int dpm_add_signal_cb(device_policy_manager_h handle, const char* signal,
-                      dpm_signal_cb callback, void* user_data, int* id);
+					  dpm_signal_cb callback, void* user_data, int* id);
 
 /**
  * @brief       Removes signal callback.

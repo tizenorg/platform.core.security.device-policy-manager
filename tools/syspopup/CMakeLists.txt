@@ -5,8 +5,8 @@ INCLUDE_DIRECTORIES(./include)
 
 FIND_PACKAGE(PkgConfig REQUIRED)
 PKG_CHECK_MODULES(dpm_syspopup_pkgs REQUIRED
-        dlog
-        glib-2.0
+		dlog
+		glib-2.0
 	bundle
 	efl-extension
 	elementary
@@ -21,8 +21,8 @@ LINK_DIRECTORIES(${dpm_syspopup_pkgs_LIBRARY_DIRS})
 
 SET(PKG_NAME "${PROJECT_NAME}")
 SET(PKG_SRC src/main.c
-            src/ui.c
-            src/popup-list.c)
+			src/ui.c
+			src/popup-list.c)
 
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIE")
 SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pie")

@@ -31,61 +31,61 @@
 
 class Client {
 public:
-    Client(const Client&) = delete;
-    Client(Client&&) = default;
-    Client(const std::string& name, const std::string& key);
+	Client(const Client&) = delete;
+	Client(Client&&) = default;
+	Client(const std::string& name, const std::string& key);
 
-    ~Client();
+	~Client();
 
-    Client& operator=(Client&&) = default;
-    Client& operator=(const Client&) = delete;
+	Client& operator=(Client&&) = default;
+	Client& operator=(const Client&) = delete;
 
-    inline std::string getName() const
-    {
-        return name;
-    }
+	inline std::string getName() const
+	{
+		return name;
+	}
 
-    inline std::string getKey() const
-    {
-        return key;
-    }
+	inline std::string getKey() const
+	{
+		return key;
+	}
 
 private:
-    std::string name;
-    std::string key;
+	std::string name;
+	std::string key;
 
-    std::unique_ptr<PolicyStorage> policyStorage;
+	std::unique_ptr<PolicyStorage> policyStorage;
 };
 
 class ClientManager {
 public:
-    ClientManager(const ClientManager&) = delete;
-    ClientManager& operator=(const ClientManager&) = delete;
+	ClientManager(const ClientManager&) = delete;
+	ClientManager& operator=(const ClientManager&) = delete;
 
-    void registerClient(const std::string& name);
-    void deregisterClient(const std::string& name);
+	void registerClient(const std::string& name);
+	void deregisterClient(const std::string& name);
 
-    std::string generateKey();
+	std::string generateKey();
 
-    static ClientManager& instance();
-
-private:
-    ClientManager();
-    ~ClientManager();
-
-    void loadClients();
-    void prepareRepository();
-    std::string getPackageName(int pid);
+	static ClientManager& instance();
 
 private:
-    typedef std::vector<Client> ClientList;
-    ClientList activatedClients;
-    ClientList registeredClients;
+	ClientManager();
+	~ClientManager();
 
-    std::unique_ptr<database::Connection> clientRepository;
+	void loadClients();
+	void prepareRepository();
+	std::string getPackageName(int pid);
 
-    typedef std::recursive_mutex Mutex;
-    Mutex mutex;
+private:
+	typedef std::vector<Client> ClientList;
+	ClientList activatedClients;
+	ClientList registeredClients;
+
+	std::unique_ptr<database::Connection> clientRepository;
+
+	typedef std::recursive_mutex Mutex;
+	Mutex mutex;
 };
 
 #endif //__DPM_CLIENT_MANAGER_H__

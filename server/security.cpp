@@ -47,13 +47,13 @@ const std::string PROG_POWEROFF = "/usr/sbin/poweroff";
 } // namespace
 
 SecurityPolicy::SecurityPolicy(PolicyControlContext& ctxt) :
-    context(ctxt)
+	context(ctxt)
 {
-    ctxt.registerNonparametricMethod(this, DPM_PRIVILEGE_LOCK, (int)(SecurityPolicy::lockoutScreen));
-    ctxt.registerNonparametricMethod(this, "", (int)(SecurityPolicy::isInternalStorageEncrypted));
-    ctxt.registerNonparametricMethod(this, "", (int)(SecurityPolicy::isExternalStorageEncrypted));
-    ctxt.registerParametricMethod(this, DPM_PRIVILEGE_SECURITY, (int)(SecurityPolicy::setInternalStorageEncryption)(bool));
-    ctxt.registerParametricMethod(this, DPM_PRIVILEGE_SECURITY, (int)(SecurityPolicy::setExternalStorageEncryption)(bool));
+	ctxt.registerNonparametricMethod(this, DPM_PRIVILEGE_LOCK, (int)(SecurityPolicy::lockoutScreen));
+	ctxt.registerNonparametricMethod(this, "", (int)(SecurityPolicy::isInternalStorageEncrypted));
+	ctxt.registerNonparametricMethod(this, "", (int)(SecurityPolicy::isExternalStorageEncrypted));
+	ctxt.registerParametricMethod(this, DPM_PRIVILEGE_SECURITY, (int)(SecurityPolicy::setInternalStorageEncryption)(bool));
+	ctxt.registerParametricMethod(this, DPM_PRIVILEGE_SECURITY, (int)(SecurityPolicy::setExternalStorageEncryption)(bool));
 }
 
 SecurityPolicy::~SecurityPolicy()
@@ -62,81 +62,81 @@ SecurityPolicy::~SecurityPolicy()
 
 int SecurityPolicy::lockoutScreen()
 {
-    try {
-        Launchpad launchpad(context.getPeerUid());
-        launchpad.launch(APPID_LOCKSCREEN);
+	try {
+		Launchpad launchpad(context.getPeerUid());
+		launchpad.launch(APPID_LOCKSCREEN);
    } catch (runtime::Exception &e) {
-        ERROR("Failed to launch lockscreen: " + APPID_LOCKSCREEN);
-        return -1;
-    }
+		ERROR("Failed to launch lockscreen: " + APPID_LOCKSCREEN);
+		return -1;
+	}
 
-    return 0;
+	return 0;
 }
 
 int SecurityPolicy::setInternalStorageEncryption(bool encrypt)
 {
-    std::string policy = context.getPolicy("internal-storage-encryption");
-    if ((encrypt == true) && (policy == "encrypted")) {
-        return 0;
-    } else if ((encrypt == false) && (policy == "decrypted")) {
-        return 0;
-    }
+	std::string policy = context.getPolicy("internal-storage-encryption");
+	if ((encrypt == true) && (policy == "encrypted")) {
+		return 0;
+	} else if ((encrypt == false) && (policy == "decrypted")) {
+		return 0;
+	}
 
-    try {
-        Bundle bundle;
-        bundle.add("viewtype", encrypt ? "ENCRYPT_DEVICE" : "DECRYPT_DEVICE");
+	try {
+		Bundle bundle;
+		bundle.add("viewtype", encrypt ? "ENCRYPT_DEVICE" : "DECRYPT_DEVICE");
 
-        Launchpad launchpad(context.getPeerUid());
-        launchpad.launch(APPID_DEVICE_ENCRYPTION, bundle);
-    } catch (runtime::Exception& e) {
-        ERROR("Failed to start device encryption");
-        return -1;
-    }
+		Launchpad launchpad(context.getPeerUid());
+		launchpad.launch(APPID_DEVICE_ENCRYPTION, bundle);
+	} catch (runtime::Exception& e) {
+		ERROR("Failed to start device encryption");
+		return -1;
+	}
 
-    return 0;
+	return 0;
 }
 
 int SecurityPolicy::isInternalStorageEncrypted()
 {
-    std::string policy = context.getPolicy("internal-storage-encryption");
-    if (policy == "encrypted") {
-        return true;
-    }
+	std::string policy = context.getPolicy("internal-storage-encryption");
+	if (policy == "encrypted") {
+		return true;
+	}
 
-    return false;
+	return false;
 }
 
 int SecurityPolicy::setExternalStorageEncryption(bool encrypt)
 {
-    std::string policy = context.getPolicy("external-storage-encryption");
-    if ((encrypt == true) && (policy == "encrypted")) {
-        return 0;
-    } else if ((encrypt == false) && (policy == "decrypted")) {
-        return 0;
-    }
+	std::string policy = context.getPolicy("external-storage-encryption");
+	if ((encrypt == true) && (policy == "encrypted")) {
+		return 0;
+	} else if ((encrypt == false) && (policy == "decrypted")) {
+		return 0;
+	}
 
-    try {
-        Bundle bundle;
-        bundle.add("viewtype", encrypt ? "ENCRYPT_SD_CARD" : "DECRYPT_SD_CARD");
+	try {
+		Bundle bundle;
+		bundle.add("viewtype", encrypt ? "ENCRYPT_SD_CARD" : "DECRYPT_SD_CARD");
 
-        Launchpad launchpad(context.getPeerUid());
-        launchpad.launch(APPID_DEVICE_ENCRYPTION, bundle);
-    } catch (runtime::Exception& e) {
-        ERROR("Failed to start sd card encryption");
-        return -1;
-    }
+		Launchpad launchpad(context.getPeerUid());
+		launchpad.launch(APPID_DEVICE_ENCRYPTION, bundle);
+	} catch (runtime::Exception& e) {
+		ERROR("Failed to start sd card encryption");
+		return -1;
+	}
 
-    return 0;
+	return 0;
 }
 
 int SecurityPolicy::isExternalStorageEncrypted()
 {
-    std::string policy = context.getPolicy("external-storage-encryption");
-    if (policy == "encrypted") {
-        return true;
-    }
+	std::string policy = context.getPolicy("external-storage-encryption");
+	if (policy == "encrypted") {
+		return true;
+	}
 
-    return false;
+	return false;
 }
 
 SecurityPolicy securityPolicy(Server::instance());

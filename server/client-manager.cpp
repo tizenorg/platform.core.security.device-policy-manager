@@ -33,10 +33,10 @@ const std::string clientPolicyStorage = CONF_PATH "/policy";
 } //namespace
 
 Client::Client(const std::string& pkgname, const std::string& pk) :
-    name(pkgname), key(pk), policyStorage(nullptr)
+	name(pkgname), key(pk), policyStorage(nullptr)
 {
-    std::string storagePath = clientPolicyStorage + "/" + name;
-    policyStorage.reset(new PolicyStorage(storagePath));
+	std::string storagePath = clientPolicyStorage + "/" + name;
+	policyStorage.reset(new PolicyStorage(storagePath));
 }
 
 Client::~Client()
@@ -50,14 +50,14 @@ const std::string clientDBName = ".client.db";
 
 } //namespace
 
-ClientManager::ClientManager()
-    : clientRepository(nullptr)
+ClientManager::ClientManager() :
+	clientRepository(nullptr)
 {
-    std::string location = dataStorageLocation + "/" + clientDBName;
-    clientRepository.reset(new database::Connection(location, database::Connection::ReadWrite |
-                           database::Connection::Create));
-    prepareRepository();
-    loadClients();
+	std::string location = dataStorageLocation + "/" + clientDBName;
+	clientRepository.reset(new database::Connection(location, database::Connection::ReadWrite |
+						   database::Connection::Create));
+	prepareRepository();
+	loadClients();
 }
 
 ClientManager::~ClientManager()
@@ -66,89 +66,89 @@ ClientManager::~ClientManager()
 
 void ClientManager::registerClient(const std::string& name)
 {
-    std::lock_guard<Mutex> lock(mutex);
+	std::lock_guard<Mutex> lock(mutex);
 
-    std::string selectQuery = "SELECT * FROM CLIENT WHERE PKG = \"" + name + "\"";
-    database::Statement stmt0(*clientRepository, selectQuery);
-    if (stmt0.step()) {
-        throw runtime::Exception("Client already registered");
-    }
+	std::string selectQuery = "SELECT * FROM CLIENT WHERE PKG = \"" + name + "\"";
+	database::Statement stmt0(*clientRepository, selectQuery);
+	if (stmt0.step()) {
+		throw runtime::Exception("Client already registered");
+	}
 
-    std::string key = generateKey();
+	std::string key = generateKey();
 
-    std::string insertQuery = "INSERT INTO CLIENT (PKG, KEY, VALID) VALUES (?, ?, ?)";
-    database::Statement stmt(*clientRepository, insertQuery);
-    stmt.bind(1, name);
-    stmt.bind(2, key);
-    stmt.bind(3, true);
+	std::string insertQuery = "INSERT INTO CLIENT (PKG, KEY, VALID) VALUES (?, ?, ?)";
+	database::Statement stmt(*clientRepository, insertQuery);
+	stmt.bind(1, name);
+	stmt.bind(2, key);
+	stmt.bind(3, true);
 
-    if (!stmt.exec()) {
-        throw runtime::Exception("Failed to insert client data");
-    }
+	if (!stmt.exec()) {
+		throw runtime::Exception("Failed to insert client data");
+	}
 
-    registeredClients.push_back(Client(name, key));
+	registeredClients.push_back(Client(name, key));
 }
 
 void ClientManager::deregisterClient(const std::string& name)
 {
-    auto removeClient = [](ClientList & list, const std::string & name) {
-        ClientList::iterator iter = list.begin();
-        while (iter != list.end()) {
-            Client& client = *iter;
-            if (client.getName() == name) {
-                list.erase(iter);
-                return true;
-            }
-            ++iter;
-        }
+	auto removeClient = [](ClientList & list, const std::string & name) {
+		ClientList::iterator iter = list.begin();
+		while (iter != list.end()) {
+			Client& client = *iter;
+			if (client.getName() == name) {
+				list.erase(iter);
+				return true;
+			}
+			++iter;
+		}
 
-        return false;
-    };
+		return false;
+	};
 
-    std::lock_guard<Mutex> lock(mutex);
+	std::lock_guard<Mutex> lock(mutex);
 
-    std::string query = "DELETE FROM CLIENT WHERE PKG = \"" + name + "\"";
-    if (!clientRepository->exec(query)) {
-        throw runtime::Exception("Failed to delete client data");
-    }
+	std::string query = "DELETE FROM CLIENT WHERE PKG = \"" + name + "\"";
+	if (!clientRepository->exec(query)) {
+		throw runtime::Exception("Failed to delete client data");
+	}
 
-    if (!removeClient(registeredClients, name)) {
-        removeClient(activatedClients, name);
-    }
+	if (!removeClient(registeredClients, name)) {
+		removeClient(activatedClients, name);
+	}
 }
 
 std::string ClientManager::generateKey()
 {
-    std::string key = "TestKey";
-    return key;
+	std::string key = "TestKey";
+	return key;
 }
 
 void ClientManager::loadClients()
 {
-    std::lock_guard<Mutex> lock(mutex);
+	std::lock_guard<Mutex> lock(mutex);
 
-    database::Statement stmt(*clientRepository, "SELECT * FROM CLIENT");
-    while (stmt.step()) {
-        std::string name = stmt.getColumn(1).getText();
-        std::string key = stmt.getColumn(2).getText();
+	database::Statement stmt(*clientRepository, "SELECT * FROM CLIENT");
+	while (stmt.step()) {
+		std::string name = stmt.getColumn(1).getText();
+		std::string key = stmt.getColumn(2).getText();
 
-        registeredClients.push_back(Client(name, key));
-    }
+		registeredClients.push_back(Client(name, key));
+	}
 }
 
 void ClientManager::prepareRepository()
 {
-    std::string query = "CREATE TABLE IF NOT EXISTS CLIENT ("    \
-                        "ID INTEGER PRIMARY KEY AUTOINCREMENT, " \
-                        "PKG TEXT, "                             \
-                        "KEY TEXT, "                             \
-                        "VALID INTEGER)";
+	std::string query = "CREATE TABLE IF NOT EXISTS CLIENT ("    \
+						"ID INTEGER PRIMARY KEY AUTOINCREMENT, " \
+						"PKG TEXT, "                             \
+						"KEY TEXT, "                             \
+						"VALID INTEGER)";
 
-    clientRepository->exec(query);
+	clientRepository->exec(query);
 }
 
 ClientManager& ClientManager::instance()
 {
-    static ClientManager __instance__;
-    return __instance__;
+	static ClientManager __instance__;
+	return __instance__;
 }

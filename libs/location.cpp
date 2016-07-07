@@ -19,8 +19,8 @@
 
 namespace DevicePolicyManager {
 
-LocationPolicy::LocationPolicy(PolicyControlContext& ctxt)
-	: context(ctxt)
+LocationPolicy::LocationPolicy(PolicyControlContext& ctxt) :
+	context(ctxt)
 {
 }
 

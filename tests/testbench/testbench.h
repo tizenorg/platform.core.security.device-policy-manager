@@ -27,54 +27,54 @@
 namespace testbench {
 
 struct Source {
-    Source(const std::string& file, long line, const std::string& msg);
+	Source(const std::string& file, long line, const std::string& msg);
 
-    std::string fileName;
-    long lineNumber;
-    std::string	message;
+	std::string fileName;
+	long lineNumber;
+	std::string	message;
 };
 
 class TestResult {
 public:
-    TestResult();
-    virtual ~TestResult();
-    virtual void testsStarted();
-    virtual void addFailure(const std::string& name, const Source& source);
-    virtual void testsEnded();
+	TestResult();
+	virtual ~TestResult();
+	virtual void testsStarted();
+	virtual void addFailure(const std::string& name, const Source& source);
+	virtual void testsEnded();
 
 private:
-    int	__failureCount;
+	int	__failureCount;
 };
 
 class TestSuite {
 public:
-    TestSuite(const std::string& name);
-    virtual ~TestSuite();
+	TestSuite(const std::string& name);
+	virtual ~TestSuite();
 
-    TestSuite(const TestSuite&) = delete;
-    TestSuite& operator=(const TestSuite&) = delete;
+	TestSuite(const TestSuite&) = delete;
+	TestSuite& operator=(const TestSuite&) = delete;
 
-    void run();
+	void run();
 
-    const std::string& name() const {
-        return __testName;
-    }
+	const std::string& name() const {
+		return __testName;
+	}
 
 protected:
-    typedef void (TestSuite::*TestFunction)();
+	typedef void (TestSuite::*TestFunction)();
 
-    struct TestCase {
-        TestCase(TestFunction func, const std::string& name) :
-            function(func), testName(name)
-        {
-        }
+	struct TestCase {
+		TestCase(TestFunction func, const std::string& name) :
+			function(func), testName(name)
+		{
+		}
 
-        TestFunction function;
-        std::string testName;
-    };
+		TestFunction function;
+		std::string testName;
+	};
 
-    virtual void setup();
-    virtual void teardown();
+	virtual void setup();
+	virtual void teardown();
 
 #define addTest(func)	\
 	registerTestCase(static_cast<TestFunction>(&func), #func)
@@ -82,35 +82,35 @@ protected:
 #define addTestWithName(func, name)	\
 	registerTestCase(static_cast<TestFunction>(&func), name)
 
-    void registerTestCase(TestFunction func, const std::string& name);
-    bool check(long expected, long actual, const std::string& file, long line);
+	void registerTestCase(TestFunction func, const std::string& name);
+	bool check(long expected, long actual, const std::string& file, long line);
 
 protected:
-    std::string __testName;
+	std::string __testName;
 
 private:
-    typedef std::vector<TestCase> TestCaseRegistry;
+	typedef std::vector<TestCase> TestCaseRegistry;
 
-    TestCaseRegistry __registry;
+	TestCaseRegistry __registry;
 };
 
 class Testbench {
 public:
-    static void addTestSuite(TestSuite *testSuite);
-    static void runAllTestSuites();
-    static void report(const std::string& name, const Source& source);
+	static void addTestSuite(TestSuite *testSuite);
+	static void runAllTestSuites();
+	static void report(const std::string& name, const Source& source);
 
 private:
-    static Testbench& instance();
+	static Testbench& instance();
 
-    void add(TestSuite *testSuite);
-    void run();
+	void add(TestSuite *testSuite);
+	void run();
 
 private:
-    static std::unique_ptr<TestResult> collector;
+	static std::unique_ptr<TestResult> collector;
 
-    typedef std::vector<TestSuite *> TestSuiteRegistry;
-    TestSuiteRegistry __testSuites;
+	typedef std::vector<TestSuite *> TestSuiteRegistry;
+	TestSuiteRegistry __testSuites;
 };
 
 #ifndef __FILENAME__
@@ -121,43 +121,43 @@ private:
 #define TESTCASE(TestName)                              \
 class TestName##TestCase : public testbench::TestSuite {\
 public:                                                 \
-    TestName##TestCase()                                \
-        : TestSuite(#TestName)                          \
-    {                                                   \
-        addTestWithName(TestName##TestCase::standalone, #TestName); \
-    }                                                   \
-    void standalone();                                  \
+	TestName##TestCase()                                \
+		: TestSuite(#TestName)                          \
+	{                                                   \
+		addTestWithName(TestName##TestCase::standalone, #TestName); \
+	}                                                   \
+	void standalone();                                  \
 } TestName##TestCase##Instance;                         \
 void TestName##TestCase::standalone()
 
 #define TEST_CHECK(condition)                           \
 {                                                       \
-    if (!(condition)) {                                 \
-        testbench::Testbench::report(__testName,        \
-        testbench::Source(__FILENAME__, __LINE__, #condition));  \
-        return;                                         \
-    }                                                   \
+	if (!(condition)) {                                 \
+		testbench::Testbench::report(__testName,        \
+		testbench::Source(__FILENAME__, __LINE__, #condition));  \
+		return;                                         \
+	}                                                   \
 }
 
 #define TEST_EXPECT(expected, actual)                   \
 {                                                       \
-    __typeof__(expected) _exp = (expected);             \
-    __typeof__(actual) _act = (actual);                 \
-    if (_exp != _act) {                                 \
-        std::stringstream _stream;                      \
-        _stream << "expected " << _exp                  \
-                << " but it was " << _act;              \
-        testbench::Testbench::report(__testName,        \
-        testbench::Source(__FILENAME__, __LINE__, _stream.str())); \
-        return;                                         \
-    }                                                   \
+	__typeof__(expected) _exp = (expected);             \
+	__typeof__(actual) _act = (actual);                 \
+	if (_exp != _act) {                                 \
+		std::stringstream _stream;                      \
+		_stream << "expected " << _exp                  \
+				<< " but it was " << _act;              \
+		testbench::Testbench::report(__testName,        \
+		testbench::Source(__FILENAME__, __LINE__, _stream.str())); \
+		return;                                         \
+	}                                                   \
 }
 
 #define TEST_FAIL(text)                                 \
 {                                                       \
-    testbench::Testbench::report(__testName,            \
-    testbench::Source(__FILENAME__, __LINE__, (text))); \
-    return;                                             \
+	testbench::Testbench::report(__testName,            \
+	testbench::Source(__FILENAME__, __LINE__, (text))); \
+	return;                                             \
 }
 } // namespace testbench
 #endif //!__DPM_TESTBENCH_H__

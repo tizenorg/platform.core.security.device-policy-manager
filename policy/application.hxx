@@ -24,35 +24,35 @@ namespace DevicePolicyManager {
 
 class ApplicationPolicy {
 public:
-    enum PrivilegeType {
-        PRIVILEGE_TYPE_WRT = 0,
-        PRIVILEGE_TYPE_CORE = 1
-    };
+	enum PrivilegeType {
+		PRIVILEGE_TYPE_WRT = 0,
+		PRIVILEGE_TYPE_CORE = 1
+	};
 
-    enum RestrictionMode {
-        RESTRICTION_MODE_ALL = 0x0F,
-        RESTRICTION_MODE_INSTALL = 0x01,
-        RESTRICTION_MODE_UNINSTALL = 0x02,
-        RESTRICTION_MODE_REINSTALL = 0x04,
-        RESTRICTION_MODE_MVOE = 0x08
-    };
+	enum RestrictionMode {
+		RESTRICTION_MODE_ALL = 0x0F,
+		RESTRICTION_MODE_INSTALL = 0x01,
+		RESTRICTION_MODE_UNINSTALL = 0x02,
+		RESTRICTION_MODE_REINSTALL = 0x04,
+		RESTRICTION_MODE_MVOE = 0x08
+	};
 
-    ApplicationPolicy(PolicyControlContext& ctxt);
-    ~ApplicationPolicy();
+	ApplicationPolicy(PolicyControlContext& ctxt);
+	~ApplicationPolicy();
 
-    int installPackage(const std::string& pkgpath);
-    int uninstallPackage(const std::string& pkgid);
+	int installPackage(const std::string& pkgpath);
+	int uninstallPackage(const std::string& pkgid);
 
-    int setModeRestriction(int mode);
-    int unsetModeRestriction(int mode);
-    int getModeRestriction();
+	int setModeRestriction(int mode);
+	int unsetModeRestriction(int mode);
+	int getModeRestriction();
 
-    int addPrivilegeToBlacklist(int type, const std::string& privilege);
-    int removePrivilegeFromBlacklist(int type, const std::string& privilege);
-    int checkPrivilegeIsBlacklisted(int type, const std::string& privilege);
+	int addPrivilegeToBlacklist(int type, const std::string& privilege);
+	int removePrivilegeFromBlacklist(int type, const std::string& privilege);
+	int checkPrivilegeIsBlacklisted(int type, const std::string& privilege);
 
 private:
-    PolicyControlContext& context;
+	PolicyControlContext& context;
 };
 
 } // namespace DevicePolicyManager

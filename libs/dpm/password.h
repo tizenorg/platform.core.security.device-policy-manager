@@ -39,20 +39,20 @@ extern "C" {
  * @since_tizen 3.0
  */
 typedef enum {
-    DPM_PASSWORD_QUALITY_UNSPECIFIED     = 0x00,    /**< No requirements for password. */
-    DPM_PASSWORD_QUALITY_SIMPLE_PASSWORD = 0x01,    /**< EAS(Exchange ActiveSync) requirement for simple password */
-    DPM_PASSWORD_QUALITY_SOMETHING       = 0x10,    /**< Some kind password is required, but doesn't care what it is */
-    DPM_PASSWORD_QUALITY_NUMERIC         = 0x20,    /**< Containing at least numeric characters */
-    DPM_PASSWORD_QUALITY_ALPHABETIC      = 0x40,    /**< Containing at least alphabetic (or other symbol) characters */
-    DPM_PASSWORD_QUALITY_ALPHANUMERIC    = 0x80,    /**< Containing at least numeric and alphabetic characters */
+	DPM_PASSWORD_QUALITY_UNSPECIFIED     = 0x00,    /**< No requirements for password. */
+	DPM_PASSWORD_QUALITY_SIMPLE_PASSWORD = 0x01,    /**< EAS(Exchange ActiveSync) requirement for simple password */
+	DPM_PASSWORD_QUALITY_SOMETHING       = 0x10,    /**< Some kind password is required, but doesn't care what it is */
+	DPM_PASSWORD_QUALITY_NUMERIC         = 0x20,    /**< Containing at least numeric characters */
+	DPM_PASSWORD_QUALITY_ALPHABETIC      = 0x40,    /**< Containing at least alphabetic (or other symbol) characters */
+	DPM_PASSWORD_QUALITY_ALPHANUMERIC    = 0x80,    /**< Containing at least numeric and alphabetic characters */
 } dpm_password_quality_e;
 
 typedef enum {
-    DPM_PASSWORD_STATUS_NORMAL,                 /**< Password normal status */
-    DPM_PASSWORD_STATUS_CHANGED,                /**< Password successfully changed */
-    DPM_PASSWORD_STATUS_NOT_CHANGED,            /**< Password not changed */
-    DPM_PASSWORD_STATUS_CHANGE_REQUIRED ,       /**< Password change required */
-    DPM_PASSWORD_STATUS_MAX_ATTEMPTS_EXCEEDED,  /**< Password Max Attempts Exceeded*/
+	DPM_PASSWORD_STATUS_NORMAL,                 /**< Password normal status */
+	DPM_PASSWORD_STATUS_CHANGED,                /**< Password successfully changed */
+	DPM_PASSWORD_STATUS_NOT_CHANGED,            /**< Password not changed */
+	DPM_PASSWORD_STATUS_CHANGE_REQUIRED ,       /**< Password change required */
+	DPM_PASSWORD_STATUS_MAX_ATTEMPTS_EXCEEDED,  /**< Password Max Attempts Exceeded*/
 } dpm_password_status_e;
 
 /**

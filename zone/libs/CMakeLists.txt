@@ -38,11 +38,11 @@ SET(CAPI_INCLUDE_FILES  zone/zone.h
 SET (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,noexecstack")
 
 PKG_CHECK_MODULES(ZONE_LIBS_DEPS  REQUIRED
-                                  glib-2.0
-                                  capi-appfw-package-manager
-                                  capi-appfw-app-manager
-                                  capi-appfw-app-control
-                                  libtzplatform-config
+								  glib-2.0
+								  capi-appfw-package-manager
+								  capi-appfw-app-manager
+								  capi-appfw-app-control
+								  libtzplatform-config
 )
 
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${SOURCES})

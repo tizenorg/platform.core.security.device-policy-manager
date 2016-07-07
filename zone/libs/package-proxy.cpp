@@ -17,8 +17,8 @@
 
 namespace DevicePolicyManager {
 
-ZonePackageProxy::ZonePackageProxy(PolicyControlContext& ctx)
-    : context(ctx)
+ZonePackageProxy::ZonePackageProxy(PolicyControlContext& ctx) :
+	context(ctx)
 {
 }
 
@@ -28,36 +28,36 @@ ZonePackageProxy::~ZonePackageProxy()
 
 ZonePackageProxy::PackageInfo ZonePackageProxy::getPackageInfo(const std::string& name, const std::string& pkgid)
 {
-    try {
-        return context->methodCall<ZonePackageProxy::PackageInfo>("ZonePackageProxy::getPackageInfo", name, pkgid);
-    } catch (runtime::Exception& e) {}
-    return ZonePackageProxy::PackageInfo();
+	try {
+		return context->methodCall<ZonePackageProxy::PackageInfo>("ZonePackageProxy::getPackageInfo", name, pkgid);
+	} catch (runtime::Exception& e) {}
+	return ZonePackageProxy::PackageInfo();
 }
 
 std::vector<std::string> ZonePackageProxy::getPackageList(const std::string& zone)
 {
-    try {
-        return context->methodCall<std::vector<std::string>>("ZonePackageProxy::getPackageList", zone);
-    } catch (runtime::Exception& e) {}
-    return std::vector<std::string>();;
+	try {
+		return context->methodCall<std::vector<std::string>>("ZonePackageProxy::getPackageList", zone);
+	} catch (runtime::Exception& e) {}
+	return std::vector<std::string>();;
 }
 
 int ZonePackageProxy::install(const std::string& name, const std::string& pkgid)
 {
-    try {
-        return context->methodCall<int>("ZonePackageProxy::install", name, pkgid);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<int>("ZonePackageProxy::install", name, pkgid);
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 
 int ZonePackageProxy::uninstall(const std::string& name, const std::string& pkgid)
 {
-    try {
-        return context->methodCall<int>("ZonePackageProxy::uninstall", name, pkgid);
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
+	try {
+		return context->methodCall<int>("ZonePackageProxy::uninstall", name, pkgid);
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 }
 
 } // namespace DevicePolicyManager

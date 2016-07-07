@@ -29,35 +29,34 @@
 
 class ZoneGuard {
 public:
-    ZoneGuard(const std::string& name) :
-        zoneName(name),
-        semaphore(nullptr)
-    {
-        semaphore = ::sem_open(zoneName.c_str(), O_CREAT, 0700, 1);
-        if (semaphore == nullptr) {
-            throw runtime::Exception("Filed to create semaphore for zone guard");
-        }
-    }
+	ZoneGuard(const std::string& name) :
+		zoneName(name), semaphore(nullptr)
+	{
+		semaphore = ::sem_open(zoneName.c_str(), O_CREAT, 0700, 1);
+		if (semaphore == nullptr) {
+			throw runtime::Exception("Filed to create semaphore for zone guard");
+		}
+	}
 
-    ~ZoneGuard()
-    {
-        if (semaphore == nullptr) {
-            return;
-        }
+	~ZoneGuard()
+	{
+		if (semaphore == nullptr) {
+			return;
+		}
 
-        ::sem_post(semaphore);
-        ::sem_close(semaphore);
-        ::sem_unlink(zoneName.c_str());
-    }
+		::sem_post(semaphore);
+		::sem_close(semaphore);
+		::sem_unlink(zoneName.c_str());
+	}
 
-    void wait()
-    {
-        while ((::sem_wait(semaphore) == -1) && (errno == EINTR));
-    }
+	void wait()
+	{
+		while ((::sem_wait(semaphore) == -1) && (errno == EINTR));
+	}
 
 private:
-    std::string zoneName;
-    sem_t* semaphore;
+	std::string zoneName;
+	sem_t* semaphore;
 };
 
 #endif //!__ZONE_GUARD_H__

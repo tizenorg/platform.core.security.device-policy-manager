@@ -27,91 +27,91 @@
 
 class ApplicationInfo {
 public:
-    ApplicationInfo(const std::string& aid, uid_t uid = 0);
-    ApplicationInfo(pkgmgrinfo_appinfo_h handle);
-    ~ApplicationInfo();
+	ApplicationInfo(const std::string& aid, uid_t uid = 0);
+	ApplicationInfo(pkgmgrinfo_appinfo_h handle);
+	~ApplicationInfo();
 
-    const std::string& getId() const;
-    const std::string& getPackage() const;
-    const std::string& getType() const;
-    const std::string& getIcon() const;
-    const std::string& getLabel() const;
-    int getComponentType() const;
-    bool isNoDisplayed() const;
-    bool isTaskManaged() const;
+	const std::string& getId() const;
+	const std::string& getPackage() const;
+	const std::string& getType() const;
+	const std::string& getIcon() const;
+	const std::string& getLabel() const;
+	int getComponentType() const;
+	bool isNoDisplayed() const;
+	bool isTaskManaged() const;
 
 private:
-    void load(pkgmgrinfo_appinfo_h handle);
+	void load(pkgmgrinfo_appinfo_h handle);
 
-    std::string id;
-    std::string package;
-    std::string type;
-    std::string icon;
-    std::string label;
-    int componentType;
-    bool noDisplayed;
-    bool taskManaged;
+	std::string id;
+	std::string package;
+	std::string type;
+	std::string icon;
+	std::string label;
+	int componentType;
+	bool noDisplayed;
+	bool taskManaged;
 };
 
 class PackageInfo {
 public:
-    PackageInfo(const std::string& pkgid, uid_t uid = 0);
-    ~PackageInfo();
+	PackageInfo(const std::string& pkgid, uid_t uid = 0);
+	~PackageInfo();
 
-    std::vector<ApplicationInfo> getAppList() const;
+	std::vector<ApplicationInfo> getAppList() const;
 
-    std::string getType() const;
-    std::string getIcon() const;
-    std::string getLabel() const;
-    std::string getDescription() const;
+	std::string getType() const;
+	std::string getIcon() const;
+	std::string getLabel() const;
+	std::string getDescription() const;
 
-    std::string getAuthorName() const;
-    std::string getAuthorEmail() const;
-    std::string getAuthorHref() const;
+	std::string getAuthorName() const;
+	std::string getAuthorEmail() const;
+	std::string getAuthorHref() const;
 
-    std::string getVersion() const;
-    std::string getApiVersion() const;
-    std::string getMainAppId() const;
+	std::string getVersion() const;
+	std::string getApiVersion() const;
+	std::string getMainAppId() const;
 
-    bool isSystem() const;
-    bool isRemovable() const;
-    bool isPreload() const;
+	bool isSystem() const;
+	bool isRemovable() const;
+	bool isPreload() const;
 
 private:
-    uid_t user;
-    pkgmgrinfo_pkginfo_h handle;
+	uid_t user;
+	pkgmgrinfo_pkginfo_h handle;
 };
 
 class PackageManager {
 public:
-    void activatePackage(const std::string& pkgid, const uid_t user);
-    void deactivatePackage(const std::string& pkgid, const uid_t user);
-    void installPackage(const std::string& pkgpath, const uid_t user);
-    void uninstallPackage(const std::string& pkgid, const uid_t user);
-    void wipePackageData(const std::string& pkgid, const uid_t user);
+	void activatePackage(const std::string& pkgid, const uid_t user);
+	void deactivatePackage(const std::string& pkgid, const uid_t user);
+	void installPackage(const std::string& pkgpath, const uid_t user);
+	void uninstallPackage(const std::string& pkgid, const uid_t user);
+	void wipePackageData(const std::string& pkgid, const uid_t user);
 
-    std::vector<std::string> getPackageList(const uid_t user);
-    std::vector<ApplicationInfo> getAppList(const uid_t user);
+	std::vector<std::string> getPackageList(const uid_t user);
+	std::vector<ApplicationInfo> getAppList(const uid_t user);
 
-    void setEventCallback(pkgmgrinfo_handler callback, void* user_data);
-    void unsetEventCallback();
+	void setEventCallback(pkgmgrinfo_handler callback, void* user_data);
+	void unsetEventCallback();
 
-    void setModeRestriction(int mode, uid_t user);
-    void unsetModeRestriction(int mode, uid_t user);
-    int getModeRestriction(uid_t user);
+	void setModeRestriction(int mode, uid_t user);
+	void unsetModeRestriction(int mode, uid_t user);
+	int getModeRestriction(uid_t user);
 
-    void setPackageRestriction(const std::string& pkgid, int mode, uid_t user);
-    void unsetPackageRestriction(const std::string& pkgid, int mode, uid_t user);
-    int getPackageRestriction(const std::string& pkgid, uid_t user);
+	void setPackageRestriction(const std::string& pkgid, int mode, uid_t user);
+	void unsetPackageRestriction(const std::string& pkgid, int mode, uid_t user);
+	int getPackageRestriction(const std::string& pkgid, uid_t user);
 
-    static PackageManager& instance();
-
-private:
-    PackageManager();
-    ~PackageManager();
+	static PackageManager& instance();
 
 private:
-    pkgmgr_client *nativeRequestHandle, *nativeListenHandle;
+	PackageManager();
+	~PackageManager();
+
+private:
+	pkgmgr_client *nativeRequestHandle, *nativeListenHandle;
 };
 
 #endif // __DPM_PACKMAN_H__

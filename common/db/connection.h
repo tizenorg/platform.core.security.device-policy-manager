@@ -25,50 +25,50 @@ namespace database {
 
 class Connection {
 public:
-    enum Mode {
-        Create = SQLITE_OPEN_CREATE,
-        ReadWrite = SQLITE_OPEN_READWRITE
-    };
+	enum Mode {
+		Create = SQLITE_OPEN_CREATE,
+		ReadWrite = SQLITE_OPEN_READWRITE
+	};
 
-    Connection(const std::string& name, const int flags);
-    virtual ~Connection();
+	Connection(const std::string& name, const int flags);
+	~Connection();
 
-    int exec(const std::string& query);
-    bool isTableExists(const std::string& tableName);
+	int exec(const std::string& query);
+	bool isTableExists(const std::string& tableName);
 
-    inline long long getLastInsertRowId() const noexcept
-    {
-        return sqlite3_last_insert_rowid(handle);
-    }
+	inline long long getLastInsertRowId() const noexcept
+	{
+		return sqlite3_last_insert_rowid(handle);
+	}
 
-    inline const std::string& getName() const noexcept
-    {
-        return filename;
-    }
+	inline const std::string& getName() const noexcept
+	{
+		return filename;
+	}
 
-    inline int getErrorCode() const
-    {
-        return sqlite3_errcode(handle);
-    }
+	inline int getErrorCode() const
+	{
+		return sqlite3_errcode(handle);
+	}
 
-    inline int getExtendedErrorCode() const
-    {
-        return sqlite3_extended_errcode(handle);
-    }
+	inline int getExtendedErrorCode() const
+	{
+		return sqlite3_extended_errcode(handle);
+	}
 
-    inline std::string getErrorMessage() const
-    {
-        return sqlite3_errmsg(handle);
-    }
+	inline std::string getErrorMessage() const
+	{
+		return sqlite3_errmsg(handle);
+	}
 
-    inline sqlite3* get() const noexcept
-    {
-        return handle;
-    }
+	inline sqlite3* get() const noexcept
+	{
+		return handle;
+	}
 
 private:
-    sqlite3* handle;
-    std::string filename;
+	sqlite3* handle;
+	std::string filename;
 };
 
 } // namespace database

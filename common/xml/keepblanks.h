@@ -23,14 +23,14 @@ namespace xml {
 
 class KeepBlanks {
 public:
-    KeepBlanks(bool value);
-    ~KeepBlanks();
+	KeepBlanks(bool value);
+	~KeepBlanks();
 
-    static const bool Default = true;
+	static const bool Default = true;
 
 private:
-    int preservedKeepBlanksDefault;
-    int preservedIndentTreeOutput;
+	int preservedKeepBlanksDefault;
+	int preservedIndentTreeOutput;
 };
 
 } // namespace xml

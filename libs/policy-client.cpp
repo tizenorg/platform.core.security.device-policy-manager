@@ -32,71 +32,71 @@ DevicePolicyContext::DevicePolicyContext() noexcept
 
 DevicePolicyContext::~DevicePolicyContext() noexcept
 {
-    disconnect();
+	disconnect();
 }
 
 int DevicePolicyContext::connect(const std::string& address) noexcept
 {
-    try {
-        client.reset(new rmi::Client(address));
-        client->connect();
-    } catch (runtime::Exception& e) {
-        return -1;
-    }
+	try {
+		client.reset(new rmi::Client(address));
+		client->connect();
+	} catch (runtime::Exception& e) {
+		return -1;
+	}
 
-    return 0;
+	return 0;
 }
 
 int DevicePolicyContext::connect() noexcept
 {
-    return connect(POLICY_MANAGER_ADDRESS);
+	return connect(POLICY_MANAGER_ADDRESS);
 }
 
 void DevicePolicyContext::disconnect() noexcept
 {
-    client.reset();
+	client.reset();
 }
 
 int DevicePolicyContext::subscribePolicyChange(const std::string& name,
-                                              const PolicyChangeListener& listener,
-                                              void* data)
+											  const PolicyChangeListener& listener,
+											  void* data)
 {
-    auto listenerDispatcher = [listener, data](const std::string& policy, std::string &state) {
-        listener(policy.c_str(), state.c_str(), data);
-    };
+	auto listenerDispatcher = [listener, data](const std::string& policy, std::string &state) {
+		listener(policy.c_str(), state.c_str(), data);
+	};
 
-    try {
-        return client->subscribe<std::string, std::string>(SUBSCRIBER_REGISTER,
-                                                           name, listenerDispatcher);
-    } catch (runtime::Exception& e) {
-        std::cout << e.what() << std::endl;
-        return -1;
-    }
+	try {
+		return client->subscribe<std::string, std::string>(SUBSCRIBER_REGISTER,
+														   name, listenerDispatcher);
+	} catch (runtime::Exception& e) {
+		std::cout << e.what() << std::endl;
+		return -1;
+	}
 }
 
 int DevicePolicyContext::unsubscribePolicyChange(int subscriberId)
 {
-    return client->unsubscribe(SUBSCRIBER_UNREGISTER, subscriberId);
+	return client->unsubscribe(SUBSCRIBER_UNREGISTER, subscriberId);
 }
 
 int DevicePolicyContext::subscribeSignal(const std::string& name,
-                                        const SignalListener& listener,
-                                        void* data)
+										const SignalListener& listener,
+										void* data)
 {
-    auto listenerDispatcher = [listener, data](std::string &name, std::string &from, std::string &object) {
-        listener(from.c_str(), object.c_str(), data);
-    };
+	auto listenerDispatcher = [listener, data](std::string &name, std::string &from, std::string &object) {
+		listener(from.c_str(), object.c_str(), data);
+	};
 
-    try {
-        return client->subscribe<std::string, std::string, std::string>(SUBSCRIBER_REGISTER,
-                                                                        name, listenerDispatcher);
-    } catch (runtime::Exception& e) {
-        std::cout << e.what() << std::endl;
-        return -1;
-    }
+	try {
+		return client->subscribe<std::string, std::string, std::string>(SUBSCRIBER_REGISTER,
+																		name, listenerDispatcher);
+	} catch (runtime::Exception& e) {
+		std::cout << e.what() << std::endl;
+		return -1;
+	}
 }
 
 int DevicePolicyContext::unsubscribeSignal(int subscriberId)
 {
-    return client->unsubscribe(SUBSCRIBER_UNREGISTER, subscriberId);
+	return client->unsubscribe(SUBSCRIBER_UNREGISTER, subscriberId);
 }
