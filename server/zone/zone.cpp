@@ -646,16 +646,16 @@ int ZoneManager::getZoneState(const std::string& name)
 
 	try {
 		runtime::User user(name);
-		dbus::Connection& systemDBus = dbus::Connection::getSystem();
-		const dbus::Variant& var = systemDBus.methodcall
+		try {
+			dbus::Connection& systemDBus = dbus::Connection::getSystem();
+			const dbus::Variant& var = systemDBus.methodcall
 										   ("org.freedesktop.login1",
 											"/org/freedesktop/login1",
 											"org.freedesktop.login1.Manager",
 											"GetUser",
 											-1, "(o)", "(u)", user.getUid());
-		if (var) {
 			return ZoneManager::State::Running;
-		} else {
+		} catch (runtime::Exception& e) {
 			return ZoneManager::State::Locked;
 		}
 	} catch (runtime::Exception& e) {
