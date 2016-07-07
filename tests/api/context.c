@@ -27,6 +27,36 @@
 
 static volatile int completed = 0;
 
+static void signal_callback(const char* name, const char* object, void* user_data)
+{
+}
+
+static int device_policy_signal(struct testcase* tc)
+{
+	dpm_context_h handle;
+
+	handle = dpm_context_create();
+	if (handle == NULL) {
+		printf("Failed to create client handle\n");
+		return TEST_FAILED;
+	}
+
+	int id;
+	if (dpm_context_add_signal_cb(handle, "unknown", signal_callback, NULL, &id) == DPM_ERROR_NONE) {
+		dpm_context_destroy(handle);
+		return TEST_FAILED;
+	}
+
+	if (dpm_context_add_signal_cb(handle, "camera", signal_callback, NULL, &id) != DPM_ERROR_NONE) {
+		dpm_context_destroy(handle);
+		return TEST_FAILED;
+	}
+
+	dpm_context_remove_signal_cb(handle, id);
+	dpm_context_destroy(handle);
+	return TEST_SUCCESSED;
+}
+
 static void device_policy_handle_callback(const char* name, const char* state, void* user_data)
 {
 	int *triggered = user_data;
@@ -138,6 +168,11 @@ static int device_policy_handle(struct testcase* tc)
 	return ret;
 }
 
+struct testcase device_policy_signal_testcase = {
+	.description = "device policy signal",
+	.handler = device_policy_signal
+};
+
 struct testcase device_policy_handle_testcase = {
 	.description = "device policy handle",
 	.handler = device_policy_handle
@@ -146,4 +181,5 @@ struct testcase device_policy_handle_testcase = {
 void TESTCASE_CONSTRUCTOR device_policy_handle_build_testcase(void)
 {
 	testbench_populate_testcase(&device_policy_handle_testcase);
+	testbench_populate_testcase(&device_policy_signal_testcase);
 }

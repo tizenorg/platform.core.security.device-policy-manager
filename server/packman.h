@@ -84,11 +84,8 @@ private:
 
 class PackageManager {
 public:
-	void activatePackage(const std::string& pkgid, const uid_t user);
-	void deactivatePackage(const std::string& pkgid, const uid_t user);
 	void installPackage(const std::string& pkgpath, const uid_t user);
 	void uninstallPackage(const std::string& pkgid, const uid_t user);
-	void wipePackageData(const std::string& pkgid, const uid_t user);
 
 	std::vector<std::string> getPackageList(const uid_t user);
 	std::vector<ApplicationInfo> getAppList(const uid_t user);

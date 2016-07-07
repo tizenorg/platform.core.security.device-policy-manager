@@ -16,12 +16,16 @@
 SET(UNIT_TEST_TARGET	"dpm-unit-tests")
 
 SET(UNIT_TEST_SOURCES	main.cpp
-						rmi.cpp
 						database.cpp
-						xml.cpp
+						dbus.cpp
+						eventfd.cpp
 						filesystem.cpp
-						shadow.cpp
+						logger.cpp
+						misc.cpp
 						proc.cpp
+						rmi.cpp
+						shadow.cpp
+						xml.cpp
 						${DPM_TESTBENCH}/testbench.cpp
 )
 
@@ -34,3 +38,4 @@ TARGET_LINK_LIBRARIES(${UNIT_TEST_TARGET} dpm-common)
 
 INSTALL(TARGETS ${UNIT_TEST_TARGET} DESTINATION bin)
 INSTALL(FILES   data/sample-policy.xml DESTINATION ${DATA_INSTALL_DIR})
+INSTALL(FILES   data/unittest-proc.sh DESTINATION ${DATA_INSTALL_DIR})

@@ -40,8 +40,6 @@ std::string LogLevelToString(const LogLevel level)
 		return "DEBUG";
 	case LogLevel::Info:
 		return "INFO";
-	case LogLevel::Trace:
-		return "TRACE";
 	default:
 		return "UNKNOWN";
 	}

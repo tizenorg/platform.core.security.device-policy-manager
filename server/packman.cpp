@@ -357,27 +357,6 @@ void PackageManager::unsetEventCallback()
 	}
 }
 
-void PackageManager::activatePackage(const std::string& pkgid, const uid_t user)
-{
-	PackageInfo package(pkgid, user);
-
-	if (::pkgmgr_client_usr_activate(nativeRequestHandle, package.getType().c_str(), pkgid.c_str(), user) != PKGMGR_R_OK) {
-		ERROR("Failed to activate package: " + pkgid);
-		throw runtime::Exception("Operation failed");
-	}
-}
-
-void PackageManager::deactivatePackage(const std::string& pkgid, const uid_t user)
-{
-	PackageInfo package(pkgid, user);
-
-	int ret = pkgmgr_client_usr_deactivate(nativeRequestHandle, package.getType().c_str(), pkgid.c_str(), user);
-	if (ret != PKGMGR_R_OK) {
-		ERROR("Failed to deactivate package: " + std::to_string(ret));
-		throw runtime::Exception("Operation failed");
-	}
-}
-
 void PackageManager::installPackage(const std::string& pkgpath, const uid_t user)
 {
 	int ret = ::pkgmgr_client_usr_install(nativeRequestHandle, NULL, NULL, pkgpath.c_str(), NULL, PM_QUIET, PackageEventCallback, nullptr, user);
@@ -397,17 +376,6 @@ void PackageManager::uninstallPackage(const std::string& pkgid, const uid_t user
 	if (ret < PKGMGR_R_OK) {
 		ERROR("Error in pkgmgr_client_uninstall");
 		throw runtime::Exception("Package manager exception");
-	}
-}
-
-void PackageManager::wipePackageData(const std::string& pkgid, const uid_t user)
-{
-	PackageInfo package(pkgid);
-
-	int ret = ::pkgmgr_client_usr_clear_user_data(nativeRequestHandle, package.getType().c_str(), pkgid.c_str(), PM_QUIET, user);
-	if (ret != PKGMGR_R_OK) {
-		ERROR("Error in pkgmgr_clear_user_data");
-		throw runtime::Exception("Operation failed");
 	}
 }
 

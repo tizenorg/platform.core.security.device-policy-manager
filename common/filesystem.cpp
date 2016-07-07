@@ -74,56 +74,35 @@ bool File::exists() const
 
 bool File::canRead() const
 {
-	struct stat st;
-	if (::stat(path.c_str(), &st) != 0) {
-		throw runtime::Exception(runtime::GetSystemErrorMessage());
+	if (::access(path.c_str(), R_OK) == 0) {
+		return true;
 	}
 
-	if (st.st_uid == geteuid()) {
-		return ((st.st_mode & S_IRUSR) != 0);
-	} else if (st.st_gid == getegid()) {
-		return ((st.st_mode & S_IRGRP) != 0);
-	}
-
-	return (((st.st_mode & S_IROTH) != 0) || (geteuid() == 0));
+	return false;
 }
 
 bool File::canWrite() const
 {
-	struct stat st;
-	if (::stat(path.c_str(), &st) != 0) {
-		throw runtime::Exception(runtime::GetSystemErrorMessage());
+	if (::access(path.c_str(), W_OK) == 0) {
+		return true;
 	}
 
-	if (st.st_uid == geteuid()) {
-		return ((st.st_mode & S_IWUSR) != 0);
-	} else if (st.st_gid == getegid()) {
-		return ((st.st_mode & S_IWGRP) != 0);
-	}
-
-	return (((st.st_mode & S_IWOTH) != 0) || (geteuid() == 0));
+	return false;
 }
 
 bool File::canExecute() const
 {
-	struct stat st;
-	if (::stat(path.c_str(), &st) != 0) {
-		throw runtime::Exception(runtime::GetSystemErrorMessage());
+	if (::access(path.c_str(), X_OK) == 0) {
+		return true;
 	}
 
-	if (st.st_uid == geteuid()) {
-		return ((st.st_mode & S_IXUSR) != 0);
-	} else if (st.st_gid == getegid()) {
-		return ((st.st_mode & S_IXGRP) != 0);
-	}
-
-	return ((st.st_mode & S_IXOTH) != 0);
+	return false;
 }
 
 bool File::isLink() const
 {
 	struct stat st;
-	if (::stat(path.c_str(), &st) != 0) {
+	if (::lstat(path.c_str(), &st) != 0) {
 		throw runtime::Exception(runtime::GetSystemErrorMessage());
 	}
 
@@ -230,20 +209,10 @@ void File::open(int flags)
 
 void File::close()
 {
-	if (descriptor == -1) {
-		return;
+	if (descriptor != -1) {
+		while ((::close(descriptor) == -1) && (errno == EINTR));
+		descriptor = -1;
 	}
-
-	while (1) {
-		if (::close(descriptor) == -1) {
-			if (errno == EINTR) {
-				continue;
-			}
-		}
-		break;
-	}
-
-	descriptor = -1;
 }
 
 void File::read(void *buffer, const size_t size) const

@@ -14,35 +14,29 @@
  *  limitations under the License
  */
 
-#include "dbus/error.h"
+#include <string>
+#include <vector>
 
-namespace dbus {
+#include "array.h"
+#include "error.h"
+#include "exception.h"
+#include "audit/logger.h"
 
-Error::Error() :
-	error(nullptr)
+#include "testbench/testbench.h"
+
+TESTCASE(LogMacroTest)
 {
+    TRACE("Trace");
+    INFO("Info");
+    DEBUG("Debug");
+    WARN("Warning");
+    ERROR("Error");
 }
 
-Error::~Error()
+TESTCASE(LogSeverityTest)
 {
-	if (error) {
-		g_error_free(error);
+	try {
+		audit::LogLevelToString((audit::LogLevel)-1);
+	} catch (runtime::Exception& e) {
 	}
 }
-
-GError** Error::operator& ()
-{
-	return &error;
-}
-
-const GError* Error::operator-> () const
-{
-	return error;
-}
-
-Error::operator bool () const
-{
-	return error != nullptr;
-}
-
-} // namespace dbus

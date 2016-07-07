@@ -36,82 +36,8 @@ void signalHandler(int signum)
 	exit(0);
 }
 
-static bool daemonize(void)
-{
-	pid_t pid;
-
-	pid = ::fork();
-	if (pid == -1) {
-		std::cerr << "Fork failed" << std::endl;
-		return false;
-	} else if (pid != 0) {
-		exit(EXIT_SUCCESS);
-	}
-
-	if (::setsid() == -1) {
-		return false;
-	}
-
-	if (::chdir("/") == -1) {
-		return false;
-	}
-
-	int fd = ::open("/dev/null", O_RDWR);
-	if (fd == -1) {
-		return false;
-	}
-
-	for (int i = 0; i < 3; i++) {
-		if (::dup2(fd, i) == -1) {
-			::close(fd);
-			return false;
-		}
-	}
-
-	::close(fd);
-
-	return true;
-}
-
-static void usage(const std::string& prog)
-{
-	std::cout << "Usage: " << prog << std::endl
-			  << "-d            : daemonize" << std::endl
-			  << "-l log-level  : chnage log level(default is 0)" << std::endl;
-}
-
 int main(int argc, char *argv[])
 {
-	int opt, index, logLevel = 0;
-	bool runAsDaemon = false;
-	struct option options[] = {
-		{"daemonize", no_argument, 0, 'd'},
-		{"loglevel", required_argument, 0, 'l'},
-		{0, 0, 0, 0}
-	};
-
-	while ((opt = getopt_long(argc, argv, "dl:", options, &index)) != -1) {
-		switch (opt) {
-		case 'd':
-			runAsDaemon = true;
-			break;
-		case 'l':
-			logLevel = atoi(optarg);
-			break;
-		default:
-			std::cerr << "unknown" << std::endl;
-			usage(argv[0]);
-			exit(EXIT_FAILURE);
-		}
-	}
-
-	std::cout << "Daemonize: " << runAsDaemon << std::endl;
-	std::cout << "Log Level: " << logLevel << std::endl;
-
-	if (runAsDaemon && !daemonize()) {
-		exit(EXIT_FAILURE);
-	}
-
 	::signal(SIGINT, signalHandler);
 
 	::umask(0);

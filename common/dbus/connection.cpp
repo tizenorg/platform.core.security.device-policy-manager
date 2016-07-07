@@ -56,12 +56,6 @@ Connection::Connection(const std::string& address) :
 	}
 }
 
-Connection::Connection(Connection&& other) :
-	connection(other.connection)
-{
-	other.connection = nullptr;
-}
-
 Connection::~Connection()
 {
 	if (connection) {
@@ -74,33 +68,6 @@ Connection& Connection::getSystem()
 {
 	static Connection __instance__(DBUS_SYSTEM_BUS_ADDRESS);
 	return __instance__;
-}
-
-void Connection::emitSignal(const std::string& busName,
-							const std::string& object,
-							const std::string& interface,
-							const std::string& name,
-							const std::string& paramType,
-							...)
-{
-	Error error;
-	va_list ap;
-
-	va_start(ap, paramType);
-	g_dbus_connection_emit_signal(connection,
-								  busName.empty() ? NULL : busName.c_str(),
-								  object.c_str(),
-								  interface.c_str(),
-								  name.c_str(),
-								  paramType.empty() ? NULL :
-								  g_variant_new(paramType.c_str(), NULL, &ap),
-								  &error);
-	va_end(ap);
-
-	if (error) {
-		ERROR(error->message);
-		throw runtime::Exception(error->message);
-	}
 }
 
 Connection::subscriptionId Connection::subscribeSignal(const std::string& sender,
