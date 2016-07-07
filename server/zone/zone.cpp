@@ -492,6 +492,7 @@ ZoneManager::ZoneManager(PolicyControlContext& ctx) :
 
 	context.createNotification("ZoneManager::created");
 	context.createNotification("ZoneManager::removed");
+	context.createNotification("ZoneManager::aborted");
 
 	PackageManager& packageManager = PackageManager::instance();
 	packageManager.setEventCallback(packageEventHandler, this);
@@ -553,10 +554,10 @@ int ZoneManager::createZone(const std::string& name, const std::string& manifest
 			auto it = createdZoneList.insert(createdZoneList.begin(), name);
 			int noti = notification_register_detailed_changed_cb_for_uid(notiProxyCallback, &(*it), user.getUid());
 			notiProxyCallbackMap.insert(std::make_pair(name, noti));
-			context.notify("ZoneManager::created", name, std::string());
+			context.notify("ZoneManager::created", name, "");
 		} catch (runtime::Exception& e) {
 			ERROR(e.what());
-			context.notify("ZoneManager::removed", name, std::string());
+			context.notify("ZoneManager::created", name, "Error");
 		}
 	};
 
@@ -597,9 +598,10 @@ int ZoneManager::removeZone(const std::string& name)
 				createdZoneList.erase(it);
 			}
 			notiProxyCallbackMap.erase(name);
-			context.notify("ZoneManager::removed", name, std::string());
+			context.notify("ZoneManager::removed", name, "");
 		} catch (runtime::Exception& e) {
 			ERROR(e.what());
+			context.notify("ZoneManager::removed", name, "Error");
 			return;
 		}
 	};
