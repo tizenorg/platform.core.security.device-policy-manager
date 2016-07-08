@@ -157,7 +157,8 @@ void KeyGenerator::sha1Update(SHA1_CTX* context, const void* p, unsigned int len
 			sha1Transform(context->state, data + i);
 		}
 		j = 0;
-	} else i = 0;
+	} else
+		i = 0;
 
 	::memcpy(&context->buffer[j], &data[i], len - i);
 }
