@@ -64,6 +64,11 @@ int SecurityPolicy::lockoutScreen()
 {
 	try {
 		Launchpad launchpad(context.getPeerUid());
+		if (launchpad.isRunning(APPID_LOCKSCREEN)) {
+			launchpad.resume(APPID_LOCKSCREEN);
+			return 0;
+		}
+
 		launchpad.launch(APPID_LOCKSCREEN);
    } catch (runtime::Exception &e) {
 		ERROR("Failed to launch lockscreen: " + APPID_LOCKSCREEN);
@@ -87,6 +92,11 @@ int SecurityPolicy::setInternalStorageEncryption(bool encrypt)
 		bundle.add("viewtype", encrypt ? "ENCRYPT_DEVICE" : "DECRYPT_DEVICE");
 
 		Launchpad launchpad(context.getPeerUid());
+		if (launchpad.isRunning(APPID_DEVICE_ENCRYPTION) == false) {
+			launchpad.resume(APPID_DEVICE_ENCRYPTION);
+			return 0;
+		}
+
 		launchpad.launch(APPID_DEVICE_ENCRYPTION, bundle);
 	} catch (runtime::Exception& e) {
 		ERROR("Failed to start device encryption");
@@ -120,6 +130,11 @@ int SecurityPolicy::setExternalStorageEncryption(bool encrypt)
 		bundle.add("viewtype", encrypt ? "ENCRYPT_SD_CARD" : "DECRYPT_SD_CARD");
 
 		Launchpad launchpad(context.getPeerUid());
+		if (launchpad.isRunning(APPID_DEVICE_ENCRYPTION)) {
+			launchpad.resume(APPID_DEVICE_ENCRYPTION);
+			return 0;
+		}
+
 		launchpad.launch(APPID_DEVICE_ENCRYPTION, bundle);
 	} catch (runtime::Exception& e) {
 		ERROR("Failed to start sd card encryption");
