@@ -15,6 +15,7 @@
  */
 
 #include "message.h"
+#include "exception.h"
 
 namespace rmi {
 
@@ -91,6 +92,10 @@ Message Message::createErrorMessage(const std::string& message) const
 
 template<> void Message::enclose(FileDescriptor&& fd)
 {
+	if (fd.fileDescriptor == -1) {
+		throw runtime::Exception("Invalid file descriptor");
+	}
+
 	fileDescriptors.push_back(std::move(fd));
 }
 
