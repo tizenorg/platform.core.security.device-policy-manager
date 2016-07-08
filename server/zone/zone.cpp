@@ -68,10 +68,9 @@ const std::string ZONE_DEFAULT_OWNER = "owner";
 
 const std::string ZONE_GROUP = "users";
 
-std::vector<std::string> createdZoneList;
+std::list<std::string> createdZoneList;
 static std::atomic<bool> isZoneForeground(false);
 
-std::unordered_map<std::string, int> notiProxyCallbackMap;
 std::unordered_map<int, notification_h> notiHandleMap;
 
 inline void maskUserServices(const runtime::User& user)
@@ -198,10 +197,12 @@ void initializeCreatedZoneList() {
 		runtime::DirectoryIterator iter(ZONE_MANIFEST_DIR), end;
 
 		while (iter != end) {
-			const std::string& file = iter->getName();
+			const std::string& file = (iter++)->getName();
 			const std::string& name(file.substr(0, file.rfind(".xml")));
-			createdZoneList.push_back(name);
-			++iter;
+			try {
+				runtime::User user(name);
+				createdZoneList.push_back(name);
+			} catch (runtime::Exception &e) {}
 		}
 	} catch (runtime::Exception& e) {}
 }
@@ -451,8 +452,11 @@ void notiProxyCallback(void *data, notification_type_e type, notification_op *op
 	static runtime::User owner(ZONE_DEFAULT_OWNER);
 	runtime::User user(*reinterpret_cast<std::string*>(data));
 
-	// TODO : should remove noti in the zone when related-zone is removed
-	//        This will be imlemented when notification bug is fixed
+	if (user == owner) {
+		// TODO : should remove noti in the zone when related-zone is removed
+		//        This will be imlemented when notification bug is fixed
+		return;
+    }
 
 	for (int i = 0; i < num_op; i++) {
 		notification_h noti = NULL;
@@ -500,13 +504,7 @@ ZoneManager::ZoneManager(PolicyControlContext& ctx) :
 
 	initializeCreatedZoneList();
 	for (std::string& name : createdZoneList) {
-		if (name == ZONE_DEFAULT_OWNER) {
-			continue;
-		}
-
-		runtime::User zone(name);
-		int noti = notification_register_detailed_changed_cb_for_uid(notiProxyCallback, &name, zone.getUid());
-		notiProxyCallbackMap.insert(std::make_pair(name, noti));
+		notification_register_detailed_changed_cb_for_uid(notiProxyCallback, &name, zone.getUid());
 	}
 }
 
@@ -523,7 +521,7 @@ int ZoneManager::createZone(const std::string& name, const std::string& manifest
 
 		try {
 			//create zone user by gumd
-			GumUser *guser = gum_user_create_sync(FALSE);
+			GumUser* guser = gum_user_create_sync(FALSE);
 			g_object_set(G_OBJECT(guser), "username", name.c_str(),
 							"usertype", GUM_USERTYPE_SECURITY, NULL);
 			gboolean ret = gum_user_add_sync(guser);
@@ -550,9 +548,8 @@ int ZoneManager::createZone(const std::string& name, const std::string& manifest
 			//wait for launchpad in the zone
 			sleep(1);
 
-			auto it = createdZoneList.insert(createdZoneList.begin(), name);
-			int noti = notification_register_detailed_changed_cb_for_uid(notiProxyCallback, &(*it), user.getUid());
-			notiProxyCallbackMap.insert(std::make_pair(name, noti));
+			auto it = createdZoneList.insert(createdZoneList.end(), name);
+			notification_register_detailed_changed_cb_for_uid(notiProxyCallback, &(*it), user.getUid());
 			context.notify("ZoneManager::created", name, "");
 		} catch (runtime::Exception& e) {
 			ERROR(e.what());
@@ -585,7 +582,7 @@ int ZoneManager::removeZone(const std::string& name)
 			::tzplatform_reset_user();
 
 			//remove zone user
-			GumUser *guser = gum_user_get_sync(user.getUid(), FALSE);
+			GumUser* guser = gum_user_get_sync(user.getUid(), FALSE);
 			gboolean ret = gum_user_delete_sync(guser, TRUE);
 			g_object_unref(guser);
 
@@ -593,11 +590,15 @@ int ZoneManager::removeZone(const std::string& name)
 				throw runtime::Exception("Failed to remove user " + name + "(" + std::to_string(user.getUid()) + ") by gumd");
 			}
 
-			for (std::vector<std::string>::iterator it = createdZoneList.begin();
-				 it != createdZoneList.end(); it++) {
-				createdZoneList.erase(it);
+			auto it = createdZoneList.begin();
+			for (; it != createdZoneList.end(); it++) {
+				if (*it == name) {
+					break;
+				}
 			}
-			notiProxyCallbackMap.erase(name);
+			createdZoneList.erase(it);
+
+			notification_unregister_detailed_changed_cb_for_uid(notiProxyCallback, NULL, user.getUid());
 			context.notify("ZoneManager::removed", name, "");
 		} catch (runtime::Exception& e) {
 			ERROR(e.what());
