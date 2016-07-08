@@ -520,7 +520,10 @@ int ZoneManager::createZone(const std::string& name, const std::string& manifest
 
 		try {
 			//create zone user by gumd
-			GumUser* guser = gum_user_create_sync(FALSE);
+			GumUser* guser = NULL;
+			while (guser == NULL) {
+				guser = gum_user_create_sync(FALSE);
+			}
 			g_object_set(G_OBJECT(guser), "username", name.c_str(),
 							"usertype", GUM_USERTYPE_SECURITY, NULL);
 			gboolean ret = gum_user_add_sync(guser);
@@ -581,7 +584,10 @@ int ZoneManager::removeZone(const std::string& name)
 			::tzplatform_reset_user();
 
 			//remove zone user
-			GumUser* guser = gum_user_get_sync(user.getUid(), FALSE);
+			GumUser* guser = NULL;
+			while (guser == NULL) {
+				guser = gum_user_get_sync(user.getUid(), FALSE);
+			}
 			gboolean ret = gum_user_delete_sync(guser, TRUE);
 			g_object_unref(guser);
 
