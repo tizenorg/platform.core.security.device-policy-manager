@@ -199,7 +199,6 @@ TESTCASE(ColumnTest)
 
 TESTCASE(ColumnOutRange1)
 {
-
 	try {
 		database::Connection db(TestbenchDataSource, database::Connection::ReadWrite | database::Connection::Create);
 		database::Statement select(db, "SELECT * FROM CLIENT");
@@ -211,7 +210,6 @@ TESTCASE(ColumnOutRange1)
 
 TESTCASE(ColumnOutRange2)
 {
-
 	try {
 		database::Connection db(TestbenchDataSource, database::Connection::ReadWrite | database::Connection::Create);
 		database::Statement select(db, "SELECT * FROM CLIENT");
@@ -223,7 +221,6 @@ TESTCASE(ColumnOutRange2)
 
 TESTCASE(ColumnOutRange3)
 {
-
 	try {
 		database::Connection db(TestbenchDataSource, database::Connection::ReadWrite | database::Connection::Create);
 		database::Statement select(db, "SELECT * FROM CLIENT");

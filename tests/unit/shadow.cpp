@@ -61,7 +61,6 @@ TESTCASE(GetGroupNegativeTest2)
 		runtime::Group group(-1);
 	} catch (runtime::Exception& e) {
 	}
-
 }
 
 TESTCASE(GetUserNegativetest)
