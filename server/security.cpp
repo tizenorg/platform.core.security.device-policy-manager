@@ -92,7 +92,7 @@ int SecurityPolicy::setInternalStorageEncryption(bool encrypt)
 		bundle.add("viewtype", encrypt ? "ENCRYPT_DEVICE" : "DECRYPT_DEVICE");
 
 		Launchpad launchpad(context.getPeerUid());
-		if (launchpad.isRunning(APPID_DEVICE_ENCRYPTION) == false) {
+		if (launchpad.isRunning(APPID_DEVICE_ENCRYPTION)) {
 			launchpad.resume(APPID_DEVICE_ENCRYPTION);
 			return 0;
 		}
