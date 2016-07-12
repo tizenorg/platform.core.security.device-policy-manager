@@ -82,7 +82,10 @@ EXPORT_API int dpm_security_is_external_storage_encrypted(device_policy_manager_
 
 EXPORT_API int dpm_security_wipe_data(device_policy_manager_h handle, dpm_security_wipe_type_e type)
 {
+	int mask = type & (DPM_SECURITY_WIPE_INTERNAL_STORAGE | DPM_SECURITY_WIPE_EXTERNAL_STORAGE);
+
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(mask, DPM_ERROR_INVALID_PARAMETER);
 
 	DevicePolicyContext &client = GetDevicePolicyContext(handle);
 	StoragePolicy storage = client.createPolicyInterface<StoragePolicy>();

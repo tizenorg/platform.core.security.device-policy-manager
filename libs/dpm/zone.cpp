@@ -48,6 +48,7 @@ EXPORT_API int dpm_zone_get_state(device_policy_manager_h handle, const char* na
 {
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 	RET_ON_FAILURE(name, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(state, DPM_ERROR_INVALID_PARAMETER);
 
 	DevicePolicyContext &client = GetDevicePolicyContext(handle);
 	ZonePolicy zone = client.createPolicyInterface<ZonePolicy>();
@@ -64,8 +65,11 @@ EXPORT_API int dpm_zone_get_state(device_policy_manager_h handle, const char* na
 EXPORT_API int dpm_zone_foreach_name(device_policy_manager_h handle, dpm_zone_state_e state,
 									 dpm_zone_foreach_name_cb callback, void* user_data)
 {
+	int mask = state & (DPM_ZONE_STATE_LOCKED | DPM_ZONE_STATE_RUNNING);
+
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 	RET_ON_FAILURE(callback, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(mask, DPM_ERROR_INVALID_PARAMETER);
 
 	DevicePolicyContext &client = GetDevicePolicyContext(handle);
 	ZonePolicy zone = client.createPolicyInterface<ZonePolicy>();

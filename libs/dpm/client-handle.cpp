@@ -33,7 +33,9 @@ dpm_context_h dpm_context_create(void)
 {
 	DevicePolicyContext* client = new(std::nothrow) DevicePolicyContext();
 
-	assert(client);
+	if (client == nullptr) {
+		return NULL;
+	}
 
 	if (client->connect() < 0) {
 		delete client;
@@ -45,7 +47,7 @@ dpm_context_h dpm_context_create(void)
 
 int dpm_context_destroy(dpm_context_h handle)
 {
-	assert(handle);
+	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
 	delete &GetDevicePolicyContext(handle);
 
@@ -54,7 +56,10 @@ int dpm_context_destroy(dpm_context_h handle)
 
 int dpm_context_add_policy_changed_cb(dpm_context_h handle, const char* name, dpm_policy_changed_cb callback, void* user_data, int* id)
 {
-	assert(handle);
+	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(name, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(callback, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(id, DPM_ERROR_INVALID_PARAMETER);
 
 	DevicePolicyContext& client = GetDevicePolicyContext(handle);
 	int ret = client.subscribePolicyChange(name, callback, user_data);
@@ -68,7 +73,8 @@ int dpm_context_add_policy_changed_cb(dpm_context_h handle, const char* name, dp
 
 int dpm_context_remove_policy_changed_cb(dpm_context_h handle, int id)
 {
-	assert(handle);
+	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(id >= 0, DPM_ERROR_INVALID_PARAMETER);
 
 	DevicePolicyContext& client = GetDevicePolicyContext(handle);
 	client.unsubscribePolicyChange(id);
@@ -81,6 +87,7 @@ int dpm_context_add_signal_cb(dpm_context_h handle, const char* signal, dpm_sign
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 	RET_ON_FAILURE(signal, DPM_ERROR_INVALID_PARAMETER);
 	RET_ON_FAILURE(callback, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(id, DPM_ERROR_INVALID_PARAMETER);
 
 	DevicePolicyContext& context = GetDevicePolicyContext(handle);
 	int ret = context.subscribeSignal(signal, callback, user_data);
@@ -92,20 +99,21 @@ int dpm_context_add_signal_cb(dpm_context_h handle, const char* signal, dpm_sign
 	return 0;
 }
 
-int dpm_context_remove_signal_cb(dpm_context_h handle, int callback_id)
+int dpm_context_remove_signal_cb(dpm_context_h handle, int id)
 {
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
-	RET_ON_FAILURE(callback_id >= 0, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(id >= 0, DPM_ERROR_INVALID_PARAMETER);
 
 	DevicePolicyContext& context = GetDevicePolicyContext(handle);
-	return context.unsubscribeSignal(callback_id);
+	return context.unsubscribeSignal(id);
 }
 
 EXPORT_API device_policy_manager_h dpm_manager_create(void)
 {
 	DevicePolicyContext* client = new(std::nothrow) DevicePolicyContext();
-
-	assert(client);
+	if (client == nullptr) {
+		return NULL;
+	}
 
 	if (client->connect() < 0) {
 		delete client;
@@ -117,7 +125,7 @@ EXPORT_API device_policy_manager_h dpm_manager_create(void)
 
 EXPORT_API int dpm_manager_destroy(device_policy_manager_h handle)
 {
-	assert(handle);
+	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 
 	delete &GetDevicePolicyContext(handle);
 
@@ -130,7 +138,10 @@ EXPORT_API int dpm_add_policy_changed_cb(device_policy_manager_h handle,
 										 void* user_data,
 										 int* id)
 {
-	assert(handle);
+	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(name, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(callback, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(id, DPM_ERROR_INVALID_PARAMETER);
 
 	DevicePolicyContext& client = GetDevicePolicyContext(handle);
 	int ret = client.subscribePolicyChange(name, callback, user_data);
@@ -144,12 +155,11 @@ EXPORT_API int dpm_add_policy_changed_cb(device_policy_manager_h handle,
 
 EXPORT_API int dpm_remove_policy_changed_cb(device_policy_manager_h handle, int id)
 {
-	assert(handle);
+	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(id >= 0, DPM_ERROR_INVALID_PARAMETER);
 
 	DevicePolicyContext& client = GetDevicePolicyContext(handle);
-	client.unsubscribePolicyChange(id);
-
-	return 0;
+	return client.unsubscribePolicyChange(id);
 }
 
 EXPORT_API int dpm_add_signal_cb(device_policy_manager_h handle, const char* signal,
@@ -158,6 +168,7 @@ EXPORT_API int dpm_add_signal_cb(device_policy_manager_h handle, const char* sig
 	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
 	RET_ON_FAILURE(signal, DPM_ERROR_INVALID_PARAMETER);
 	RET_ON_FAILURE(callback, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(id, DPM_ERROR_INVALID_PARAMETER);
 
 	DevicePolicyContext& context = GetDevicePolicyContext(handle);
 	int ret = context.subscribeSignal(signal, callback, user_data);
