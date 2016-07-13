@@ -227,7 +227,7 @@ void zoneProcessCallback(GDBusConnection *connection,
 	static runtime::User owner(ZONE_DEFAULT_OWNER);
 	int pid, status;
 
-	notification_h noti = reinterpret_cast<notification_h>(userData);
+//	notification_h noti = reinterpret_cast<notification_h>(userData);
 
 	g_variant_get(params, "(ii)", &status, &pid);
 
@@ -241,6 +241,8 @@ void zoneProcessCallback(GDBusConnection *connection,
 		return;
 	}
 
+	// this will have been commented until notification_delete_for_uid can work
+	/*
 	if (owner.getUid() != st.st_uid) {
 		if (!isZoneForeground) {
 			notification_set_text(noti, NT_CONTENT, NT_APPINFO, NULL, NT_NONE);
@@ -252,7 +254,7 @@ void zoneProcessCallback(GDBusConnection *connection,
 			notification_delete_for_uid(noti, owner.getUid());
 			isZoneForeground = false;
 		}
-	}
+	}*/
 }
 
 notification_h createNotification()
