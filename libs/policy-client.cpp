@@ -21,7 +21,7 @@ namespace {
 const std::string SUBSCRIBER_REGISTER = "Server::registerNotificationSubscriber";
 const std::string SUBSCRIBER_UNREGISTER = "Server::unregisterNotificationSubscriber";
 
-const std::string POLICY_MANAGER_ADDRESS = "/tmp/.device-policy-manager";
+const std::string POLICY_MANAGER_ADDRESS = "/tmp/.device-policy-manager.sock";
 
 } // namespace
 

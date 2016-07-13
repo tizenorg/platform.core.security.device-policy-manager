@@ -24,7 +24,7 @@ using namespace std::placeholders;
 
 namespace {
 
-const std::string POLICY_MANAGER_ADDRESS = "/tmp/.device-policy-manager";
+const std::string POLICY_MANAGER_ADDRESS = "/tmp/.device-policy-manager.sock";
 
 } // namespace
 
