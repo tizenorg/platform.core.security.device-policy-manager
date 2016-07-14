@@ -20,25 +20,26 @@
 
 #include <algorithm>
 
-#include <gum/gum-user.h>
-#include <gum/common/gum-user-types.h>
 #include <notification.h>
 #include <notification_internal.h>
 #include <tzplatform_config.h>
 #include <auth-passwd-admin.h>
+#include <gum/gum-user.h>
+#include <gum/common/gum-user-types.h>
+#include <klay/error.h>
+#include <klay/process.h>
+#include <klay/filesystem.h>
+#include <klay/auth/user.h>
+#include <klay/xml/parser.h>
+#include <klay/xml/document.h>
+#include <klay/dbus/connection.h>
+#include <klay/audit/logger.h>
 
-#include "zone/zone.hxx"
-#include "policy-builder.h"
-#include "error.h"
-#include "process.h"
 #include "packman.h"
 #include "launchpad.h"
-#include "filesystem.h"
-#include "auth/user.h"
-#include "xml/parser.h"
-#include "xml/document.h"
-#include "audit/logger.h"
-#include "dbus/connection.h"
+#include "policy-builder.h"
+
+#include "zone/zone.hxx"
 
 #define ZONE_DELEGATOR_APP  "org.tizen.keyguard"
 #define NOTIFICATION_SUB_ICON_PATH  DATA_PATH "/zone_noti_list_sub_icon.png"

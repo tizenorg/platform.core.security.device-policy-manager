@@ -22,12 +22,12 @@
 #include <string>
 #include <mutex>
 
+#include <klay/db/column.h>
+#include <klay/db/statement.h>
+#include <klay/db/connection.h>
+
 #include "policy.h"
 #include "policy-storage.h"
-
-#include "db/connection.h"
-#include "db/statement.h"
-#include "db/column.h"
 
 class Client {
 public:
