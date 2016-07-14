@@ -22,8 +22,6 @@
 
 #include <bundle.h>
 
-#include "exception.h"
-
 class Bundle {
 public:
 	Bundle();

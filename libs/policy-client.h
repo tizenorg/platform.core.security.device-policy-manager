@@ -21,7 +21,7 @@
 #include <memory>
 #include <functional>
 
-#include "rmi/client.h"
+#include <klay/rmi/client.h>
 
 typedef std::function<void(const char*, const char*, void*)> PolicyChangeListener;
 typedef std::function<void(const char*, const char*, void*)> SignalListener;

@@ -15,14 +15,14 @@
  */
 #include <sys/stat.h>
 #include <sys/types.h>
+
 #include <system_settings.h>
+#include <klay/auth/user.h>
+#include <klay/audit/logger.h>
+
+#include "packman.h"
 
 #include "zone/package-proxy.hxx"
-
-#include "error.h"
-#include "packman.h"
-#include "auth/user.h"
-#include "audit/logger.h"
 
 namespace DevicePolicyManager {
 

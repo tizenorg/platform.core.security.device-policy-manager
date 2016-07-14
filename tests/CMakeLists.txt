@@ -13,10 +13,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+SET(API_TEST_TARGET	"dpm-api-tests")
 
-SET(DPM_TESTBENCH        ${DPM_TESTS}/testbench)
-SET(DPM_UNIT_TEST        ${DPM_TESTS}/unit)
-SET(DPM_API_TEST         ${DPM_TESTS}/api)
+SET(API_TEST_SOURCES main.c
+					 testbench.c
+					 admin.c
+					 application.c
+					 context.c
+					 bluetooth.c
+					 manager.c
+					 restriction.c
+					 security.c
+					 wifi.c
+)
 
-ADD_SUBDIRECTORY(${DPM_UNIT_TEST})
-ADD_SUBDIRECTORY(${DPM_API_TEST})
+INCLUDE("${TIZEN_PROFILE_NAME}.cmake")
+
+ADD_EXECUTABLE(${API_TEST_TARGET} ${API_TEST_SOURCES})
+
+INCLUDE_DIRECTORIES(SYSTEM ${DPM_LIBS} ${DPM_TESTS})
+
+TARGET_LINK_LIBRARIES(${API_TEST_TARGET} dpm glib-2.0)
+
+INSTALL(TARGETS ${API_TEST_TARGET} DESTINATION bin)

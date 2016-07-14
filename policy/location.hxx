@@ -17,7 +17,6 @@
 #ifndef __LOCATION_POLICY__
 #define __LOCATION_POLICY__
 
-#include "data-type.h"
 #include "policy-context.hxx"
 
 namespace DevicePolicyManager {

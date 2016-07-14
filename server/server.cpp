@@ -36,7 +36,7 @@ Server::Server()
 
 	service->setPrivilegeChecker(std::bind(&Server::checkPeerPrivilege, this, _1, _2));
 
-	service->registerParametricMethod(this, "", (FileDescriptor)(Server::registerNotificationSubscriber)(std::string));
+	service->registerParametricMethod(this, "", (runtime::FileDescriptor)(Server::registerNotificationSubscriber)(std::string));
 	service->registerParametricMethod(this, "", (int)(Server::unregisterNotificationSubscriber)(std::string, int));
 }
 
@@ -55,9 +55,9 @@ void Server::terminate()
 	service->stop();
 }
 
-FileDescriptor Server::registerNotificationSubscriber(const std::string& name)
+runtime::FileDescriptor Server::registerNotificationSubscriber(const std::string& name)
 {
-	return FileDescriptor(service->subscribeNotification(name), true);
+	return runtime::FileDescriptor(service->subscribeNotification(name), true);
 }
 
 int Server::unregisterNotificationSubscriber(const std::string& name, int id)

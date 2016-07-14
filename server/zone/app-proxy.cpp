@@ -16,17 +16,17 @@
 
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <system_settings.h>
 
 #include <unordered_map>
 
-#include "zone/app-proxy.hxx"
+#include <system_settings.h>
+#include <klay/auth/user.h>
+#include <klay/audit/logger.h>
 
-#include "error.h"
 #include "packman.h"
 #include "launchpad.h"
-#include "auth/user.h"
-#include "audit/logger.h"
+
+#include "zone/app-proxy.hxx"
 
 namespace DevicePolicyManager {
 

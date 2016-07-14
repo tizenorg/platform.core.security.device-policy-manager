@@ -22,8 +22,6 @@
 #include "app-proxy.h"
 #include "app-info-internal.h"
 
-#include "error.h"
-#include "auth/user.h"
 #include "policy-client.h"
 #include "zone/app-proxy.hxx"
 

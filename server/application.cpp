@@ -21,13 +21,14 @@
 
 #include <privilege_manager.h>
 #include <privilege_info.h>
+#include <klay/exception.h>
+#include <klay/audit/logger.h>
 
-#include "application.hxx"
-
-#include "policy-helper.h"
 #include "packman.h"
 #include "launchpad.h"
-#include "audit/logger.h"
+#include "policy-helper.h"
+
+#include "application.hxx"
 
 namespace DevicePolicyManager {
 
