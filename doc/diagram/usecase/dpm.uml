@@ -1,11 +1,10 @@
 @startuml
-DevicePolicyToolkit --> DPC : use
-:Device Policy Client Library: as DPC
+:Device Admin Client: as DPC
 :Device Policy Manager: as DPM
 :Tizen Framework: as Framework
 
-DPC --> DPM :IPC
-MDM --> DPC :use
+DPC --> DPM :use
+MDM --> DPM :use
 
 (DPM) --> (Policies) : manage
 (DPM) --> (Framework) : enforce
