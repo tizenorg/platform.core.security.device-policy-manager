@@ -29,8 +29,8 @@ public:
 	AdministrationPolicy(PolicyControlContext& ctxt);
 	~AdministrationPolicy();
 
-	int registerPolicyClient(const std::string& name);
-	int deregisterPolicyClient(const std::string& name);
+	int registerPolicyClient(const std::string& name, const int uid);
+	int deregisterPolicyClient(const std::string& name, const int uid);
 
 private:
 	PolicyControlContext& context;
