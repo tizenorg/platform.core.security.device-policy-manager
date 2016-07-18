@@ -15,14 +15,42 @@
  */
 
 #include <stdio.h>
+#include <pwd.h>		// struct pwd
 #include <dpm/administration.h>
 
 #include "testbench.h"
 
+static int getUID(const char* userName)
+{
+	struct passwd pwd, *result;
+	int bufsize;
+
+	if (userName == NULL)
+		return -1;
+
+	bufsize = sysconf(_SC_GETPW_R_SIZE_MAX);
+	if (bufsize == -1)
+		bufsize = 16384;
+
+	std::unique_ptr<char[]> buf(new char[bufsize]);
+	::getpwnam_r(userName, &pwd, buf.get(), bufsize, &result);
+	if (result == NULL) {
+		printf("User %s doesn't exist\n", userName);
+		return -1;
+	}
+
+	return (int)result->pw_uid;
+}
+
 static int admin_register_client(struct testcase* tc)
 {
 	int ret;
+	int uid;
 	device_policy_manager_h handle;
+
+	uid = getUID("owner");
+	if (uid == -1)
+		return TEST_FAILED;
 
 	handle = dpm_manager_create();
 	if (handle == NULL) {
@@ -31,7 +59,7 @@ static int admin_register_client(struct testcase* tc)
 	}
 
 	ret = TEST_SUCCESSED;
-	if (dpm_admin_register_client(handle, "org.tizen.dpm-toolkit") != DPM_ERROR_NONE) {
+	if (dpm_admin_register_client(handle, "org.tizen.dpm-toolkit", uid) != DPM_ERROR_NONE) {
 		ret = TEST_FAILED;
 	}
 
@@ -43,7 +71,12 @@ static int admin_register_client(struct testcase* tc)
 static int admin_deregister_client(struct testcase* tc)
 {
 	int ret;
+	int uid;
 	device_policy_manager_h handle;
+
+	uid = getUID("owner");
+	if (uid == -1)
+		return TEST_FAILED;
 
 	handle = dpm_manager_create();
 	if (handle == NULL) {
@@ -52,7 +85,7 @@ static int admin_deregister_client(struct testcase* tc)
 	}
 
 	ret = TEST_SUCCESSED;
-	if (dpm_admin_deregister_client(handle, "org.tizen.dpm-toolkit") != DPM_ERROR_NONE) {
+	if (dpm_admin_deregister_client(handle, "org.tizen.dpm-toolkit", uid) != DPM_ERROR_NONE) {
 		ret = TEST_FAILED;
 	}
 
