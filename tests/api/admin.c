@@ -31,7 +31,7 @@ static int admin_register_client(struct testcase* tc)
 	}
 
 	ret = TEST_SUCCESSED;
-	if (dpm_admin_register_client(handle, "org.tizen.dpm-toolkit") != DPM_ERROR_NONE) {
+	if (dpm_admin_register_client(handle, "org.tizen.dpm-toolkit", 1) != DPM_ERROR_NONE) {
 		ret = TEST_FAILED;
 	}
 
@@ -52,7 +52,7 @@ static int admin_deregister_client(struct testcase* tc)
 	}
 
 	ret = TEST_SUCCESSED;
-	if (dpm_admin_deregister_client(handle, "org.tizen.dpm-toolkit") != DPM_ERROR_NONE) {
+	if (dpm_admin_deregister_client(handle, "org.tizen.dpm-toolkit", 1) != DPM_ERROR_NONE) {
 		ret = TEST_FAILED;
 	}
 
