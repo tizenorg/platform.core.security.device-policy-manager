@@ -39,6 +39,8 @@ public:
 
 	void flush();
 
+	void remove();
+
 private:
 	std::string location;
 	std::unique_ptr<xml::Document> data;
