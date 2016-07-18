@@ -29,19 +29,19 @@ AdministrationPolicy::~AdministrationPolicy()
 {
 }
 
-int AdministrationPolicy::registerPolicyClient(const std::string& name)
+int AdministrationPolicy::registerPolicyClient(const std::string& name, uid_t uid)
 {
 	try {
-		return context->methodCall<int>("AdministrationPolicy::registerPolicyClient", name);
+		return context->methodCall<int>("AdministrationPolicy::registerPolicyClient", name, uid);
 	} catch (runtime::Exception& e) {
 		return -1;
 	}
 }
 
-int AdministrationPolicy::deregisterPolicyClient(const std::string& name)
+int AdministrationPolicy::deregisterPolicyClient(const std::string& name, uid_t uid)
 {
 	try {
-		return context->methodCall<int>("AdministrationPolicy::deregisterPolicyClient", name);
+		return context->methodCall<int>("AdministrationPolicy::deregisterPolicyClient", name, uid);
 	} catch (runtime::Exception& e) {
 		return -1;
 	}

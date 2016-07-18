@@ -25,16 +25,28 @@
 
 using namespace DevicePolicyManager;
 
-EXPORT_API int dpm_admin_register_client(device_policy_manager_h handle, const char* name)
+EXPORT_API int dpm_admin_register_client(device_policy_manager_h handle, const char* name, uid_t uid)
 {
+	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(name, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(uid, DPM_ERROR_INVALID_PARAMETER);
+
+	printf("REG:%s-%d\n", name, uid);
+
 	DevicePolicyContext &client = GetDevicePolicyContext(handle);
 	AdministrationPolicy admin = client.createPolicyInterface<AdministrationPolicy>();
-	return admin.registerPolicyClient(name);
+	return admin.registerPolicyClient(name, uid);
 }
 
-EXPORT_API int dpm_admin_deregister_client(device_policy_manager_h handle, const char* name)
+EXPORT_API int dpm_admin_deregister_client(device_policy_manager_h handle, const char* name, uid_t uid)
 {
+	RET_ON_FAILURE(handle, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(name, DPM_ERROR_INVALID_PARAMETER);
+	RET_ON_FAILURE(uid, DPM_ERROR_INVALID_PARAMETER);
+
+	printf("DeREG:%s-%d\n", name, uid);
+
 	DevicePolicyContext &client = GetDevicePolicyContext(handle);
 	AdministrationPolicy admin = client.createPolicyInterface<AdministrationPolicy>();
-	return admin.deregisterPolicyClient(name);
+	return admin.deregisterPolicyClient(name, uid);
 }
