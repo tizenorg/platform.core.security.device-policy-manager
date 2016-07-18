@@ -14,27 +14,7 @@
  *  limitations under the License
  */
 
-#ifndef __ADMINISTRATION_POLICY__
-#define __ADMINISTRATION_POLICY__
-
-#include <string>
-
-#include "data-type.h"
-#include "policy-context.hxx"
-
-namespace DevicePolicyManager {
-
-class AdministrationPolicy {
-public:
-	AdministrationPolicy(PolicyControlContext& ctxt);
-	~AdministrationPolicy();
-
-	int registerPolicyClient(const std::string& name, const int uid);
-	int deregisterPolicyClient(const std::string& name, const int uid);
-
-private:
-	PolicyControlContext& context;
-};
-
-} // namespace DevicePolicyManager
-#endif // __ADMINISTRATION_POLICY__
+int main(int argc, char *argv[])
+{
+	return 0;
+}

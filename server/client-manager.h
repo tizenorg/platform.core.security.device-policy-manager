@@ -33,7 +33,7 @@ class Client {
 public:
 	Client(const Client&) = delete;
 	Client(Client&&) = default;
-	Client(const std::string& name, const std::string& key);
+	Client(const std::string& name, const int uid, const std::string& key);
 
 	~Client();
 
@@ -45,6 +45,11 @@ public:
 		return name;
 	}
 
+	inline int getUid() const
+	{
+		return uid;
+	}
+
 	inline std::string getKey() const
 	{
 		return key;
@@ -52,6 +57,7 @@ public:
 
 private:
 	std::string name;
+	int uid;
 	std::string key;
 
 	std::unique_ptr<PolicyStorage> policyStorage;
@@ -62,8 +68,8 @@ public:
 	ClientManager(const ClientManager&) = delete;
 	ClientManager& operator=(const ClientManager&) = delete;
 
-	void registerClient(const std::string& name);
-	void deregisterClient(const std::string& name);
+	void registerClient(const std::string& name, const int uid);
+	void deregisterClient(const std::string& name, const int uid);
 
 	std::string generateKey();
 
