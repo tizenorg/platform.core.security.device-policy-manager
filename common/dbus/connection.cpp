@@ -26,7 +26,7 @@ namespace dbus {
 
 namespace {
 
-const std::string DBUS_SYSTEM_BUS_ADDRESS = "unix:path=/var/run/dbus/system_bus_socket";
+const std::string DBUS_SYSTEM_BUS_ADDRESS = "kernel:path=/sys/fs/kdbus/0-system/bus;unix:path=/var/run/dbus/system_bus_socket";
 
 void defaultCallback(GDBusConnection* connection,
 					 const gchar *sender_name,
