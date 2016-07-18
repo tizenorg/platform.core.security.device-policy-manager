@@ -24,20 +24,20 @@ namespace DevicePolicyManager {
 AdministrationPolicy::AdministrationPolicy(PolicyControlContext& ctx) :
 	context(ctx)
 {
-	context.registerParametricMethod(this, "", (int)(AdministrationPolicy::registerPolicyClient)(std::string));
-	context.registerParametricMethod(this, "", (int)(AdministrationPolicy::deregisterPolicyClient)(std::string));
+	context.registerParametricMethod(this, "", (int)(AdministrationPolicy::registerPolicyClient)(std::string, uid_t));
+	context.registerParametricMethod(this, "", (int)(AdministrationPolicy::deregisterPolicyClient)(std::string, uid_t));
 }
 
 AdministrationPolicy::~AdministrationPolicy()
 {
 }
 
-int AdministrationPolicy::registerPolicyClient(const std::string& name)
+int AdministrationPolicy::registerPolicyClient(const std::string& name, uid_t uid)
 {
 	ClientManager& manager = ClientManager::instance();
 
 	try {
-		manager.registerClient(name);
+		manager.registerClient(name, uid);
 	} catch (runtime::Exception& e) {
 		ERROR("Failed to register policy client");
 		return -1;
@@ -46,12 +46,12 @@ int AdministrationPolicy::registerPolicyClient(const std::string& name)
 	return 0;
 }
 
-int AdministrationPolicy::deregisterPolicyClient(const std::string& name)
+int AdministrationPolicy::deregisterPolicyClient(const std::string& name, uid_t uid)
 {
 	ClientManager& manager = ClientManager::instance();
 
 	try {
-		manager.deregisterClient(name);
+		manager.deregisterClient(name, uid);
 	} catch (runtime::Exception& e) {
 		ERROR("Failed to deregister policy client");
 		return -1;
