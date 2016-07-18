@@ -17,6 +17,8 @@
 #ifndef __CAPI_ADMINISTRATION_POLICY_H__
 #define __CAPI_ADMINISTRATION_POLICY_H__
 
+#include <sys/types.h>
+
 #include <dpm/device-policy-manager.h>
 
 /**
@@ -41,6 +43,7 @@ extern "C" {
  * @since_tizen 3.0
  * @param[in]   handle The device policy manager handle
  * @param[in]   name The name of the device policy admin package
+ * @param[in]   uid The uid of the device policy admin package
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_TIMEOUT Time out
@@ -52,7 +55,7 @@ extern "C" {
  * @see         dpm_context_release_admin_policy()
  * @see         dpm_admin_deregister_client()
  */
-int dpm_admin_register_client(device_policy_manager_h handle, const char* name);
+int dpm_admin_register_client(device_policy_manager_h handle, const char* name, uid_t uid);
 
 /**
  * @brief       Deregisters the device policy admin client.
@@ -61,6 +64,7 @@ int dpm_admin_register_client(device_policy_manager_h handle, const char* name);
  * @since_tizen 3.0
  * @param[in]   handle The device policy manager handle
  * @param[in]   name The name of the device policy admin package
+ * @param[in]   uid The uid of the device policy admin package
  * @return      #DPM_ERROR_NONE on success, otherwise a negative value
  * @retval      #DPM_ERROR_NONE Successful
  * @retval      #DPM_ERROR_TIMEOUT Time out
@@ -72,7 +76,7 @@ int dpm_admin_register_client(device_policy_manager_h handle, const char* name);
  * @see         dpm_context_release_admin_policy()
  * @see         dpm_admin_register_client()
  */
-int dpm_admin_deregister_client(device_policy_manager_h handle, const char* name);
+int dpm_admin_deregister_client(device_policy_manager_h handle, const char* name, uid_t uid);
 
 #ifdef __cplusplus
 }
