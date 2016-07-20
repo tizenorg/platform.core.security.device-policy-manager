@@ -3,6 +3,7 @@ Description=Device Policy Manager
 
 [Service]
 Type=simple
+SmackProcessLabel=System
 ExecStart=${CMAKE_INSTALL_PREFIX}/bin/device-policy-manager
 Restart=on-failure
 ExecReload=/bin/kill -HUP $MAINPID
