@@ -101,7 +101,7 @@ int RestrictionPolicy::setMicrophoneState(int enable)
 							  "(s)",
 							  "(su)",
 							  "block_recording_media",
-							  enable).get("(s)", &result);
+							  !enable).get("(s)", &result);
 	} catch (runtime::Exception& e) {
 		ERROR("Failed to enforce location policy");
 		return -1;
