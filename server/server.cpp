@@ -30,7 +30,7 @@ const std::string POLICY_MANAGER_ADDRESS = "/tmp/.device-policy-manager.sock";
 
 Server::Server()
 {
-	policyStorage.reset(new PolicyStorage("/opt/etc/dpm/policy/PolicyManifest.xml"));
+	policyManager.reset(new PolicyManager(RUN_PATH "/dpm"));
 
 	service.reset(new rmi::Service(POLICY_MANAGER_ADDRESS));
 
@@ -69,15 +69,12 @@ int Server::updatePolicy(const std::string& name, const std::string& value,
 						 const std::string& event, const std::string& info)
 {
 	try {
-		Policy& policy = policyStorage->getPolicy(name);
-		std::string old = policy.getContent();
-		policy.setContent(value);
+		std::string old = policyManager->getPolicy(name);
 		if (old != value) {
+			policyManager->setPolicy(name, value);
 			if (event != "") {
 				service->notify(event, info);
 			}
-
-			policyStorage->flush();
 		}
 	} catch (runtime::Exception& e) {
 		ERROR("Exception on access to policy: " + name);
@@ -94,7 +91,7 @@ int Server::updatePolicy(const std::string& name, const std::string& value)
 
 std::string Server::getPolicy(const std::string& name) const
 {
-	return policyStorage->getPolicy(name).getContent();
+	return policyManager->getPolicy(name);
 }
 
 bool Server::checkPeerPrivilege(const rmi::Credentials& cred, const std::string& privilege)
