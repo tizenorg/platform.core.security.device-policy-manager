@@ -3,7 +3,6 @@
 		<domain name="_" />
 	</request>
 	<assign>
-		<filesystem path="/opt/etc/dpm/zone" label="System::Shared" type="transmutable" />
-		<filesystem path="/opt/etc/dpm/policy/PolicyManifest.xml" label="System" />
+		<filesystem path="/opt/etc/dpm" label="System::Shared" type="transmutable" />
 	</assign>
 </manifest>
