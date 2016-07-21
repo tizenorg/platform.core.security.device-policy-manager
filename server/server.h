@@ -20,7 +20,7 @@
 #include <string>
 #include <memory>
 
-#include "policy-storage.h"
+#include "policy-manager.h"
 
 #include "file-descriptor.h"
 #include "filesystem.h"
@@ -81,7 +81,7 @@ private:
 	~Server();
 
 	std::string securityLabel;
-	std::unique_ptr<PolicyStorage> policyStorage;
+	std::unique_ptr<PolicyManager> policyManager;
 	std::unique_ptr<rmi::Service> service;
 };
 
