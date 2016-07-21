@@ -28,7 +28,7 @@
 
 namespace {
 
-const std::string clientPolicyStorage = DATA_PATH;
+const std::string clientPolicyStorage = CONF_PATH "/policy";
 
 } //namespace
 
@@ -41,11 +41,6 @@ Client::Client(const std::string& pkgname, uid_t puid, const std::string& pk) :
 
 Client::~Client()
 {
-}
-
-void Client::removePolicyStorage()
-{
-	policyStorage.get()->remove();
 }
 
 namespace {
@@ -124,6 +119,16 @@ void ClientManager::deregisterClient(const std::string& name, uid_t uid)
 	}
 }
 
+Client& ClientManager::getClient(const std::string& name, uid_t uid)
+{
+	for (Client& client : getClients()) {
+		if (client.getName() == name && client.getUid() == uid) {
+			return client;
+		}
+	}
+	throw runtime::Exception("Client doesn't exist");
+}
+
 std::string ClientManager::generateKey()
 {
 	std::string key = "TestKey";
@@ -142,6 +147,7 @@ void ClientManager::loadClients()
 
 		registeredClients.push_back(Client(name, uid, key));
 	}
+	registeredClients.push_back(Client("org.tizen.dpm-toolkit", 5001, "TestKey"));
 }
 
 void ClientManager::prepareRepository()
