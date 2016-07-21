@@ -23,6 +23,7 @@ SET(FOUNDATION		main.cpp
 					packman.cpp
 					policy.cpp
 					policy-storage.cpp
+					policy-manager.cpp
 					client-manager.cpp
 )
 
