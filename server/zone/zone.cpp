@@ -540,9 +540,7 @@ int ZoneManager::createZone(const std::string& name, const std::string& manifest
 			maskUserServices(user);
 
 			manifestFile.reset(xml::Parser::parseString(manifest));
-			mode_t omask = ::umask(0077);
 			manifestFile->write(ZONE_MANIFEST_DIR + name + ".xml", "UTF-8", true);
-			::umask(omask);
 
 			//TODO: write container owner info
 
