@@ -20,7 +20,7 @@
 #include <string>
 #include <memory>
 
-#include "policy-storage.h"
+#include "policy-manager.h"
 
 #include "file-descriptor.h"
 #include "filesystem.h"
@@ -67,6 +67,9 @@ public:
 		service->createNotification(name);
 	}
 
+	void definePolicy(const std::string& name, const std::string& defaultVal,
+						PolicyStateComparator comparator);
+
 	int updatePolicy(const std::string& name, const std::string& value);
 	int updatePolicy(const std::string& name, const std::string& value,
 					 const std::string& event, const std::string& info);
@@ -79,7 +82,7 @@ public:
 
 private:
 	std::string securityLabel;
-	std::unique_ptr<PolicyStorage> policyStorage;
+	std::unique_ptr<PolicyManager> policyManager;
 	std::unique_ptr<rmi::Service> service;
 };
 
