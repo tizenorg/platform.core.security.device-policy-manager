@@ -23,6 +23,7 @@ SET(FOUNDATION		main.cpp
 					packman.cpp
 					policy.cpp
 					policy-storage.cpp
+					policy-manager.cpp
 					client-manager.cpp
 )
 
@@ -74,6 +75,7 @@ SET_TARGET_PROPERTIES(${TARGET} PROPERTIES LINK_FLAGS "-pie")
 TARGET_COMPILE_DEFINITIONS(${TARGET} PRIVATE
 	CONF_PATH="${CONF_INSTALL_DIR}"
 	DATA_PATH="${DATA_INSTALL_DIR}"
+	RUN_PATH="${RUN_INSTALL_DIR}"
 	DB_PATH="${DB_INSTALL_DIR}"
 )
 
