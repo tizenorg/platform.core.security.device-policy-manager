@@ -25,8 +25,8 @@
 
 #include "password.hxx"
 
+#include "policy-builder.h"
 #include "privilege.h"
-#include "policy-helper.h"
 #include "auth/user.h"
 #include "audit/logger.h"
 
@@ -721,6 +721,6 @@ std::vector<std::string> PasswordPolicy::getForbiddenStrings()
 	return ForbiddenStrings;
 }
 
-PasswordPolicy passwordPolicy(Server::instance());
+DEFINE_POLICY(PasswordPolicy);
 
 } /* namespace DevicePolicyManager*/

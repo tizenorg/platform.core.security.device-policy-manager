@@ -24,7 +24,7 @@
 
 #include "application.hxx"
 
-#include "policy-helper.h"
+#include "policy-builder.h"
 #include "packman.h"
 #include "launchpad.h"
 #include "audit/logger.h"
@@ -163,6 +163,6 @@ int ApplicationPolicy::checkPrivilegeIsBlacklisted(int type, const std::string& 
 	return false;
 }
 
-ApplicationPolicy applicationPolicy(Server::instance());
+DEFINE_POLICY(ApplicationPolicy);
 
 } // namespace DevicePolicyManager

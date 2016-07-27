@@ -19,7 +19,7 @@
 #include "location.hxx"
 
 #include "privilege.h"
-#include "policy-helper.h"
+#include "policy-builder.h"
 #include "audit/logger.h"
 
 namespace DevicePolicyManager {
@@ -50,6 +50,6 @@ int LocationPolicy::getLocationState()
 	return IsPolicyAllowed(context, "location");
 }
 
-LocationPolicy locationPolicy(Server::instance());
+DEFINE_POLICY(LocationPolicy);
 
 } // namespace DevicePolicyManager

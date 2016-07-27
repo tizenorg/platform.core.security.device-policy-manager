@@ -22,6 +22,7 @@ SET(FOUNDATION		main.cpp
 					launchpad.cpp
 					packman.cpp
 					policy.cpp
+					policy-builder.cpp
 					policy-storage.cpp
 					client-manager.cpp
 )

@@ -30,6 +30,7 @@
 #include "security.hxx"
 
 #include "privilege.h"
+#include "policy-builder.h"
 #include "launchpad.h"
 #include "process.h"
 #include "filesystem.h"
@@ -154,6 +155,6 @@ int SecurityPolicy::isExternalStorageEncrypted()
 	return false;
 }
 
-SecurityPolicy securityPolicy(Server::instance());
+DEFINE_POLICY(SecurityPolicy);
 
 } // namespace DevicePolicyManager

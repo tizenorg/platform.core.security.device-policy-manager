@@ -19,7 +19,7 @@
 #include "restriction.hxx"
 
 #include "privilege.h"
-#include "policy-helper.h"
+#include "policy-builder.h"
 #include "audit/logger.h"
 #include "dbus/connection.h"
 
@@ -221,6 +221,6 @@ int RestrictionPolicy::getBrowserState()
 	return IsPolicyAllowed(context, "browser");
 }
 
-RestrictionPolicy restrictionPolicy(Server::instance());
+DEFINE_POLICY(RestrictionPolicy);
 
 } // namespace DevicePolicyManager

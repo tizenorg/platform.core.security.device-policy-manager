@@ -22,8 +22,7 @@
 #include "storage.hxx"
 
 #include "privilege.h"
-#include "policy-helper.h"
-
+#include "policy-builder.h"
 #include "exception.h"
 #include "process.h"
 #include "filesystem.h"
@@ -146,6 +145,6 @@ int StoragePolicy::wipeData(int id)
 	return 0;
 }
 
-StoragePolicy storagePolicy(Server::instance());
+DEFINE_POLICY(StoragePolicy);
 
 } //namespace DevicePolicyManager

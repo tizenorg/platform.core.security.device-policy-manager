@@ -16,6 +16,7 @@
 
 #include "administration.hxx"
 
+#include "policy-builder.h"
 #include "client-manager.h"
 #include "audit/logger.h"
 
@@ -60,6 +61,6 @@ int AdministrationPolicy::deregisterPolicyClient(const std::string& name, uid_t 
 	return 0;
 }
 
-AdministrationPolicy adminPolicy(Server::instance());
+DEFINE_POLICY(AdministrationPolicy);
 
 } // namespace DevicePolicyManager
