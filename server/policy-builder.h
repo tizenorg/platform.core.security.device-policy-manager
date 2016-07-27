@@ -14,12 +14,30 @@
  *  limitations under the License
  */
 
-#ifndef __DPM_POLICY_STORAGE_ADAPTOR_H__
-#define __DPM_POLICY_STORAGE_ADAPTOR_H__
+#ifndef __POLICY_BUILDER_H__
+#define __POLICY_BUILDER_H__
 
+#include <vector>
+#include <functional>
+#include <memory>
 #include <string>
+#include <iostream>
 
 #include "policy-context.hxx"
+
+extern std::vector<std::function<void(PolicyControlContext& context)>> policyBuilder;
+
+template<typename T>
+struct PolicyBuilder {
+	PolicyBuilder()
+	{
+		policyBuilder.emplace_back([this](PolicyControlContext& context) {
+			instance.reset(new T(context));
+		});
+	}
+
+	std::unique_ptr<T> instance;
+};
 
 inline bool IsPolicyAllowed(PolicyControlContext& context, const std::string& name)
 {
@@ -41,4 +59,14 @@ inline int SetPolicyEnabled(PolicyControlContext& context, const std::string& na
 	return context.updatePolicy(name, enable ? "enabled" : "disabled");
 }
 
-#endif //! __DPM_POLICY_STORAGE_ADAPTOR_H__
+inline void PolicyBuild(PolicyControlContext& context)
+{
+	for (auto builder : policyBuilder) {
+		builder(context);
+	}
+}
+
+#define DEFINE_POLICY(__policy__)  \
+	PolicyBuilder<__policy__> __policy__##_builder
+
+#endif //!__POLICY_BUILDER_H__

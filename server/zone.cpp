@@ -27,7 +27,7 @@
 #include "zone/zone.hxx"
 
 #include "privilege.h"
-
+#include "policy-builder.h"
 #include "error.h"
 #include "launchpad.h"
 #include "filesystem.h"
@@ -132,28 +132,28 @@ int ZonePolicy::removeZone(const std::string& name)
 }
 
 /* [TBD] remove dependency with zoneManager like this */
-extern ZoneManager zoneManager;
+extern ZoneManager* zoneManager;
 
 int ZonePolicy::lockZone(const std::string& name)
 {
-	return zoneManager.lockZone(name);
+	return zoneManager->lockZone(name);
 }
 
 int ZonePolicy::unlockZone(const std::string& name)
 {
-	return zoneManager.unlockZone(name);
+	return zoneManager->unlockZone(name);
 }
 
 int ZonePolicy::getZoneState(const std::string& name)
 {
-	return zoneManager.getZoneState(name);
+	return zoneManager->getZoneState(name);
 }
 
 std::vector<std::string> ZonePolicy::getZoneList(int state)
 {
-	return zoneManager.getZoneList(state);
+	return zoneManager->getZoneList(state);
 }
 
-ZonePolicy zonePolicy(Server::instance());
+DEFINE_POLICY(ZonePolicy);
 
 } // namespace DevicePolicyManager

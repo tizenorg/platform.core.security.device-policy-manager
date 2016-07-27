@@ -18,7 +18,7 @@
 #include <system_settings.h>
 
 #include "zone/package-proxy.hxx"
-
+#include "policy-builder.h"
 #include "error.h"
 #include "packman.h"
 #include "auth/user.h"
@@ -123,6 +123,6 @@ int ZonePackageProxy::uninstall(const std::string& name, const std::string& pkgi
 	return 0;
 }
 
-ZonePackageProxy zonePackageManager(Server::instance());
+DEFINE_POLICY(ZonePackageProxy);
 
 } // namespace DevicePolicyManager

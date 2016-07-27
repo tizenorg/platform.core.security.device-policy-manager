@@ -27,7 +27,7 @@
 #include "wifi.hxx"
 
 #include "privilege.h"
-#include "policy-helper.h"
+#include "policy-builder.h"
 
 #include "app-bundle.h"
 #include "audit/logger.h"
@@ -237,6 +237,6 @@ int WifiPolicy::removeSsidFromBlocklist(const std::string& ssid)
 	return 0;
 }
 
-WifiPolicy wifiPolicy(Server::instance());
+DEFINE_POLICY(WifiPolicy);
 
 } // namespace DevicePolicyManager

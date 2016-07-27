@@ -22,7 +22,7 @@
 #include "restriction.hxx"
 
 #include "privilege.h"
-#include "policy-helper.h"
+#include "policy-builder.h"
 #include "audit/logger.h"
 #include "dbus/connection.h"
 
@@ -276,6 +276,6 @@ bool BluetoothPolicy::isUuidRestricted()
 	return IsPolicyEnabled(context, "bluetooth-uuid-restriction");
 }
 
-BluetoothPolicy bluetoothPolicy(Server::instance());
+DEFINE_POLICY(BluetoothPolicy);
 
 } // namespace DevicePolicyManager

@@ -14,37 +14,6 @@
  *  limitations under the License
  */
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <getopt.h>
-#include <stdlib.h>
-#include <signal.h>
+#include "policy-builder.h"
 
-#include <iostream>
-#include <stdexcept>
-
-#include "server.h"
-
-void signalHandler(int signum)
-{
-	exit(0);
-}
-
-int main(int argc, char *argv[])
-{
-	::signal(SIGINT, signalHandler);
-
-	::umask(0);
-
-	try {
-		Server server;
-		server.run();
-	} catch (std::exception &e) {
-		std::cerr << e.what() << std::endl;
-		return 1;
-	}
-
-	return 0;
-}
+std::vector<std::function<void(PolicyControlContext& context)>> policyBuilder;

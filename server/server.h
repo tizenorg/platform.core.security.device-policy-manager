@@ -28,6 +28,9 @@
 
 class Server {
 public:
+	Server();
+	~Server();
+
 	void run();
 	void terminate();
 
@@ -74,12 +77,7 @@ public:
 
 	bool checkPeerPrivilege(const rmi::Credentials& cred, const std::string& privilege);
 
-	static Server& instance();
-
 private:
-	Server();
-	~Server();
-
 	std::string securityLabel;
 	std::unique_ptr<PolicyStorage> policyStorage;
 	std::unique_ptr<rmi::Service> service;

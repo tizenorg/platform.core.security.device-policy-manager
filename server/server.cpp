@@ -19,6 +19,7 @@
 #include <cynara-session.h>
 
 #include "server.h"
+#include "policy-builder.h"
 
 using namespace std::placeholders;
 
@@ -46,6 +47,8 @@ Server::~Server()
 
 void Server::run()
 {
+	PolicyBuild(*this);
+
 	// Prepare execution environment
 	service->start(true);
 }
@@ -121,11 +124,4 @@ bool Server::checkPeerPrivilege(const rmi::Credentials& cred, const std::string&
 	::cynara_finish(p_cynara);
 
 	return true;
-}
-
-Server& Server::instance()
-{
-	static Server _instance_;
-
-	return _instance_;
 }

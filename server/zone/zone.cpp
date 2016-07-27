@@ -28,7 +28,7 @@
 #include <auth-passwd-admin.h>
 
 #include "zone/zone.hxx"
-
+#include "policy-builder.h"
 #include "error.h"
 #include "process.h"
 #include "packman.h"
@@ -483,6 +483,8 @@ void notiProxyCallback(void *data, notification_type_e type, notification_op *op
 
 } // namespace
 
+ZoneManager* zoneManager = nullptr;
+
 ZoneManager::ZoneManager(PolicyControlContext& ctx) :
 	context(ctx)
 {
@@ -507,12 +509,12 @@ ZoneManager::ZoneManager(PolicyControlContext& ctx) :
 		runtime::User zone(name);
 		notification_register_detailed_changed_cb_for_uid(notiProxyCallback, &name, zone.getUid());
 	}
+
+	zoneManager = this;
 }
 
 ZoneManager::~ZoneManager()
 {
-	PackageManager& packageManager = PackageManager::instance();
-	packageManager.unsetEventCallback();
 }
 
 int ZoneManager::createZone(const std::string& name, const std::string& manifest)
@@ -703,6 +705,6 @@ int ZoneManager::resetZonePassword(const std::string& name, const std::string& n
 	return 0;
 }
 
-ZoneManager zoneManager(Server::instance());
+DEFINE_POLICY(ZoneManager);
 
 } // namespace DevicePolicyManager
