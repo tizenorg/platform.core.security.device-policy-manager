@@ -18,6 +18,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "policy-context.hxx"
+
 #include "policy-storage.h"
 
 #include "error.h"

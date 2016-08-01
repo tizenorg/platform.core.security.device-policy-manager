@@ -22,6 +22,7 @@
 
 #include "zone/app-proxy.hxx"
 
+#include "policy-builder.h"
 #include "error.h"
 #include "packman.h"
 #include "launchpad.h"
@@ -252,6 +253,6 @@ bool ZoneAppProxy::isRunning(const std::string& name, const std::string& appid)
 	return false;
 }
 
-ZoneAppProxy zoneAppManager(Server::instance());
+DEFINE_POLICY(ZoneAppProxy);
 
 } // namespace DevicePolicyManager
