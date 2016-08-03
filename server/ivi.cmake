@@ -18,6 +18,7 @@ SET(POLICY      ${POLICY}
 				bluetooth.cpp
 				location.cpp
 				password.cpp
+				krate.cpp
 )
 
 SET(DEPENDENCY  ${DEPENDENCY}
@@ -25,4 +26,5 @@ SET(DEPENDENCY  ${DEPENDENCY}
 				capi-network-bluetooth
 				auth-fw-admin
 				bluetooth-api
+				krate
 )

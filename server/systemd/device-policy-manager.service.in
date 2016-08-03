@@ -3,6 +3,8 @@ Description=Device Policy Manager
 
 [Service]
 Type=simple
+User=security_fw
+Group=security_fw
 SmackProcessLabel=System
 ExecStart=${CMAKE_INSTALL_PREFIX}/bin/device-policy-manager
 Restart=on-failure
