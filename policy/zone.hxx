@@ -17,6 +17,7 @@
 #ifndef __ZONE_POLICY__
 #define __ZONE_POLICY__
 
+#include "data-type.h"
 #include "policy-context.hxx"
 
 namespace DevicePolicyManager {

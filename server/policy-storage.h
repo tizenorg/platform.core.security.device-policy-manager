@@ -23,7 +23,9 @@
 
 #include "policy.h"
 
-#include <klay/xml/document.h>
+#include "xml/parser.h"
+#include "xml/document.h"
+#include "xml/node.h"
 
 class PolicyStorage {
 public:

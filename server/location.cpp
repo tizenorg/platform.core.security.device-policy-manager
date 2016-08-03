@@ -16,10 +16,11 @@
 
 #include <location_batch.h>
 
+#include "location.hxx"
+
 #include "privilege.h"
 #include "policy-builder.h"
-
-#include "location.hxx"
+#include "audit/logger.h"
 
 namespace DevicePolicyManager {
 

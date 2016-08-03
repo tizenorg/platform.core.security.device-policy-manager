@@ -13,15 +13,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License
  */
+
+#include <sys/types.h>
 #include <unistd.h>
 #include <signal.h>
-#include <sys/types.h>
 
 #include <aul.h>
-#include <klay/exception.h>
-#include <klay/audit/logger.h>
 
 #include "launchpad.h"
+
+#include "error.h"
+#include "exception.h"
+#include "audit/logger.h"
+#include "dbus/variant.h"
+#include "dbus/connection.h"
 
 Launchpad::Launchpad(const uid_t uid) :
 	user(uid)

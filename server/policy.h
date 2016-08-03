@@ -21,7 +21,8 @@
 #include <mutex>
 #include <memory>
 
-#include <klay/xml/node.h>
+#include "xml/document.h"
+#include "xml/node.h"
 
 class Policy {
 public:

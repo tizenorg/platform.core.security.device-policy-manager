@@ -13,21 +13,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License
  */
+
+ #include <dd-deviced.h>
+ #include <dd-control.h>
+
 #include <thread>
 
-#include <dd-deviced.h>
-#include <dd-control.h>
-#include <klay/process.h>
-#include <klay/exception.h>
-#include <klay/filesystem.h>
-#include <klay/dbus/variant.h>
-#include <klay/dbus/connection.h>
-#include <klay/audit/logger.h>
+#include "storage.hxx"
 
 #include "privilege.h"
 #include "policy-builder.h"
-
-#include "storage.hxx"
+#include "exception.h"
+#include "process.h"
+#include "filesystem.h"
+#include "dbus/connection.h"
+#include "dbus/variant.h"
+#include "audit/logger.h"
 
 namespace DevicePolicyManager {
 

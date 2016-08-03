@@ -17,6 +17,7 @@
 #ifndef __RESTRICTION_POLICY__
 #define __RESTRICTION_POLICY__
 
+#include "data-type.h"
 #include "policy-context.hxx"
 
 namespace DevicePolicyManager

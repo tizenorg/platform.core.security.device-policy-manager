@@ -17,6 +17,7 @@
 #ifndef __WIFI_POLICY__
 #define __WIFI_POLICY__
 
+#include "data-type.h"
 #include "policy-context.hxx"
 
 namespace DevicePolicyManager {

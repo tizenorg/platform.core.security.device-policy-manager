@@ -17,11 +17,10 @@
 #ifndef __DPM_PACKMAN_H__
 #define __DPM_PACKMAN_H__
 
-#include <unistd.h>
 #include <sys/types.h>
+#include <unistd.h>
 
 #include <string>
-#include <vector>
 
 #include <package-manager.h>
 #include <pkgmgr-info.h>

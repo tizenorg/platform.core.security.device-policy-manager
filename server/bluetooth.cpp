@@ -15,16 +15,16 @@
  */
 
 #include <bluetooth.h>
-#include <bluetooth-api.h>
 #include <bluetooth_internal.h>
-#include <klay/exception.h>
-#include <klay/audit/logger.h>
-#include <klay/dbus/connection.h>
+#include <bluetooth-api.h>
+
+#include "bluetooth.hxx"
+#include "restriction.hxx"
 
 #include "privilege.h"
 #include "policy-builder.h"
-
-#include "bluetooth.hxx"
+#include "audit/logger.h"
+#include "dbus/connection.h"
 
 #define POLICY_ENFORCING_FAILED(ret)                    \
 	(((ret) == BLUETOOTH_DPM_RESULT_ACCESS_DENIED) ||   \

@@ -20,11 +20,11 @@
 #include <string>
 #include <memory>
 
-#include <klay/filesystem.h>
-#include <klay/file-descriptor.h>
-#include <klay/rmi/service.h>
-
 #include "policy-storage.h"
+
+#include "file-descriptor.h"
+#include "filesystem.h"
+#include "rmi/service.h"
 
 class Server {
 public:
@@ -72,7 +72,7 @@ public:
 					 const std::string& event, const std::string& info);
 	std::string getPolicy(const std::string& name) const;
 
-	runtime::FileDescriptor registerNotificationSubscriber(const std::string& name);
+	FileDescriptor registerNotificationSubscriber(const std::string& name);
 	int unregisterNotificationSubscriber(const std::string& name, int id);
 
 	bool checkPeerPrivilege(const rmi::Credentials& cred, const std::string& privilege);

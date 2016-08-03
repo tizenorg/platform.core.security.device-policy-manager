@@ -13,13 +13,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License
  */
-#include <klay/exception.h>
-#include <klay/audit/logger.h>
+
+#include "administration.hxx"
 
 #include "policy-builder.h"
 #include "client-manager.h"
-
-#include "administration.hxx"
+#include "audit/logger.h"
 
 namespace DevicePolicyManager {
 
