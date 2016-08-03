@@ -35,9 +35,9 @@ SET(POLICY			administration.cpp
 					wifi.cpp
 )
 
-SET(DEPENDENCY		glib-2.0
+SET(DEPENDENCY		klay
+					glib-2.0
 					gio-2.0
-					klay
 					libxml-2.0
 					sqlite3
 					bundle
@@ -57,7 +57,6 @@ SET(DEPENDENCY		glib-2.0
 					capi-network-connection
 					capi-network-bluetooth
 					notification
-					libgum
 					cynara-client
 					cynara-session
 )
@@ -86,3 +85,4 @@ CONFIGURE_FILE(systemd/device-policy-manager.service.in systemd/device-policy-ma
 INSTALL(TARGETS ${TARGET} DESTINATION bin)
 INSTALL(FILES systemd/device-policy-manager.service DESTINATION ${SYSTEMD_UNIT_INSTALL_DIR})
 INSTALL(FILES data/PolicyManifest.xml DESTINATION ${CONF_INSTALL_DIR}/policy)
+INSTALL(DIRECTORY DESTINATION ${DATA_INSTALL_DIR})

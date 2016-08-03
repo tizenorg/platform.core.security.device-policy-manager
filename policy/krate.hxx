@@ -14,37 +14,33 @@
  *  limitations under the License
  */
 
-#ifndef __ZONE_MANAGER__
-#define __ZONE_MANAGER__
+#ifndef __KRATE_POLICY__
+#define __KRATE_POLICY__
 
 #include "policy-context.hxx"
 
 namespace DevicePolicyManager {
 
-class ZoneManager {
+class KratePolicy {
 public:
 	enum State {
 		Locked      = 0x01,
 		Running     = 0x02,
 	};
 
-	ZoneManager(PolicyControlContext& ctxt);
-	~ZoneManager();
+	KratePolicy(PolicyControlContext& ctxt);
+	~KratePolicy();
 
-	int createZone(const std::string& name, const std::string& manifest);
-	int removeZone(const std::string& name);
-	int lockZone(const std::string& name);
-	int unlockZone(const std::string& name);
+	int createKrate(const std::string& name, const std::string& setupWizardAppid);
+	int removeKrate(const std::string& name);
 
-	int getZoneState(const std::string& name);
+	int getKrateState(const std::string& name);
 
-	std::vector<std::string> getZoneList(int state);
-
-	int resetZonePassword(const std::string& name, const std::string& newPassword);
+	std::vector<std::string> getKrateList(int state);
 
 private:
 	PolicyControlContext& context;
 };
 
 } // namespace DevicePolicyManager
-#endif // __ZONE_MANAGER__
+#endif // __KRATE_POLICY__

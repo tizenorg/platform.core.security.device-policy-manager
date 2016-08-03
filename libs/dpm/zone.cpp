@@ -15,7 +15,7 @@
  */
 
 #include "zone.h"
-#include "zone.hxx"
+#include "krate.hxx"
 
 #include "array.h"
 #include "debug.h"
@@ -30,8 +30,8 @@ EXPORT_API int dpm_zone_create(device_policy_manager_h handle, const char* name,
 	RET_ON_FAILURE(pkgname, DPM_ERROR_INVALID_PARAMETER);
 
 	DevicePolicyContext &client = GetDevicePolicyContext(handle);
-	ZonePolicy zone = client.createPolicyInterface<ZonePolicy>();
-	return zone.createZone(name, pkgname);
+	KratePolicy krate = client.createPolicyInterface<KratePolicy>();
+	return krate.createKrate(name, pkgname);
 }
 
 EXPORT_API int dpm_zone_destroy(device_policy_manager_h handle, const char* name)
@@ -40,8 +40,8 @@ EXPORT_API int dpm_zone_destroy(device_policy_manager_h handle, const char* name
 	RET_ON_FAILURE(name, DPM_ERROR_INVALID_PARAMETER);
 
 	DevicePolicyContext &client = GetDevicePolicyContext(handle);
-	ZonePolicy zone = client.createPolicyInterface<ZonePolicy>();
-	return zone.removeZone(name);
+	KratePolicy krate = client.createPolicyInterface<KratePolicy>();
+	return krate.removeKrate(name);
 }
 
 EXPORT_API int dpm_zone_get_state(device_policy_manager_h handle, const char* name, dpm_zone_state_e *state)
@@ -51,9 +51,9 @@ EXPORT_API int dpm_zone_get_state(device_policy_manager_h handle, const char* na
 	RET_ON_FAILURE(state, DPM_ERROR_INVALID_PARAMETER);
 
 	DevicePolicyContext &client = GetDevicePolicyContext(handle);
-	ZonePolicy zone = client.createPolicyInterface<ZonePolicy>();
+	KratePolicy krate = client.createPolicyInterface<KratePolicy>();
 
-	int result = zone.getZoneState(name);
+	int result = krate.getKrateState(name);
 	if (result == 0) {
 		return DPM_ERROR_NO_DATA;
 	}
@@ -72,8 +72,8 @@ EXPORT_API int dpm_zone_foreach_name(device_policy_manager_h handle, dpm_zone_st
 	RET_ON_FAILURE(mask, DPM_ERROR_INVALID_PARAMETER);
 
 	DevicePolicyContext &client = GetDevicePolicyContext(handle);
-	ZonePolicy zone = client.createPolicyInterface<ZonePolicy>();
-	std::vector<std::string> list = zone.getZoneList(state);
+	KratePolicy krate = client.createPolicyInterface<KratePolicy>();
+	std::vector<std::string> list = krate.getKrateList(state);
 	for (const std::string& name : list) {
 		if (!callback(name.c_str(), user_data))
 			break;

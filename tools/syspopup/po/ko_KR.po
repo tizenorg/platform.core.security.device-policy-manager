@@ -1,26 +1,26 @@
-msgid "IDS_DPM_NOTI_BODY_ZONE_REMOVE"
-msgstr "여기를 누르면 Separated Zone을 제거합니다."
+msgid "IDS_DPM_NOTI_BODY_KRATE_REMOVE"
+msgstr "여기를 누르면 Separated Krate을 제거합니다."
 
-msgid "IDS_DPM_NOTI_ZONE_REMOVE"
-msgstr "Separate Zone 제거"
+msgid "IDS_DPM_NOTI_KRATE_REMOVE"
+msgstr "Separate Krate 제거"
 
-msgid "IDS_DPM_BODY_ZONE_REMOVE"
-msgstr "보안정책에 따라 Separated Zone 사용을 제한합니다. OK 버튼을 누르면 Separated Zone을 제거합니다."
+msgid "IDS_DPM_BODY_KRATE_REMOVE"
+msgstr "보안정책에 따라 Separated Krate 사용을 제한합니다. OK 버튼을 누르면 Separated Krate을 제거합니다."
 
-msgid "IDS_DPM_ZONE_REMOVE"
-msgstr "Separate Zone 제거"
+msgid "IDS_DPM_KRATE_REMOVE"
+msgstr "Separate Krate 제거"
 
-msgid "IDS_DPM_NOTI_BODY_ZONE_CREATE"
-msgstr "여기를 누르면 Separated Zone을 생성합니다."
+msgid "IDS_DPM_NOTI_BODY_KRATE_CREATE"
+msgstr "여기를 누르면 Separated Krate을 생성합니다."
 
-msgid "IDS_DPM_NOTI_ZONE_CREATE"
-msgstr "Separate Zone 생성"
+msgid "IDS_DPM_NOTI_KRATE_CREATE"
+msgstr "Separate Krate 생성"
 
-msgid "IDS_DPM_BODY_ZONE_CREATE"
-msgstr "보안정책에 따라 Separated Zone을 사용합니다. OK 버튼을 누르면 Separated Zone을 생성합니다."
+msgid "IDS_DPM_BODY_KRATE_CREATE"
+msgstr "보안정책에 따라 Separated Krate을 사용합니다. OK 버튼을 누르면 Separated Krate을 생성합니다."
 
-msgid "IDS_DPM_ZONE_CREATE"
-msgstr "Separated Zone 생성"
+msgid "IDS_DPM_KRATE_CREATE"
+msgstr "Separated Krate 생성"
 
 msgid "IDS_DPM_CANCEL"
 msgstr "취소"
