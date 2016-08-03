@@ -24,9 +24,9 @@
 #include <tzplatform_config.h>
 #include <klay/auth/user.h>
 #include <klay/audit/logger.h>
+#include <krate/krate.h>
 
-#include "zone.hxx"
-#include "zone/zone.hxx"
+#include "krate.hxx"
 
 #include "launchpad.h"
 #include "privilege.h"
@@ -38,9 +38,7 @@ namespace DevicePolicyManager {
 
 namespace {
 
-namespace {
 std::regex zoneNamePattern(NAME_PATTERN);
-}
 
 bool isAllowedName(const std::string& name) {
 	if (!std::regex_match(name, zoneNamePattern)) {
@@ -56,28 +54,31 @@ bool isAllowedName(const std::string& name) {
 	return !exists;
 }
 
+krate_manager_h krate_manager;
+
 }
 
-ZonePolicy::ZonePolicy(PolicyControlContext& ctx) :
+KratePolicy::KratePolicy(PolicyControlContext& ctx) :
 	context(ctx)
 {
-	context.registerParametricMethod(this, DPM_PRIVILEGE_ZONE, (int)(ZonePolicy::createZone)(std::string, std::string));
-	context.registerParametricMethod(this, DPM_PRIVILEGE_ZONE, (int)(ZonePolicy::removeZone)(std::string));
-	context.registerParametricMethod(this, DPM_PRIVILEGE_ZONE, (int)(ZonePolicy::lockZone)(std::string));
-	context.registerParametricMethod(this, DPM_PRIVILEGE_ZONE, (int)(ZonePolicy::unlockZone)(std::string));
-	context.registerParametricMethod(this, "", (int)(ZonePolicy::getZoneState)(std::string));
-	context.registerParametricMethod(this, "", (std::vector<std::string>)(ZonePolicy::getZoneList)(int));
+	context.registerParametricMethod(this, DPM_PRIVILEGE_ZONE, (int)(KratePolicy::createKrate)(std::string, std::string));
+	context.registerParametricMethod(this, DPM_PRIVILEGE_ZONE, (int)(KratePolicy::removeKrate)(std::string));
+	context.registerParametricMethod(this, "", (int)(KratePolicy::getKrateState)(std::string));
+	context.registerParametricMethod(this, "", (std::vector<std::string>)(KratePolicy::getKrateList)(int));
 
-	context.createNotification("ZonePolicy::created");
-	context.createNotification("ZonePolicy::removed");
+	context.createNotification("KratePolicy::created");
+	context.createNotification("KratePolicy::removed");
+
+	krate_manager_create(&krate_manager);
 }
 
-ZonePolicy::~ZonePolicy()
+KratePolicy::~KratePolicy()
 {
+	krate_manager_destroy(krate_manager);
 }
 
 
-int ZonePolicy::createZone(const std::string& name, const std::string& setupWizAppid)
+int KratePolicy::createKrate(const std::string& name, const std::string& setupWizAppid)
 {
 	if (!std::regex_match(name, zoneNamePattern)) {
 		return -1;
@@ -92,7 +93,7 @@ int ZonePolicy::createZone(const std::string& name, const std::string& setupWizA
 										 "mode", "create",
 										 "zone", name};
 		Bundle bundle;
-		bundle.add("id", "zone-create");
+		bundle.add("id", "create");
 		bundle.add("user-data", data);
 
 		Launchpad launchpad(context.getPeerUid());
@@ -105,9 +106,9 @@ int ZonePolicy::createZone(const std::string& name, const std::string& setupWizA
 	return 0;
 }
 
-int ZonePolicy::removeZone(const std::string& name)
+int KratePolicy::removeKrate(const std::string& name)
 {
-	if (getZoneState(name) == 0) {
+	if (getKrateState(name) == 0) {
 		return -1;
 	}
 
@@ -116,7 +117,7 @@ int ZonePolicy::removeZone(const std::string& name)
 										 "mode", "remove",
 										 "zone", name};
 		Bundle bundle;
-		bundle.add("id", "zone-remove");
+		bundle.add("id", "remove");
 		bundle.add("user-data", data);
 
 		Launchpad launchpad(context.getPeerUid());
@@ -129,29 +130,26 @@ int ZonePolicy::removeZone(const std::string& name)
 	return 0;
 }
 
-/* [TBD] remove dependency with zoneManager like this */
-extern ZoneManager* zoneManager;
-
-int ZonePolicy::lockZone(const std::string& name)
+int KratePolicy::getKrateState(const std::string& name)
 {
-	return zoneManager->lockZone(name);
+	krate_state_e state = 0;
+	krate_manager_get_krate_state(krate_manager, name.c_str(), state);
+	return (int)state;
 }
 
-int ZonePolicy::unlockZone(const std::string& name)
-{
-	return zoneManager->unlockZone(name);
+bool krate_manager_foreach_cb(const char* name, void* user_data) {
+	auto pList = (std::vector<std::string>*)user_data;
+	pList->push_back(name);
+	return true;
 }
 
-int ZonePolicy::getZoneState(const std::string& name)
+std::vector<std::string> KratePolicy::getKrateList(int state)
 {
-	return zoneManager->getZoneState(name);
+	std::vector<std::string> list;
+	krate_manager_foreach_name(krate_manager, (krate_state_e)state, foreach_krate, &list);
+	return list;
 }
 
-std::vector<std::string> ZonePolicy::getZoneList(int state)
-{
-	return zoneManager->getZoneList(state);
-}
-
-DEFINE_POLICY(ZonePolicy);
+DEFINE_POLICY(KratePolicy);
 
 } // namespace DevicePolicyManager
