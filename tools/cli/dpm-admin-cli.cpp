@@ -167,11 +167,11 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	if (optVal == DPM_ADMIN_CLI_REGISTER)
+	if (optVal == DPM_ADMIN_CLI_REGISTER) {
 		return registAdminClient(pkgName, static_cast<uid_t>(uid));
-	else if (optVal == DPM_ADMIN_CLI_DEREGISTER)
+	} else if (optVal == DPM_ADMIN_CLI_DEREGISTER) {
 		return deregistAdminClient(pkgName, static_cast<uid_t>(uid));
-	else {
+	} else {
 		printUsage();
 		exit(EXIT_FAILURE);
 	}
