@@ -16,19 +16,19 @@
 
 #include <sys/types.h>
 
-#include <aul.h>
-#include <vconf.h>
-#include <bundle.h>
-#include <notification.h>
-#include <system_settings.h>
 #include <auth-passwd-admin.h>
-#include <klay/auth/user.h>
-#include <klay/audit/logger.h>
-
-#include "privilege.h"
-#include "policy-builder.h"
+#include <bundle.h>
+#include <aul.h>
+#include <notification.h>
+#include <vconf.h>
+#include <system_settings.h>
 
 #include "password.hxx"
+
+#include "policy-builder.h"
+#include "privilege.h"
+#include "auth/user.h"
+#include "audit/logger.h"
 
 #define SIMPLE_PASSWORD_LENGTH 4
 #define PASSWORD_EMPTY_STRING "\\n"

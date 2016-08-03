@@ -16,11 +16,11 @@
 
 #include <string>
 
-#include <klay/exception.h>
 #include <ckmc/ckmc-manager.h>
 
 #include "key-manager.h"
 
+#include "exception.h"
 
 #define addAliasPrefix(alias)	\
 	(ckmcIdSystem + ckmcIdSeperator + alias)

@@ -21,6 +21,8 @@
 #include "policy-client.h"
 #include "debug.h"
 
+#include "exception.h"
+
 DevicePolicyContext& GetDevicePolicyContext(void* handle)
 {
 	assert(handle);

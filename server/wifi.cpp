@@ -14,23 +14,24 @@
  *  limitations under the License
  */
 
+#include <arpa/inet.h>
 #include <cstdlib>
 #include <functional>
 #include <unordered_set>
 
 #include <glib.h>
 #include <vconf.h>
-#include <wifi.h>
 #include <vconf-keys.h>
-#include <arpa/inet.h>
-#include <klay/audit/logger.h>
-#include <klay/dbus/connection.h>
-
-#include "privilege.h"
-#include "app-bundle.h"
-#include "policy-builder.h"
+#include <wifi.h>
 
 #include "wifi.hxx"
+
+#include "privilege.h"
+#include "policy-builder.h"
+
+#include "app-bundle.h"
+#include "audit/logger.h"
+#include "dbus/connection.h"
 
 #define NETCONFIG_INTERFACE		\
 	"net.netconfig",			\

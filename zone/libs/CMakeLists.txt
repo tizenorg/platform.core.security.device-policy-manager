@@ -37,13 +37,12 @@ SET(CAPI_INCLUDE_FILES  zone/zone.h
 
 SET (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,noexecstack")
 
-PKG_CHECK_MODULES(ZONE_LIBS_DEPS	REQUIRED
-									klay
-									glib-2.0
-									capi-appfw-package-manager
-									capi-appfw-app-manager
-									capi-appfw-app-control
-									libtzplatform-config
+PKG_CHECK_MODULES(ZONE_LIBS_DEPS  REQUIRED
+								  glib-2.0
+								  capi-appfw-package-manager
+								  capi-appfw-app-manager
+								  capi-appfw-app-control
+								  libtzplatform-config
 )
 
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${SOURCES})
@@ -51,8 +50,8 @@ SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-fvisibility=hid
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES SOVERSION ${LIB_SOVERSION})
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES VERSION   ${LIB_VERSION})
 
-INCLUDE_DIRECTORIES(SYSTEM ${ZONE_LIBS_DEPS_INCLUDE_DIRS} ${DPM_POLICY} ${DPM_LIBS} ${ZONE_LIBS})
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${ZONE_LIBS_DEPS_LIBRARIES} pthread)
+INCLUDE_DIRECTORIES(SYSTEM ${ZONE_LIBS_DEPS_INCLUDE_DIRS} ${DPM_COMMON} ${DPM_POLICY} ${DPM_LIBS} ${ZONE_LIBS})
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${ZONE_LIBS_DEPS_LIBRARIES} pthread dpm-common)
 
 CONFIGURE_FILE(${PC_FILE}.in ${CMAKE_BINARY_DIR}/${PC_FILE} @ONLY)
 

@@ -24,30 +24,32 @@
  */
 
 #define _XOPEN_SOURCE
-#include <grp.h>
 #include <glib.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <getopt.h>
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/param.h>
 
-#include <klay/exception.h>
-#include <klay/filesystem.h>
-#include <klay/auth/user.h>
+#include <grp.h>
+#include <string.h>
+#include <unistd.h>
+#include <getopt.h>
+#include <fcntl.h>
 
-#include <zone/app-proxy.h>
-#include <zone/package-proxy.h>
-
-#include <cstring>
 #include <string>
 #include <vector>
-#include <utility>
 #include <iostream>
+#include <utility>
+
+#include <zone/package-proxy.h>
+#include <zone/app-proxy.h>
 
 #include "session.h"
+
+#include "error.h"
+#include "exception.h"
+#include "filesystem.h"
+#include "auth/user.h"
 
 
 #define DEFAULT_SHELL "/bin/bash"

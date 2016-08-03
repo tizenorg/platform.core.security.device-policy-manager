@@ -17,6 +17,7 @@
 #ifndef __BLUETOOTH_POLICY__
 #define __BLUETOOTH_POLICY__
 
+#include "data-type.h"
 #include "policy-context.hxx"
 
 namespace DevicePolicyManager {

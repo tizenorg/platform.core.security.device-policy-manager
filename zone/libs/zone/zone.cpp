@@ -16,6 +16,7 @@
 
 #include "zone/zone.h"
 
+#include "error.h"
 #include "debug.h"
 #include "array.h"
 

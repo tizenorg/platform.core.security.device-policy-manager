@@ -5,8 +5,8 @@ INCLUDE_DIRECTORIES(./include)
 
 FIND_PACKAGE(PkgConfig REQUIRED)
 PKG_CHECK_MODULES(dpm_syspopup_pkgs REQUIRED
-	dlog
-	glib-2.0
+		dlog
+		glib-2.0
 	bundle
 	efl-extension
 	elementary

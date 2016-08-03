@@ -9,7 +9,6 @@ BuildRequires: gcc
 BuildRequires: cmake
 BuildRequires: pam-devel
 BuildRequires: gettext-tools
-BuildRequires: pkgconfig(klay)
 BuildRequires: pkgconfig(glib-2.0)
 BuildRequires: pkgconfig(libxml-2.0)
 BuildRequires: pkgconfig(sqlite3)
@@ -148,7 +147,12 @@ Testcases for device policy manager and device policy client
 
 %files -n dpm-testcases
 %defattr(644,root,root,755)
+%attr(755,root,root) %{_bindir}/dpm-unit-tests
 %attr(755,root,root) %{_bindir}/dpm-api-tests
+%defattr(-,root,root,-)
+%{TZ_SYS_DATA}/dpm/sample-policy.xml
+%defattr(755,root,root,755)
+%{TZ_SYS_DATA}/dpm/unittest-proc.sh
 
 ## Tools Package #############################################################
 %package -n org.tizen.ode

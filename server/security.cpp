@@ -26,15 +26,15 @@
 #include <vconf-keys.h>
 #include <dd-deviced.h>
 #include <dd-control.h>
-#include <klay/process.h>
-#include <klay/filesystem.h>
-#include <klay/audit/logger.h>
+
+#include "security.hxx"
 
 #include "privilege.h"
 #include "policy-builder.h"
 #include "launchpad.h"
-
-#include "security.hxx"
+#include "process.h"
+#include "filesystem.h"
+#include "audit/logger.h"
 
 namespace DevicePolicyManager {
 

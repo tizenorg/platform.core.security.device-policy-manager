@@ -14,46 +14,35 @@
  *  limitations under the License
  */
 
-#ifndef __RUNTIME_ARRAY_H__
-#define __RUNTIME_ARRAY_H__
+#include "dbus/error.h"
 
-#include <vector>
-#include <utility>
+namespace dbus {
 
-namespace runtime {
+Error::Error() :
+	error(nullptr)
+{
+}
 
-template <typename T>
-class Array final {
-public:
-	Array() = delete;
-	Array(std::vector<T> &&list) :
-		list(std::move(list)), it(this->list.begin())
-	{
+Error::~Error()
+{
+	if (error) {
+		g_error_free(error);
 	}
+}
 
-	Array(const std::vector<T> &list) :
-		list(list), it(this->list.begin())
-	{
-	}
+GError** Error::operator& ()
+{
+	return &error;
+}
 
-	T *next()
-	{
-		if (it != list.end()) {
-			return &(*it++);
-		}
-		return NULL;
-	}
+const GError* Error::operator-> () const
+{
+	return error;
+}
 
-	bool isEnd()
-	{
-		return it == list.end();
-	}
+Error::operator bool () const
+{
+	return error != nullptr;
+}
 
-private:
-	std::vector<T> list;
-	typename std::vector<T>::iterator it;
-};
-
-} // namespace runtime
-
-#endif // __RUNTIME_ARRAY_H__
+} // namespace dbus

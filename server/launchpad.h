@@ -20,6 +20,7 @@
 #include <string>
 
 #include "app-bundle.h"
+#include "exception.h"
 
 class Launchpad {
 public:

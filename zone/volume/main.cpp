@@ -14,26 +14,26 @@
  *  limitations under the License
  */
 
-#include <fcntl.h>
-#include <unistd.h>
-#include <getopt.h>
-#include <sys/stat.h>
 #include <sys/mount.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
+#include <getopt.h>
 
-#include <cstring>
 #include <string>
 #include <vector>
 #include <iostream>
-
-#include <klay/error.h>
-#include <klay/exception.h>
-#include <klay/audit/logger.h>
 
 #include "ecryptfs.h"
 #include "kernel-keyring.h"
 #include "key-manager.h"
 #include "key-generator.h"
+
+#include "error.h"
+#include "exception.h"
+#include "audit/logger.h"
 
 int generateKey(const std::string& keyName)
 {
