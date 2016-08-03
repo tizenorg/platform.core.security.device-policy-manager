@@ -16,9 +16,12 @@
 
 SET(POLICY      ${POLICY}
 				password.cpp
+				krate.cpp
 				dpm/password.cpp
+				dpm/zone.cpp
 )
 
 SET(CAPI        ${CAPI}
 				dpm/password.h
+				dpm/zone.h
 )

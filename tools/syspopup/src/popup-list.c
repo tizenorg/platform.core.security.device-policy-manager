@@ -58,9 +58,9 @@ popup_info_s popup_list[] = {
 	{"storage-decryption", true, "IDS_DPM_STORAGE_DECRYPTION", NULL, "toast", NULL, NULL, NULL, NULL},
 	{"wipe-data",          true, "IDS_DPM_WIPE_DATA",          NULL, "default", "IDS_DPM_CANCEL", "IDS_DPM_OK", NULL, NULL},
 
-	/* Zone Policy */
-	{"zone-create", false, "IDS_DPM_ZONE_CREATE", "IDS_DPM_BODY_ZONE_CREATE", "default", "IDS_DPM_CANCEL", "IDS_DPM_OK", "IDS_DPM_NOTI_ZONE_CREATE", "IDS_DPM_NOTI_BODY_ZONE_CREATE"},
-	{"zone-remove", false, "IDS_DPM_ZONE_REMOVE", "IDS_DPM_BODY_ZONE_REMOVE", "default", "IDS_DPM_CANCEL", "IDS_DPM_OK", "IDS_DPM_NOTI_ZONE_REMOVE", "IDS_DPM_NOTI_BODY_ZONE_REMOVE"},
+	/* Krate Policy */
+	{"krate-create", false, "IDS_DPM_KRATE_CREATE", "IDS_DPM_BODY_KRATE_CREATE", "default", "IDS_DPM_CANCEL", "IDS_DPM_OK", "IDS_DPM_NOTI_KRATE_CREATE", "IDS_DPM_NOTI_BODY_KRATE_CREATE"},
+	{"krate-remove", false, "IDS_DPM_KRATE_REMOVE", "IDS_DPM_BODY_KRATE_REMOVE", "default", "IDS_DPM_CANCEL", "IDS_DPM_OK", "IDS_DPM_NOTI_KRATE_REMOVE", "IDS_DPM_NOTI_BODY_KRATE_REMOVE"},
 };
 
 popup_info_s *_get_popup_info(const char *id)

@@ -34,14 +34,17 @@ BuildRequires: pkgconfig(capi-network-bluetooth)
 BuildRequires: pkgconfig(capi-system-system-settings)
 BuildRequires: pkgconfig(notification)
 BuildRequires: pkgconfig(key-manager)
-BuildRequires: pkgconfig(libgum)
-BuildRequires:  pkgconfig(cynara-client)
-BuildRequires:  pkgconfig(cynara-session)
+BuildRequires: pkgconfig(cynara-client)
+BuildRequires: pkgconfig(cynara-session)
 
 %if "%{profile}" != "tv"
 BuildRequires: pkgconfig(capi-location-manager)
 BuildRequires: pkgconfig(auth-fw-admin)
+%if "%{profile}" != "wearable"
+BuildRequires: pkgconfig(krate)
 %endif
+%endif
+
 
 %description
 The device-policy-manager package provides a daemon which is responsible for
@@ -53,9 +56,9 @@ managing device policies.
 %attr(755,root,root) %{_bindir}/device-policy-manager
 %attr(700,root,root) %{_bindir}/factory-reset
 %attr(700,root,root) %{_bindir}/dpm-admin-cli
-%dir %{TZ_SYS_DATA}/dpm
-%dir %{TZ_SYS_ETC}/dpm/policy
-%{TZ_SYS_ETC}/dpm/policy/PolicyManifest.xml
+%attr(711,security_fw,security_fw) %dir %{TZ_SYS_DATA}/dpm
+%attr(711,security_fw,security_fw) %dir %{TZ_SYS_ETC}/dpm/policy
+%attr(644,security_fw,security_fw) %{TZ_SYS_ETC}/dpm/policy/PolicyManifest.xml
 %{_unitdir}/device-policy-manager.service
 %{_unitdir}/multi-user.target.wants/device-policy-manager.service
 
@@ -200,81 +203,3 @@ Tizen DPM system popup interface package
 %{TZ_SYS_RO_APP}/org.tizen.dpm-syspopup/res/locale/*
 %{TZ_SYS_RO_PACKAGES}/org.tizen.dpm-syspopup.xml
 /usr/share/icons/default/small/org.tizen.dpm-syspopup.png
-
-## Begin of mobile feature ###################################################
-%if "%{profile}" == "mobile"
-
-## Zone Client Package ########################################################
-%package -n libzone
-Summary: Tizen Zone Client library
-Group: Development/Libraries
-BuildRequires: pkgconfig(capi-appfw-application)
-BuildRequires: pkgconfig(capi-appfw-app-manager)
-BuildRequires: pkgconfig(capi-appfw-package-manager)
-BuildRequires: pkgconfig(libtzplatform-config)
-Requires: %{name} = %{version}-%{release}
-Requires(post): /sbin/ldconfig
-Requires(postun): /sbin/ldconfig
-
-%description -n libzone
-The libzone package contains the libraries needed to control inside of the zone.
-
-%post -n libzone -p /sbin/ldconfig
-
-%postun -n libzone -p /sbin/ldconfig
-
-%files -n libzone
-%manifest device-policy-manager.manifest
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libzone.so.%{version}
-%{_libdir}/libzone.so.0
-
-## Devel Package ##############################################################
-%package -n libzone-devel
-Summary: Libraries and header files for zone client development
-Group: Development/Libraries
-Requires: libzone = %{version}-%{release}
-
-%description -n libzone-devel
-The libzone-devel package includes the libraries and header files necessary for
-developing the zone client program.
-
-%files -n libzone-devel
-%manifest device-policy-manager.manifest
-%defattr(644,root,root,755)
-%{_libdir}/libzone.so
-%{_includedir}/zone
-%{_libdir}/pkgconfig/zone.pc
-
-## PAM Plugin Package ########################################################
-%package -n dpm-pam-zone
-Summary: PAM Plugin for zone policy in device policy manager
-Group: Development/Libraries
-Requires: systemd
-
-%description -n dpm-pam-zone
-PAM Plugin for zone policy in device policy manager and CLI tool
-
-%post -n dpm-pam-zone
-mv /etc/pam.d/systemd-user /etc/pam.d/systemd-user.keep
-cp /etc/pam.d/systemd-user-zone /etc/pam.d/systemd-user
-
-%postun -n dpm-pam-zone
-mv /etc/pam.d/systemd-user.keep /etc/pam.d/systemd-user
-
-%files -n dpm-pam-zone
-%manifest device-policy-manager.manifest
-%defattr(600,root,root,700)
-%attr(700,root,root) %{_libdir}/security/pam_*.so
-%attr(700,root,root) %{_sbindir}/zone-admin-cli
-%attr(700,root,root) %{_sbindir}/zone-volume-manager
-%attr(700,root,root) %dir %{TZ_SYS_ETC}/dpm/zone
-%attr(700,root,root) /etc/gumd/useradd.d/20_pam-zone-add.post
-%attr(700,root,root) /etc/gumd/userdel.d/20_pam-zone-remove.post
-%attr(600,root,root) %config %{TZ_SYS_ETC}/dpm/zone/owner.xml
-%attr(644,root,root) %{TZ_SYS_DATA}/dpm/zone_indicator_icon.png
-%attr(644,root,root) %{TZ_SYS_DATA}/dpm/zone_noti_list_sub_icon.png
-%config /etc/pam.d/*
-
-%endif
-# End of mobile feature

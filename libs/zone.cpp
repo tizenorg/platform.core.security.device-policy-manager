@@ -13,69 +13,51 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License
  */
-#include "zone.hxx"
+#include "krate.hxx"
 
 namespace DevicePolicyManager {
 
-ZonePolicy::ZonePolicy(PolicyControlContext& ctx) :
+KratePolicy::KratePolicy(PolicyControlContext& ctx) :
 	context(ctx)
 {
 }
 
-ZonePolicy::~ZonePolicy()
+KratePolicy::~KratePolicy()
 {
 }
 
-int ZonePolicy::createZone(const std::string& name, const std::string& setupWizAppid)
+int KratePolicy::createKrate(const std::string& name, const std::string& setupWizAppid)
 {
 	try {
-		return context->methodCall<int>("ZonePolicy::createZone", name, setupWizAppid);
+		return context->methodCall<int>("KratePolicy::createKrate", name, setupWizAppid);
 	} catch (runtime::Exception& e) {
 		return -1;
 	}
 }
 
-int ZonePolicy::removeZone(const std::string& name)
+int KratePolicy::removeKrate(const std::string& name)
 {
 	try {
-		return context->methodCall<int>("ZonePolicy::removeZone", name);
+		return context->methodCall<int>("KratePolicy::removeKrate", name);
 	} catch (runtime::Exception& e) {
 		return -1;
 	}
 }
 
-int ZonePolicy::lockZone(const std::string& name)
+int KratePolicy::getKrateState(const std::string& name)
 {
 	try {
-		return context->methodCall<int>("ZonePolicy::lockZone", name);
+		return context->methodCall<int>("KratePolicy::getKrateState", name);
 	} catch (runtime::Exception& e) {
 		return -1;
 	}
 }
 
-int ZonePolicy::unlockZone(const std::string& name)
-{
-	try {
-		return context->methodCall<int>("ZonePolicy::unlockZone", name);
-	} catch (runtime::Exception& e) {
-		return -1;
-	}
-}
-
-int ZonePolicy::getZoneState(const std::string& name)
-{
-	try {
-		return context->methodCall<int>("ZonePolicy::getZoneState", name);
-	} catch (runtime::Exception& e) {
-		return -1;
-	}
-}
-
-std::vector<std::string> ZonePolicy::getZoneList(int state)
+std::vector<std::string> KratePolicy::getKrateList(int state)
 {
 	std::vector<std::string> empty;
 	try {
-		return context->methodCall<std::vector<std::string>>("ZonePolicy::getZoneList", state);
+		return context->methodCall<std::vector<std::string>>("KratePolicy::getKrateList", state);
 	} catch (runtime::Exception& e) {
 		return empty;
 	}
