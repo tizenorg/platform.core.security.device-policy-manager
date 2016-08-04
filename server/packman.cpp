@@ -13,15 +13,10 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License
  */
-
-#include <sys/stat.h>
-#include <signal.h>
-
-#include <vector>
+#include <klay/exception.h>
+#include <klay/audit/logger.h>
 
 #include "packman.h"
-#include "exception.h"
-#include "audit/logger.h"
 
 namespace {
 

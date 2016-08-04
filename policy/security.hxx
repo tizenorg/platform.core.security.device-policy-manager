@@ -17,7 +17,6 @@
 #ifndef __SECURITY_POLICY__
 #define __SECURITY_POLICY__
 
-#include "data-type.h"
 #include "policy-context.hxx"
 
 namespace DevicePolicyManager {

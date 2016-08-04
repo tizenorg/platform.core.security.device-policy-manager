@@ -15,23 +15,22 @@
  */
 
 
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <string.h>
-#include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
+#include <cstring>
+#include <cstdlib>
 #include <string>
 #include <iomanip>
 #include <sstream>
 #include <iostream>
 
-#include "exception.h"
-#include "key-generator.h"
+#include <klay/error.h>
+#include <klay/exception.h>
 
-#include "error.h"
-#include "exception.h"
+#include "key-generator.h"
 
 #define RAND_READ_BYTES 8
 #define PBKDF2_ITERATION 1000

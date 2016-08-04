@@ -17,9 +17,6 @@
 #ifndef __ADMINISTRATION_POLICY__
 #define __ADMINISTRATION_POLICY__
 
-#include <string>
-
-#include "data-type.h"
 #include "policy-context.hxx"
 
 namespace DevicePolicyManager {
