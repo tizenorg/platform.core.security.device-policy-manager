@@ -14,17 +14,14 @@
  *  limitations under the License
  */
 
-#include <climits>
-#include <memory>
-#include <stdexcept>
 #include <string>
-#include <limits>
+#include <climits>
+#include <stdexcept>
+#include <klay/exception.h>
 
-#include "client-manager.h"
 #include "policy.h"
 
-#include "exception.h"
-#include "audit/logger.h"
+#include "client-manager.h"
 
 namespace {
 

@@ -15,13 +15,14 @@
  */
 
 #include <vconf.h>
-
-#include "restriction.hxx"
+#include <klay/exception.h>
+#include <klay/dbus/connection.h>
+#include <klay/audit/logger.h>
 
 #include "privilege.h"
 #include "policy-builder.h"
-#include "audit/logger.h"
-#include "dbus/connection.h"
+
+#include "restriction.hxx"
 
 #define PULSEAUDIO_LOGIN_INTERFACE          \
 	"org.pulseaudio.Server",                \

@@ -17,7 +17,6 @@
 #ifndef __ZONE_APP_PROXY__
 #define __ZONE_APP_PROXY__
 
-#include "data-type.h"
 #include "policy-context.hxx"
 
 namespace DevicePolicyManager {

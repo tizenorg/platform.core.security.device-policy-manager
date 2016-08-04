@@ -13,9 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License
  */
-
 #include "restriction.hxx"
-#include "audit/logger.h"
 
 namespace DevicePolicyManager
 {

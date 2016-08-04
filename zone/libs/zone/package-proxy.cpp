@@ -21,14 +21,13 @@
 #include <pkgmgr-info.h>
 #include <package-manager.h>
 #include <tzplatform_config.h>
+#include <klay/auth/user.h>
 
 #include "zone.h"
 #include "debug.h"
 #include "package-proxy.h"
 #include "package-info-internal.h"
 
-#include "error.h"
-#include "auth/user.h"
 #include "policy-client.h"
 #include "zone/package-proxy.hxx"
 

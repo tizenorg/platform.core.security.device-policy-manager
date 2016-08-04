@@ -17,7 +17,6 @@
 #ifndef __STORAGE_POLICY__
 #define __STORAGE_POLICY__
 
-#include "data-type.h"
 #include "policy-context.hxx"
 
 namespace DevicePolicyManager {

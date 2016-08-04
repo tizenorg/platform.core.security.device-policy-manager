@@ -13,12 +13,11 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License
  */
+#include <memory>
+
+#include <klay/exception.h>
 
 #include "app-bundle.h"
-
-#include "error.h"
-#include "exception.h"
-#include "audit/logger.h"
 
 Bundle::Bundle() :
 	handle(nullptr)

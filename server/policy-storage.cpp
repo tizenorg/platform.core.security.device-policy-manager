@@ -14,17 +14,17 @@
  *  limitations under the License
  */
 
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
-#include "policy-context.hxx"
+#include <klay/error.h>
+#include <klay/exception.h>
+#include <klay/xml/parser.h>
+#include <klay/audit/logger.h>
 
 #include "policy-storage.h"
-
-#include "error.h"
-#include "exception.h"
-#include "audit/logger.h"
+#include "policy-context.hxx"
 
 namespace {
 
